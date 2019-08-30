@@ -1,0 +1,16 @@
+# Pinoox
+upload/*
+uploads/*
+apps/*/upload/*
+apps/*/cache/*
+apps/*/uploads/*
+cache/*
+temp/*
+dist/*
+
+# IntelliJ IDEA
+.idea/
+
+# Node Js
+node_modules/
+*.pin
