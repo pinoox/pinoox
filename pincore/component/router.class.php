@@ -43,6 +43,7 @@ class Router
         self::checkDomain();
         self::findAppByUrl();
         self::findPartsByUrl();
+
     }
 
     /**get Current url
@@ -247,7 +248,9 @@ class Router
      */
     private static function getAsArray($url, $get = '/')
     {
-        return array_values(array_filter(explode($get, $url)));
+        return array_values(array_filter(explode($get, $url),function ($value){
+            return $value == 0 || !empty($value);
+        }));
     }
 
     private static function createParts($isUrl = false)
