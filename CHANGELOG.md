@@ -1,6 +1,6 @@
 # Release Notes
 ## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
-## [v1.2.1b3](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)   
+## [v1.2.1b3 (2019-08-30)](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)   
 
 ## Added
 
