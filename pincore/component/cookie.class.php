@@ -14,30 +14,41 @@ namespace pinoox\component;
 
 class Cookie
 {
-
     /**
-     * @param $key → key name the data to save
-     * @param $value → data to save
-     * @param int $time → expiration time in minutes (default value is 1440 min == 1 day)
+     * Set new Cookie.
      *
+     * @param string $key
+     * @param string $value
+     * @param int $time give in minutes, default time is 1440 min (1 day).
+     * @param string|null $path
+     * @param string|null $domain
+     * @param bool $https
+     * @param bool $httpOnly
+     * @return void
      */
     public static function set($key, $value, $time = 1440, $path = "/", $domain = null, $https = false, $httpOnly = true)
     {
         setcookie($key, $value, time() + ($time * 60), $path, $domain, $https, $httpOnly);
     }
 
-    public static function get($key = null, $default = null)
+    /**
+     * Get Cookie.
+     *
+     * @param string|null $key
+     * @return bool
+     */
+    public static function get($key = null)
     {
-        $cookie = is_null($key) ? $_COOKIE : isset($_COOKIE[$key]) ? $_COOKIE[$key] : null;
-        if (empty($cookie) && !is_null($default))
-            return $default;
-
-        return $cookie;
+        return isset($_COOKIE[$key]) ? $_COOKIE[$key] : $_COOKIE;
     }
 
     /**
-     * destroys the cookies
-     * @param string $key → cookie name to destroy. Not set to delete all
+     * Destroy Cookie.
+     *
+     * if you do not set key that destroy all Cookies also you can destroy specific with key
+     *
+     * @param string|null $key
+     * @return void
      */
     public static function destroy($key = "")
     {
