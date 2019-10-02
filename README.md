@@ -1,3 +1,5 @@
+<p align="center"><a href="https://www.pinoox.com" target="_blank" rel="noopener noreferrer"><img width="100" src="https://www.pinoox.com/img/logo.png" alt="Pinoox logo"></a></p>
+
 # Pinoox
 
 ### New generation of web frameworks.
