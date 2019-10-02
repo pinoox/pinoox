@@ -1,3 +1,7 @@
+# Release Notes
+## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
+## [v1.2.1b3](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)   
+
 ## Added
 
 - English language
