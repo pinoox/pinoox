@@ -14,6 +14,16 @@ namespace pinoox\component;
 
 class Response
 {
+    /**
+     * Redirect to a location
+     *
+     * @param $url
+     * @param bool $header
+     * @param bool $exit force to exit
+     * @param int $sec
+     * @param bool $return for returning args
+     * @return string
+     */
     public static function redirect($url, $header = true, $exit = true, $sec = 0, $return = false)
     {
         if (!headers_sent() && $header && !$return) {
@@ -27,8 +37,17 @@ class Response
         }
         if ($exit)
             exit;
+
+        return null;
     }
 
+    /**
+     * Response in json formant
+     *
+     * @param $result
+     * @param null $status
+     * @param bool $exit
+     */
     public static function json($result, $status = null, $exit = true)
     {
         HelperHeader::contentType('application/json', 'UTF-8');
@@ -41,12 +60,25 @@ class Response
         if ($exit) exit;
     }
 
-
+    /**
+     * Response in json format with extra message data
+     *
+     * @param $message
+     * @param $status
+     * @param null $result
+     * @param bool $exit
+     */
     public static function jsonMessage($message, $status, $result = null, $exit = true)
     {
         self::json(array("status" => $status, "result" => $result, "message" => $message), null, $exit);
     }
 
+    /**
+     * Response in json format for errors
+     *
+     * @param $message
+     * @param int $statusCode
+     */
     public static function jsonError($message, $statusCode = 400)
     {
         http_response_code($statusCode);
