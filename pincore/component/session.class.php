@@ -16,24 +16,101 @@ use pinoox\model\SessionModel;
 
 class Session
 {
+
+    /**
+     * The default salt for security reasons.
+     *
+     * @var string
+     */
     private static $salt = 'Fg$vv4513DKOzQEvC$&#DK';
-    private static $store_in_file = false;
+
+    /**
+     * The Time of Session that is alive
+     *
+     * @var int
+     */
     private static $lifeTime = 0;
+
+    /**
+     * Probability session data garbage collection
+     *
+     * @var int|null
+     */
     private static $gc_probability = null;
+
+    /**
+     * It's depend on gc_probability when you set gc_probability=1 and gc_divisor=100 means there is a 1% chance that the GC process starts on each request.
+     *
+     * @var int|null
+     */
     private static $gc_divisor = null;
-    private static $non_blocking = false;
+
+    /**
+     * When is true it is sensitive to user agents and IP changes
+     *
+     * @var bool
+     */
     private static $security_token = false;
+
+    /**
+     * When is true it is sensitive to IP changes
+     *
+     * @var bool
+     */
     private static $is_ip = false;
+
+    /**
+     * Encrypt generated session and it's data
+     *
+     * @var bool
+     */
     private static $encryption = false;
-    private static $save_empty = false;
+
+    /**
+     * Store session in file or database.
+     *
+     * default state is false means store in file, For store in database use true state.
+     *
+     * @var bool
+     */
+    private static $store_in_file = false;
+
+    /**
+     * Locking Session on concurrent requests
+     *
+     * @var bool
+     */
+    private static $non_blocking = false;
+
+    /**
+     * The app name
+     *
+     * @var null
+     */
     private static $app = null;
+
+    /**
+     * Check is started on database
+     *
+     * @var bool
+     */
     private static $is_start = false;
 
+    /**
+     * Session constructor.
+     * @param bool $store_in_file
+     */
     public function __construct($store_in_file = false)
     {
         self::$store_in_file = $store_in_file;
     }
 
+    /**
+     * Call Garbage Collector
+     *
+     * @param $lifetime
+     * @return bool
+     */
     public static function _gc($lifetime)
     {
         SessionModel::remove_all_expired($lifetime);
@@ -41,12 +118,24 @@ class Session
         return true;
     }
 
+    /**
+     * Check specific key in Session
+     *
+     * @return bool
+     */
     public static function has()
     {
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
         return HelperArray::isExistsValueByNestedKey($_SESSION, $parts);
     }
 
+    /**
+     * Set data in Session
+     *
+     * @param $key
+     * @param null $value
+     * @return void
+     */
     public static function set($key, $value = null)
     {
         $_SESSION[$key] = $value;
@@ -54,6 +143,11 @@ class Session
             session_write_close();
     }
 
+    /**
+     * Get data stored in Session by key
+     *
+     * @return array|null
+     */
     public static function get()
     {
         if (func_num_args() == 0)
@@ -63,6 +157,11 @@ class Session
         return HelperArray::getValueByNestedKey($_SESSION, $parts);
     }
 
+    /**
+     * Get all data stored in Session
+     *
+     * @return array
+     */
     private static function getAll()
     {
         if (isset($_SESSION))
@@ -86,39 +185,48 @@ class Session
         return $parts;
     }
 
+
+    /**
+     * Get Session of specific app
+     *
+     * @param $package_name
+     */
     public static function app($package_name)
     {
-        if(!empty(self::$app)) {
+        if (!empty(self::$app)) {
             session_write_close();
             session_start();
         }
         self::$app = $package_name;
-        if(function_exists('session_reset'))
+        if (function_exists('session_reset'))
             session_reset();
 
     }
 
+    /**
+     * Get App name
+     *
+     * @return null|string
+     */
     public static function getApp()
     {
         return (!empty(self::$app)) ? self::$app : Router::getApp();
     }
 
     /**
-     * @param $lifeTime : in seconds
-     * @param $type : sec | min | hour | day
+     * Lifetime Session
+     *
+     * @param $lifeTime
+     * @param string $unitTime units are sec,min,hour,day
      */
-    public static function lifeTime($lifeTime, $type = 'sec')
+    public static function lifeTime($lifeTime, $unitTime = 'sec')
     {
-        if ($type == 'min') $lifeTime = $lifeTime * 60;
-        if ($type == 'hour') $lifeTime = $lifeTime * 60 * 60;
-        if ($type == 'day') $lifeTime = $lifeTime * 60 * 60 * 24;
+        if ($unitTime == 'min') $lifeTime = $lifeTime * 60;
+        if ($unitTime == 'hour') $lifeTime = $lifeTime * 60 * 60;
+        if ($unitTime == 'day') $lifeTime = $lifeTime * 60 * 60 * 24;
         self::$lifeTime = $lifeTime;
     }
 
-    public static function saveEmpty($status = false)
-    {
-        self::$save_empty = $status;
-    }
 
     public static function gcProbability($gc_probability)
     {
@@ -136,8 +244,11 @@ class Session
     }
 
     /**
-     * make a token with ip and user agent for preventing Session hijacking and fixation attack
+     * Make a token with ip and user agent for preventing Session hijacking and fixation attack
+     *
      * @param $security_token -> true or false
+     * @param bool $is_ip
+     * @return void
      */
     public static function securityToken($security_token, $is_ip = false)
     {
@@ -145,8 +256,9 @@ class Session
         self::$is_ip = $is_ip;
     }
 
-    /**store session data encrypted
-     * @param $status : true or false
+    /**
+     * Encrypt when save data
+     * @param $status
      */
     public static function encryption($status)
     {
@@ -154,21 +266,30 @@ class Session
     }
 
     /**
-     * @param $status true OR false
-     * true → regenerate session id
-     * set true after logout or login for changing session id and preventing fixation attack
+     * Prevent fixation attack
+     * If $status is true after each login or logout call regenerate_id() for changing session_id
+     *
+     * @param $regenerate_id
      */
-    public static function regenerateId($status)
+    public static function regenerateId($regenerate_id)
     {
-        session_regenerate_id($status);
+        session_regenerate_id($regenerate_id);
     }
 
+    /**
+     * Remove Session
+     *
+     * @param ... key of specific index
+     */
     public static function remove()
     {
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
         HelperArray::removeValueByNestedKey($_SESSION, $parts);
     }
 
+    /**
+     * Start Session
+     */
     public function start()
     {
         // this makes it harder for an attacker to hijack the session ID
@@ -202,11 +323,23 @@ class Session
         self::$is_start = true;
     }
 
+    /**
+     * Checking Session use database or file
+     *
+     * @return bool
+     */
     public static function isStartOnDatabase()
     {
         return (!self::$store_in_file && self::$is_start);
     }
 
+    /**
+     * Determine Session Where to store with specific name
+     *
+     * @param $save_path
+     * @param $session_name
+     * @return bool
+     */
     public function _open($save_path, $session_name)
     {
         if (!self::$store_in_file)
@@ -214,6 +347,11 @@ class Session
         return false;
     }
 
+    /**
+     * Stop Session
+     *
+     * @return bool
+     */
     public function _close()
     {
         if (!self::$store_in_file)
@@ -221,6 +359,13 @@ class Session
         return false;
     }
 
+    /**
+     * Read data from specific session id
+     *
+     *
+     * @param $id
+     * @return decrypted|string
+     */
     public function _read($id)
     {
         if (!self::$store_in_file) {
@@ -235,6 +380,11 @@ class Session
         }
     }
 
+    /**
+     * Get security token
+     *
+     * @return string|null
+     */
     private function getSecurityToken()
     {
         if (self::$security_token) {
@@ -246,11 +396,11 @@ class Session
     }
 
     /**
-     * decrypt AES 256
+     * Decrypt AES 256
      *
-     * @param data $edata
+     * @param mixed $edata
      * @param string $password
-     * @return decrypted data
+     * @return mixed data
      */
     private static function decrypt($edata, $password = null)
     {
@@ -278,6 +428,13 @@ class Session
         return openssl_decrypt($ct, 'AES-256-CBC', $key, true, $iv);
     }
 
+    /**
+     * Write data for specific session id
+     *
+     * @param $session_id
+     * @param $session_data
+     * @return bool
+     */
     public function _write($session_id, $session_data)
     {
         if (!self::$store_in_file) {
@@ -289,7 +446,7 @@ class Session
                 $session_data = $this->encrypt($session_data);
             }
             if (SessionModel::is_exists($session_id)) {
-                return SessionModel::update($session_id, $session_data,self::$lifeTime);
+                return SessionModel::update($session_id, $session_data, self::$lifeTime);
             } else {
                 SessionModel::delete($session_id);
                 $id = SessionModel::insert($session_id, $session_data, self::$lifeTime, $this->getSecurityToken());
@@ -300,7 +457,7 @@ class Session
     }
 
     /**
-     * crypt AES 256
+     * Crypt AES 256
      *
      * @param data $data
      * @param string $password
@@ -331,6 +488,12 @@ class Session
         return base64_encode($salt . $encrypted_data);
     }
 
+    /**
+     * Destroy Session
+     *
+     * @param $session_id
+     * @return bool
+     */
     public function _destroy($session_id)
     {
         // delete the current session id from the database
@@ -339,17 +502,28 @@ class Session
         return $status ? true : false;
     }
 
+    /**
+     * Get Session id
+     *
+     * @return string
+     */
     public static function getSessionId()
     {
         return session_id();
     }
 
+    /**
+     * Destroy and close all Sessions
+     */
     public static function clear()
     {
         session_unset();
         session_destroy();
     }
 
+    /**
+     * Destroy and close all Sessions
+     */
     public static function stop()
     {
         session_write_close();
