@@ -19,9 +19,12 @@ class Tree
     public $maxDepth = false;
 
     /**
-     * @var 
+     * @var
      */
     public $openParentHTMLTags;
+    /**
+     * @var
+     */
     public $closeParentHTMLTags;
     public $openInnerHTMLTags;
     public $closeInnerHTMLTags;
