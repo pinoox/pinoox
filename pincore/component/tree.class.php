@@ -17,6 +17,10 @@ class Tree
      * @var bool
      */
     public $maxDepth = false;
+
+    /**
+     * @var 
+     */
     public $openParentHTMLTags;
     public $closeParentHTMLTags;
     public $openInnerHTMLTags;
