@@ -13,6 +13,9 @@ namespace pinoox\component;
 
 class Tree
 {
+    /**
+     * @var bool
+     */
     public $maxDepth = false;
     public $openParentHTMLTags;
     public $closeParentHTMLTags;
