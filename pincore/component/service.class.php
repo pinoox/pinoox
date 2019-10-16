@@ -14,92 +14,171 @@ namespace pinoox\component;
 
 class Service
 {
+    /**
+     * Package name of app
+     *
+     * @var null|string
+     */
     private static $app = null;
+
+    /**
+     * Services information
+     *
+     * @var array
+     */
     private static $services = [];
+
+    /**
+     * List of services name
+     *
+     * @var array
+     */
     private static $listServices = [];
 
+    /**
+     * Set default app with package name
+     *
+     * @param string|null $packageName for example "com_pinoox_manager"
+     */
     public static function app($packageName)
     {
         self::$app = $packageName;
     }
 
+    /**
+     * Get package name of current app
+     *
+     * @return null|string
+     */
     public static function getApp()
     {
         return self::$app;
     }
 
-    public static function object($value)
+    /**
+     * Get object of current app with service name
+     *
+     * @param string $service
+     * @return mixed|null
+     */
+    public static function object($service)
     {
-        return isset(self::$services[$value]['object'])? self::$services[$value]['object'] : null;
+        return isset(self::$services[$service]['object'])? self::$services[$service]['object'] : null;
     }
 
+    /**
+     * Get names of all services
+     *
+     * @return array
+     */
     public static function all()
     {
         return self::$listServices;
     }
 
-    public static function run($value)
+    /**
+     * Run service
+     *
+     * for example "cache.config" => cache is a directory and config is inner service name
+     *
+     * @param $service
+     * @return mixed|null
+     */
+    public static function run($service)
     {
-        return self::runner($value, 'run');
+        return self::runner($service, 'run');
     }
 
-    private static function runner($value, $status)
+    /**
+     * Call method of service
+     *
+     * @param string $service
+     * @param string $status
+     * @return mixed|null
+     */
+    private static function runner($service, $status)
     {
-        if (empty($value)) return null;
+        if (empty($service)) return null;
 
         $isObject = false;
-        if (isset(self::$services[$value]['object'])) {
+        if (isset(self::$services[$service]['object'])) {
             $isObject = true;
         } else {
-            $classname = self::createServiceName($value);
+            $classname = self::createServiceName($service);
 
             if (class_exists($classname)) {
-                self::$listServices[] = $value;
-                self::$services[$value]['object'] = new $classname;
+                self::$listServices[] = $service;
+                self::$services[$service]['object'] = new $classname;
                 $isObject = true;
             }
         }
 
         if ($isObject) {
-            self::$services[$value]['status'] = $status;
+            self::$services[$service]['status'] = $status;
             $method = '_' . $status;
-            return self::$services[$value]['object']->$method();
+            return self::$services[$service]['object']->$method();
         }
 
         return null;
     }
 
-    private static function createServiceName($value)
+    /**
+     * Generate service name
+     *
+     * @param $service
+     * @return string
+     */
+    private static function createServiceName($service)
     {
-        if (HelperString::firstHas($value, '~') || self::$app === '~') {
-            $value = HelperString::firstDelete($value, '~');
+        if (HelperString::firstHas($service, '~') || self::$app === '~') {
+            $service = HelperString::firstDelete($service, '~');
             $namespace = "pinoox\\service\\";
         } else {
             $app = (empty(self::$app)) ? Router::getApp() : self::$app;
             $namespace = "pinoox\\app\\" . $app . "\\service\\";
         }
 
-        $values = HelperString::multiExplode(['\\', '>', '/', '.'], $value);
-        $serviceName = array_pop($values);
-        $values[] = ucfirst($serviceName) . 'Service';
-        $classname = implode('\\', $values);
+        $services = HelperString::multiExplode(['\\', '>', '/', '.'], $service);
+        $serviceName = array_pop($services);
+        $services[] = ucfirst($serviceName) . 'Service';
+        $classname = implode('\\', $services);
         return $namespace . $classname;
     }
 
-    public static function stop($value)
+    /**
+     * Stop service
+     *
+     * @param $service
+     * @return mixed|null
+     */
+    public static function stop($service)
     {
-        return self::runner($value, 'stop');
+        return self::runner($service, 'stop');
     }
 
-    public static function restart($value)
+    /**
+     * Restart service
+     *
+     * stop and run service
+     *
+     * @param $service
+     * @return mixed|null
+     */
+    public static function restart($service)
     {
-        self::runner($value, 'stop');
-        return self::runner($value, 'run');
+        self::runner($service, 'stop');
+        return self::runner($service, 'run');
     }
 
-    public static function status($value)
+    /**
+     * Get status service
+     *
+     * @param $service
+     * @return string|null
+     */
+    public static function status($service)
     {
-        return isset(self::$services[$value]['status']) ? self::$services[$value]['status'] : null;
+        return isset(self::$services[$service]['status']) ? self::$services[$service]['status'] : null;
     }
 
 }
