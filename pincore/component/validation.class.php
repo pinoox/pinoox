@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use Closure;
 
 /**
  * Validation Help you to check validity of input data in a simple way
@@ -25,7 +26,7 @@ class Validation
     /**
      * An instance of Validation Class
      *
-     * @var object
+     * @var Validation
      */
     private static $obj;
 
@@ -306,11 +307,11 @@ class Validation
     /**
      * Execute rule
      *
-     * @param \Closure $status
+     * @param Closure $status
      * @param $err
-     * @param \Closure|null $dataIntoMessage
+     * @param Closure|null $dataIntoMessage
      */
-    private static function executeRuleGenerate(\Closure $status, $err, \Closure $dataIntoMessage = null)
+    private static function executeRuleGenerate(Closure $status, $err, Closure $dataIntoMessage = null)
     {
         $info = [
             'data' => self::getData(),
@@ -597,11 +598,11 @@ class Validation
      * Generate
      *
      * @param $name
-     * @param \Closure $status
+     * @param Closure $status
      * @param $err
-     * @param \Closure|null $dataIntoMessage
+     * @param Closure|null $dataIntoMessage
      */
-    public static function generate($name, \Closure $status, $err, \Closure $dataIntoMessage = null)
+    public static function generate($name, Closure $status, $err, Closure $dataIntoMessage = null)
     {
         self::$validators['_' . $name] = [
             'status' => $status,

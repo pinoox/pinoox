@@ -97,7 +97,8 @@ class Session
     private static $is_start = false;
 
     /**
-     * Session constructor.
+     * Session constructor
+     *
      * @param bool $store_in_file
      */
     public function __construct($store_in_file = false)
