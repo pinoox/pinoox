@@ -12,6 +12,7 @@
 
 namespace pinoox\component\app;
 
+use Closure;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\HelperObject;
@@ -19,19 +20,66 @@ use pinoox\component\HelperString;
 
 class AppProvider extends AppSource
 {
+    /**
+     * An instance of AppProvider Class
+     *
+     * @var AppProvider
+     */
     private static $obj = null;
+
+    /**
+     * Package name of app
+     *
+     * @var string
+     */
     private static $app = '~';
+
+    /**
+     * App information in file app.php
+     *
+     * @var array
+     */
     private $options = [];
+
+    /**
+     * Path current app config (app.php)
+     *
+     * @var null|string
+     */
     private $path = null;
+
+    /**
+     * Given data array for apps
+     *
+     * @var array
+     */
     private $data = [];
+
+    /**
+     * Check is store data by app
+     *
+     * @var bool
+     */
     private $isApp = false;
 
+    /**
+     * AppProvider constructor
+     *
+     * @param string|null $path
+     * @param bool $isApp
+     */
     public function __construct($path = null, $isApp = false)
     {
         $this->isApp = $isApp;
         self::build(self::$app, $path);
     }
 
+    /**
+     * build app information
+     *
+     * @param string|null $app
+     * @param string|null $path
+     */
     private function build($app = null, $path = null)
     {
         $app = ($app === '~') ? null : $app;
@@ -40,6 +88,11 @@ class AppProvider extends AppSource
         $this->setOptionsApp();
     }
 
+    /**
+     * get array app config in file app.php
+     *
+     * @return array
+     */
     private function getOptionsApp()
     {
         if (is_file($this->path))
@@ -48,6 +101,9 @@ class AppProvider extends AppSource
             return [];
     }
 
+    /**
+     * set app config in data array
+     */
     private function setOptionsApp()
     {
         foreach ($this->options as $option => $value) {
@@ -59,10 +115,16 @@ class AppProvider extends AppSource
         }
     }
 
+    /**
+     *  Change current app with package name
+     *
+     * @param string|null $packageName for example "com_pinoox_manager"
+     * @return AppProvider
+     */
     public static function app($packageName = null)
     {
         if (is_null($packageName)) {
-            return self::$app;
+            return self::$obj;
         } else {
             self::$app = $packageName;
 
@@ -74,6 +136,12 @@ class AppProvider extends AppSource
         return self::$obj;
     }
 
+    /**
+     * Create an instance AppProvider
+     *
+     * @param string|null $path
+     * @return AppProvider
+     */
     public static function bake($path = null)
     {
         if (empty(self::$obj))
@@ -82,20 +150,40 @@ class AppProvider extends AppSource
         return self::$obj;
     }
 
+    /**
+     * Set data in app config
+     *
+     * @param string $key
+     * @param string|Closure $value
+     */
     public static function set($key, $value)
     {
         $key = HelperString::camelToUnderscore($key);
         self::$obj->data[self::$app][$key] = $value;
     }
 
+    /**
+     * Call closure data in app config
+     *
+     * @param string $key
+     * @return mixed|null
+     */
     public static function call($key)
     {
         $func = self::get($key);
 
         if (!empty($func) && is_callable($func))
-            call_user_func($func);
+            return call_user_func($func);
+
+        return null;
     }
 
+    /**
+     * Get data in app config
+     *
+     * @param string|null $key
+     * @return string|array|mixed|null
+     */
     public static function get($key = null)
     {
         $result = null;
@@ -114,6 +202,9 @@ class AppProvider extends AppSource
         return $result;
     }
 
+    /**
+     * Save data on file app.php
+     */
     public static function save()
     {
         $app = (self::$app !== '~')? self::$app : null;
@@ -140,6 +231,15 @@ class AppProvider extends AppSource
         File::generate_file($file, $data_for_save);
     }
 
+    /**
+     * Call features app
+     *
+     * Example) AppProvider::com_pinoox_manager('MainController')
+     *
+     * @param string $app
+     * @param $arguments
+     * @return mixed|bool|null
+     */
     public static function __callStatic($app, $arguments)
     {
         if (count($arguments) != 1) return false;
@@ -158,6 +258,15 @@ class AppProvider extends AppSource
         return self::callClass($app, $path, $class, $type);
     }
 
+    /**
+     * Instance class into a app
+     *
+     * @param string $app example 'com_pinoox_manager'
+     * @param string $path
+     * @param string $class
+     * @param string $type
+     * @return mixed|null
+     */
     private static function callClass($app, $path, $class, $type)
     {
         $path = !empty($path) ? $path . '\\' : '';
@@ -169,11 +278,12 @@ class AppProvider extends AppSource
         return null;
     }
 
-    public function getData()
-    {
-
-    }
-
+    /**
+     * Get data in app config
+     *
+     * @param string $key
+     * @return array|mixed|null
+     */
     public function __get($key)
     {
         $result = null;
@@ -192,6 +302,12 @@ class AppProvider extends AppSource
         return $result;
     }
 
+    /**
+     *  Set data in app config
+     *
+     * @param string $name
+     * @param string|Closure $value
+     */
     public function __set($name, $value)
     {
         $name = HelperString::camelToUnderscore($name);
