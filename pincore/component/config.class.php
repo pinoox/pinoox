@@ -15,37 +15,90 @@ namespace pinoox\component;
 
 class Config
 {
+    /**
+     * Data config
+     *
+     * @var array
+     */
     private static $data = [];
+
+    /**
+     * Temp data config
+     *
+     * @var array
+     */
     private static $tempData = [];
+
+    /**
+     * Package name of app
+     *
+     * @var string|null
+     */
     private static $app = null;
 
+    /**
+     * Change current app with package name
+     *
+     * @param string $packageName
+     */
     public static function app($packageName)
     {
         self::$app = $packageName;
     }
 
+    /**
+     * Set data in config
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public static function set($key, $value)
     {
         self::push($key, $value, 'set');
     }
 
-    public static function setLinear($pointer,$key,$value,$ignore = ['.'])
+    /**
+     * Set Target data in config
+     *
+     * @param string $pointer
+     * @param string $key
+     * @param mixed $value
+     * @param array|string $ignore
+     */
+    public static function setLinear($pointer, $key, $value, $ignore = ['.'])
     {
         $key = !empty($ignore)? str_replace($ignore,'',$key) : $key;
         $key = $pointer .'.'. $key;
         self::push($key, $value, 'set');
     }
 
+    /**
+     * Remove data in config
+     *
+     * @param string $key
+     */
     public static function remove($key)
     {
         self::push($key, null, 'del');
     }
 
+    /**
+     * Reset data in config with config file
+     *
+     * @param string $key
+     */
     public static function reset($key)
     {
         self::push($key, null, 'reset');
     }
 
+    /**
+     * Write data in config
+     *
+     * @param string $key
+     * @param mixed $value
+     * @param string $type
+     */
     private static function push($key, $value, $type = 'add')
     {
         $isApp = (HelperString::firstHas($key, '~')) ? false : true;
@@ -99,6 +152,13 @@ class Config
         }
     }
 
+    /**
+     * Load config file
+     *
+     * @param $app
+     * @param $filename
+     * @return mixed|null
+     */
     private static function loadFile($app, $filename)
     {
         if ($app !== '~')
@@ -113,11 +173,22 @@ class Config
         return null;
     }
 
+    /**
+     * Add data in config
+     *
+     * @param string $key
+     * @param string $value
+     */
     public static function add($key, $value)
     {
         self::push($key, $value, 'add');
     }
 
+    /**
+     * Save data on config file
+     *
+     * @param string $name
+     */
     public static function save($name)
     {
         if (empty($name) || HelperString::has($name, '.')) return;
@@ -138,6 +209,12 @@ class Config
         File::generate_file($file, $data_for_save);
     }
 
+    /**
+     * Get data from config
+     *
+     * @param string $value
+     * @return mixed|null
+     */
     public static function get($value)
     {
         if (empty($value)) return null;
@@ -160,6 +237,15 @@ class Config
         return self::result($app, $filename, $info);
     }
 
+    /**
+     * Result request get data
+     *
+     * @param string $app
+     * @param string $filename
+     * @param array $info
+     * @param bool $isTemp
+     * @return mixed|null
+     */
     private static function result($app, $filename, $info, $isTemp = false)
     {
         $result = ($isTemp) ? self::$tempData[$app][$filename] : self::$data[$app][$filename];
