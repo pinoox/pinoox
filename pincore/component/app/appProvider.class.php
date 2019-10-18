@@ -259,7 +259,7 @@ class AppProvider extends AppSource
     }
 
     /**
-     * Instance class into a app
+     * Instance class into an app
      *
      * @param string $app example 'com_pinoox_manager'
      * @param string $path
