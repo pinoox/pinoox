@@ -231,7 +231,7 @@ class Download
             if ($isFetch)
                 $this->fileSize = File::get_remote_file_size($pathFile);
             else
-                $this->fileSize = File::file_size($pathFile);
+                $this->fileSize = File::size($pathFile);
         }
         $this->isAttachment = $isAttachment;
         $this->isMultiThreaded = $isMultiThreaded;
@@ -255,7 +255,7 @@ class Download
     /**
      * The instance an object of download class for fetching file
      *
-     * @param string$link
+     * @param string $link
      * @param string|null $savePath
      * @param int $size
      * @param bool $isMultiThreaded
@@ -372,7 +372,7 @@ class Download
         if ($file = @fopen($this->pathFile, 'r', false, $context)) {
             $path_save = null;
             if (!empty(self::$savePath) && $this->isFetch) {
-                $dir = File::dir_file(self::$savePath);
+                $dir = File::dir(self::$savePath);
                 File::make_folder($dir, true);
                 $path_save = fopen(self::$savePath, 'w');
             }

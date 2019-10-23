@@ -206,7 +206,7 @@ class Config
         $data_for_save .= '//pinoox config file, generated at "' . gmdate('Y-m-d H:i') . "\"\n\n";
         $data_for_save .= 'return ' . var_export($data, true) . ";\n\n//end of config";
 
-        File::generate_file($file, $data_for_save);
+        File::generate($file, $data_for_save);
     }
 
     /**

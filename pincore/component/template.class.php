@@ -882,10 +882,10 @@ class Template
             if ($time > (time() - $recoveryTime))
                 return;
         }
-        $path = File::dir_file($locationSave);
+        $path = File::dir($locationSave);
         File::make_folder($path, true, 0777, false);
         $string = self::getProcessedText($file);
-        File::generate_file($locationSave, $string);
+        File::generate($locationSave, $string);
     }
 
     /**
@@ -957,7 +957,7 @@ class Template
     public function loader($params)
     {
         $file = implode('/', $params);
-        $ext = File::ext_file($file);
+        $ext = File::extension($file);
         $mime = Config::get('~loader' . $ext);
         HelperHeader::contentType($mime, 'UTF-8');
         self::phpToAssets($file);

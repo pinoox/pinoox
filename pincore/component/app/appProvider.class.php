@@ -228,7 +228,7 @@ class AppProvider extends AppSource
         $data_for_save .= '//pinoox app file, generated at "' . gmdate('Y-m-d H:i') . "\"\n\n";
         $data_for_save .= 'return ' . $data . ";\n\n//end of app";
 
-        File::generate_file($file, $data_for_save);
+        File::generate($file, $data_for_save);
     }
 
     /**

@@ -261,7 +261,7 @@ class Cache
         $data_for_save .= '//pinoox cache file, generated at "' . gmdate('Y-m-d H:i') . "\"\n\n";
         $data_for_save .= 'return ' . var_export($arr, true) . ";\n\n//end of cache";
 
-        File::generate_file($file, $data_for_save);
+        File::generate($file, $data_for_save);
     }
 
     /**
