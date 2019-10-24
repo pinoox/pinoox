@@ -236,7 +236,7 @@ class Validation
 
             self::$field_titles[$key] = self::$field_title;
 
-            self::$data = HelperArray::searchArrayByPattern($key, self::$inputs);
+            self::$data = HelperArray::detachByPattern($key, self::$inputs);
 
             $condParts = explode('|', $partsCond);
             self::$field_types[$key] = $condParts;
@@ -485,7 +485,7 @@ class Validation
         self::$resultMethod = true;
 
         if (!empty($patternArray)) {
-            self::$data = HelperArray::searchArrayByPattern($patternArray, $value);
+            self::$data = HelperArray::detachByPattern($patternArray, $value);
         } else {
             self::$data['required'] = true;
             self::$data['values'] = [$value];
@@ -772,7 +772,7 @@ class Validation
         $checkField = $key;
         if (HelperString::firstHas($key, '[') && HelperString::lastHas($key, ']')) {
             $key = str_replace(['[', ']'], '', $key);
-            $values = HelperArray::searchArrayByPattern($key, self::$inputs);
+            $values = HelperArray::detachByPattern($key, self::$inputs);
             $checkField = isset($values['values'][0]) ? $values['values'][0] : null;
             $title2 = isset(self::$field_titles[$key]) ? self::$field_titles[$key] : $key;
         }
