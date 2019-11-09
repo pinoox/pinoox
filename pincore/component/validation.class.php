@@ -61,9 +61,9 @@ class Validation
     /**
      * Error messages
      *
-     * @var string
+     * @var array
      */
-    private static $errors;
+    private static $errors = [];
 
     /**
      * Check is validation has error
@@ -510,23 +510,6 @@ class Validation
     }
 
     /**
-     * Get errors
-     *
-     * @return array
-     */
-    public static function getError()
-    {
-        $result = [];
-        if (!empty(self::$errors)) {
-            foreach (self::$errors as $err) {
-                $result = array_merge($result, array_values($err));
-            }
-        }
-
-        return $result;
-    }
-
-    /**
      * Get first error
      *
      * @return array|mixed|null
@@ -551,15 +534,49 @@ class Validation
     /**
      * Get errors
      *
-     * @param null $key retrieve specific error
-     * @return string
+     * @return array
+     */
+    public static function getError()
+    {
+        $result = [];
+        if (!empty(self::$errors)) {
+            foreach (self::$errors as $err) {
+                $result = array_merge($result, array_values($err));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get errors
+     *
+     * @param string $key retrieve specific error
+     * @return array
      */
     public static function get($key = null)
     {
-        if (isset(self::$errors[$key]))
+        if (!is_null($key) && isset(self::$errors[$key]))
             return self::$errors[$key];
 
         return self::$errors;
+    }
+
+    /**
+     * Get first errors by fields
+     *
+     * @return array
+     */
+    public static function getFieldError()
+    {
+        $result = [];
+        foreach (self::$errors as $key => $errs) {
+            if (isset($errs[0])) {
+                $result[$key] = $errs[0];
+            }
+        }
+
+        return $result;
     }
 
     /**
