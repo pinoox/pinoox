@@ -97,7 +97,8 @@ class Session
     private static $is_start = false;
 
     /**
-     * Session constructor.
+     * Session constructor
+     *
      * @param bool $store_in_file
      */
     public function __construct($store_in_file = false)
@@ -126,7 +127,7 @@ class Session
     public static function has()
     {
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
-        return HelperArray::isExistsValueByNestedKey($_SESSION, $parts);
+        return HelperArray::existsNestedKey($_SESSION, $parts);
     }
 
     /**
@@ -154,7 +155,7 @@ class Session
             return self::getAll();
 
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
-        return HelperArray::getValueByNestedKey($_SESSION, $parts);
+        return HelperArray::getNestedKey($_SESSION, $parts);
     }
 
     /**
@@ -284,7 +285,7 @@ class Session
     public static function remove()
     {
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
-        HelperArray::removeValueByNestedKey($_SESSION, $parts);
+        HelperArray::removeNestedKey($_SESSION, $parts);
     }
 
     /**

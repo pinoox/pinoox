@@ -45,7 +45,7 @@ class AppController extends MasterConfiguration
         if (!empty($app)) {
 
             $appPath = path('~apps/' . $packageName);
-            File::removedir($appPath);
+            File::remove($appPath);
 
             //remove route
             $this->removeRoutes($packageName);

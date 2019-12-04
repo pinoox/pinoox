@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use Closure;
 
 /**
  * Validation Help you to check validity of input data in a simple way
@@ -25,7 +26,7 @@ class Validation
     /**
      * An instance of Validation Class
      *
-     * @var object
+     * @var Validation
      */
     private static $obj;
 
@@ -60,9 +61,9 @@ class Validation
     /**
      * Error messages
      *
-     * @var string
+     * @var array
      */
-    private static $errors;
+    private static $errors = [];
 
     /**
      * Check is validation has error
@@ -235,7 +236,7 @@ class Validation
 
             self::$field_titles[$key] = self::$field_title;
 
-            self::$data = HelperArray::searchArrayByPattern($key, self::$inputs);
+            self::$data = HelperArray::detachByPattern($key, self::$inputs);
 
             $condParts = explode('|', $partsCond);
             self::$field_types[$key] = $condParts;
@@ -306,11 +307,11 @@ class Validation
     /**
      * Execute rule
      *
-     * @param \Closure $status
+     * @param Closure $status
      * @param $err
-     * @param \Closure|null $dataIntoMessage
+     * @param Closure|null $dataIntoMessage
      */
-    private static function executeRuleGenerate(\Closure $status, $err, \Closure $dataIntoMessage = null)
+    private static function executeRuleGenerate(Closure $status, $err, Closure $dataIntoMessage = null)
     {
         $info = [
             'data' => self::getData(),
@@ -484,7 +485,7 @@ class Validation
         self::$resultMethod = true;
 
         if (!empty($patternArray)) {
-            self::$data = HelperArray::searchArrayByPattern($patternArray, $value);
+            self::$data = HelperArray::detachByPattern($patternArray, $value);
         } else {
             self::$data['required'] = true;
             self::$data['values'] = [$value];
@@ -506,23 +507,6 @@ class Validation
     public static function isFail()
     {
         return self::$isFail;
-    }
-
-    /**
-     * Get errors
-     *
-     * @return array
-     */
-    public static function getError()
-    {
-        $result = [];
-        if (!empty(self::$errors)) {
-            foreach (self::$errors as $err) {
-                $result = array_merge($result, array_values($err));
-            }
-        }
-
-        return $result;
     }
 
     /**
@@ -550,15 +534,49 @@ class Validation
     /**
      * Get errors
      *
-     * @param null $key retrieve specific error
-     * @return string
+     * @return array
+     */
+    public static function getError()
+    {
+        $result = [];
+        if (!empty(self::$errors)) {
+            foreach (self::$errors as $err) {
+                $result = array_merge($result, array_values($err));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get errors
+     *
+     * @param string $key retrieve specific error
+     * @return array
      */
     public static function get($key = null)
     {
-        if (isset(self::$errors[$key]))
+        if (!is_null($key) && isset(self::$errors[$key]))
             return self::$errors[$key];
 
         return self::$errors;
+    }
+
+    /**
+     * Get first errors by fields
+     *
+     * @return array
+     */
+    public static function getFieldError()
+    {
+        $result = [];
+        foreach (self::$errors as $key => $errs) {
+            if (isset($errs[0])) {
+                $result[$key] = $errs[0];
+            }
+        }
+
+        return $result;
     }
 
     /**
@@ -597,11 +615,11 @@ class Validation
      * Generate
      *
      * @param $name
-     * @param \Closure $status
+     * @param Closure $status
      * @param $err
-     * @param \Closure|null $dataIntoMessage
+     * @param Closure|null $dataIntoMessage
      */
-    public static function generate($name, \Closure $status, $err, \Closure $dataIntoMessage = null)
+    public static function generate($name, Closure $status, $err, Closure $dataIntoMessage = null)
     {
         self::$validators['_' . $name] = [
             'status' => $status,
@@ -771,7 +789,7 @@ class Validation
         $checkField = $key;
         if (HelperString::firstHas($key, '[') && HelperString::lastHas($key, ']')) {
             $key = str_replace(['[', ']'], '', $key);
-            $values = HelperArray::searchArrayByPattern($key, self::$inputs);
+            $values = HelperArray::detachByPattern($key, self::$inputs);
             $checkField = isset($values['values'][0]) ? $values['values'][0] : null;
             $title2 = isset(self::$field_titles[$key]) ? self::$field_titles[$key] : $key;
         }
