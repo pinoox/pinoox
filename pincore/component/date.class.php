@@ -558,7 +558,7 @@ class Date
      * @return bool
      * @throws Exception
      */
-    public static function compare($date1, $date2, $operator, $isJalali = false, $format = 'Y/m/d H:s:m')
+    public static function compare($date1, $date2, $operator, $isJalali = false, $format = 'Y-m-d H:i:s')
     {
         if ($isJalali) {
             $date1 = self::g($format, $date1, true);
@@ -658,9 +658,12 @@ class Date
      * Get approximate date
      *
      * @param string|int $date
+     * @param bool $exactAfterDays Show the exact date after the specified number of days have elapsed
+     * @param string $dateFormat format date for after days
      * @return string
+     * @throws Exception
      */
-    public static function approximateDate($date)
+    public static function approximateDate($date, $exactAfterDays = false, $dateFormat = 'Y/m/d')
     {
         $units = array(
             Lang::get('~date.year') => 3600 * 24 * 365,//one year
@@ -679,14 +682,21 @@ class Date
 
         foreach ($units as $key => $val) {
             $elapsed = round(abs($now - $secondsTimestamp));
+
             if ($elapsed >= $val) {
                 $res = (round($elapsed / $val) . " " . $key);
-                if ($now - $secondsTimestamp > 0) {
-                    return $res . ' ' . Lang::get('TILL');
-                } else {
-                    return $res . ' ' . Lang::get('ELAPSED');
+                if ($now - $secondsTimestamp <= 0) {
+                    if ($val < 60) {
+                        return Lang::get('~date.some_sec_before');
+                    } else {
+                        if ($exactAfterDays !== false) {
+                            if ((3600 * 24) * $exactAfterDays <= $val)
+                                return Date::g($dateFormat, $now);
+                        }
+                        return $res . ' ' . Lang::get('~date.before');
+                    }
                 }
-
+                return null;
             }
         }
 

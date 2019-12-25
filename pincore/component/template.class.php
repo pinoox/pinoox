@@ -897,6 +897,10 @@ class Template
      */
     public function getProcessedText($view, $replaceData = array())
     {
+        if ($_file = self::getPathView('functions.php')) {
+            include_once $_file;
+        }
+
         $view = self::actIncludeText($view);
 
         if (!empty($view)) {
