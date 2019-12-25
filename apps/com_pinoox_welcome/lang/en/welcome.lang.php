@@ -6,6 +6,7 @@ return [
     'welcome_to_pinoox' => 'welcome to pinoox',
     'website' => 'website',
     'documents' => 'documents',
+    'blog' => 'blog',
     'forums' => 'forums',
     'github' => 'github',
     'designed' => 'designed by',

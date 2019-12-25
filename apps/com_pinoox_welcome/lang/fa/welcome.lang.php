@@ -7,6 +7,7 @@ return [
     'website' => 'وبسایت',
     'documents' => 'مستندات',
     'forums' => 'پرسش و پاسخ',
+    'blog' => 'وبلاگ',
     'github' => 'گیت هاب',
     'designed' => 'طراحی شده با',
     'for_you' => 'برای شما',
