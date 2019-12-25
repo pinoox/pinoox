@@ -3,7 +3,7 @@
 
 return array (
   'host' => 'localhost',
-  'database' => 'hub',
+  'database' => 'pinooox',
   'username' => 'root',
   'password' => NULL,
 );

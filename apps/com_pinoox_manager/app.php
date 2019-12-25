@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2019-08-29 10:24"
+//pinoox app file, generated at "2019-12-25 13:39"
 
 return array (
   'enable' => true,
@@ -17,6 +17,7 @@ return array (
   array (
     0 => 'cache/update',
   ),
+  'lang' => 'fa',
 );
 
 //end of app
