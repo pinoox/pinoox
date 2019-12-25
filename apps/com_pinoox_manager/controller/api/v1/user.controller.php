@@ -36,7 +36,7 @@ class UserController extends MasterConfiguration
     private function getUser()
     {
         $user = User::get();
-        $isLock = User::getSession('isLock');
+        $isLock = User::getTokenData('isLock');
         if ($isLock)
             return [
                 'isLock' => true,
@@ -61,7 +61,7 @@ class UserController extends MasterConfiguration
     public function login()
     {
         if (User::isLoggedIn()) {
-            $isLock = User::getSession('isLock');
+            $isLock = User::getTokenData('isLock');
             if ($isLock) {
                 $this->checkLock();
             } else {
@@ -205,7 +205,7 @@ class UserController extends MasterConfiguration
             Response::json(rlang('user.err_old_password'), false);
         }
 
-        if (UserModel::update_password($user_id, $inputs['old_password'], $inputs['new_password'])) {
+        if (UserModel::update_password($user_id, $inputs['new_password'],$inputs['old_password'])) {
             Response::json(null, true);
         }
 

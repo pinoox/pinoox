@@ -2,10 +2,23 @@ SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
--- Table structure for file
+-- Table structure for com_pinoox_manager_notification
 -- ----------------------------
-DROP TABLE IF EXISTS `{dbprefix}file`;
-CREATE TABLE `{dbprefix}file`  (
+DROP TABLE IF EXISTS `{dbprefix}com_pinoox_manager_notification`;
+CREATE TABLE `{dbprefix}com_pinoox_manager_notification`  (
+  `ntf_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `message` varchar(1000) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `insert_date` datetime(0) NULL DEFAULT NULL,
+  `is_seen` tinyint(1) NULL DEFAULT 0,
+  PRIMARY KEY (`ntf_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Table structure for pincore_file
+-- ----------------------------
+DROP TABLE IF EXISTS `{dbprefix}pincore_file`;
+CREATE TABLE `{dbprefix}pincore_file`  (
   `file_id` int(11) NOT NULL AUTO_INCREMENT,
   `user_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `app` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
@@ -18,28 +31,15 @@ CREATE TABLE `{dbprefix}file`  (
   `file_date` datetime(0) NULL DEFAULT NULL,
   `file_access` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   PRIMARY KEY (`file_id`) USING BTREE,
-  INDEX `{dbprefix}file_user_id`(`user_id`) USING BTREE,
-  CONSTRAINT `{dbprefix}file_user_id` FOREIGN KEY (`user_id`) REFERENCES `{dbprefix}user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
+  INDEX `{dbprefix}pincore_file_user_id`(`user_id`) USING BTREE,
+  CONSTRAINT `{dbprefix}pincore_file_user_id` FOREIGN KEY (`user_id`) REFERENCES `{dbprefix}pincore_user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
 -- ----------------------------
--- Table structure for notification
+-- Table structure for pincore_session
 -- ----------------------------
-DROP TABLE IF EXISTS `{dbprefix}notification`;
-CREATE TABLE `{dbprefix}notification`  (
-  `ntf_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `message` varchar(1000) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-  `insert_date` datetime(0) NULL DEFAULT NULL,
-  `is_seen` tinyint(1) NULL DEFAULT 0,
-  PRIMARY KEY (`ntf_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 10 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
-
--- ----------------------------
--- Table structure for session
--- ----------------------------
-DROP TABLE IF EXISTS `{dbprefix}session`;
-CREATE TABLE `{dbprefix}session`  (
+DROP TABLE IF EXISTS `{dbprefix}pincore_session`;
+CREATE TABLE `{dbprefix}pincore_session`  (
   `session_id` varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `app` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `session_data` text CHARACTER SET utf8 COLLATE utf8_bin NULL,
@@ -49,14 +49,14 @@ CREATE TABLE `{dbprefix}session`  (
   `security_token` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   `end_date` datetime(0) NULL DEFAULT NULL,
   PRIMARY KEY (`session_id`, `app`) USING BTREE,
-  INDEX `{dbprefix}session_id`(`session_id`) USING BTREE
+  INDEX `{dbprefix}pincore_session_id`(`session_id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
 -- ----------------------------
--- Table structure for user
+-- Table structure for pincore_user
 -- ----------------------------
-DROP TABLE IF EXISTS `{dbprefix}user`;
-CREATE TABLE `{dbprefix}user`  (
+DROP TABLE IF EXISTS `{dbprefix}pincore_user`;
+CREATE TABLE `{dbprefix}pincore_user`  (
   `user_id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `session_id` int(11) UNSIGNED NULL DEFAULT NULL,
   `avatar_id` int(11) NULL DEFAULT NULL,
@@ -70,7 +70,27 @@ CREATE TABLE `{dbprefix}user`  (
   `status` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
   PRIMARY KEY (`user_id`) USING BTREE,
   INDEX `{dbprefix}user_avatar_id`(`avatar_id`) USING BTREE,
-  CONSTRAINT `{dbprefix}user_avatar_id` FOREIGN KEY (`avatar_id`) REFERENCES `{dbprefix}file` (`file_id`) ON DELETE SET NULL ON UPDATE CASCADE
+  CONSTRAINT `{dbprefix}pincore_user_avatar_id` FOREIGN KEY (`avatar_id`) REFERENCES `{dbprefix}pincore_file` (`file_id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Table structure for pincore_token
+-- ----------------------------
+DROP TABLE IF EXISTS `{dbprefix}pincore_token`;
+CREATE TABLE `{dbprefix}pincore_token`  (
+  `token_key` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `token_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `token_data` text CHARACTER SET utf8 COLLATE utf8_bin NULL,
+  `app` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `user_id` int(10) UNSIGNED NULL DEFAULT NULL,
+  `ip` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `user_agent` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+  `insert_date` datetime(0) NULL DEFAULT NULL,
+  `expiration_date` datetime(0) NULL DEFAULT NULL,
+  PRIMARY KEY (`token_key`, `app`) USING BTREE,
+  INDEX `pincore_token_user_id`(`user_id`) USING BTREE,
+  CONSTRAINT `token_user_id` FOREIGN KEY (`user_id`) REFERENCES `pincore_user` (`user_id`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
+
 
 SET FOREIGN_KEY_CHECKS = 1;

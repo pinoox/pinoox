@@ -8,6 +8,6 @@ return [
     'hour' => 'ساعت',
     'minute' => 'دقیقه',
     'second' => 'ثانیه',
-    'till' => 'مانده',
-    'elapsed' => 'قبل',
+    'before' => 'پیش',
+    'some_sec_before' => 'لحظاتی پیش',
 ];

@@ -21,10 +21,10 @@ class PinooxDatabase extends Database
 {
     use MagicTrait;
 
-    const session = 'session';
-    const user = 'user';
-    const file = 'file';
-    const notification = 'notification';
+    const session = 'pincore_session';
+    const user = 'pincore_user';
+    const file = 'pincore_file';
+    const token = 'pincore_token';
 
     public static function __init()
     {
@@ -33,9 +33,7 @@ class PinooxDatabase extends Database
             $db_configs['host'],
             $db_configs['username'],
             $db_configs['password'],
-            $db_configs['database'],
-            $db_configs['prefix']
-        );
+            $db_configs['database']);
     }
 
 

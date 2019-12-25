@@ -8,6 +8,6 @@ return [
     'hour' => 'hour',
     'minute' => 'minute',
     'second' => 'second',
-    'till' => 'till',
-    'elapsed' => 'elapsed',
+    'before' => 'before',
+    'some_sec_before' => 'seconds ago',
 ];
