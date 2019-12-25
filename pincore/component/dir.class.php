@@ -127,7 +127,7 @@ class Dir
         if (empty($img)) return $defaultImage;
 
         $path = dirname($img) .DIRECTORY_SEPARATOR. $path;
-        $name = File::name_file($img);
+        $name = File::name($img);
         $ext = File::extension($img);
         $filename = $name . '.'.$ext;
         $fix = false;

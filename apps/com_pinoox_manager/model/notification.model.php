@@ -12,9 +12,7 @@
 
 namespace pinoox\app\com_pinoox_manager\model;
 
-use pinoox\model\PinooxDatabase;
-
-class NotificationModel extends PinooxDatabase
+class NotificationModel extends ManagerDatabase
 {
 
     public static function fetch_all($limit = null, $is_seen = null)

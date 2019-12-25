@@ -715,7 +715,7 @@ class Upload
         $f_filename = $file['name'];
         $f_size = $file['size'];
         $f_mimeType = $file['type'];
-        $f_name = File::name_file($f_filename);
+        $f_name = File::name($f_filename);
         $f_type = File::extension($f_filename);
         $u_filename = $this->getFileNameForUpload($f_name, $f_type);
 
@@ -726,7 +726,7 @@ class Upload
             "formattedSize" => File::convert_auto_unit($f_size, 2),
             "ext" => $f_type,
             'mimeType' => $f_mimeType,
-            'type' => File::get_type_mimetype($f_mimeType),
+            'type' => File::mime_type($f_mimeType),
             'dir_file' => ($this->dirFolder . $this->dirSeparator),
             'path_file' => ($this->dirFolder . $this->dirSeparator . $u_filename)
         ];
@@ -945,7 +945,7 @@ class Upload
                 $this->setError('MKDIR_THUMB', Lang::replace('~upload.err.mkdir', $dir));
             }
 
-            $name = File::name_file($filename);
+            $name = File::name($filename);
             $ext = File::extension($filename);
 
             if (is_array($this->thumbImg["size"])) {

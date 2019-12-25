@@ -309,7 +309,7 @@ class Uploader extends Upload
         if (!$this->isImg($file_info['ext'])) return;
         $file_info['dir'] = File::dir($file_path);
         $file_info['filename'] = File::fullname($file_path);
-        $file_info['name'] = File::name_file($file_path);
+        $file_info['name'] = File::name($file_path);
         $path = $this->thumbImg["path"];
         $path = Dir::ds($path);
         $path = $file_info['dir'] . $this->dirSeparator . $path;

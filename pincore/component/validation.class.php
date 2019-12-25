@@ -13,6 +13,9 @@
 namespace pinoox\component;
 
 use Closure;
+use ReflectionException;
+use ReflectionClass;
+use ReflectionMethod;
 
 /**
  * Validation Help you to check validity of input data in a simple way
@@ -158,8 +161,7 @@ class Validation
      * @param array $inputs pass an array from Request component
      * @param array $rules define array of rules for checking
      * @param null $messages custom message
-     * @return object
-     * @throws \ReflectionException
+     * @return Validation
      */
     public static function check($inputs, $rules, $messages = null)
     {
@@ -177,7 +179,6 @@ class Validation
     /**
      * Initialize Validation component
      *
-     * @throws \ReflectionException
      */
     private static function init()
     {
@@ -190,17 +191,16 @@ class Validation
     /**
      * Get Validator methods (rules)
      *
-     * @throws \ReflectionException
      */
     private static function getDefinedValidators()
     {
         if (!empty(self::$listMethodValidators)) return;
 
-        $class = new \ReflectionClass(self::class);
+        $class = new ReflectionClass(self::class);
         $methods = $class->getMethods(
-            \ReflectionMethod::IS_PUBLIC |
-            \ReflectionMethod::IS_PROTECTED |
-            \ReflectionMethod::IS_PRIVATE
+            ReflectionMethod::IS_PUBLIC |
+            ReflectionMethod::IS_PROTECTED |
+            ReflectionMethod::IS_PRIVATE
         );
         foreach ($methods as $method) {
             $mName = $method->name;
