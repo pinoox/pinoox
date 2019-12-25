@@ -43,14 +43,6 @@
                                                class="pin-input form-control ltr" placeholder="password">
                                     </div>
                                 </div>
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{LANG.install.db_prefix}}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="params.prefix" type="text" name="prefix"
-                                               class="pin-input form-control ltr"
-                                               placeholder="prefix">
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

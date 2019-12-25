@@ -12,7 +12,7 @@ export default new Vuex.Store({
             database: 'pinoox',
             username: 'root',
             password: '',
-            prefix: 'pin_',
+            prefix: '',
         },
         user:{
             fname:'',
