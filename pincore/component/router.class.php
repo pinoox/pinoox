@@ -655,12 +655,22 @@ class Router
 
     private static function startup()
     {
+        self::loadLoader();
         self::loadSession();
         self::loadUser();
         self::loadLang();
         self::loadInputDataInGlobal();
         self::loadServices();
         AppProvider::call('startup');
+    }
+
+    private static function loadLoader()
+    {
+        $loaders = AppProvider::get('loader');
+        foreach ($loaders as $classname=>$path)
+        {
+            Config::setLinear('~loader',$classname,$path);
+        }
     }
 
     private static function loadSession()

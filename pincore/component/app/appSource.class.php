@@ -107,6 +107,13 @@ abstract class AppSource
     protected static $service = [];
 
     /**
+     * Require other components in Loader
+     *
+     * @var array
+     */
+    protected static $loader = [];
+
+    /**
      * Call function startup before call controller
      *
      * @var Closure|null
