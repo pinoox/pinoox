@@ -139,6 +139,15 @@ abstract class AppSource
     protected static $token = null;
 
     /**
+     * Change user type in token component
+     *
+     * Example) User::JWT
+     *
+     * @var string|null
+     */
+    protected static $userType = null;
+
+    /**
      * Change current app on user component
      *
      * Example) 'com_pinoox_manager'

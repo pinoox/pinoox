@@ -693,6 +693,10 @@ class Router
         $app = AppProvider::get('user');
         if (!empty($app))
             User::app($app);
+
+        $type = AppProvider::get('user-type');
+        if (!empty($type))
+            User::type($type);
     }
 
     private static function loadLang()
