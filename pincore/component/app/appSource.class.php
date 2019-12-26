@@ -130,6 +130,15 @@ abstract class AppSource
     protected static $session = null;
 
     /**
+     * Change current app on token component
+     *
+     * Example) 'com_pinoox_manager'
+     *
+     * @var string|null
+     */
+    protected static $token = null;
+
+    /**
      * Change current app on user component
      *
      * Example) 'com_pinoox_manager'

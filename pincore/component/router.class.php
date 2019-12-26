@@ -657,6 +657,7 @@ class Router
     {
         self::loadLoader();
         self::loadSession();
+        self::loadToken();
         self::loadUser();
         self::loadLang();
         self::loadInputDataInGlobal();
@@ -678,6 +679,13 @@ class Router
         $app = AppProvider::get('session');
         if (!empty($app))
             Session::app($app);
+    }
+
+    private static function loadToken()
+    {
+        $app = AppProvider::get('token');
+        if (!empty($app))
+            Token::app($app);
     }
 
     private static function loadUser()
