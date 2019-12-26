@@ -100,6 +100,13 @@ abstract class AppSource
     protected static $rewrite = [];
 
     /**
+     * Filter on rewrite url
+     *
+     * @var array
+     */
+    protected static $rewriteFilter = [];
+
+    /**
      * Run services
      *
      * @var array

@@ -71,7 +71,7 @@ class Router
     private static function checkDomain($url = null)
     {
         $new_url = empty($url) ? self::$url : $url;;
-        $app_domain = Config::get('~domain.' . Url::domain());
+        $app_domain = Config::getLinear('~domain',Url::domain());
         if (empty($app_domain)) {
             $info = self::getByPatternDomain();
             if (!empty($info)) {
@@ -99,7 +99,7 @@ class Router
 
     private static function getByPatternDomain()
     {
-        $domain = Config::get('~domain.' . Url::domain());
+        $domain = Config::getLinear('~domain',Url::domain());
         if (is_null($domain)) {
             $domains = Config::get('~domain');
 
@@ -190,7 +190,7 @@ class Router
     private static function getPackageNameApp($part)
     {
         if ($part === '*') return null;
-        return Config::get('~app.' . $part);
+        return Config::getLinear('~app',$part);
     }
 
     public static function existApp($packageName, $isBake = false)
@@ -403,14 +403,45 @@ class Router
     {
         $main = explode('[+PIN]', $main);
         $rewrite = explode('[+PIN]', $rewrite);
-        if (count($main) < count($rewrite)) return false;
-
+        $countRewrite = 0;
+        foreach ($rewrite as $_key => $_value) {
+            if (HelperString::firstHas($_value, "?")) {
+                $rewrite[$_key] = HelperString::firstDelete($_value, "?");
+            } else {
+                $countRewrite++;
+            }
+        }
+        if (count($main) < $countRewrite) return false;
+        $isValid = true;
         $inputDataApp = [];
         foreach ($rewrite as $i => $r) {
             if (HelperString::firstHas($r, "$")) {
-                $r = HelperString::firstDelete($r, '$');
-                $inputDataApp[$r] = $main[$i];
-                $rewrite[$i] = $main[$i];
+                $isTempValid = true;
+                //check rewrite filter
+                $keys = explode('=', $r);
+                $key = $keys[0];
+                $default = isset($keys[1]) ? $keys[1] : null;
+                $value = !empty($main[$i]) ? $main[$i] : $default;
+                $filters = AppProvider::get('rewrite-filter');
+                if (isset($filters[$key])) {
+                    $filter = $filters[$key];
+                    if (is_array($filter)) {
+                        if (!in_array($value, $filter)) {
+                            $isValid = false;
+                            $isTempValid = false;
+                        }
+                    } else if (is_callable($filter)) {
+                        if (!$filter($value)) {
+                            $isValid = false;
+                            $isTempValid = false;
+                        }
+                    }
+                }
+                $key = HelperString::firstDelete($key, '$');
+
+                // set input global
+                $inputDataApp[$key] = $isTempValid ? $value : $default;
+                $rewrite[$i] = $value;
                 continue;
             } else if ($r == $main[$i]) {
                 continue;
@@ -418,9 +449,10 @@ class Router
                 return false;
             }
         }
+
         $rewrite = implode('[+PIN]', $rewrite);
         self::$inputDataApp = $inputDataApp;
-        return true;
+        return $isValid;
     }
 
     private static function findFolderController($parts, $controller = null)
