@@ -243,12 +243,13 @@ class Config
      * @param string $pointer
      * @param string $key
      * @param array|string $ignore
+     * @return mixed|null
      */
     public static function getLinear($pointer, $key, $ignore = ['.'])
     {
         $key = !empty($ignore)? str_replace($ignore,'',$key) : $key;
         $key = $pointer .'.'. $key;
-        self::get($key);
+        return self::get($key);
     }
 
     /**
