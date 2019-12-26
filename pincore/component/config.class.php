@@ -238,6 +238,20 @@ class Config
     }
 
     /**
+     * Get data from config
+     *
+     * @param string $pointer
+     * @param string $key
+     * @param array|string $ignore
+     */
+    public static function getLinear($pointer, $key, $ignore = ['.'])
+    {
+        $key = !empty($ignore)? str_replace($ignore,'',$key) : $key;
+        $key = $pointer .'.'. $key;
+        self::get($key);
+    }
+
+    /**
      * Result request get data
      *
      * @param string $app
