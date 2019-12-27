@@ -1,7 +1,7 @@
 <template>
     <section>
     <div id="settings">
-        <div id="sidebar" data-simplebar>
+        <div class="sidebar" data-simplebar>
             <router-link class="item back" :to="{name:'home'}">
                 <i class="fas fa-chevron-right"></i>
                 <span class="name">{{LANG.manager.back}}</span>
@@ -37,6 +37,12 @@
                         name:'setting-router',
                         label: 'router',
                         icon: 'fas fa-code-branch',
+                    },
+
+                    {
+                        name:'appManager-home',
+                        label: 'app_manager',
+                        icon: 'fas fa-grip-horizontal',
                     },
                     {
                         name:'setting-market',

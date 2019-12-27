@@ -32,10 +32,59 @@ use pinoox\model\UserModel;
 
 class AppController extends MasterConfiguration
 {
-    public function get()
+    public function get($filter = null)
     {
-        $result = AppModel::fetch_all();
+        switch ($filter) {
+            case 'installed':
+                {
+                    $result = AppModel::fetch_all(false);
+                    break;
+                }
+            case 'downloading':
+                {
+                    $result = [];
+                    break;
+                }
+            case 'systems':
+                {
+                    $result = AppModel::fetch_all(true);
+                    break;
+                }
+            default:
+                {
+                    $result = AppModel::fetch_all(null, true);
+                }
+        }
+
         Response::json($result);
+    }
+
+    public function getConfig($packageName)
+    {
+        $config = AppModel::fetch_by_package_name($packageName);
+        Response::json($config);
+    }
+
+    public function setConfig($packageName, $key)
+    {
+        $config = Request::inputOne('config');
+
+        if ($key == 'hidden')
+            $config = $config == false ? true : false;
+        if ($key == 'router')
+            $config = $config === 'multiple' ? 'single' : 'multiple';
+        $currentApp = AppProvider::app();
+        if (!is_null($config)) {
+            AppProvider::app($packageName);
+            AppProvider::set($key, $config);
+            AppProvider::save();
+            Response::json($config, true);
+        } else {
+            Response::json(null, false);
+        }
+        AppProvider::app($currentApp);
+
+
     }
 
     public function remove()
@@ -130,7 +179,7 @@ class AppController extends MasterConfiguration
         $app = AppModel::fetch_by_package_name($packageName);
         $file = path('temp/' . $packageName . '.pin');
 
-        if(!is_file($file) || !empty($app))
+        if (!is_file($file) || !empty($app))
             Response::json(rlang('manager.currently_installed'), false);
 
         Zip::extract($file, path('~apps/'));
@@ -204,10 +253,4 @@ class AppController extends MasterConfiguration
         Response::json(rlang('manager.error_happened'), true);
     }
 
-    public function market($keyword = null)
-    {
-        $data = Download::fetch('https://www.pinoox.com/api/v1/market/' . $keyword)->process();
-        HelperHeader::contentType('application/json', 'UTF-8');
-        echo $data;
-    }
 }

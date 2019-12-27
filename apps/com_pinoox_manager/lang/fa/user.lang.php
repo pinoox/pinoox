@@ -11,6 +11,11 @@ return [
     'valid_password' => 'تکرار رمز عبور',
     'err_old_password' => 'رمز عبور فعلی شما صحیح نمی باشد',
     'username_or_email' => 'نام کاربری یا ایمیل',
+    'enter_username_or_email' => 'نام کاربری یاایمیل را وارد کنید',
     'login' => 'ورود',
     'logout' => 'خروج',
+    'login_to_pinoox' => 'ورود به پینوکس',
+    'active' => 'فعال',
+    'pending' => 'در حال فعالسازی',
+    'suspend' => 'تعلیق',
 ];

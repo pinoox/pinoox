@@ -22,7 +22,14 @@ use pinoox\model\PinooxDatabase;
 
 class AppModel extends PinooxDatabase
 {
-    public static function fetch_all($isCheckHidden = false, $isCheckRouter = false)
+
+    /**
+     * @param null|boolean $sysApp null: return all installed and system apps | true: return all system apps | false: return all installed app
+     * @param bool $isCheckHidden
+     * @param bool $isCheckRouter
+     * @return array
+     */
+    public static function fetch_all($sysApp = null, $isCheckHidden = false, $isCheckRouter = false)
     {
         $path = Dir::path('~apps/');
         $folders = File::get_dir_folders($path);
@@ -46,9 +53,18 @@ class AppModel extends PinooxDatabase
             if ($isCheckHidden && $isHidden)
                 continue;
 
-            $isRouter = AppProvider::get('router');;
+            $isRouter = AppProvider::get('router');
             if ($isCheckRouter && !$isRouter)
                 continue;
+
+            if (!is_null($sysApp)) {
+                $sysAppState = AppProvider::get('sys-app');
+                if ($sysApp && !$sysAppState) {
+                    continue;
+                } else if (!$sysApp && $sysAppState) {
+                    continue;
+                }
+            }
 
             $result[$package_key] = [
                 'package_name' => $package_key,
@@ -60,10 +76,12 @@ class AppModel extends PinooxDatabase
                 'version_code' => AppProvider::get('version-code'),
                 'developer' => AppProvider::get('developer'),
                 'open' => AppProvider::get('open'),
+                'sys_app' => AppProvider::get('sys-app'),
                 'icon' => Url::check(Url::file(AppProvider::get('icon'), $package_key), $icon_default),
                 'routes' => self::fetch_all_aliases_by_package_name($package_key)
             ];
         }
+
         AppProvider::app('~');
         Router::setApp($app);
         return $result;

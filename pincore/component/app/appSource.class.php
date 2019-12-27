@@ -9,6 +9,7 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component\app;
 
 use Closure;
@@ -200,4 +201,11 @@ abstract class AppSource
      * @var int
      */
     protected static $minPin = 0;
+
+    /**
+     * To specify default system applications
+     *
+     * @var boolean
+     */
+    protected static $sysApp = false;
 }

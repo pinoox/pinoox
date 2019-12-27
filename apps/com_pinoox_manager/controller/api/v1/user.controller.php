@@ -12,6 +12,8 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
+use pinoox\component\Date;
+use pinoox\component\Lang;
 use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Uploader;
@@ -109,12 +111,11 @@ class UserController extends MasterConfiguration
 
     public function deleteAvatar()
     {
-        if(!User::isLoggedIn())
+        if (!User::isLoggedIn())
             $this->error();
         $user = User::get();
         Uploader::init()->thumb('128f', PINOOX_PATH_THUMB)->actRemoveRow($user['avatar_id']);
-        if (UserModel::update_avatar($user['user_id'], null))
-        {
+        if (UserModel::update_avatar($user['user_id'], null)) {
             $user = self::getUser();
             Response::json($user, true);
         }
@@ -125,7 +126,7 @@ class UserController extends MasterConfiguration
 
     public function changeAvatar()
     {
-        if(!User::isLoggedIn())
+        if (!User::isLoggedIn())
             $this->error();
 
         if (Request::isFile('avatar')) {
@@ -161,7 +162,7 @@ class UserController extends MasterConfiguration
 
     public function changeInfo()
     {
-        if(!User::isLoggedIn())
+        if (!User::isLoggedIn())
             $this->error();
 
         $inputs = Request::input('fname,lname,username,email', null, '!empty');
@@ -185,7 +186,7 @@ class UserController extends MasterConfiguration
 
     public function changePassword()
     {
-        if(!User::isLoggedIn())
+        if (!User::isLoggedIn())
             $this->error();
 
         $inputs = Request::input('old_password,new_password,valid_password', null, '!empty');
@@ -205,11 +206,32 @@ class UserController extends MasterConfiguration
             Response::json(rlang('user.err_old_password'), false);
         }
 
-        if (UserModel::update_password($user_id, $inputs['new_password'],$inputs['old_password'])) {
+        if (UserModel::update_password($user_id, $inputs['new_password'], $inputs['old_password'])) {
             Response::json(null, true);
         }
 
         Response::json(rlang('user.err_old_password'), false);
+    }
+
+    public function getUsers($packageName)
+    {
+        UserModel::where_app($packageName);
+        $users = UserModel::fetch_all(null, false, false);
+        $users = array_map(function ($user) {
+            return [
+                'email' => $user['email'],
+                'app' => $user['app'],
+                'register_date_fa' => Date::j('Y/m/d', $user['register_date']),
+                'fname' => $user['fname'],
+                'lname' => $user['lname'],
+                'status_fa' => rlang('user.' . $user['status']),
+                'full_name' => $user['fname'] . ' ' . $user['lname'],
+                'avatar' => Url::upload($user['avatar_id'], Url::file('resources/avatar.png')),
+                'avatar_thumb' => Url::thumb($user['avatar_id'], 128, Url::file('resources/avatar.png')),
+            ];
+        }, $users);
+
+        Response::json($users);
     }
 
 }

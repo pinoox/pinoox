@@ -65,5 +65,13 @@ return [
     'update_successfully' => 'با موفقیت بروزرسانی شد',
     'update_app' => 'بروزرسانی اپلیکیشن',
     'preview' => 'پیش نمایش',
+    'download' => 'دانلود',
+    'create_pinoox_account' => 'ایجاد حساب کاربری پینوکس',
+    'required_login_for_download_app' => 'برای دانلود و نصب اپلیکیشن های مارکت باید وارد حساب کاربری پینوکس خود شوید، در صورتیکه حساب کاربری ندارید از لینک زیر ثبت نام کنید',
+    'app_manager'=>'اپلیکیشن ها',
+    'app_manager_title'=>'مدیریت اپلیکیشن ها',
+    'installed_apps'=>'نصب شده ها',
+    'downloading_apps'=>'در حال دانلود',
+    'systems_apps'=>'سیستمی',
 ];
     

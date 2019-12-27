@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2019-12-25 13:39"
+//pinoox app file, generated at "2019-12-27 11:49"
 
 return array (
   'enable' => true,
@@ -13,7 +13,8 @@ return array (
   'developer' => 'Pinoox Team',
   'minpin' => 1,
   'open' => 'setting-dashboard',
-  'service' => 
+  'sys-app' => true,
+  'service' =>
   array (
     0 => 'cache/update',
   ),

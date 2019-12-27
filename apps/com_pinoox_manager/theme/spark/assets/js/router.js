@@ -5,7 +5,31 @@ import {routes} from "./routes";
 Vue.use(VueRouter);
 
 // router
-export default new VueRouter({
+const router = new VueRouter({
     mode: 'history',
     routes: routes
 });
+
+router.beforeEach((to, from, next) => {
+    var user = localStorage.getItem('pinoox_auth');
+    if (to.meta.requireAuth !== undefined) {
+        if (to.meta.requireAuth) {
+            if (user == null) {
+                next({name: 'market-login'});
+            } else {
+                next();
+            }
+        } else {
+            if (user == null) {
+                next();
+            } else {
+                next({name: 'market-account'});
+            }
+        }
+
+    } else {
+        next();
+    }
+});
+
+export default router;

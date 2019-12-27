@@ -65,5 +65,13 @@ return [
     'update_successfully' => 'updated successfully',
     'update_app' => 'update app',
     'preview' => 'preview',
+    'download' => 'download',
+    'create_pinoox_account' => 'create pinoox account',
+    'required_login_for_download_app' => 'to download and install apps you need to login to your Pinoox account, if you don\'t have an account sign up from the link below',
+    'app_manager'=>'applications',
+    'app_manager_title'=>'applications manager',
+    'installed_apps'=>'installed',
+    'downloading_apps'=>'downloading',
+    'systems_apps'=>'systems',
 ];
     
