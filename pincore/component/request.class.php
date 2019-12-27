@@ -9,34 +9,15 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component;
+
+use ReflectionException;
 
 class Request
 {
     private static $data = [];
     private static $json = [];
-
-    /**
-     * Return all the raw data
-     *
-     * @return array|false|string
-     */
-    private static function getData()
-    {
-        if (empty(self::$data)) self::$data = file_get_contents('php://input');
-        return self::$data;
-    }
-
-    /**
-     * Get JSON data
-     *
-     * @return array|mixed
-     */
-    private static function getJson()
-    {
-        if (empty(self::$json)) self::$json = HelperString::decodeJson(self::getData());
-        return self::$json;
-    }
 
     /**
      * Get params in url based on MVC format like: http//site.com/p1/p2 -> [p1,p2]
@@ -82,12 +63,34 @@ class Request
      * @param null $validation
      * @param bool $removeNull
      * @return array
+     * @throws ReflectionException
      */
     public static function input($keys, $defaults = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams(self::getJson(), $keys, $defaults, $validation, $removeNull);
     }
 
+    /**
+     * Get JSON data
+     *
+     * @return array|mixed
+     */
+    private static function getJson()
+    {
+        if (empty(self::$json)) self::$json = HelperString::decodeJson(self::getData());
+        return self::$json;
+    }
+
+    /**
+     * Return all the raw data
+     *
+     * @return array|false|string
+     */
+    private static function getData()
+    {
+        if (empty(self::$data)) self::$data = file_get_contents('php://input');
+        return self::$data;
+    }
 
     /**
      * Get specific raw data
@@ -137,6 +140,7 @@ class Request
      * @param null $validation
      * @param bool $removeNull
      * @return array
+     * @throws ReflectionException
      */
     public static function get($keys, $defaults = null, $validation = null, $removeNull = false)
     {
@@ -150,6 +154,7 @@ class Request
      * @param null $default
      * @param null $validation
      * @return array|string|null
+     * @throws ReflectionException
      */
     public static function getOne($key, $default = null, $validation = null)
     {
@@ -164,6 +169,7 @@ class Request
      * @param null $validation
      * @param bool $removeNull
      * @return array
+     * @throws ReflectionException
      */
     public static function all($keys, $defaults = null, $validation = null, $removeNull = false)
     {
@@ -177,6 +183,7 @@ class Request
      * @param null $default
      * @param null $validation
      * @return array|string|null
+     * @throws ReflectionException
      */
     public static function one($key, $default = null, $validation = null)
     {
@@ -260,5 +267,32 @@ class Request
             return true;
         return false;
 
+    }
+
+
+    /**
+     * Send post request
+     *
+     * @param $url string
+     * @param $params array
+     * @param $options array
+     * @return array|string|bool|mixed
+     */
+    public static function sendPost($url, $params, $options = [])
+    {
+        return HttpRequest::init($url, HttpRequest::POST)->params($params)->options($options)->send();
+    }
+
+    /**
+     * Send get request
+     *
+     * @param $url string
+     * @param $options array
+     * @return array|string|bool|mixed
+     */
+    public static function sendGet($url, $options = [])
+    {
+        $params = isset($options['params']) ? $options['params'] : [];
+        return HttpRequest::init($url, HttpRequest::GET)->params($params)->options($options)->send();
     }
 }
