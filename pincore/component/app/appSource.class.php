@@ -100,11 +100,25 @@ abstract class AppSource
     protected static $rewrite = [];
 
     /**
+     * Filter on rewrite url
+     *
+     * @var array
+     */
+    protected static $rewriteFilter = [];
+
+    /**
      * Run services
      *
      * @var array
      */
     protected static $service = [];
+
+    /**
+     * Require other components in Loader
+     *
+     * @var array
+     */
+    protected static $loader = [];
 
     /**
      * Call function startup before call controller
@@ -121,6 +135,24 @@ abstract class AppSource
      * @var string|null
      */
     protected static $session = null;
+
+    /**
+     * Change current app on token component
+     *
+     * Example) 'com_pinoox_manager'
+     *
+     * @var string|null
+     */
+    protected static $token = null;
+
+    /**
+     * Change user type in token component
+     *
+     * Example) User::JWT
+     *
+     * @var string|null
+     */
+    protected static $userType = null;
 
     /**
      * Change current app on user component

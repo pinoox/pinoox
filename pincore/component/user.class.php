@@ -50,6 +50,8 @@ class User
     public static function type($value)
     {
         self::$type = $value;
+        self::$token = null;
+        self::$user = null;
     }
 
     public static function getApp()
