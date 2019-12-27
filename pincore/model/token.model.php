@@ -47,6 +47,13 @@ class TokenModel extends PinooxDatabase
         return self::$db->delete(self::token);
     }
 
+    public static function delete_by_app($app)
+    {
+        $app = is_null($app) ? Token::getApp() : $app;
+        self::$db->where('app', $app);
+        return self::$db->delete(self::token);
+    }
+
     public static function insert($form)
     {
         self::$db->insert(self::token, [
@@ -62,37 +69,37 @@ class TokenModel extends PinooxDatabase
         ]);
     }
 
-    public static function update_data($token_key,$token_data,$UpdateLifetime = false)
+    public static function update_data($token_key, $token_data, $UpdateLifetime = false)
     {
         self::$db->where('app', Token::getApp());
         self::$db->where('token_key', $token_key);
         $values = [
             'token_data' => HelperString::encodeJson($token_data),
         ];
-        if($UpdateLifetime)
+        if ($UpdateLifetime)
             $values['expiration_date'] = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
-        return self::$db->update(self::token,$values);
+        return self::$db->update(self::token, $values);
     }
 
-    public static function update_key($old_token_key,$token_key,$UpdateLifetime = false,$app =true)
+    public static function update_key($old_token_key, $token_key, $UpdateLifetime = false, $app = true)
     {
-        if($app)
+        if ($app)
             self::$db->where('app', Token::getApp());
 
         self::$db->where('token_key', $old_token_key);
         $values = [
             'token_key' => $token_key,
         ];
-        if($UpdateLifetime)
+        if ($UpdateLifetime)
             $values['expiration_date'] = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
-        return self::$db->update(self::token,$values);
+        return self::$db->update(self::token, $values);
     }
 
     public static function update_lifetime($token_key)
     {
         self::$db->where('app', Token::getApp());
         self::$db->where('token_key', $token_key);
-        return self::$db->update(self::token,[
+        return self::$db->update(self::token, [
             'expiration_date' => Date::g('Y-m-d H:i:s', time() + Token::$lifeTime),
         ]);
     }

@@ -26,14 +26,17 @@ class PinooxDatabase extends Database
     const file = 'pincore_file';
     const token = 'pincore_token';
 
+    private static $config = [];
+
     public static function __init()
     {
-        $db_configs = Config::get('~database');
+        self::$config = Config::get('~database');
         self::$db = new DB(
-            $db_configs['host'],
-            $db_configs['username'],
-            $db_configs['password'],
-            $db_configs['database']);
+            self::$config['host'],
+            self::$config['username'],
+            self::$config['password'],
+            self::$config['database']
+        );
     }
 
 
@@ -62,5 +65,17 @@ class PinooxDatabase extends Database
         return self::$db->trace;
     }
 
+    public static function getTables($app = null)
+    {
+        //$query = 'SHOW TABLES';
+        //$query = (!empty($app))? $query.' LIKE "'.self::$db->escape($app).'%"' : $query;
+        if(!empty($app))
+            self::$db->where('table_name',$app.'%','LIKE');
+        self::$db->where('table_schema', self::$config['database']);
+        $result = self::$db->get('information_schema.TABLES',null, 'table_name');
+        $result = array_column($result,'table_name');
+
+        return $result;
+    }
 }
     

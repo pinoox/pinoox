@@ -86,5 +86,13 @@ class SessionModel extends PinooxDatabase
         self::$db->where('session_id', $session_id);
         return self::$db->delete(self::session);
     }
+
+    public static function delete_by_app($app)
+    {
+        $app = is_null($app) ? Session::getApp() : $app;
+
+        self::$db->where('app',$app);
+        return self::$db->delete(self::session);
+    }
 }
     
