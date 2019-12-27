@@ -5,8 +5,8 @@ return array(
     'router' => false,
     'icon' => 'icon.png',
     'name' => 'مارکت',
-    'version-name'=>'1.0',
-    'version-code' => 1,
+    'version-name'=>'1.5',
+    'version-code' => 2,
     'open' => 'setting-market',
     'sys-app' => true,
 );
