@@ -12,7 +12,7 @@ export default new Vuex.Store({
         time: 0,
         user: {},
         pinoox: {},
-        isLoading:false,
+        isLoading: false,
         isLoadingUpdate: false,
         isLogin: null,
         isLock: null,
@@ -42,7 +42,10 @@ export default new Vuex.Store({
     },
     getters: {
         background: state => {
-            return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';
+            if (state.options.background === 6)
+                return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.svg';
+            else
+                return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';
         },
         isBackground: state => {
             return !!state.options.background;
