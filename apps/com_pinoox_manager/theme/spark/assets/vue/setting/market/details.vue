@@ -16,7 +16,8 @@
                     <h3>{{LANG.manager.require_space}}: {{app.app_size}}</h3>
                 </div>
                 <div class="action">
-                    <div class="btn-install" @click="downloadApp()">{{LANG.manager.download}}</div>
+                    <div v-if="isDownloading" class="btn-install pin-loader"><i class="fa fa-spinner"></i></div>
+                    <div v-else class="btn-install" @click="downloadApp()">{{LANG.manager.download}}</div>
                 </div>
             </div>
             <div class="content-details">
@@ -24,17 +25,17 @@
             </div>
 
         </div>
-
     </div>
 </template>
 <script>
-    import {mapGetters} from 'vuex';
+    import {mapGetters, mapMutations} from 'vuex';
 
     export default {
         props: ['package_name'],
         data() {
             return {
                 isLoading: false,
+                isDownloading: false,
                 app: {}
             }
         },
@@ -42,6 +43,7 @@
             ...mapGetters(['pinooxAuth']),
         },
         methods: {
+            ...mapMutations(['logoutPinooxAuth']),
             getApp() {
                 this.isLoading = true;
                 this.$http.get(this.URL.API + 'market/getOneApp/' + this.package_name).then((json) => {
@@ -51,8 +53,17 @@
             },
             downloadApp() {
                 if (this.pinooxAuth.isLogin) {
-                    this.$http.get(this.URL.API + 'market/downloadRequest/' + this.package_name).then((json) => {
-                        this.isLoading = false;
+                    this.isDownloading = true;
+                    this.$http.post(this.URL.API + 'market/downloadRequest/' + this.package_name, {auth: this.pinooxAuth}).then((json) => {
+                        this.isDownloading = false;
+                        if (!json.data.status) {
+                            this._notify(this.LANG.user.login_to_pinoox, json.data.result.message, 'warning');
+                            if (json.data.result.require_auth) {
+                               /* this.logoutPinooxAuth();
+                                this.$router.push({name: 'market-login'});*/
+                            }
+                        }
+
                     });
                 } else {
                     this.$router.push({name: 'market-login'});

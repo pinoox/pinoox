@@ -24,6 +24,7 @@ use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Router;
 use pinoox\component\Service;
+use pinoox\component\Url;
 use pinoox\component\User;
 use pinoox\component\Validation;
 use pinoox\component\Zip;
@@ -47,7 +48,28 @@ class MarketController extends MasterConfiguration
         echo $data;
     }
 
-    public function downloadRequest(){
+    public function downloadRequest($package_name)
+    {
+        $auth = Request::inputOne('auth');
+        $app = AppModel::fetch_by_package_name($package_name);
+        if (!empty($app))
+            Response::json(rlang('manager.currently_installed'), false);
 
+        $pinVer = Config::get('~pinoox');
+        $params = [
+            'token' => $auth['token'],
+            'remote_url' => Url::site(),
+            'user_agent' => HelperHeader::getUserAgent() . ';Pinoox/' . $pinVer['version_name'] . ' Manager',
+        ];
+        $res = Request::sendPost('https://www.pinoox.com/api/manager/v1/market/downloadRequest/' . $package_name, $params);
+        if (!empty($res)) {
+            $response = json_decode($res, true);
+            if (!$response['status']) {
+                exit($res);
+            } else {
+                $path = path("downloads>apps>" . $package_name . ">" . $package_name . ".pin");
+                Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result'], $path)->process();
+            }
+        }
     }
 }

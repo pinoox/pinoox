@@ -234,7 +234,7 @@ class HttpRequest
     public function send($raw = null)
     {
         $result = false;
-        if ($this->checkEnableLib('curl')) {
+        if (false) {
             $result = $this->sendCurl();
         } else if ($this->checkEnableLib('content')) {
             $result = $this->sendContents();
