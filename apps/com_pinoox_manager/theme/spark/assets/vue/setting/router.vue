@@ -1,5 +1,5 @@
 <template>
-    <div id="content" ref="content">
+    <div class="content" ref="content">
         <div class="header">
             <h1>{{LANG.manager.router}}</h1>
             <h2>{{LANG.setting.router.router_help }}</h2>

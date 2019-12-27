@@ -1,99 +1,14 @@
 <template>
-    <div id="content" ref="content">
+    <div class="content" ref="content">
         <div class="header">
             <h1>{{LANG.setting.market.pinoox_market_title}}</h1>
             <h2>{{LANG.setting.market.market_help }}</h2>
         </div>
         <div class="page" data-simplebar data-simplebar-auto-hide="false">
             <div class="market">
-                <input v-if="state=='home'" v-model="keyword" @keyup="search()" type="text"
-                       class="pin-input"
-                       :placeholder="LANG.setting.market.search_placeholder">
-                <span v-else class="return pin-btn" @click="gotoHomeMarket()"><i class="fa fa-chevron-right"></i> {{LANG.manager.return}}</span>
-                <div v-if="isLoading" class="pin-spinner"></div>
-                <div v-else>
-                    <div v-if="state==='home'">
-                        <div v-if="apps.length>0" class="apps-list">
-                            <div v-for="(app,index) in apps" class="app-item"
-                                 :class="app.install_state"
-                                 @click="openAppDetails(index)">
-                                <img :src="app.icon" alt="app icon">
-                                <div class="name">{{app.name}}</div>
-
-                                <i class="fa fa-download installState" v-if="app.install_state=='download'"></i>
-                                <span class="installState pin-loader " v-if="app.install_state=='installing'">
-                                    <i class="fa fa-spinner"></i>
-                                </span>
-                            </div>
-                        </div>
-                        <div v-else class="empty">{{LANG.setting.market.not_found_result_try_again}}</div>
-                    </div>
-                    <div v-else-if="state==='details'" class="app-details">
-                        <br>
-                        <br>
-                        <div class="header-details">
-                            <img class="app-icon" :src="selectedApp.icon">
-                            <div class="app-info">
-                                <h2>{{selectedApp.name}} </h2>
-                                <h3>{{LANG.manager.developer}}: {{selectedApp.developer}}</h3>
-                                <h3> {{LANG.manager.version}}: {{selectedApp.version_name}}</h3>
-                                <h3>{{LANG.manager.require_space}}: {{selectedApp.size}}</h3>
-                            </div>
-                            <div v-if="selectedApp.install_state==='download'" class="btn-install" @click="install()">
-                                {{LANG.manager.install}}
-                            </div>
-                            <div v-if="selectedApp.install_state==='installing'" class="btn-install">
-                                {{LANG.setting.market.installing}}
-                            </div>
-                            <div v-if="selectedApp.install_state==='installed' && selectedApp.version_code > app.version_code && !isLoadingUpdate" class="btn-install mr-2"
-                                 @click="updateApp()">{{LANG.manager.update}}
-                            </div>
-                            <div v-else-if="selectedApp.install_state==='installed' && selectedApp.version_code > app.version_code && isLoadingUpdate" class="btn-install mr-2 pin-loader"><i class="fa fa-spinner"></i> </div>
-                            <div v-if="selectedApp.install_state==='installed'" class="btn-install"
-                                 @click="removeApp()">{{LANG.manager.delete}}
-                            </div>
-
-
-                        </div>
-                        <div class="content-details">
-                            <div class="links">
-                                <a target="_blank" :href="selectedApp.docs"><i class="far fa-file-code"></i>
-                                    {{LANG.manager.documents}}</a>
-                                <a target="_blank" :href="selectedApp.support"><i class="fas fa-headset"></i>
-                                    {{LANG.manager.support}}</a>
-                            </div>
-                            <div class="text" v-html="selectedApp.description"></div>
-                        </div>
-                    </div>
-                    <div v-else-if="state==='downloading'" class="installing finish animated faster bounceIn">
-                        <div class="app">
-                            <div class="icon"><img :src="selectedApp.icon"></div>
-                        </div>
-                        <div class="message">
-                            <div class="text">
-                                <span class="pin-loader"><i class="fa fa-spinner"></i></span>
-                                <span>{{LANG.setting.market.wait_downloading_installing_app}}</span>
-                            </div>
-                        </div>
-                        <div class="tips">{{LANG.setting.market.install_app_tips}}</div>
-                    </div>
-                    <div v-else-if="state==='finish'" class="finish animated faster bounceIn">
-                        <div class="app">
-                            <div class="icon"><img :src="selectedApp.icon"></div>
-                        </div>
-                        <div class="message">
-                            <div class="text">{{LANG.setting.market.install_app}} {{finishMessage}}</div>
-                            <br>
-
-                            <router-link :to="{name:'setting-router'}" class="pin-btn">{{LANG.manager.router}}
-                            </router-link>
-                        </div>
-                    </div>
-                </div>
-
+                 <router-view></router-view>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -105,11 +20,11 @@
         data() {
             return {
                 isLoading: false,
-                state: 'home',
+                state: 'login',
                 finishMessage: '',
                 keyword: '',
                 index: null,
-                isLoadingUpdate:false,
+                isLoadingUpdate: false,
                 apps: [],
             }
         },
@@ -143,7 +58,7 @@
                 this._delay(() => {
                     this.$http.get(this.URL.API + 'app/market/' + this.keyword).then((json) => {
                         this.isLoading = false;
-                        this.apps = json.data.result;
+                        this.apps = json.data.items;
                         for (let i = 0; i < this.apps.length; i++) {
                             this.apps[i]['install_state'] = 'download';
 
@@ -174,13 +89,13 @@
             gotoHomeMarket() {
                 this.state = 'home';
             },
-            downloadApp(package_name,download_link) {
+            downloadApp(package_name, download_link) {
                 this.$http.post(this.URL.API + 'app/download/', {
                     packageName: package_name,
                     downloadLink: download_link,
                 }).then((json) => {
                     if (json.data.status) {
-                       this.installApp(package_name);
+                        this.installApp(package_name);
                     } else {
                         this.selectedApp.install_state = 'download';
                         this.finishMessage = this.LANG.setting.market.occurred_error;
@@ -210,7 +125,7 @@
                 this.state = 'downloading';
                 this.selectedApp.install_state = 'installing';
                 this.addToInstallList(this.selectedApp);
-                this.downloadApp(this.selectedApp.package_name,this.selectedApp.download_link);
+                this.downloadApp(this.selectedApp.package_name, this.selectedApp.download_link);
             },
             updateApp() {
                 this.isLoadingUpdate = true;
@@ -241,7 +156,7 @@
                             }).then((json) => {
                                 this._loading = false;
                                 this.selectedApp.install_state = 'download';
-                                this.$delete(this.$store.state.apps,this.selectedApp.package_name);
+                                this.$delete(this.$store.state.apps, this.selectedApp.package_name);
                                 this.gotoHomeMarket();
                             });
                         }
@@ -255,7 +170,7 @@
             },
         },
         created() {
-            this.search();
+            //this.search();
         },
     }
 </script>
@@ -271,8 +186,8 @@
     }
 
     .pin-loader .fa-spinner {
-        -webkit-animation:spin 4s linear infinite;
-        -moz-animation:spin 4s linear infinite;
-        animation:spin 4s linear infinite;
+        -webkit-animation: spin 4s linear infinite;
+        -moz-animation: spin 4s linear infinite;
+        animation: spin 4s linear infinite;
     }
 </style>

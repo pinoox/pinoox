@@ -49,6 +49,9 @@ Vue.mixin({
     },
     methods: {
         ...mapMutations(['notify']),
+        _isEmptyObj(obj) {
+            return Object.keys(obj).length === 0
+        },
         _redirect(path, seconds) {
             let s = seconds * 1000;
             setTimeout(function () {

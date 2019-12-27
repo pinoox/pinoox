@@ -1,5 +1,5 @@
 <template>
-    <div id="content" data-simplebar>
+    <div class="content" data-simplebar>
         <div class="header">
             <h1>{{LANG.manager.interface}}</h1>
         </div>

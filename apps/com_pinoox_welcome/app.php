@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2019-08-28 14:21"
+//pinoox app file, generated at "2019-12-27 18:58"
 
 return array (
   'name' => 'welcome',
@@ -11,6 +11,8 @@ return array (
   'enable' => true,
   'theme' => 'welcome',
   'lang' => 'fa',
+  'router' => 'single',
+  'hidden' => false,
 );
 
 //end of app

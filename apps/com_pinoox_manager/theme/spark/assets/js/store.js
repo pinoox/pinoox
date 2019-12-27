@@ -12,7 +12,7 @@ export default new Vuex.Store({
         time: 0,
         user: {},
         pinoox: {},
-        isLoading:false,
+        isLoading: false,
         isLoadingUpdate: false,
         isLogin: null,
         isLock: null,
@@ -38,7 +38,8 @@ export default new Vuex.Store({
             timer: 5,//in seconds
             interval: null,
         },
-        installList: []
+        installList: [],
+        pinooxAuth: {isLogin: false}
     },
     getters: {
         background: state => {
@@ -55,6 +56,11 @@ export default new Vuex.Store({
         },
         hasNotification: state => {
             return state.installList.length > 0 || state.notifications.length > 0;
+        },
+        pinooxAuth: state => {
+            var auth = JSON.parse(localStorage.getItem('pinoox_auth'));
+            state.pinooxAuth = (auth === null) ? {isLogin: false} : auth;
+            return state.pinooxAuth;
         },
     },
     mutations: {
@@ -138,6 +144,10 @@ export default new Vuex.Store({
         updateDirections: (state, direction) => {
             document.body.className = direction;
             state.animDirection = direction === 'rtl' ? 'Right' : 'Left';
+        },
+        logoutPinooxAuth: (state) => {
+            localStorage.removeItem('pinoox_auth');
+            state.pinooxAuth = {isLogin: false};
         }
     },
     actions: {
