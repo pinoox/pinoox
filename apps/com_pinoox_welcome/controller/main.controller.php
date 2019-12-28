@@ -11,6 +11,8 @@
  */
 namespace pinoox\app\com_pinoox_welcome\controller;
 
+use pinoox\component\Download;
+
 class MainController extends MasterConfiguration
 {
 

@@ -63,6 +63,8 @@
 </template>
 
 <script>
+    import {mapMutations} from 'vuex';
+
     export default {
         data() {
             return {
@@ -82,6 +84,7 @@
             }
         },
         methods: {
+            ...mapMutations(['getApps']),
             loadApps(activeTab) {
                 this.isLoading = true;
                 if (activeTab != null)
@@ -97,6 +100,7 @@
                     app.state = 'installed';
                     this.$delete(this.apps, app.package_name);
                     this.installCount--;
+                    this.getApps();
                     this._notify(this.LANG.manager.installed_successfully, '', 'success');
                 });
             },
@@ -108,7 +112,7 @@
                             this._loading = true;
                             this.$http.post(this.URL.API + 'app/remove/' + app.package_name).then((json) => {
                                 this._loading = false;
-                                this.app.state = 'download';
+                                app.state = 'download';
                                 this.$delete(this.$store.state.apps, app.package_name);
                                 this.$delete(this.apps, app.package_name);
                             });

@@ -142,7 +142,6 @@ export default new Vuex.Store({
         },
         logoutPinooxAuth: (state) => {
             $http.get(PINOOX.URL.API + 'account/logout').then((json) => {
-                localStorage.removeItem('pinoox_auth');
                 state.pinooxAuth = {isLogin: false};
             });
 
@@ -154,8 +153,7 @@ export default new Vuex.Store({
         },
         getPinooxAuth: (state) => {
             $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
-                state.pinooxAuth = (json.data === null) ? {isLogin: false} : json.data;
-                localStorage.setItem('pinoox_auth', JSON.stringify(state.pinooxAuth));
+                state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
             });
         },
     },

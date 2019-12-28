@@ -148,6 +148,20 @@ class Wizard
         PinooxDatabase::commit();
     }
 
+    public static function updateCore($file)
+    {
+        Zip::extract($file, path('~'));
+        File::remove_file($file);
+        Cache::clean('version');
+        Cache::get('version');
+        Config::reset('~pinoox');
+        Service::run('~core>update');
+
+        Cache::app('com_pinoox_manager');
+        Service::app('com_pinoox_manager');
+        Service::run('app>update');
+    }
+
     public static function is_installed($package_name)
     {
         $app = AppModel::fetch_by_package_name($package_name);

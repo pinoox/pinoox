@@ -55,7 +55,7 @@
                     this.isLoading = false;
                     if (json.data.status) {
                         this.user = json.data.result;
-                        localStorage.setItem('pinoox_auth', JSON.stringify(this.user));
+                        this.$store.state.pinooxAuth = this.user;
                         this.$router.go(-1);
                     } else {
                         this._notify(this.LANG.user.login_to_pinoox, json.data.result);

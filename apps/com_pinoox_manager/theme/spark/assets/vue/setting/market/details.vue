@@ -75,7 +75,7 @@
             }
         },
         methods: {
-            ...mapMutations(['logoutPinooxAuth']),
+            ...mapMutations(['getApps','logoutPinooxAuth']),
             getApp() {
                 this.isLoading = true;
                 this.$http.get(this.URL.API + 'market/getOneApp/' + this.package_name).then((json) => {
@@ -87,7 +87,9 @@
             downloadApp() {
                 if (this.pinooxAuth.isLogin) {
                     this.state = 'downloading';
+                    this._loading = true;
                     this.$http.post(this.URL.API + 'market/downloadRequest/' + this.package_name, {auth: this.pinooxAuth}).then((json) => {
+                        this._loading = false;
                         if (!json.data.status) {
                             this.state = 'download';
                             this._notify(this.LANG.user.login_to_pinoox, json.data.result.message, 'warning');
@@ -108,10 +110,14 @@
             },
             installApp() {
                 this.state = 'installing';
+                this._loading = true;
                 this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
+                    this._loading = false;
                     if (json.data.status) {
                         this._notify(this.LANG.manager.installed_successfully, '', 'success');
                         this.state = 'installed';
+                        this.readyInstall--;
+                        this.getApps();
                     } else {
                         this.state = 'install';
                     }
@@ -119,12 +125,14 @@
             },
             updateApp() {
                 this.isLoadingUpdate = true;
+                this._loading = true;
                 this.$http.post(this.URL.API + 'app/update/', {
                     packageName: this.selectedApp.package_name,
                     downloadLink: this.selectedApp.download_link,
                     versionName: this.selectedApp.version_name,
                     versionCode: this.selectedApp.version_code,
                 }).then((json) => {
+                    this._loading = false;
                     this.isLoadingUpdate = false;
                     if (json.data.status) {
                         this._notify(this.LANG.manager.update_app, json.data.result, 'success');

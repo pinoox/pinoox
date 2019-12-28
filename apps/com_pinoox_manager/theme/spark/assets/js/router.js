@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import {routes} from "./routes";
+import Store from './store';
 
 Vue.use(VueRouter);
 
@@ -11,7 +12,7 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    var user = JSON.parse(localStorage.getItem('pinoox_auth'));
+    let user = Store.state.pinooxAuth;
     if (to.meta.requireAuth !== undefined) {
         if (to.meta.requireAuth) {
             if (user == null || !user.isLogin) {
