@@ -8,9 +8,9 @@
                 <img src="@img/pin-icon.png">
                 <span v-if="hasNotification" class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
             </div>
-            <router-link :to="{name:'appManager-home'}" class="pin-icon">
-                <i class="fab fa-whmcs fontIcon"></i> <span class="label">{{LANG.manager.app_manager_title}}</span>
-                <span v-if="hasNotification" class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
+            <router-link :to="{name:'appManager-home'}" class="pin-icon" v-if="notifyInstaller>0">
+                <i class="fas fas fa-grip-horizontal fontIcon"></i> <span class="label">{{LANG.manager.ready_to_install}}</span>
+                <span class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
             </router-link>
         </div>
 
@@ -43,8 +43,13 @@
             }
         },
         computed: {
-            ...mapState(['isLoading','isRun', 'time', 'isApp']),
+            ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
+            notifyInstaller: {
+                get() {
+                    return this.$store.state.readyInstallCount;
+                }
+            },
             options: {
                 get() {
                     return this.$store.state.options;
@@ -80,7 +85,7 @@
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -129,6 +134,7 @@
                     this.getApps();
                     this.getNotifications();
                     this.checkVersion();
+                    this.getReadyToInstallApp();
                 } else {
                     this.$store.state.apps = {};
                 }
@@ -142,10 +148,9 @@
             },
             userAccess() {
                 if (this.isLogin && !this.isLock) {
-                   //this.$router.replace({name: this.startRoute.name});
-                   // this.$router.replace({name: 'home'});
-                }
-                else {
+                    //this.$router.replace({name: this.startRoute.name});
+                    // this.$router.replace({name: 'home'});
+                } else {
                     this.$router.replace({name: 'login'});
                 }
             },
@@ -158,7 +163,7 @@
         },
         created() {
             this.setStartRouter();
-          //  this.$router.replace({name: 'loading'});
+            //  this.$router.replace({name: 'loading'});
             this.getUser();
             this.getOptions();
 
