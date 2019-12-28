@@ -12,13 +12,11 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
+use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\component\Cache;
 use pinoox\component\Config;
 use pinoox\component\Download;
-use pinoox\component\File;
 use pinoox\component\Response;
-use pinoox\component\Service;
-use pinoox\component\Zip;
 
 class UpdateController extends LoginConfiguration
 {
@@ -52,16 +50,7 @@ class UpdateController extends LoginConfiguration
         if ($isNewVersion) {
             $file = path('temp/pincore.pin');
             Download::fetch('https://www.pinoox.com/api/v1/update/get', $file)->process();
-            Zip::extract($file, path('~'));
-            File::remove_file($file);
-            Cache::clean('version');
-            Cache::get('version');
-            Config::reset('~pinoox');
-            Service::run('~core>update');
-
-            Cache::app('com_pinoox_manager');
-            Service::app('com_pinoox_manager');
-            Service::run('app>update');
+            Wizard::updateCore($file);
 
             Response::json($this->getVersions(), true);
         } else {

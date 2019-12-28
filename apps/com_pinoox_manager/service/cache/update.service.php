@@ -15,7 +15,9 @@ use pinoox\component\Cache;
 use pinoox\component\Config;
 use pinoox\component\Download;
 use pinoox\component\HelperString;
+use pinoox\component\HttpRequest;
 use pinoox\component\interfaces\ServiceInterface;
+use pinoox\component\Request;
 use pinoox\component\Url;
 
 class UpdateService implements ServiceInterface
@@ -26,16 +28,21 @@ class UpdateService implements ServiceInterface
         Cache::init('version',function () {
 
             $pinoox = Config::get('~pinoox');
-            $data = array('domain' => Url::domain(), 'site' => Url::site(), 'app' => Url::app(), 'version_name' => $pinoox['version_name'], 'version_code' => $pinoox['version_code'], 'php' => phpversion());
-            $data = http_build_query($data);
-            $http = [
-                'method' => 'POST',
-                'header' => "Content-type: application/x-www-form-urlencoded\r\n"
-                    . "Content-Length: " . strlen($data) . "\r\n" .
-                    "Access-Control-Allow-Headers: *\r\n" . "Access-Control-Allow-origin: *\r\n",
-                'content' => $data
-            ];
-            $data = Download::fetch('https://www.pinoox.com/api/v1/update/checkVersion/')->timeout(8)->http($http)->process();
+            $data = Request::sendPost(
+                'https://www.pinoox.com/api/v1/update/checkVersion/',
+                [
+                    'domain' => Url::domain(),
+                    'site' => Url::site(), 'app' => Url::app(),
+                    'version_name' => $pinoox['version_name'],
+                    'version_code' => $pinoox['version_code'],
+                    'php' => phpversion()
+                ],
+                [
+                    'timeout' => 8000,
+                    'type' => HttpRequest::form,
+                ]
+            );
+
             return HelperString::decodeJson($data);
         },(5*24));
     }

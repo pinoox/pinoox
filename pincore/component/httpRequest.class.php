@@ -111,7 +111,7 @@ class HttpRequest
     {
         if (!isset($this->options['headers']))
             $this->options['headers'] = [];
-        $this->options['headers'][] = $key . ': ' . $value;
+        $this->options['headers'][$key] = $value;
 
         return self::$http;
     }
@@ -122,9 +122,9 @@ class HttpRequest
      * @param string $method
      * @return HttpRequest
      */
-    public static function init($url, $method = self::GET)
+    public static function init($url, $method = self::GET, $isCache = true)
     {
-        if (empty(self::$http))
+        if (!$isCache || empty(self::$http))
             self::$http = new HttpRequest($url, $method);
 
         return self::$http;
@@ -179,10 +179,17 @@ class HttpRequest
      */
     private function getHeaders($key = null)
     {
-        if (is_null($key))
-            return isset($this->options['headers']) ? $this->options['headers'] : [];
-        else
-            return isset($this->options['headers'][$key]) ? $this->options['headers'][$key] : null;
+        $headers = isset($this->options['headers']) ? $this->options['headers'] : [];
+        if (!is_null($key)) {
+            return (isset($headers[$key])) ? $headers[$key] : null;
+        } else {
+            $result = [];
+            foreach ($headers as $key => $value) {
+                $result[] = $key . ': ' . $value;
+            }
+
+            return $result;
+        }
     }
 
     /**
@@ -234,6 +241,12 @@ class HttpRequest
     public function send($raw = null)
     {
         $result = false;
+
+        $user_agent = $this->getHeaders('User-Agent');
+
+        if (empty($user_agent))
+            $this->setHeader('User-Agent', HelperHeader::getUserAgent() . ' pinoox');
+
         if (false) {
             $result = $this->sendCurl();
         } else if ($this->checkEnableLib('content')) {
@@ -243,25 +256,6 @@ class HttpRequest
         $result = ($result && $raw === self::json) ? HelperString::decodeJson($result) : $result;
 
         return $result;
-    }
-
-    /**
-     * Check require source
-     *
-     * @param string $type
-     * @return bool
-     */
-    private function checkEnableLib($type)
-    {
-        switch ($type) {
-            case 'curl':
-                return function_exists('curl_init');
-                break;
-            case 'content':
-                return function_exists('file_get_contents');
-        }
-
-        return false;
     }
 
     /**
@@ -302,6 +296,10 @@ class HttpRequest
         if (!empty($timeout))
             curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
 
+        $user_agent = $this->getHeaders('User-Agent');
+        if(!empty($user_agent))
+            curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+
         // execute
         $result = curl_exec($curl);
         curl_close($curl);
@@ -319,6 +317,25 @@ class HttpRequest
     }
 
     /**
+     * Check require source
+     *
+     * @param string $type
+     * @return bool
+     */
+    private function checkEnableLib($type)
+    {
+        switch ($type) {
+            case 'curl':
+                return function_exists('curl_init');
+                break;
+            case 'content':
+                return function_exists('file_get_contents');
+        }
+
+        return false;
+    }
+
+    /**
      *  send request by file_get_contents library
      *
      * @return bool|string|array|null|mixed
@@ -330,7 +347,7 @@ class HttpRequest
 
         // method and options
         $headers = $this->getHeaders();
-        $headers = implode('\r\n', $headers);
+        $headers = implode(' \r\n ', $headers);
         $options = array(
             'http' => array(
                 'header' => $headers,
@@ -340,6 +357,10 @@ class HttpRequest
         $timeout = $this->getTimeout();
         if (!empty($timeout))
             $options['http']['timeout'] = $timeout / 1000;
+
+        $user_agent = $this->getHeaders('User-Agent');
+        if(!empty($user_agent))
+            $options['http']['user_agent'] = $user_agent;
 
         // params
         if ($this->method === self::POST || $this->method === self::PUT)

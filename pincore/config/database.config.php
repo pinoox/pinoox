@@ -1,11 +1,12 @@
 <?php
-//pinoox config file, generated at "2019-11-03 22:35"
+//pinoox config file, generated at "2019-12-25 19:03"
 
 return array (
   'host' => 'localhost',
-  'database' => 'pinooox',
+  'database' => 'pinfork',
   'username' => 'root',
   'password' => NULL,
+  'prefix' => NULL,
 );
 
 //end of config

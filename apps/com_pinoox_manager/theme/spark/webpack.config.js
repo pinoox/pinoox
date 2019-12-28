@@ -91,7 +91,7 @@ module.exports = {
         new webpack.ProgressPlugin(),
         new CopyPlugin([
             {
-                from: './assets/images/backgrounds/*.jpg',
+                from: './assets/images/backgrounds/*',
                 to: 'images/backgrounds',
                 flatten: true,
             },
