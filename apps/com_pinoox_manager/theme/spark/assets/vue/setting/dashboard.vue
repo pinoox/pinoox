@@ -9,7 +9,7 @@
             <div class="config">
                 <h2 class="title">{{LANG.setting.dashboard.choose_background_image}}</h2>
                 <div class="pic-grid">
-                    <img v-for="n in 6" :class="background == n ? 'active' : ''" @click="setBackground(n)"
+                    <img v-for="n in 8" :class="background == n ? 'active' : ''" @click="setBackground(n)"
                          :src="getImage(n)">
                 </div>
             </div>

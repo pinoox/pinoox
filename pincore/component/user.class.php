@@ -50,6 +50,11 @@ class User
     public static function type($value)
     {
         self::$type = $value;
+        self::reset();
+    }
+
+    public static function reset()
+    {
         self::$token = null;
         self::$user = null;
     }
@@ -59,7 +64,7 @@ class User
         return (!empty(self::$app)) ? self::$app : Router::getApp();
     }
 
-    public static function login($username, $password,$isActive = true)
+    public static function login($username, $password, $isActive = true)
     {
         self::$msg = null;
 
@@ -68,7 +73,7 @@ class User
             return false;
         }
 
-        if($isActive)
+        if ($isActive)
             UserModel::where_status(UserModel::active);
         $user = UserModel::fetch_user_by_email_or_username($username);
         if (empty($user)) {
@@ -210,12 +215,10 @@ class User
             if ($user && $user['status'] == 'active') {
                 if (isset($user['password'])) unset($user['password']);
                 self::$user = $user;
-                if(self::$updateTokenKey)
-                {
-                    $token_key = Token::changeKey($token['token_key'],true,false);
+                if (self::$updateTokenKey) {
+                    $token_key = Token::changeKey($token['token_key'], true, false);
                     self::setClientToken($token_key);
-                }
-                else if (self::$updateLifetime)
+                } else if (self::$updateLifetime)
                     Token::updateLifetime($token['token_key']);
             } else {
                 self::logout(null, false);
