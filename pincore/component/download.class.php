@@ -379,7 +379,7 @@ class Download
 
             $this->adjustPrerequisites();
             $size = $this->partial_length;
-//            if (isset($_SERVER['HTTP_RANGE']) && $this->isMultiThreaded)
+            if (isset($_SERVER['HTTP_RANGE']) && $this->isMultiThreaded)
                 fseek($file, $this->mtOffset);
 
             //write the data out

@@ -4,7 +4,7 @@
                 class="fa fa-chevron-right"></i> {{LANG.manager.return}}
         </router-link>
 
-        <div class="users" v-if="users!=null">
+        <div class="users" v-if="users!==null && !!users && users.length > 0">
             <div class="item" v-for="(u,index) in users">
                 <div class="image">
                     <img :src="u.avatar_thumb">
