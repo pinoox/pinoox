@@ -127,4 +127,30 @@ class AppModel extends PinooxDatabase
         return $aliases;
     }
 
+    public static function fetch_all_ready_to_install()
+    {
+        $ready_to_install = [];
+        $folders = File::get_dir_folders(Dir::path('downloads>apps'));
+        if (!empty($folders) && isset($folders[0])) {
+            $folder = $folders[0];
+            $files = File::get_files_by_pattern($folder, '*.pin');
+
+            if (!empty($files)) {
+                foreach ($files as $file) {
+                    $package_name = str_replace('.pin', '', basename($file));
+                    $info = Config::get('market.' . $package_name);
+                    if (!empty($info)) {
+                        $arr = json_decode($info, true);
+                        $app = $arr[$package_name];
+                        $app['state'] = 'install';
+                        $app['package_name'] = $package_name;
+                        $ready_to_install[$package_name] = $app;
+                    }
+                }
+            }
+            return $ready_to_install;
+        }
+
+    }
+
 }
