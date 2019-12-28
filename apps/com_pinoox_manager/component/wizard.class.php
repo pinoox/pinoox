@@ -15,6 +15,7 @@
 namespace pinoox\app\com_pinoox_manager\component;
 
 
+use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\app\AppProvider;
 use pinoox\component\Cache;
 use pinoox\component\Config;
@@ -41,7 +42,7 @@ class Wizard
         if (is_file($appDB)) {
             $prefix = Config::get('~database.prefix');
             $query = file_get_contents($appDB);
-            $query = str_replace('{dbprefix}', $prefix, $query);
+            $query = str_replace('{dbprefix}', $prefix . $packageName.'_', $query);
             $queryArr = explode(';', $query);
 
             PinooxDatabase::$db->startTransaction();
@@ -63,10 +64,12 @@ class Wizard
 
     private static function runService($packageName, $state = 'install')
     {
+        $current = Router::getApp();
         self::setApp($packageName);
         Cache::app($packageName);
         Service::app($packageName);
         Service::run('app>' . $state);
+        Router::setApp($current);
     }
 
     private static function setApp($packageName)
@@ -133,7 +136,8 @@ class Wizard
         PinooxDatabase::$db->rawQuery("SET FOREIGN_KEY_CHECKS = 0");
 
         //delete all tables
-        PinooxDatabase::$db->rawQuery("DROP TABLE IF EXISTS " . $tables);
+        if (!empty($tables))
+            PinooxDatabase::$db->rawQuery("DROP TABLE IF EXISTS " . $tables);
 
         //delete all rows
         UserModel::delete_by_app($packageName);
@@ -142,5 +146,13 @@ class Wizard
 
         PinooxDatabase::$db->rawQuery("SET FOREIGN_KEY_CHECKS = 1");
         PinooxDatabase::commit();
+    }
+
+    public static function is_installed($package_name)
+    {
+        $app = AppModel::fetch_by_package_name($package_name);
+        if (!empty($app))
+            return true;
+        return false;
     }
 }
