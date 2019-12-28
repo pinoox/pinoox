@@ -149,7 +149,7 @@
             userAccess() {
                 if (this.isLogin && !this.isLock) {
                     //this.$router.replace({name: this.startRoute.name});
-                   // this.$router.replace({name: 'home'});
+                   this.$router.replace({name: 'home'});
                 } else {
                     this.$router.replace({name: 'login'});
                 }
@@ -163,7 +163,7 @@
         },
         created() {
             this.setStartRouter();
-           // this.$router.replace({name: 'loading'});
+            this.$router.replace({name: 'loading'});
             this.getUser();
             this.getOptions();
             this.getPinooxAuth();
