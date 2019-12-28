@@ -9,8 +9,8 @@
             <div class="config">
                 <h2 class="title">{{LANG.setting.dashboard.choose_background_image}}</h2>
                 <div class="pic-grid">
-                    <img v-for="n in 5" :class="background == n ? 'active' : ''" @click="setBackground(n)"
-                         :src="URL.THEME+'dist/images/backgrounds/'+n+'.jpg'">
+                    <img v-for="n in 6" :class="background == n ? 'active' : ''" @click="setBackground(n)"
+                         :src="getImage(n)">
                 </div>
             </div>
             <div class="config">
@@ -37,7 +37,7 @@
 
 
 <script>
-    import {mapState, mapMutations} from 'vuex';
+    import {mapMutations, mapState} from 'vuex';
 
     export default {
         computed: {
@@ -88,7 +88,14 @@
                     this.LANG = json.data.lang;
                     this.clock = '';
                 });
+            },
+            getImage(n) {
+                if (n === 6)
+                    return this.URL.THEME + 'dist/images/backgrounds/' + n + '.svg';
+                else
+                    return this.URL.THEME + 'dist/images/backgrounds/' + n + '.jpg';
             }
+
         },
     }
 </script>

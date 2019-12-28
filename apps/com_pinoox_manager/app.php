@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2019-12-27 11:49"
+//pinoox app file, generated at "2019-08-29 10:24"
 
 return array (
   'enable' => true,
@@ -14,11 +14,9 @@ return array (
   'minpin' => 1,
   'open' => 'setting-dashboard',
   'sys-app' => true,
-  'service' =>
-  array (
-    0 => 'cache/update',
-  ),
-  'lang' => 'fa',
+  'service' => [
+      'cache/update',
+  ],
 );
 
 //end of app

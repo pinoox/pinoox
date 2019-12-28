@@ -1,8 +1,8 @@
 <?php
-//pinoox config file, generated at "2019-12-28 07:05"
+//pinoox config file, generated at "2019-12-27 22:25"
 
 return array (
-  'background' => '3',
+  'background' => '6',
   'lock_time' => 0,
 );
 
