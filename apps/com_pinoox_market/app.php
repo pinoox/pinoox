@@ -4,9 +4,9 @@ return array(
     'enable' => true,
     'router' => false,
     'icon' => 'icon.png',
-    'name' => 'مارکت',
-    'version-name'=>'1.5',
-    'version-code' => 2,
+    'name' => 'market',
+    'version-name'=>'1.7',
+    'version-code' => 3,
     'open' => 'setting-market',
     'sys-app' => true,
 );
