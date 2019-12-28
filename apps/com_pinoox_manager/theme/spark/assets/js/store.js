@@ -38,8 +38,8 @@ export default new Vuex.Store({
             timer: 5,//in seconds
             interval: null,
         },
-        installList: [],
-        pinooxAuth: {isLogin: false}
+        pinooxAuth: {isLogin: false},
+        readyInstallCount: 0
     },
     getters: {
         background: state => {
@@ -55,7 +55,7 @@ export default new Vuex.Store({
             return Object.values(state.apps);
         },
         hasNotification: state => {
-            return state.installList.length > 0 || state.notifications.length > 0;
+            return state.notifications.length > 0;
         },
         pinooxAuth: state => {
             var auth = JSON.parse(localStorage.getItem('pinoox_auth'));
@@ -138,9 +138,6 @@ export default new Vuex.Store({
                 state.apps = json.data;
             });
         },
-        addToInstallList: (state, app) => {
-            state.installList.push(app);
-        },
         updateDirections: (state, direction) => {
             document.body.className = direction;
             state.animDirection = direction === 'rtl' ? 'Right' : 'Left';
@@ -148,6 +145,11 @@ export default new Vuex.Store({
         logoutPinooxAuth: (state) => {
             localStorage.removeItem('pinoox_auth');
             state.pinooxAuth = {isLogin: false};
+        },
+        getReadyToInstallApp: (state) => {
+            $http.get(PINOOX.URL.API + 'app/readyInstallCount').then((json) => {
+                state.readyInstallCount = json.data;
+            });
         }
     },
     actions: {
