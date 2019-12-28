@@ -19,6 +19,7 @@ return [
     'add' => 'add',
     'edit' => 'edit',
     'delete' => 'delete',
+    'do_delete' => 'delete',
     'alert' => 'alert',
     'cancel' => 'cancel',
     'save' => 'save',
@@ -41,6 +42,7 @@ return [
     'version' => 'version',
     'require_space' => 'requirement space',
     'install' => 'install',
+    'installing' => 'installing',
     'documents' => 'documents',
     'support' => 'support',
     'package_name' => 'package',
@@ -66,6 +68,7 @@ return [
     'update_app' => 'update app',
     'preview' => 'preview',
     'download' => 'download',
+    're_download' => 'download again',
     'create_pinoox_account' => 'create pinoox account',
     'required_login_for_download_app' => 'to download and install apps you need to login to your Pinoox account, if you don\'t have an account sign up from the link below',
     'app_manager'=>'applications',
@@ -73,5 +76,11 @@ return [
     'installed_apps'=>'installed',
     'downloading_apps'=>'downloading',
     'systems_apps'=>'systems',
+    'downloading' => 'downloading',
+    'download_completed' => 'download completed',
+    'installed' => 'installed',
+    'installed_successfully' => 'installed successfully',
+    'ready_to_install' => 'ready installation',
+
 ];
     
