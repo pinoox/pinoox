@@ -45,7 +45,7 @@
                         for (let i = 0; i < this.apps.length; i++) {
                             this.apps[i]['state'] = 'download';
 
-                            //update base on installed apps
+                            //update state base on installed apps
                             for (let j = 0; j < this.appsArray.length; j++) {
                                 if (this.apps[i].package_name === this.appsArray[j].package_name) {
                                     this.apps[i]['state'] = 'installed';
@@ -53,13 +53,6 @@
                                 }
                             }
 
-                            //update state based on installing list
-                            /* for (let k = 0; k < this.installList.length; k++) {
-                                 if (this.apps[i].package_name === this.installList[k].package_name) {
-                                     this.apps[i]['state'] = 'installing';
-                                     break;
-                                 }
-                             }*/
                         }
                     });
                 }, 250);
