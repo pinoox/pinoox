@@ -13,6 +13,7 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
+use pinoox\component\Config;
 use pinoox\component\Download;
 use pinoox\component\Request;
 use pinoox\component\Response;
@@ -45,7 +46,22 @@ class AccountController extends MasterConfiguration
             'content' => $postData
         ];
         $data = Download::fetch('https://www.pinoox.com/api/manager/v1/account/login')->timeout(8)->http($http)->process();
+        $array = json_decode($data, true);
+        if ($array['status']) {
+            Config::set('options.pinoox_auth', $array['result']);
+            Config::save('options');
+        }
         exit($data);
     }
 
+    public function getPinooxAuth()
+    {
+        Response::json(Config::get('options.pinoox_auth'));
+    }
+
+    public function logout()
+    {
+        Config::remove('options.pinoox_auth');
+        Config::save('options');
+    }
 }

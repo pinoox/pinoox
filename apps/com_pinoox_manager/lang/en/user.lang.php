@@ -18,4 +18,7 @@ return [
     'active' => 'active',
     'pending' => 'pending',
     'suspend' => 'suspend',
+    'logout_account' => 'logout account',
+    'login_account' => 'login to account',
+    'account' => 'account',
 ];

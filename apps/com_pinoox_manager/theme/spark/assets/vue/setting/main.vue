@@ -3,8 +3,8 @@
         <div id="settings">
             <div class="sidebar" data-simplebar>
                 <router-link class="item back" :to="{name:'home'}">
-                    <i class="fas fa-chevron-right"></i>
-                    <span class="name">{{LANG.manager.back}}</span>
+                    <i class="fas fa-chevron-right"></i>&nbsp;
+                    <span class="name"> {{LANG.manager.back}}</span>
                 </router-link>
                 <router-link v-for="menu in menus" exact-active-class="active" class="item" :to="{name:menu.name}">
                     <img v-if="menu.img!=null" :src="menu.img">
@@ -14,6 +14,9 @@
                         <div class="double-bounce1"></div>
                         <div class="double-bounce2"></div>
                     </div>
+                    <div v-if="pinooxAuth.isLogin && menu.name === 'setting-market'">
+                        <i class="fas fa-user-check"></i>
+                    </div>
                 </router-link>
             </div>
             <router-view></router-view>
@@ -22,6 +25,8 @@
 </template>
 
 <script>
+    import {mapGetters} from 'vuex';
+
     export default {
         data() {
             return {
@@ -61,6 +66,11 @@
             }
         },
         computed: {
+            pinooxAuth: {
+                get() {
+                    return this.$store.state.pinooxAuth;
+                }
+            },
             notifyInstaller: {
                 get() {
                     return this.$store.state.readyInstallCount;

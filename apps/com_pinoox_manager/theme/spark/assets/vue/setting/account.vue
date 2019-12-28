@@ -1,7 +1,9 @@
 <template>
     <div class="content" data-simplebar>
         <div class="header">
-            <h1>{{LANG.manager.account}}</h1>
+           <div class="text">
+               <h1>{{LANG.manager.account}}</h1>
+           </div>
         </div>
         <div class="page">
             <div class="config">

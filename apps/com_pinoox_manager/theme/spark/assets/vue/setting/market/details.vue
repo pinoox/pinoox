@@ -60,7 +60,11 @@
             }
         },
         computed: {
-            ...mapGetters(['pinooxAuth']),
+            pinooxAuth: {
+                get() {
+                    return this.$store.state.pinooxAuth;
+                }
+            },
             readyInstall: {
                 set(val) {
                     this.$store.state.readyInstallCount = val;

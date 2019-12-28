@@ -18,4 +18,7 @@ return [
     'active' => 'فعال',
     'pending' => 'در حال فعالسازی',
     'suspend' => 'تعلیق',
+    'logout_account' => 'خروج از حساب کاربری',
+    'login_account' => 'ورود به حساب کابری',
+    'account' => 'حساب کاربری',
 ];

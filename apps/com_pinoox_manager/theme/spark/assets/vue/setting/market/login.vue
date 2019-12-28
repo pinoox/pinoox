@@ -41,27 +41,29 @@
         computed: {
             user: {
                 set(val) {
-                    this.$store.state.pinoox_auth = val;
+                    this.$store.state.pinooxAuth = val;
                 },
                 get() {
-                    return this.$store.state.pinoox_auth;
+                    return this.$store.state.pinooxAuth;
                 }
             }
         },
         methods: {
             login() {
-                this.isLoading = true;
+              this.isLoading = true;
                 this.$http.post(this.URL.API + 'account/login', this.params).then((json) => {
                     this.isLoading = false;
                     if (json.data.status) {
                         this.user = json.data.result;
                         localStorage.setItem('pinoox_auth', JSON.stringify(this.user));
-                        this.$router.replace({path: 'account'});
+                        this.$router.go(-1);
                     } else {
                         this._notify(this.LANG.user.login_to_pinoox, json.data.result);
                     }
                 });
             }
+        },
+        created() {
         }
     }
 </script>

@@ -11,16 +11,16 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    var user = localStorage.getItem('pinoox_auth');
+    var user = JSON.parse(localStorage.getItem('pinoox_auth'));
     if (to.meta.requireAuth !== undefined) {
         if (to.meta.requireAuth) {
-            if (user == null) {
+            if (user == null || !user.isLogin) {
                 next({name: 'market-login'});
             } else {
                 next();
             }
         } else {
-            if (user == null) {
+            if (user == null || !user.isLogin) {
                 next();
             } else {
                 next({name: 'market-account'});

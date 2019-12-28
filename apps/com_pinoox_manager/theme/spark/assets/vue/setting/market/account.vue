@@ -7,30 +7,31 @@
         <br>
 
         <div class="user">
-            <img v-if="user!=null" class="user-image" :src="user.avatar_thumb" alt="user-profile-image">
-            <h4>{{user.fullname}}</h4>
-            <h5>{{user.email}}</h5>
+            <img v-if="pinooxAuth.avatar_thumb!=null" class="user-image" :src="pinooxAuth.avatar_thumb" alt="user-profile-image">
+            <h4>{{pinooxAuth.fullname}}</h4>
+            <h5>{{pinooxAuth.email}}</h5>
 
-            <a @click="logoutPinooxAuth()" class="logout" href="">{{LANG.user.logout}}</a>
+            <a @click="logoutPinooxAuth()" class="logout" href="">{{LANG.user.logout_account}}</a>
 
         </div>
 
     </div>
 </template>
 <script>
-    import {mapGetters,mapMutations} from 'vuex';
+    import {mapMutations} from 'vuex';
 
     export default {
         computed: {
-            ...mapGetters(['pinooxAuth']),
-            user: {
+            pinooxAuth: {
                 get() {
-                    return this.pinooxAuth;
+                    return this.$store.state.pinooxAuth;
                 }
-            }
+            },
         },
         methods:{
             ...mapMutations(['logoutPinooxAuth']),
+        },
+        created() {
         }
 
     }

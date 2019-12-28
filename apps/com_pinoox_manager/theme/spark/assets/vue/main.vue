@@ -85,7 +85,7 @@
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp','getPinooxAuth']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -149,7 +149,7 @@
             userAccess() {
                 if (this.isLogin && !this.isLock) {
                     //this.$router.replace({name: this.startRoute.name});
-                    // this.$router.replace({name: 'home'});
+                   // this.$router.replace({name: 'home'});
                 } else {
                     this.$router.replace({name: 'login'});
                 }
@@ -163,9 +163,10 @@
         },
         created() {
             this.setStartRouter();
-            //  this.$router.replace({name: 'loading'});
+           // this.$router.replace({name: 'loading'});
             this.getUser();
             this.getOptions();
+            this.getPinooxAuth();
 
         },
         mounted() {

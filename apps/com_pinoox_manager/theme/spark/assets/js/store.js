@@ -57,11 +57,6 @@ export default new Vuex.Store({
         hasNotification: state => {
             return state.notifications.length > 0;
         },
-        pinooxAuth: state => {
-            var auth = JSON.parse(localStorage.getItem('pinoox_auth'));
-            state.pinooxAuth = (auth === null) ? {isLogin: false} : auth;
-            return state.pinooxAuth;
-        },
     },
     mutations: {
         startTimer: (state) => {
@@ -143,14 +138,23 @@ export default new Vuex.Store({
             state.animDirection = direction === 'rtl' ? 'Right' : 'Left';
         },
         logoutPinooxAuth: (state) => {
-            localStorage.removeItem('pinoox_auth');
-            state.pinooxAuth = {isLogin: false};
+            $http.get(PINOOX.URL.API + 'account/logout').then((json) => {
+                localStorage.removeItem('pinoox_auth');
+                state.pinooxAuth = {isLogin: false};
+            });
+
         },
         getReadyToInstallApp: (state) => {
             $http.get(PINOOX.URL.API + 'app/readyInstallCount').then((json) => {
                 state.readyInstallCount = json.data;
             });
-        }
+        },
+        getPinooxAuth: (state) => {
+            $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
+                state.pinooxAuth = (json.data === null) ? {isLogin: false} : json.data;
+                localStorage.setItem('pinoox_auth', JSON.stringify(state.pinooxAuth));
+            });
+        },
     },
     actions: {
         run({commit}) {
