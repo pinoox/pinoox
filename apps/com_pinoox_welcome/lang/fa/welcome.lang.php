@@ -8,6 +8,7 @@ return [
     'documents' => 'مستندات',
     'forums' => 'پرسش و پاسخ',
     'blog' => 'وبلاگ',
+    'answers' => 'پرسش و پاسخ',
     'github' => 'گیت هاب',
     'designed' => 'طراحی شده با',
     'for_you' => 'برای شما',
