@@ -27,6 +27,7 @@ class LangModel extends PinooxDatabase
                 'dashboard' => rlang('setting>dashboard'),
                 'market' => rlang('setting>market'),
                 'router' => rlang('setting>router'),
+                'appManager' => rlang('setting>appManager'),
             ],
             'widget' => [
                 'clock' => rlang('widget>clock'),

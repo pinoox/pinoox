@@ -62,7 +62,7 @@ class UserModel extends PinooxDatabase
 
     public static function fetch_user_by_email_or_username($username, $notUser = null)
     {
-       self::checkApp();
+        self::checkApp();
         if (!empty($notUser))
             self::$db->where('user_id', $notUser, '!=');
 
@@ -97,9 +97,10 @@ class UserModel extends PinooxDatabase
         ));
     }
 
-    public static function fetch_all($limit = null, $isCount = false)
+    public static function fetch_all($limit = null, $isCount = false, $checkApp = true)
     {
-        self::checkApp();
+        if ($checkApp)
+            self::checkApp();
         $result = self::$db->get(self::user, $limit);
         if ($isCount) return count($result);
         return $result;
@@ -174,11 +175,11 @@ class UserModel extends PinooxDatabase
         return self::$db->update(self::user, $formData);
     }
 
-    public static function update_password($user_id,$newPassword, $oldPassword = null)
+    public static function update_password($user_id, $newPassword, $oldPassword = null)
     {
         self::checkApp();
 
-        if(!is_null($oldPassword))
+        if (!is_null($oldPassword))
             self::$db->where('password', Security::passHash($oldPassword));
         self::$db->where('user_id', $user_id);
         return self::$db->update(self::user, [
@@ -193,13 +194,13 @@ class UserModel extends PinooxDatabase
         return self::$db->getOne(self::user);
     }
 
-    public static function fetch_by_username($username,$no_user_id = null)
+    public static function fetch_by_username($username, $no_user_id = null)
     {
         self::checkApp();
-        if(!empty($no_user_id))
-            self::$db->where('user_id', $no_user_id , ' != ');
+        if (!empty($no_user_id))
+            self::$db->where('user_id', $no_user_id, ' != ');
         self::$db->where('username', $username);
-        return self::$db->getOne(self::user,'*,CONCAT(fname," ",lname) full_name');
+        return self::$db->getOne(self::user, '*,CONCAT(fname," ",lname) full_name');
     }
 
     public static function delete($user_id)
@@ -218,6 +219,11 @@ class UserModel extends PinooxDatabase
     public static function where_status($status)
     {
         self::$db->where('status', $status);
+    }
+
+    public static function where_app($package_name)
+    {
+        self::$db->where('app', $package_name);
     }
 
     public static function where_search($keyword)

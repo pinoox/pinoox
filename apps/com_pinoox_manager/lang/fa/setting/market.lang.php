@@ -12,4 +12,6 @@ return [
     'installation_failed' => 'خطا در نصب',
     'occurred_error' => 'با خطا مواجه شد',
     'not_found_result_try_again' => 'جست و جو بی نتیجه بود مجددا امتحان کنید',
+    'please_wait_until_download_complete' => 'لطفا تا پایان عملیات دانلود صبر کنید...',
+    'please_wait_until_install_complete' => 'لطفا تا پایان عملیات نصب صبر کنید...',
 ];

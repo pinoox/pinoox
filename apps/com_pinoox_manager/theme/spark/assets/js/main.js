@@ -13,10 +13,11 @@ import VueAxios from 'vue-axios';
 import store from './store';
 import Main from '../vue/main.vue';
 import router from './router';
+import ToggleButton from 'vue-js-toggle-button'
+Vue.use(ToggleButton);
 
 Vue.use(VueAxios, axios);
 __webpack_public_path__ = PINOOX.URL.THEME + 'dist/';
-
 
 new Vue({
     el: '#app',

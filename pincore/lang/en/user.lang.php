@@ -5,6 +5,8 @@ return [
     'password' => 'password',
     'email' => 'email',
     'enter_username' => 'enter your username',
+    'email_or_username' => 'email or username',
+    'enter_username_or_password' => 'enter username or password',
     'enter_password' => 'enter your password',
     'username_or_password_is_wrong' => 'invalid username or password',
     'password_is_wrong' => 'wrong password',

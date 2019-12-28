@@ -8,6 +8,7 @@ return [
     'documents' => 'documents',
     'blog' => 'blog',
     'forums' => 'forums',
+    'answers' => 'answers',
     'github' => 'github',
     'designed' => 'designed by',
     'for_you' => 'for you',

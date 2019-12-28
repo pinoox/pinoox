@@ -26,7 +26,7 @@
         <a target="_blank" href="https://www.pinoox.com/blog"><i
                     class="far fa-file"></i> <?php lang('welcome.blog'); ?></a>
         <a target="_blank" href="https://www.pinoox.com/answers"><i
-                    class="fa fa-question"></i> <?php lang('welcome.forums'); ?></a>
+                    class="fa fa-question"></i> <?php lang('welcome.answers'); ?></a>
         <a target="_blank" href="https://www.github.com/pinoox"><i
                     class="fab fa-github"></i> <?php lang('welcome.github'); ?></a>
     </div>

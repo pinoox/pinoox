@@ -12,8 +12,8 @@
                         <span class="app-name">{{selectedApp.name}}</span>
                         <router-link v-if="selectedApp.router" tag="span" :to="{name:'setting-router'}" class="btn"
                                      v-bind:title="LANG.manager.router"><i class="fas fa-code-branch"></i></router-link>
-                        <span @click="deleteApp()" class="btn" v-bind:title="LANG.manager.delete"><i
-                                class="fas fa-trash"></i></span>
+                        <router-link :to="{name:'appManager-config',params:{package_name:selectedApp.package_name}}" class="btn" v-bind:title="LANG.manager.app_manager"><i
+                                class="fas fa-cogs"></i></router-link>
                         <a target="_blank" class="btn" :href="URL.APP+ 'app/'+selectedApp.package_name" :title="LANG.manager.preview"><i
                                 class="fa fa-eye"></i></a>
                     </div>

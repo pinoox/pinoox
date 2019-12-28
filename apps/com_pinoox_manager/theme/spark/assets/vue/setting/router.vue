@@ -1,8 +1,10 @@
 <template>
-    <div id="content" ref="content">
+    <div class="content" ref="content">
         <div class="header">
-            <h1>{{LANG.manager.router}}</h1>
-            <h2>{{LANG.setting.router.router_help }}</h2>
+            <div class="text">
+                <h1>{{LANG.manager.router}}</h1>
+                <h2>{{LANG.setting.router.router_help }}</h2>
+            </div>
         </div>
         <div class="page" data-simplebar data-simplebar-auto-hide="false">
             <!-- choose app -->
