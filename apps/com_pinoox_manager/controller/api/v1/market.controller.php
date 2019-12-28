@@ -12,24 +12,16 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
+use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Cache;
 use pinoox\component\Config;
+use pinoox\component\Dir;
 use pinoox\component\Download;
 use pinoox\component\File;
 use pinoox\component\HelperHeader;
-use pinoox\component\Lang;
 use pinoox\component\Request;
 use pinoox\component\Response;
-use pinoox\component\Router;
-use pinoox\component\Service;
 use pinoox\component\Url;
-use pinoox\component\User;
-use pinoox\component\Validation;
-use pinoox\component\Zip;
-use pinoox\model\PinooxDatabase;
-use pinoox\model\UserModel;
 
 class MarketController extends MasterConfiguration
 {
@@ -43,9 +35,21 @@ class MarketController extends MasterConfiguration
 
     public function getOneApp($package_name)
     {
+
         $data = file_get_contents("https://www.pinoox.com/api/manager/v1/market/getApp/$package_name");
         HelperHeader::contentType('application/json', 'UTF-8');
-        echo $data;
+        $arr = json_decode($data, true);
+
+        //check app state
+        $arr['state'] = 'download';
+        $file = Dir::path('downloads>apps>' . $package_name . '.pin');
+        if (Wizard::is_installed($package_name))
+            $arr['state'] = 'installed';
+        else if (file_exists($file))
+            $arr['state'] = 'install';
+
+        Response::json($arr);
+
     }
 
     public function downloadRequest($package_name)
@@ -67,8 +71,11 @@ class MarketController extends MasterConfiguration
             if (!$response['status']) {
                 exit($res);
             } else {
-                $path = path("downloads>apps>" . $package_name . ">" . $package_name . ".pin");
-                Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result'], $path)->process();
+                $path = path("downloads>apps>" . $package_name . ".pin");
+                Config::set('market.'.$package_name, json_encode([$package_name => $response['result']]));
+                Config::save('market');
+                Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result']['hash'], $path)->process();
+                Response::json(rlang('manager.download_completed'), true);
             }
         }
     }
