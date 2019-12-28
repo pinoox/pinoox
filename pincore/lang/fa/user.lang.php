@@ -5,6 +5,8 @@ return [
     'password' => 'رمز عبور',
     'email' => 'ایمیل',
     'enter_username' => 'نام کاربری را وارد کنید',
+    'email_or_username' => 'ایمیل یا نام کاربری',
+    'enter_username_or_password' => 'نام کاربری یا ایمیل را وارد کنید',
     'enter_password' => 'رمز عبور را وارد کنید',
     'username_or_password_is_wrong' => 'نام کاربری یا رمز عبور اشتباه است',
     'already_logged_in' => 'شما قبلا وارد ناحیه کاربری شده اید',

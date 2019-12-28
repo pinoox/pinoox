@@ -11,14 +11,6 @@
                         class="fas fa-power-off"></i></span>
             </div>
             <div v-if="hasNotification">
-                <div class="installation" v-show="installList!==null && installList.length>0">
-                    <div class="caption">{{LANG.manager.installation_list}}</div>
-                    <div class="item" v-for="app in installList">
-                        <img :src="app.icon" alt="" class="icon">
-                        <span class="name">{{app.name}}</span>
-                        <div class="pin-loader"><i class="fa fa-spinner"></i></div>
-                    </div>
-                </div>
                 <div class="list">
                     <transition-group name="list" tag="div">
                         <div class="item" v-bind:key="item.ntf_id" @click="hideNotification(index,item)"
@@ -45,7 +37,7 @@
     export default {
         name: "notifications",
         computed: {
-            ...mapState(['notifications', 'installList', 'animDirection']),
+            ...mapState(['notifications', 'animDirection']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
         },
         methods: {

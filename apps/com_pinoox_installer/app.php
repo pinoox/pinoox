@@ -2,7 +2,7 @@
 //pinoox app file, generated at "2019-08-25 12:49"
 
 return array(
-    'enable' => true,
+    'enable' => false,
     'icon' => 'icon.png',
     'name' => 'installer',
     'theme' => 'magic',
