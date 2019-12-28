@@ -52,7 +52,7 @@
             },
         },
         methods: {
-            ...mapMutations(['getApps', 'addToInstallList']),
+            ...mapMutations(['getApps']),
             search() {
                 this.isLoading = true;
                 this._delay(() => {
@@ -109,7 +109,6 @@
                 }).then((json) => {
                     this.state = 'finish';
                     this.finishMessage = json.data.result;
-                    this.installList.splice(this.selectedApp, 1);
                     if (json.data.status) {
                         this.selectedApp.install_state = 'installed';
                         this.getApps();
@@ -124,7 +123,6 @@
             install() {
                 this.state = 'downloading';
                 this.selectedApp.install_state = 'installing';
-                this.addToInstallList(this.selectedApp);
                 this.downloadApp(this.selectedApp.package_name, this.selectedApp.download_link);
             },
             updateApp() {
