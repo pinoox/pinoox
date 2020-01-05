@@ -1,8 +1,8 @@
 <?php
 
 return [
-    'first' => 'first',
-    'last' => 'last',
-    'next' => 'next',
-    'prev' => 'prev',
+    'first' => 'First',
+    'last' => 'Last',
+    'next' => 'Next',
+    'prev' => 'Prev',
 ];
