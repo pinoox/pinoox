@@ -1,6 +1,6 @@
 <?php
 
 return [
-  'today' => 'today'
+  'today' => 'Today'
 ];
     
