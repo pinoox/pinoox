@@ -23,6 +23,7 @@ class ApiConfiguration implements ControllerInterface
 
     public function __construct()
     {
+        User::lifeTime(100,'day');
     }
 
     public function _main()
