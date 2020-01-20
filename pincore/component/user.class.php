@@ -186,7 +186,7 @@ class User
         if ($unitTime === 'min') $lifeTime = $lifeTime * 60;
         else if ($unitTime === 'hour') $lifeTime = $lifeTime * 60 * 60;
         else if ($unitTime === 'day') $lifeTime = $lifeTime * 60 * 60 * 24;
-        self::$lifeTime = $lifeTime;
+        self::$lifetime = $lifeTime;
     }
 
     public static function getTokenData($field = null)
