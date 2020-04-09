@@ -192,4 +192,33 @@ class Lang
         File::generate($file, $data_for_save);
     }
 
+
+    /**
+     * Set target data in lang
+     *
+     * @param string $pointer
+     * @param string $key
+     * @param mixed $value
+     */
+    public static function setLinear($pointer, $key, $value)
+    {
+        $data = self::get($pointer);
+        $data = is_array($data)? $data : [];
+        $data[$key] = $value;
+        self::set($pointer,$data);
+    }
+
+    /**
+     * Get target data from lang
+     *
+     * @param string $pointer
+     * @param string $key
+     * @return mixed|null
+     */
+    public static function getLinear($pointer, $key)
+    {
+        $data = self::get($pointer);
+        return isset($data[$key])? $data[$key] : null;
+    }
+
 }
