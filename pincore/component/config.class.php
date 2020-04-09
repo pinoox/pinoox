@@ -58,18 +58,31 @@ class Config
     }
 
     /**
-     * Set Target data in config
+     * Set target data in config
      *
      * @param string $pointer
      * @param string $key
      * @param mixed $value
-     * @param array|string $ignore
      */
-    public static function setLinear($pointer, $key, $value, $ignore = ['.'])
+    public static function setLinear($pointer, $key, $value)
     {
-        $key = !empty($ignore)? str_replace($ignore,'',$key) : $key;
-        $key = $pointer .'.'. $key;
-        self::push($key, $value, 'set');
+        $data = self::get($pointer);
+        $data = is_array($data)? $data : [];
+        $data[$key] = $value;
+        self::set($pointer,$data);
+    }
+
+    /**
+     * Get target data from config
+     *
+     * @param string $pointer
+     * @param string $key
+     * @return mixed|null
+     */
+    public static function getLinear($pointer, $key)
+    {
+        $data = self::get($pointer);
+        return isset($data[$key])? $data[$key] : null;
     }
 
     /**
@@ -235,21 +248,6 @@ class Config
         }
 
         return self::result($app, $filename, $info);
-    }
-
-    /**
-     * Get data from config
-     *
-     * @param string $pointer
-     * @param string $key
-     * @param array|string $ignore
-     * @return mixed|null
-     */
-    public static function getLinear($pointer, $key, $ignore = ['.'])
-    {
-        $key = !empty($ignore)? str_replace($ignore,'',$key) : $key;
-        $key = $pointer .'.'. $key;
-        return self::get($key);
     }
 
     /**
