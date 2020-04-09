@@ -148,7 +148,7 @@ class User
         return false;
     }
 
-    private static function setToken($data)
+    public static function setToken($data)
     {
         if (isset($data['password']))
             unset($data['password']);
