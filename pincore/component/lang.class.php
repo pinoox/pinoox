@@ -121,6 +121,7 @@ class Lang
 
         if (is_array($replaces)) {
             foreach ($replaces as $key => $replace) {
+                $replace = is_array($replace) ? HelperString::encodeJson($replace) : $replace;
                 $text = str_replace("{" . $key . "}", $replace, $text);
             }
             return $text;
