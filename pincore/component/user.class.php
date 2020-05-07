@@ -182,7 +182,7 @@ class User
 
     public static function lifeTime($lifeTime, $unitTime = null)
     {
-        Token::lifeTime($lifeTime);
+        Token::lifeTime($lifeTime, $unitTime);
     }
 
     public static function getTokenData($field = null)
