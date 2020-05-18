@@ -4,7 +4,7 @@ return [
     'direction' => 'ltr',
     'pinoox' => 'pinoox',
     'welcome_to_pinoox' => 'Welcome to Pinoox',
-    'website' => 'Website',
+    'website' => 'pinoox.com',
     'documents' => 'Documents',
     'blog' => 'Blog',
     'forums' => 'Forums',

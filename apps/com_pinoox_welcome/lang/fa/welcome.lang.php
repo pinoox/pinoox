@@ -4,7 +4,7 @@ return [
     'direction' => 'rtl',
     'pinoox' => 'پینوکس',
     'welcome_to_pinoox' => 'به پینوکس خوش آمدید',
-    'website' => 'وبسایت',
+    'website' => 'پینوکس',
     'documents' => 'مستندات',
     'forums' => 'پرسش و پاسخ',
     'blog' => 'وبلاگ',
