@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2020-05-19 00:16"
+//pinoox app file, generated at "2020-05-19 00:41"
 
 return array (
   'enable' => true,
@@ -8,7 +8,7 @@ return array (
   'theme' => 'magic',
   'version-name' => '1.4',
   'version-code' => 4,
-  'lang' => 'fa',
+  'lang' => 'en',
   'user' => 'com_pinoox_manager',
 );
 
