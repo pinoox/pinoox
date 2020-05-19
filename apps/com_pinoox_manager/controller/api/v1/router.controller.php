@@ -77,7 +77,7 @@ class RouterController extends LoginConfiguration
             Response::json(rlang('manager.request_not_valid'), false);
 
 
-        if ($package['router'] !== 'multiple' && in_array($data['packageName'], $routes))
+        if ($package['router'] !== 'multiple' && is_array($routes) && in_array($data['packageName'], $routes))
             Response::json(rlang('manager.request_not_valid'), false);
 
         if (!Validation::checkOne($data['alias'], 'required') || !isset($routes[$data['alias']]))
