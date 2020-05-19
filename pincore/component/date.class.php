@@ -155,7 +155,7 @@ class Date
             $oldDate = $date;
             $date = preg_split('/[\-|\/]+/', $match);
 
-            if (count($date) != 3) self::g('Y-m-d', Date::j('Y-m-d', $oldDate), true);
+            if (!$date || !is_array($date) || count($date) != 3) return self::g('Y-m-d', Date::j('Y-m-d', $oldDate), true);
             list($y, $m, $d) = array($date[0], $date[1], $date[2]);
             $jdate = self::j2g($y, $m, $d);
             $jdate = implode('-', $jdate);

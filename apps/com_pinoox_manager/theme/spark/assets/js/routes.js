@@ -1,3 +1,5 @@
+/** global: PINOOX */
+
 import Home from '../vue/home.vue';
 import Login from '../vue/login.vue';
 import Loading from '../vue/loading.vue';

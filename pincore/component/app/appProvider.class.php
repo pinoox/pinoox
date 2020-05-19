@@ -71,7 +71,7 @@ class AppProvider extends AppSource
     public function __construct($path = null, $isApp = false)
     {
         $this->isApp = $isApp;
-        self::build(self::$app, $path);
+        $this->build(self::$app, $path);
     }
 
     /**

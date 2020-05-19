@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="<?php echo $_url ?>assets/css/style.css">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/fonts/FontAwesome/css/all.css">
 </head>
-<body class="<?php echo lang('welcome.direction'); ?>">
+<body class="<?php lang('welcome.direction'); ?>">
 
 <div class="container">
 
