@@ -6,7 +6,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php lang('welcome.welcome_to_pinoox'); ?></title>
-    <link rel="shortcut icon" href="<?php echo $_url ?>assets/images/pinoox.ico" type="image/icon">
+    <link rel="icon" href="<?php echo $_url; ?>assets/images/logo-64.png">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/css/style.css">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/fonts/FontAwesome/css/all.css">
 </head>

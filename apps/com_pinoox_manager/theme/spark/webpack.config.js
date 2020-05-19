@@ -96,6 +96,11 @@ module.exports = {
                 from: './assets/js/pinoox.js',
                 flatten: true,
             },
+            {
+                from: './assets/images/logo/logo-64.png',
+                to: 'images',
+                flatten: true,
+            },
         ]),
         new MiniCssExtractPlugin({
             filename: `[name].css${isRelease ? '?[chunkhash]' : ''}`,
