@@ -28,7 +28,7 @@ class UserController extends MasterConfiguration
     public function get()
     {
         if (User::isLoggedIn()) {
-            $user = self::getUser();
+            $user = $this->getUser();
             Response::json($user, true);
         }
 
@@ -75,7 +75,7 @@ class UserController extends MasterConfiguration
 
 
         if (User::login($input['username'], $input['password'])) {
-            $user = self::getUser();
+            $user = $this->getUser();
             Response::json($user, true);
         }
         Response::json(User::getMessage(), false);
@@ -87,7 +87,7 @@ class UserController extends MasterConfiguration
         $password = Request::inputOne('password', null, '!empty');
         if (UserModel::fetch_by_password($user_id, $password)) {
             User::append('isLock', false);
-            $user = self::getUser();
+            $user = $this->getUser();
             Response::json($user, true);
         }
 
@@ -105,7 +105,7 @@ class UserController extends MasterConfiguration
         if (User::isLoggedIn())
             User::append('isLock', true);
 
-        $user = self::getUser();
+        $user = $this->getUser();
         Response::json($user, true);
     }
 
@@ -116,7 +116,7 @@ class UserController extends MasterConfiguration
         $user = User::get();
         Uploader::init()->thumb('128f', PINOOX_PATH_THUMB)->actRemoveRow($user['avatar_id']);
         if (UserModel::update_avatar($user['user_id'], null)) {
-            $user = self::getUser();
+            $user = $this->getUser();
             Response::json($user, true);
         }
 
