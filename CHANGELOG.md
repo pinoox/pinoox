@@ -2,6 +2,26 @@
 ## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
 
 
+## [v1.4.6 (2020-05-19)](https://github.com/pinoox/pinoox/compare/1.4.6...master)   
+
+## Added
+
+- Add Karla font for English
+- Add multiple parametric routes to routing
+
+## Changed
+
+- Optimize Pinoox installation file (reduce size)
+- Ability to support emojis in database with UTF8MB4
+
+## Fixed
+
+- Fixed the user's session lifetime
+- Fixed database problems in some systems with limited resources
+- Fixed the installer problem in some devices to check the required resources
+- Fixed the problem of displaying images on iOS
+- Fixed some minor problems...
+
 ## [v1.4.0 (2019-12-28)](https://github.com/pinoox/pinoox/compare/1.4.0...master)   
 
 ## Added
