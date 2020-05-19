@@ -88,21 +88,21 @@ h1 {
     padding: 15px;
     border-radius: 5px;
     transition: 0.25s;
-    min-width: 80px;
     text-shadow: 0 2px 10px rgba(62, 155, 192, 0.3);
 }
 
-.nav a i {
+.nav a img {
     color: #3e9bc0;
     display: block;
-    font-size: 2rem;
-    text-shadow: 0 2px 10px rgba(62, 155, 192, 0.3);
     transition: 0.25s;
+    width: 50px;
+    margin-bottom: 5px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-.nav a:hover, .nav a:hover i {
+.nav a:hover, .nav a:hover img {
     transition: 0.25s;
-    color: #4A64BF;
     transform: scale(1.2);
 }
 
@@ -123,6 +123,10 @@ a.pointer {
     color: #f62a58;
     text-shadow: 0 2px 10px rgba(246, 42, 88, 0.3);
     animation: heartbeat 2s infinite;
+}
+
+.footer .heart img {
+    width: 25px;
 }
 
 @keyframes heartbeat {

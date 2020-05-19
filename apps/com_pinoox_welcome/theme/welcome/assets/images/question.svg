@@ -1,0 +1,9 @@
+<svg id="interface" xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <g id="Group_2" data-name="Group 2">
+    <g id="Group_1" data-name="Group 1">
+      <circle id="Ellipse_1" data-name="Ellipse 1" cx="25" cy="25" r="25" transform="translate(231 353.5)" fill="#489BC3"/>
+      <path id="Path_1" data-name="Path 1" d="M256,0C114.516,0,0,114.5,0,256,0,397.484,114.5,512,256,512c141.484,0,256-114.5,256-256C512,114.516,397.5,0,256,0Zm0,472A216,216,0,1,1,472,256,215.883,215.883,0,0,1,256,472Z" fill="#489BC3"/>
+      <path id="Path_2" data-name="Path 2" d="M256,128.5a80.091,80.091,0,0,0-80,80,20,20,0,0,0,40,0,40,40,0,1,1,40,40,20,20,0,0,0-20,20v50a20,20,0,0,0,40,0V285.969A80.005,80.005,0,0,0,256,128.5Z" fill="#489BC3"/>
+    </g>
+  </g>
+</svg>
