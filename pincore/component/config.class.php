@@ -96,6 +96,20 @@ class Config
     }
 
     /**
+     * Remove target data in config
+     *
+     * @param string $pointer
+     * @param string $key
+     */
+    public static function removeLinear($pointer, $key)
+    {
+        $data = self::get($pointer);
+        $data = is_array($data)? $data : [];
+        unset($data[$key]);
+        self::set($pointer,$data);
+    }
+
+    /**
      * Reset data in config with config file
      *
      * @param string $key

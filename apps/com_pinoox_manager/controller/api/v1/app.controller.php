@@ -66,7 +66,7 @@ class AppController extends MasterConfiguration
         $config = Request::inputOne('config');
 
         if ($key == 'hidden')
-            $config = $config == false ? true : false;
+            $config = !$config? true : false;
         if ($key == 'router')
             $config = $config === 'multiple' ? 'single' : 'multiple';
         $currentApp = AppProvider::app();

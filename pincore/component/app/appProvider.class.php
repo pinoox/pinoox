@@ -154,7 +154,7 @@ class AppProvider extends AppSource
      * Set data in app config
      *
      * @param string $key
-     * @param string|Closure $value
+     * @param string|Closure|boolean|array $value
      */
     public static function set($key, $value)
     {

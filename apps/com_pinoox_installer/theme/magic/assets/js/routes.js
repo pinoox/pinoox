@@ -1,3 +1,5 @@
+/** global: PINOOX */
+
 import Lang from '../vue/lang.vue';
 import Setup from '../vue/setup.vue';
 import Rules from '../vue/rules.vue';

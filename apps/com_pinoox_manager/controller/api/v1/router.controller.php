@@ -40,7 +40,7 @@ class RouterController extends LoginConfiguration
     {
         $alias = Request::inputOne('alias');
         $routes = Config::get('~app');
-        if (empty($alias) || HelperString::has($alias, ['.', '?', '\\', '>', '<', '!', '=', '~', '*', '#']))
+        if (empty($alias) || HelperString::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
             Response::json(rlang('setting>router.write_correct_url'), false);
 
         if (isset($routes[$alias]))
@@ -58,7 +58,7 @@ class RouterController extends LoginConfiguration
         if ($alias == '*')
             Response::json('', false);
 
-        Config::remove('~app.' . $alias);
+        Config::removeLinear('~app',$alias);
         Config::save('~app');
 
         Response::json('', true);

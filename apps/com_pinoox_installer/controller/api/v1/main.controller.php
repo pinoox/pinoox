@@ -57,7 +57,7 @@ class MainController extends MasterConfiguration
         $status = false;
         switch ($type) {
             case 'php' :
-                $status = version_compare(System::phpVersion(), '5.6', '>=');
+                $status = (version_compare(System::phpVersion(), '5.6', '>='))? true : false;
                 break;
             case 'mysql' :
                 /**
@@ -79,6 +79,7 @@ class MainController extends MasterConfiguration
                 $status = true;//System::hasModuleApache('mod_rewrite');
                 break;
         }
+
 
         Response::json($type, $status);
     }
