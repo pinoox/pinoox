@@ -40,7 +40,7 @@ class RouterController extends LoginConfiguration
     {
         $alias = Request::inputOne('alias');
         $routes = Config::get('~app');
-        if (empty($alias) || HelperString::has($alias, ['.', '?', '\\', '>', '<', '!', '=', '~', '*', '#']))
+        if (empty($alias) || HelperString::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
             Response::json(rlang('setting>router.write_correct_url'), false);
 
         if (isset($routes[$alias]))
@@ -58,7 +58,7 @@ class RouterController extends LoginConfiguration
         if ($alias == '*')
             Response::json('', false);
 
-        Config::remove('~app.' . $alias);
+        Config::removeLinear('~app',$alias);
         Config::save('~app');
 
         Response::json('', true);
@@ -77,7 +77,7 @@ class RouterController extends LoginConfiguration
             Response::json(rlang('manager.request_not_valid'), false);
 
 
-        if ($package['router'] !== 'multiple' && in_array($data['packageName'], $routes))
+        if ($package['router'] !== 'multiple' && is_array($routes) && in_array($data['packageName'], $routes))
             Response::json(rlang('manager.request_not_valid'), false);
 
         if (!Validation::checkOne($data['alias'], 'required') || !isset($routes[$data['alias']]))

@@ -133,6 +133,19 @@ class Cache
             return self::pull($value);
         }
     }
+    
+    /**
+     * Get target data from cache
+     *
+     * @param string $pointer
+     * @param string $key
+     * @return mixed|null
+     */
+    public static function getLinear($pointer, $key)
+    {
+        $data = self::get($pointer);
+        return isset($data[$key])? $data[$key] : null;
+    }
 
     /**
      * Read info on the cache data

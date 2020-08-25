@@ -21,7 +21,7 @@ class MainController extends MasterConfiguration
 {
     public function _exception()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function app($package_name)
@@ -35,7 +35,7 @@ class MainController extends MasterConfiguration
                 exit;
             }
         }
-        self::_main();
+        $this->_main();
     }
 
     public function _main()
@@ -50,7 +50,7 @@ class MainController extends MasterConfiguration
             HelperHeader::contentType('application/javascript', 'UTF-8');
             self::$template->view('dist/pinoox.js');
         } else {
-            self::_main();
+            $this->_main();
         }
     }
 }

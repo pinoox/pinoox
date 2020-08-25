@@ -56,7 +56,7 @@ class Dir
         if (empty($theme))
             $theme = (empty(self::$theme)) ? AppProvider::get('theme') : self::$theme;
         if (empty($path))
-            $path = (empty(self::$pathTheme)) ? Dir::path(AppProvider::get('path-theme')) : self::$pathTheme;
+            $path = (empty(self::$pathTheme)) ? self::path(AppProvider::get('path-theme')) : self::$pathTheme;
         return self::path($path . '/' . $theme . '/' . $url);
     }
 

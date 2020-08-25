@@ -6,11 +6,11 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title><?php lang('welcome.welcome_to_pinoox'); ?></title>
-
+    <link rel="icon" href="<?php echo $_url; ?>assets/images/logo-64.png">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/css/style.css">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/fonts/FontAwesome/css/all.css">
 </head>
-<body class="<?php echo lang('welcome.direction'); ?>">
+<body class="<?php lang('welcome.direction'); ?>">
 
 <div class="container">
 
@@ -20,15 +20,15 @@
     </div>
 
     <div class="nav">
-        <a target="_blank" href="https://www.pinoox.com"><i
-                    class="fas fa-desktop"></i> <?php lang('welcome.website'); ?>
+        <a target="_blank" href="https://www.pinoox.com">
+            <img alt="web" src="<?php echo $_url; ?>assets/images/web.svg"/> <?php lang('welcome.website'); ?>
         </a>
-        <a target="_blank" href="https://www.pinoox.com/blog"><i
-                    class="far fa-file"></i> <?php lang('welcome.blog'); ?></a>
-        <a target="_blank" href="https://www.pinoox.com/answers"><i
-                    class="fa fa-question"></i> <?php lang('welcome.answers'); ?></a>
-        <a target="_blank" href="https://www.github.com/pinoox"><i
-                    class="fab fa-github"></i> <?php lang('welcome.github'); ?></a>
+        <a target="_blank" href="https://www.pinoox.com/blog">
+            <img alt="blog" src="<?php echo $_url; ?>assets/images/blog.svg"/> <?php lang('welcome.blog'); ?></a>
+        <a target="_blank" href="https://www.pinoox.com/answers">
+            <img alt="question" src="<?php echo $_url; ?>assets/images/question.svg"/> <?php lang('welcome.answers'); ?></a>
+        <a target="_blank" href="https://www.github.com/pinoox">
+            <img alt="github" src="<?php echo $_url; ?>assets/images/github.svg"/> <?php lang('welcome.github'); ?></a>
     </div>
 
     <div class="nav">
@@ -37,7 +37,7 @@
     <div class="footer">
         <?php lang('welcome.designed'); ?>
         <div class="heart">
-            <i class="fa fa-heart"></i>
+            <img alt="heart" src="<?php echo $_url; ?>assets/images/heart.svg"/>
         </div>
         <?php lang('welcome.for_you'); ?>
     </div>

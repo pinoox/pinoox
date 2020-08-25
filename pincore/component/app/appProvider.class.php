@@ -71,7 +71,7 @@ class AppProvider extends AppSource
     public function __construct($path = null, $isApp = false)
     {
         $this->isApp = $isApp;
-        self::build(self::$app, $path);
+        $this->build(self::$app, $path);
     }
 
     /**
@@ -154,7 +154,7 @@ class AppProvider extends AppSource
      * Set data in app config
      *
      * @param string $key
-     * @param string|Closure $value
+     * @param string|Closure|boolean|array $value
      */
     public static function set($key, $value)
     {

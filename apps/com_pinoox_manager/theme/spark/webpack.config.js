@@ -68,9 +68,6 @@ module.exports = {
                     {
                         loader: 'image-webpack-loader',
                         options: {
-                            webp: {
-                                quality: 75,
-                            }
                         }
                     }
                 ]
@@ -97,6 +94,11 @@ module.exports = {
             },
             {
                 from: './assets/js/pinoox.js',
+                flatten: true,
+            },
+            {
+                from: './assets/images/logo/logo-64.png',
+                to: 'images',
                 flatten: true,
             },
         ]),

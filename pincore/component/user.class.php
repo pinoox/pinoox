@@ -148,12 +148,11 @@ class User
         return false;
     }
 
-    private static function setToken($data)
+    public static function setToken($data)
     {
         if (isset($data['password']))
             unset($data['password']);
         $user_id = $data['user_id'];
-        Token::lifeTime(self::$lifetime);
         $token_key = self::getTokenKey();
         $token_key = Token::generate($data, 'pinoox_user', $user_id, $token_key);
         self::setClientToken($token_key);
@@ -183,10 +182,7 @@ class User
 
     public static function lifeTime($lifeTime, $unitTime = null)
     {
-        if ($unitTime === 'min') $lifeTime = $lifeTime * 60;
-        else if ($unitTime === 'hour') $lifeTime = $lifeTime * 60 * 60;
-        else if ($unitTime === 'day') $lifeTime = $lifeTime * 60 * 60 * 24;
-        self::$lifeTime = $lifeTime;
+        Token::lifeTime($lifeTime, $unitTime);
     }
 
     public static function getTokenData($field = null)

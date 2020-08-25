@@ -51,18 +51,17 @@ class MasterConfiguration implements ControllerInterface
 
     public function _main()
     {
-        var_dump(Router::getParts());
+        $this->_404();
     }
 
     public function _exception()
     {
-        var_dump(Router::getParts());
+        $this->_404();
     }
 
     public function _404()
     {
         echo '404 not found';
-        exit;
     }
 
     private function setLang()

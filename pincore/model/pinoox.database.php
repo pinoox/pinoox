@@ -35,7 +35,10 @@ class PinooxDatabase extends Database
             self::$config['host'],
             self::$config['username'],
             self::$config['password'],
-            self::$config['database']
+            self::$config['database'],
+            null,
+            null,
+            'utf8mb4'
         );
     }
 

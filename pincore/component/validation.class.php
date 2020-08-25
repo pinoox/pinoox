@@ -13,7 +13,6 @@
 namespace pinoox\component;
 
 use Closure;
-use ReflectionException;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -238,7 +237,7 @@ class Validation
 
             self::$data = HelperArray::detachByPattern($key, self::$inputs);
 
-            $condParts = explode('|', $partsCond);
+            $condParts = is_array($partsCond) ? $partsCond : explode('|', $partsCond);
             self::$field_types[$key] = $condParts;
             self::$is_required = in_array('required', $condParts);
             foreach ($condParts as $cond) {
@@ -475,7 +474,7 @@ class Validation
      * Validate a value
      *
      * @param string $value
-     * @param array $rule
+     * @param string|array $rule
      * @param null $patternArray
      * @return bool
      * @throws \ReflectionException
@@ -491,7 +490,7 @@ class Validation
             self::$data['values'] = [$value];
         }
 
-        $condParts = explode('|', $rule);
+        $condParts = is_array($rule) ? $rule : explode('|', $rule);
         foreach ($condParts as $cond) {
             self::executeRuleMethod($cond);
         }
@@ -696,35 +695,35 @@ class Validation
     {
         switch ($operator) {
             case '==':
-                {
-                    if ($dataLen != $length) self::setError(Lang::get('~validation.err.length_equal'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen != $length) self::setError(Lang::get('~validation.err.length_equal'), [self::$field_title, $length]);
+                break;
+            }
             case '!=':
-                {
-                    if ($dataLen == $length) self::setError(Lang::get('~validation.err.not_equal'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen == $length) self::setError(Lang::get('~validation.err.not_equal'), [self::$field_title, $length]);
+                break;
+            }
             case '>=':
-                {
-                    if ($dataLen < $length) self::setError(Lang::get('~validation.err.length_gte'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen < $length) self::setError(Lang::get('~validation.err.length_gte'), [self::$field_title, $length]);
+                break;
+            }
             case '<=':
-                {
-                    if ($dataLen > $length) self::setError(Lang::get('~validation.err.length_lte'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen > $length) self::setError(Lang::get('~validation.err.length_lte'), [self::$field_title, $length]);
+                break;
+            }
             case '>':
-                {
-                    if ($dataLen <= $length) self::setError(Lang::get('~validation.err.length_grater'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen <= $length) self::setError(Lang::get('~validation.err.length_grater'), [self::$field_title, $length]);
+                break;
+            }
             case '<':
-                {
-                    if ($dataLen >= $length) self::setError(Lang::get('~validation.err.length_lesser'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen >= $length) self::setError(Lang::get('~validation.err.length_lesser'), [self::$field_title, $length]);
+                break;
+            }
         }
     }
 
@@ -802,35 +801,35 @@ class Validation
     {
         switch ($operator) {
             case '==':
-                {
-                    if ($value1 != $value2) self::setError(Lang::get('~validation.err.value_equal'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 != $value2) self::setError(Lang::get('~validation.err.value_equal'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '!=':
-                {
-                    if ($value1 == $value2) self::setError(Lang::get('~validation.err.value_not_equal'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 == $value2) self::setError(Lang::get('~validation.err.value_not_equal'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '>=':
-                {
-                    if ($value1 < $value2) self::setError(Lang::get('~validation.err.value_gte'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 < $value2) self::setError(Lang::get('~validation.err.value_gte'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '<=':
-                {
-                    if ($value1 > $value2) self::setError(Lang::get('~validation.err.value_lte'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 > $value2) self::setError(Lang::get('~validation.err.value_lte'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '>':
-                {
-                    if ($value1 <= $value2) self::setError(Lang::get('~validation.err.value_grater'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 <= $value2) self::setError(Lang::get('~validation.err.value_grater'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '<':
-                {
-                    if ($value1 >= $value2) self::setError(Lang::get('~validation.err.value_lesser'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 >= $value2) self::setError(Lang::get('~validation.err.value_lesser'), [self::$field_title, $fieldName2]);
+                break;
+            }
         }
     }
 

@@ -32,7 +32,7 @@
             <div class="links">
                 <div class="socials">
                     <a target="_blank" href="https://pinoox.com"><img class="" src="@img/pin-icon.png"></a>
-                    <a target="_blank" href="https://instagram.com/pinoox.ir"><i class="fab fa-instagram"></i></a>
+                    <a target="_blank" :href="'https://instagram.com/pinoox_'+(OPTIONS.lang === 'fa'? 'fa' : 'en')"><i class="fab fa-instagram"></i></a>
                     <a target="_blank" href="https://twitter.com/pinoox_com"><i class="fab fa-twitter"></i></a>
                     <a target="_blank" href="https://t.me/pinoox"><i class="fab fa-telegram-plane"></i></a>
                     <a target="_blank" href="https://github.com/pinoox"><i class="fab fa-github"></i></a>

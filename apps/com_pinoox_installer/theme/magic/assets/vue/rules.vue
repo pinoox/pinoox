@@ -51,7 +51,7 @@ we are always striving to make Pinoox safer and more stable by providing continu
                         <div class="pretty p-icon p-round p-jelly">
                             <input type="checkbox" v-model="isAgree" name="agree"/>
                             <div class="state p-success">
-                                <i class="icon mdi mdi-check"></i>
+                                <i class="icon fa fa-check"></i>
                                 <label></label>
                             </div>
                         </div>
