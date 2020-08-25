@@ -14,10 +14,21 @@ namespace pinoox\component;
 
 class File
 {
-    private static $whereDirectory;
+    /**
+     * Data filter for fetch directories & files
+     *
+     * @var array
+     */
+    private static $whereDirectory = [];
 
-    // rename (folder or file) : changeName(file,newName)
-    public static function changeName($file, $newName)
+    /**
+     * Rename folder or file
+     *
+     * @param string $file
+     * @param string $newName
+     * @return bool
+     */
+    public static function rename($file, $newName)
     {
         if (!file_exists($file)) return false;
         $path = dirname($file) . DIRECTORY_SEPARATOR;
@@ -27,19 +38,14 @@ class File
         return $r ? true : false;
     }
 
-    // rename (folder or file)
-    public static function renameDir($file, $rename)
-    {
-        if (!file_exists($file)) return false;
-        $folder = dirname($file);
-        $newFile = $folder . DIRECTORY_SEPARATOR . $rename;
-        $r = @rename($file, $newFile);
-
-        return $r ? true : false;
-    }
-
-    // move (folder or file)
-    public static function moveDir($file, $newFile)
+    /**
+     * Move folder or file
+     *
+     * @param string $file
+     * @param string $newFile
+     * @return bool
+     */
+    public static function move($file, $newFile)
     {
         if (!file_exists($file)) return false;
         $folder = dirname($newFile);
@@ -50,8 +56,15 @@ class File
         return $m ? true : false;
     }
 
-    // copy (folder or file)
-
+    /**
+     * Make folder
+     *
+     * @param string $folder
+     * @param bool $multi
+     * @param int $chmod
+     * @param bool $safe
+     * @return bool
+     */
     public static function make_folder($folder, $multi = false, $chmod = 0777, $safe = true)
     {
 
@@ -62,7 +75,7 @@ class File
         if (is_dir($folder)) {
             if ($safe) {
                 if (!is_file($pathIndex)) {
-                    File::generate_file($pathIndex, $data);
+                    File::generate($pathIndex, $data);
                 }
                 if (!is_file($pathHtaccess)) {
                     File::generate_htaccess($folder);
@@ -75,18 +88,36 @@ class File
         $f = @mkdir($folder, $chmod, $multi);
 
         if ($safe) {
-            File::generate_file($pathIndex, $data);
+            File::generate($pathIndex, $data);
             File::generate_htaccess($folder);
         }
 
         return $f ? true : false;
     }
 
-    // make folder : make_folder("folder",false,0777);
-    // delete all sub files and sub folders in one directory
+    /**
+     * Generate file
+     *
+     * @param string $path
+     * @param string $data
+     * @return bool
+     */
+    public static function generate($path, $data)
+    {
+        $folder = dirname($path);
+        if (!is_dir($folder))
+            self::make_folder($folder, true, 0777, false);
+        #generate the file
+        $file = @fopen($path, "w");
+        return (@fwrite($file, $data)) ? true : false;
+    }
 
     /**
-     * create htaccess
+     * Create htaccess file
+     *
+     * @param string $folder
+     * @param string $data
+     * @return bool
      */
     public static function generate_htaccess($folder, $data = null)
     {
@@ -97,12 +128,17 @@ class File
 
 
         #generate the htaccess
-        return (self::generate_file($folder . "/.htaccess", $data)) ? true : false;
+        return (self::generate($folder . "/.htaccess", $data)) ? true : false;
     }
 
-    // delete file or folder and all sub files and sub folders
-
-    public static function copyDir($file, $newFile)
+    /**
+     * Copy file or folder
+     *
+     * @param string $file
+     * @param string $newFile
+     * @return bool
+     */
+    public static function copy($file, $newFile)
     {
         if (!file_exists($file)) return false;
         $folder = dirname($newFile);
@@ -113,29 +149,37 @@ class File
         return $c ? true : false;
     }
 
-    // delete file
-
-    public static function remove_all_into_dir($directory, $pattern = "*")
+    /**
+     * Delete all files in a folder
+     *
+     * @param string $directory
+     * @param string $pattern
+     */
+    public static function delete_all_files_in_folder($directory, $pattern = "*")
     {
         if (!file_exists($directory)) return;
 
         foreach (glob("{$directory}/" . $pattern) as $file) {
             if (is_dir($file)) {
-                self::removedir($file);
+                self::remove($file);
             } else {
                 unlink($file);
             }
         }
     }
 
-    // get file size
-
-    public static function removedir($directory, $pattern = "*")
+    /**
+     * Remove file or folder
+     *
+     * @param string $directory
+     * @param string $pattern
+     */
+    public static function remove($directory, $pattern = "*")
     {
         if (is_array($directory)) {
             foreach ($directory as $file) {
                 if (file_exists($file))
-                    self::removedir($file);
+                    self::remove($file);
             }
             return;
         }
@@ -152,7 +196,7 @@ class File
         foreach ($paths as $file) {
             $file = $directory . DIRECTORY_SEPARATOR . $file;
             if (is_dir($file)) {
-                self::removedir($file);
+                self::remove($file);
             } else {
                 if (file_exists($file))
                     self::remove_file($file);
@@ -169,8 +213,11 @@ class File
 
     }
 
-    // get file time
-
+    /**
+     * Remove files
+     *
+     * @param string|array $file
+     */
     public static function remove_file($file)
     {
         if (is_array($file)) {
@@ -184,9 +231,15 @@ class File
         }
     }
 
-    // check file is Image : true or false
-
-    public static function file_size($file, $unitSize = 'b', $format = null)
+    /**
+     * Get file size
+     *
+     * @param string $file
+     * @param string $unitSize
+     * @param int|null $format
+     * @return float|int|string
+     */
+    public static function size($file, $unitSize = 'b', $format = null)
     {
         if (is_file($file)) {
             $size = self::convert_size(filesize($file), 'B', $unitSize);
@@ -197,9 +250,17 @@ class File
         return 0;
     }
 
-    // get type file
-
-    public static function convert_size($input, $type_input, $type_Convert,$round = 0, $print = false)
+    /**
+     * Convert size unit
+     *
+     * @param string $input
+     * @param string $type_input
+     * @param string $type_Convert
+     * @param int $round
+     * @param bool $print
+     * @return float|int|string
+     */
+    public static function convert_size($input, $type_input, $type_Convert, $round = 0, $print = false)
     {
         if ($input == 0) return ($print) ? $input . " " . $type_Convert : $input;
         $type_Convert = strtoupper($type_Convert);
@@ -212,14 +273,18 @@ class File
             $typeSize = $size_input / $size_convert;
             $output = $input * $typeSize;
             if ($print) $output .= " " . $type_Convert;
-            return round($output,$round);
+            return round($output, $round);
         }
         if ($print) return "0 " . $type_Convert;
         return 0;
     }
 
-    // get mime type file
-
+    /**
+     * Get file time
+     *
+     * @param string $file
+     * @return false|int|null
+     */
     public static function file_time($file)
     {
         if (is_file($file)) {
@@ -228,25 +293,25 @@ class File
         return null;
     }
 
-    // get name file without ext
-
-    public static function isImg($ext, $img_types = ["png", "jpg", "gif"])
-    {
-        if (empty($ext)) return false;
-
-        if (in_array($ext, $img_types)) return true;
-        return false;
-    }
-
-    // get name folder & file
-
-    public static function name_file($file)
+    /**
+     * Get filename without extension
+     *
+     * @param string $file
+     * @return mixed
+     */
+    public static function name($file)
     {
         return pathinfo($file, PATHINFO_FILENAME);
     }
 
-    // get filename and ext
-
+    /**
+     * Get part of filename
+     *
+     * @param string $path
+     * @param int $slice
+     * @param string $delimiter
+     * @return string
+     */
     public static function getNameBySlice($path, $slice = 0, $delimiter = DIRECTORY_SEPARATOR)
     {
 
@@ -257,22 +322,37 @@ class File
         return basename($path);
     }
 
-    // get dir file
-
-    public static function name_and_ext_file($file)
+    /**
+     * Get filename with extension
+     *
+     * @param string $file
+     * @return mixed
+     */
+    public static function fullname($file)
     {
         return pathinfo($file, PATHINFO_BASENAME);
     }
 
-    // type file in exts
-
-    public static function dir_file($file)
+    /**
+     * Get directory file
+     *
+     * @param $file
+     * @return mixed
+     */
+    public static function dir($file)
     {
         return pathinfo($file, PATHINFO_DIRNAME);
     }
 
-    // get file size form link
-
+    /**
+     * Get size of file URL
+     *
+     * @param string $url
+     * @param string $method
+     * @param string $data
+     * @param int $redirect
+     * @return array|int|string
+     */
     public static function get_remote_file_size($url, $method = "GET", $data = "", $redirect = 10)
     {
         $url = parse_url($url);
@@ -311,8 +391,15 @@ class File
         return !isset($headers["Content-Length"]) ? 0 : (string)$headers["Content-Length"];
     }
 
-    // get automatic size (TB,GB,MB,KB,B)
-    public static function convert_print_size($bytes, $round = 2, $lang = [])
+    /**
+     *  Print convert size auto unit
+     *
+     * @param $bytes
+     * @param int $round
+     * @param array $lang
+     * @return mixed|string
+     */
+    public static function convert_auto_unit($bytes, $round = 2, $lang = [])
     {
         $size = 0;
         $unit = 'B';
@@ -358,9 +445,13 @@ class File
         return $result;
     }
 
-    // get convert size : convert_size(1,"MB","KB") return 1024
-
-    public static function get_name_folders($dir)
+    /**
+     * Get folder names
+     *
+     * @param string $dir
+     * @return array
+     */
+    public static function get_folder_names($dir)
     {
         $get_folders = scandir($dir);
         $get_folders = array_filter($get_folders);
@@ -375,9 +466,18 @@ class File
         return $result;
     }
 
+    // get all folder and sub folders
+
+    /**
+     * Get folders path
+     *
+     * @param string $directory
+     * @param string $directory_seperator
+     * @return array
+     */
     public static function get_dir_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR)
     {
-        if (!file_exists($directory)) return;
+        if (!file_exists($directory)) return [];
 
         $dirs = array_map(function ($item) use ($directory_seperator) {
             return $item . $directory_seperator;
@@ -386,11 +486,17 @@ class File
         return $dirs;
     }
 
-    // get all folder and sub folders
-
+    /**
+     * Get folders path by pattern
+     *
+     * @param string $dir
+     * @param string $pattern
+     * @param int $flag
+     * @return array
+     */
     public static function get_files_by_pattern($dir, $pattern = '*', $flag = 0)
     {
-        if (!file_exists($dir)) return;
+        if (!file_exists($dir)) return [];
 
         $files = array();
         foreach (glob("{$dir}" . $pattern, $flag) as $file) {
@@ -401,12 +507,17 @@ class File
         return $files;
     }
 
-    // get all folder and sub folders
-
+    /**
+     * Get all files & folders with filter
+     *
+     * @param string $dir
+     * @param string $directory_seperator
+     * @return array
+     */
     public static function get_pro_directory($dir, $directory_seperator = DIRECTORY_SEPARATOR)
     {
         $filter = self::$whereDirectory;
-        self::$whereDirectory = null;
+        self::$whereDirectory = [];
         $array_directory = array();
         $no_folders = array();
         $no_files = array();
@@ -436,12 +547,17 @@ class File
         return $array_directory;
     }
 
-    // get all folder and sub folders
-    // use filter no check folder : get_pro_folder("folder","/",array("no_folder"))
-
+    /**
+     * Get all folders with filter
+     *
+     * @param string $directory
+     * @param string $directory_seperator
+     * @param array $no_dirs
+     * @return array
+     */
     private static function get_pro_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR, $no_dirs = array())
     {
-        if (!file_exists($directory)) return;
+        if (!file_exists($directory)) return [];
 
         $dirs = self::get_all_folders($directory, $directory_seperator);
 
@@ -455,14 +571,16 @@ class File
         return $dirs;
     }
 
-    // get all files in only folder
-    // use filter no check file : array("file1","file2")
-    // use filter no check type : array("php","jpg")
-    // use filter only check type : array("php","jpg"),"in"
-
+    /**
+     * Get all folders
+     *
+     * @param string $directory
+     * @param string $directory_seperator
+     * @return array
+     */
     private static function get_all_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR)
     {
-        if (!file_exists($directory)) return;
+        if (!file_exists($directory)) return [];
 
         $dirs = array_map(function ($item) use ($directory_seperator) {
             return $item . $directory_seperator;
@@ -474,9 +592,15 @@ class File
         return $dirs;
     }
 
-    // get all files in folder
-    // by pattern
-
+    /**
+     * Get all files with filter
+     *
+     * @param array $dirs
+     * @param array $no_file
+     * @param array $exts
+     * @param string $ext_action
+     * @return array
+     */
     private static function get_pro_files($dirs, $no_file = array(), $exts = array(), $ext_action = "out")
     {
         $arr_file = array();
@@ -487,13 +611,18 @@ class File
         return $arr_file;
     }
 
-    // get all files in folder and sub folders
-    // use filter no check file : array("file1","file2")
-    // use filter no check type : array("php","jpg")
-
+    /**
+     * Get all files
+     *
+     * @param string $directory
+     * @param array $no_file
+     * @param array $exts
+     * @param string $ext_action
+     * @return array
+     */
     public static function get_files($directory, $no_file = array(), $exts = array(), $ext_action = "out")
     {
-        if (!file_exists($directory)) return;
+        if (!file_exists($directory)) return [];
         $arr_files = array();
         $get_files = scandir($directory);
         $get_files = array_filter($get_files);
@@ -501,13 +630,13 @@ class File
 
         foreach ($get_files as $get_file) {
             $file = $directory . $get_file;
-            $ext = self::ext_file($file);
+            $ext = self::extension($file);
             $check_ext = true;
             if (!empty($exts)) {
                 if ($ext_action == "out") {
                     if (in_array($ext, $exts)) $check_ext = false;
                 } else if ($ext_action == "in") {
-                    if (!self::in_exts($file, $exts)) $check_ext = false;
+                    if (!self::in_extension($file, $exts)) $check_ext = false;
                 }
             }
 
@@ -523,68 +652,55 @@ class File
         return $arr_files;
     }
 
-    // get all files and folders into folder and sub folders
-    // use filter is only folder : $filter['is_folder'] = true;
-    // use filter is only file : $filter['is_file'] = true;
-    // use filter no check file : $filter['no_file'] = array("file1","file2");
-    // use filter no check folder : $filter['no_folder'] = array("folder1","folder2");
-    // use filter no check type : $filter['out_exts'] = array("php","jpg");
-    // use filter only check in type : $filter['in_exts'] = array("php","jpg")
-    // example: get_pro_directory("folder","/")
-
-    public static function ext_file($file)
+    /**
+     * Get file extension
+     *
+     * @param string $file
+     * @return string
+     */
+    public static function extension($file)
     {
         return strtolower(pathinfo($file, PATHINFO_EXTENSION));
     }
 
-    public static function in_exts($file, $types)
+    /**
+     * Check extension file in array extensions
+     *
+     * @param string $file
+     * @param array $types
+     * @return bool
+     */
+    public static function in_extension($file, $types)
     {
         $type = $file;
         if (is_file($file))
-            $type = self::ext_file($file);
+            $type = self::extension($file);
         if (in_array($type, $types)) return true;
         return false;
     }
 
+    /**
+     * Add filter for get all files & folders (method get_pro_directory)
+     *
+     * @param string $key
+     * @param mixed $value
+     */
     public static function where($key, $value)
     {
         self::$whereDirectory[$key] = $value;
     }
 
-    // return auto type file like method get_file_type but auto
 
     /**
-     * to detect file type put full path of a file or extension of a file
+     * Get type file
      *
-     * example1)
-     *  $file = /root/uploads/video.mp4
-     * output = video
-     *
-     * * example2)
-     *  $file = png
-     * output = image
+     * @param string $file_or_mime_type
+     * @return mixed
      */
-    public static function get_file_type($file)
-    {
-        $fileExt = self::ext_file($file);
-        $types = array(
-            "image" => array('png', 'jpeg', 'jpg', 'gif', 'bmp', 'tiff'),
-            "video" => array('mp4', 'avi', 'mkv', 'mov', 'wmv'),
-            "audio" => array('mp3', 'wav', 'ogg', 'wma', 'aac', 'flac', 'm4a', 'ra', 'rm', 'mid'),
-            "document" => array('doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'pdf', 'txt'),
-            "archive" => array('zip', 'rar', 'tar'),
-        );
-        foreach ($types as $type => $exts) {
-            if (self::in_exts($fileExt, $exts) != false)
-                return $type;
-        }
-        return 'file';
-    }
-
-    public static function get_auto_file_type($file_or_mime_type)
+    public static function type($file_or_mime_type)
     {
         if (is_file($file_or_mime_type)) {
-            $mime_type = self::mime_type_file($file_or_mime_type);
+            $mime_type = self::mime_type($file_or_mime_type);
         } else {
             $mime_type = $file_or_mime_type;
         }
@@ -594,41 +710,15 @@ class File
         return $type[0];
     }
 
-    public static function mime_type_file($file)
+    /**
+     * Get mime-type by file
+     *
+     * @param string $file
+     * @return bool|string
+     */
+    public static function mime_type($file)
     {
         if (!is_file($file)) return false;
         return mime_content_type($file);
-    }
-
-    /**
-     * create file
-     */
-    public static function generate_file($path, $data)
-    {
-        $folder = dirname($path);
-        if (!is_dir($folder))
-            self::make_folder($folder, true, 0777, false);
-        #generate the file
-        $file = @fopen($path, "w");
-        return (@fwrite($file, $data)) ? true : false;
-    }
-
-    public static function getArrayInto($file, $once = false)
-    {
-        if (is_file($file)) {
-            if ($once)
-                $arr = include_once $file;
-            else
-                $arr = include $file;
-        }
-        return (!empty($arr)) ? $arr : array();
-    }
-
-    public static function is_exists_file_by_url($url, $remove = null)
-    {
-        if (empty($remove)) $remove = Url::site();
-        $url = str_replace($remove, '', $url);
-        $path = Dir::path($url);
-        return is_file($path);
     }
 }

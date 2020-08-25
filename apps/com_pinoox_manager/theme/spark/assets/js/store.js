@@ -1,3 +1,5 @@
+/** global: PINOOX */
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 import $http from 'axios';
@@ -12,7 +14,7 @@ export default new Vuex.Store({
         time: 0,
         user: {},
         pinoox: {},
-        isLoading:false,
+        isLoading: false,
         isLoadingUpdate: false,
         isLogin: null,
         isLock: null,
@@ -38,11 +40,15 @@ export default new Vuex.Store({
             timer: 5,//in seconds
             interval: null,
         },
-        installList: []
+        pinooxAuth: {isLogin: false},
+        readyInstallCount: 0
     },
     getters: {
         background: state => {
-            return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';
+            if (state.options.background === 6)
+                return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.svg';
+            else
+                return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';
         },
         isBackground: state => {
             return !!state.options.background;
@@ -54,7 +60,7 @@ export default new Vuex.Store({
             return Object.values(state.apps);
         },
         hasNotification: state => {
-            return state.installList.length > 0 || state.notifications.length > 0;
+            return state.notifications.length > 0;
         },
     },
     mutations: {
@@ -132,13 +138,26 @@ export default new Vuex.Store({
                 state.apps = json.data;
             });
         },
-        addToInstallList: (state, app) => {
-            state.installList.push(app);
-        },
         updateDirections: (state, direction) => {
             document.body.className = direction;
             state.animDirection = direction === 'rtl' ? 'Right' : 'Left';
-        }
+        },
+        logoutPinooxAuth: (state) => {
+            $http.get(PINOOX.URL.API + 'account/logout').then((json) => {
+                state.pinooxAuth = {isLogin: false};
+            });
+
+        },
+        getReadyToInstallApp: (state) => {
+            $http.get(PINOOX.URL.API + 'app/readyInstallCount').then((json) => {
+                state.readyInstallCount = json.data;
+            });
+        },
+        getPinooxAuth: (state) => {
+            $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
+                state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
+            });
+        },
     },
     actions: {
         run({commit}) {

@@ -9,25 +9,22 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component;
+
+use ReflectionException;
 
 class Request
 {
     private static $data = [];
     private static $json = [];
 
-    private static function getData()
-    {
-        if (empty(self::$data)) self::$data = file_get_contents('php://input');
-        return self::$data;
-    }
-
-    private static function getJson()
-    {
-        if (empty(self::$json)) self::$json = HelperString::decodeJson(self::getData());
-        return self::$json;
-    }
-
+    /**
+     * Get params in url based on MVC format like: http//site.com/p1/p2 -> [p1,p2]
+     *
+     * @param null $segments if it's null return all params in array or you can get specific part by a index of numeric array
+     * @return array|null
+     */
     public static function params($segments = null)
     {
         $args = Router::params();
@@ -44,6 +41,12 @@ class Request
         return $data = isset($args[$segments]) ? $args[$segments] : null;
     }
 
+    /**
+     * Read header request
+     *
+     * @param null $key
+     * @return array|false|null
+     */
     public static function headers($key = null)
     {
         $headers = apache_request_headers();
@@ -52,46 +55,147 @@ class Request
         return isset($headers[$key]) ? $headers[$key] : null;
     }
 
+    /**
+     * Get all the raw data
+     *
+     * @param $keys
+     * @param null $defaults
+     * @param null $validation
+     * @param bool $removeNull
+     * @return array
+     * @throws ReflectionException
+     */
     public static function input($keys, $defaults = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams(self::getJson(), $keys, $defaults, $validation, $removeNull);
     }
 
+    /**
+     * Get JSON data
+     *
+     * @return array|mixed
+     */
+    private static function getJson()
+    {
+        if (empty(self::$json)) self::$json = HelperString::decodeJson(self::getData());
+        return self::$json;
+    }
+
+    /**
+     * Return all the raw data
+     *
+     * @return array|false|string
+     */
+    private static function getData()
+    {
+        if (empty(self::$data)) self::$data = file_get_contents('php://input');
+        return self::$data;
+    }
+
+    /**
+     * Get specific raw data
+     *
+     * @param $key
+     * @param null $default
+     * @param null $validation
+     * @return array|string|null
+     */
     public static function inputOne($key, $default = null, $validation = null)
     {
         return HelperArray::parseParam(self::getJson(), $key, $default, $validation);
     }
 
+    /**
+     * Get All post data
+     *
+     * @param $keys
+     * @param null $defaults
+     * @param null $validation
+     * @param bool $removeNull
+     * @return array
+     */
     public static function post($keys, $defaults = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams($_POST, $keys, $defaults, $validation, $removeNull);
     }
 
+    /**
+     * Get specific post data
+     *
+     * @param $key
+     * @param null $default
+     * @param null $validation
+     * @return array|string|null
+     */
     public static function postOne($key, $default = null, $validation = null)
     {
         return HelperArray::parseParam($_POST, $key, $default, $validation);
     }
 
+    /**
+     * Get all GET data
+     *
+     * @param $keys
+     * @param null $defaults
+     * @param null $validation
+     * @param bool $removeNull
+     * @return array
+     * @throws ReflectionException
+     */
     public static function get($keys, $defaults = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams($_GET, $keys, $defaults, $validation, $removeNull);
     }
 
+    /**
+     * Get specific GET data
+     *
+     * @param $key
+     * @param null $default
+     * @param null $validation
+     * @return array|string|null
+     * @throws ReflectionException
+     */
     public static function getOne($key, $default = null, $validation = null)
     {
         return HelperArray::parseParam($_GET, $key, $default, $validation);
     }
 
+    /**
+     * Get all data from REQUEST
+     *
+     * @param $keys
+     * @param null $defaults
+     * @param null $validation
+     * @param bool $removeNull
+     * @return array
+     * @throws ReflectionException
+     */
     public static function all($keys, $defaults = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams($_REQUEST, $keys, $defaults, $validation, $removeNull);
     }
 
+    /**
+     * Get specific data from REQUEST
+     *
+     * @param $key
+     * @param null $default
+     * @param null $validation
+     * @return array|string|null
+     * @throws ReflectionException
+     */
     public static function one($key, $default = null, $validation = null)
     {
         return HelperArray::parseParam($_REQUEST, $key, $default, $validation);
     }
 
+    /**
+     * Check is a file upload request
+     *
+     * @param string $file
+     * @return bool
+     */
     public static function isFile($file = '')
     {
         if (!empty($file)) {
@@ -100,6 +204,12 @@ class Request
         return false;
     }
 
+    /**
+     * Get file upload request
+     *
+     * @param null $key
+     * @return null
+     */
     public static function file($key = null)
     {
         if (empty($key))
@@ -110,6 +220,12 @@ class Request
         return null;
     }
 
+    /**
+     * Check is POST request
+     *
+     * @param string $param
+     * @return bool
+     */
     public static function isPost($param = '')
     {
         if (!empty($param)) {
@@ -122,6 +238,12 @@ class Request
         return false;
     }
 
+    /**
+     * Check is GET request
+     *
+     * @param string $param
+     * @return bool
+     */
     public static function isGet($param = '')
     {
         if (!empty($param)) {
@@ -134,11 +256,43 @@ class Request
         return false;
     }
 
+    /**
+     * Check is Ajax request
+     *
+     * @return bool
+     */
     public static function isAjax()
     {
         if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && ($_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest'))
             return true;
         return false;
 
+    }
+
+
+    /**
+     * Send post request
+     *
+     * @param $url string
+     * @param $params array
+     * @param $options array
+     * @return array|string|bool|mixed
+     */
+    public static function sendPost($url, $params, $options = [])
+    {
+        return HttpRequest::init($url, HttpRequest::POST)->params($params)->options($options)->send();
+    }
+
+    /**
+     * Send get request
+     *
+     * @param $url string
+     * @param $options array
+     * @return array|string|bool|mixed
+     */
+    public static function sendGet($url, $options = [])
+    {
+        $params = isset($options['params']) ? $options['params'] : [];
+        return HttpRequest::init($url, HttpRequest::GET)->params($params)->options($options)->send();
     }
 }

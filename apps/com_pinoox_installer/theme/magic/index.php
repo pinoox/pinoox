@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="<?php echo $_url; ?>dist/<?php echo @$assets['css']; ?>">
+    <link rel="icon" href="<?php echo $_url; ?>dist/images/logo-64.png">
 
     <title><?php lang('install.title_page'); ?></title>
 </head>

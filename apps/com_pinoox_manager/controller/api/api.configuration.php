@@ -11,6 +11,7 @@
  */
 namespace pinoox\app\com_pinoox_manager\controller\api;
 
+use pinoox\component\User;
 use pinoox\component\interfaces\ControllerInterface;
 use pinoox\component\Response;
 use pinoox\component\Router;
@@ -22,6 +23,7 @@ class ApiConfiguration implements ControllerInterface
 
     public function __construct()
     {
+        User::lifeTime(100,'day');
     }
 
     public function _main()

@@ -3,14 +3,14 @@
 return [
     'units' =>[
         'B' => '{0} byte',
-        'KB' => '{0} kb',
-        'MB' => '{0} mb',
-        'GB' => '{0} gb',
-        'TB' => '{0} tb',
+        'KB' => '{0} KB',
+        'MB' => '{0} MB',
+        'GB' => '{0} GB',
+        'TB' => '{0} TB',
     ],
     'GB' => 'GB',
-    'capacity' => 'space',
-    'free_space' => 'free space',
-    'use_space' => 'usage space',
-    'server_storage' => 'server storage',
+    'capacity' => 'Space',
+    'free_space' => 'Free space',
+    'use_space' => 'Usage space',
+    'server_storage' => 'Server storage',
 ];

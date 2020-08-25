@@ -9,17 +9,55 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component;
 
+/**
+ * This component help you to generate tree and nested structure by give dataset and specific index
+ *
+ * @package pinoox\component
+ *
+ */
 class Tree
 {
+    /**
+     * @var bool
+     */
     public $maxDepth = false;
+
+    /**
+     * @var
+     */
     public $openParentHTMLTags;
+    /**
+     * @var
+     */
     public $closeParentHTMLTags;
+    /**
+     * @var
+     */
     public $openInnerHTMLTags;
+
+    /**
+     * @var
+     */
     public $closeInnerHTMLTags;
+
+    /**
+     * @var
+     */
     public $fields;
 
+    /**
+     * Create a nested tree
+     *
+     * @param array $records pass an array
+     * @param string $parentName determine specific index of array for create nested tree based on it
+     * @param string $field
+     * @param string $childrenName determine name of nested tree name
+     * @param int $fieldVal
+     * @return array|void
+     */
     public function createTree(&$records, $parentName, $field, $childrenName = 'children', $fieldVal = 0)
     {
         if ($records == null)
@@ -34,7 +72,11 @@ class Tree
                 $branch[] = $r;
             }
         }
-        return $branch;
+        if (!empty($branch)) {
+            /** @var array $branch */
+            return $branch;
+        }
+        return null;
     }
 
 
@@ -78,6 +120,13 @@ class Tree
     }
 
 
+    /**
+     *
+     * @param $tree_array
+     * @param string $children_fields
+     * @param int $recursionDepth
+     * @return false|string
+     */
     public function getTreeHtml($tree_array, $children_fields = 'children', $recursionDepth = 0)
     {
         ob_start();

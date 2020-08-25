@@ -10,6 +10,7 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\app\com_pinoox_installer\controller\api\v1;
 
 use pinoox\component\app\AppProvider;
@@ -21,7 +22,6 @@ use pinoox\component\HelperArray;
 use pinoox\component\Lang;
 use pinoox\component\Request;
 use pinoox\component\Response;
-use pinoox\component\Router;
 use pinoox\component\Service;
 use pinoox\component\System;
 use pinoox\component\Validation;
@@ -57,11 +57,14 @@ class MainController extends MasterConfiguration
         $status = false;
         switch ($type) {
             case 'php' :
-                $status = version_compare(System::phpVersion(), '5.6', '>=');
+                $status = (version_compare(System::phpVersion(), '5.6', '>='))? true : false;
                 break;
             case 'mysql' :
-                $vMysql = System::mysqlVersion();
-                $status = (!empty($vMysql)) ? version_compare($vMysql, '5.5', '>=') : true;
+                /**
+                 * fixme: Version mysql cannot be found on all operating systems
+                 */
+                // $vMysql = System::mysqlVersion();
+                $status = true;//(!empty($vMysql)) ? version_compare($vMysql, '5.5', '>=') : true;
                 break;
             case 'free_space' :
                 /**
@@ -70,9 +73,13 @@ class MainController extends MasterConfiguration
                 $status = true;//(System::freeSpace('MB') > 50);
                 break;
             case 'mod_rewrite' :
-                $status = System::hasModuleApache('mod_rewrite');
+                /**
+                 * fixme: The mod_rewrite status cannot be found on all operating systems
+                 */
+                $status = true;//System::hasModuleApache('mod_rewrite');
                 break;
         }
+
 
         Response::json($type, $status);
     }
@@ -99,7 +106,7 @@ class MainController extends MasterConfiguration
         if ($valid->isFail())
             Response::json($valid->first(), false);
 
-        if (!$this->insertTables($db,$user)) {
+        if (!$this->insertTables($db, $user)) {
             Response::json(rlang('install.err_insert_tables'), false);
         }
 
@@ -108,28 +115,28 @@ class MainController extends MasterConfiguration
         Config::save('~app');
 
         $lang = AppProvider::get('lang');
-        AppProvider::set('enable',false);
+        AppProvider::set('enable', false);
         AppProvider::save();
 
         // change lang app welcome
         AppProvider::app('com_pinoox_welcome');
-        AppProvider::set('lang',$lang);
+        AppProvider::set('lang', $lang);
         AppProvider::save();
 
         // change lang app manager
         AppProvider::app('com_pinoox_manager');
-        AppProvider::set('lang',$lang);
+        AppProvider::set('lang', $lang);
         AppProvider::save();
 
         // run service update & caching last version
         Cache::app('com_pinoox_manager');
         Service::app('com_pinoox_manager');
         Service::run('cache/update');
-        
+
         Response::json(null, true);
     }
 
-    private function insertTables($c,$user)
+    private function insertTables($c, $user)
     {
         if (empty($c))
             return false;

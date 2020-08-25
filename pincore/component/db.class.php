@@ -16,6 +16,11 @@
 
 namespace pinoox\component;
 
+use mysqli;
+use mysqli_stmt;
+use Exception;
+use stdClass;
+
 class DB
 {
 
@@ -285,13 +290,13 @@ class DB
         }
 
         if (empty($this->host)) {
-            throw new \Exception('MySQL host is not set');
+            throw new Exception('MySQL host is not set');
         }
 
-        $this->_mysqli = new \mysqli($this->host, $this->username, $this->password, $this->db, $this->port);
+        $this->_mysqli = new mysqli($this->host, $this->username, $this->password, $this->db, $this->port);
 
         if ($this->_mysqli->connect_error) {
-            throw new \Exception('Connect Error ' . $this->_mysqli->connect_errno . ': ' . $this->_mysqli->connect_error, $this->_mysqli->connect_errno);
+            throw new Exception('Connect Error ' . $this->_mysqli->connect_errno . ': ' . $this->_mysqli->connect_error, $this->_mysqli->connect_errno);
         }
 
         if ($this->charset) {
@@ -301,7 +306,7 @@ class DB
 
     public static function checkConnect($host, $user, $pass, $dbname)
     {
-        $conn = new \mysqli($host, $user, $pass);
+        $conn = new mysqli($host, $user, $pass);
         if (!$conn->connect_error && $conn->select_db($dbname)) {
             $conn->close();
             return true;
@@ -436,7 +441,7 @@ class DB
 
         // Failed?
         if (!$stmt) {
-            throw new \Exception("Unprepared Query Failed, ERRNO: " . $this->mysqli()->errno . " (" . $this->mysqli()->error . ")", $this->mysqli()->errno);
+            throw new Exception("Unprepared Query Failed, ERRNO: " . $this->mysqli()->errno . " (" . $this->mysqli()->error . ")", $this->mysqli()->errno);
         };
 
         // return stmt for future use
@@ -571,7 +576,7 @@ class DB
         foreach ($options as $option) {
             $option = strtoupper($option);
             if (!in_array($option, $allowedOptions)) {
-                throw new \Exception('Wrong query option: ' . $option);
+                throw new Exception('Wrong query option: ' . $option);
             }
 
             if ($option == 'MYSQLI_NESTJOIN') {
@@ -1012,7 +1017,7 @@ class DB
         $joinType = strtoupper(trim($joinType));
 
         if ($joinType && !in_array($joinType, $allowedTypes)) {
-            throw new \Exception('Wrong JOIN type: ' . $joinType);
+            throw new Exception('Wrong JOIN type: ' . $joinType);
         }
 
         if (!is_object($joinTable)) {
@@ -1039,7 +1044,7 @@ class DB
         // We have to check if the file exists
         if (!file_exists($importFile)) {
             // Throw an exception
-            throw new \Exception("importCSV -> importFile " . $importFile . " does not exists!");
+            throw new Exception("importCSV -> importFile " . $importFile . " does not exists!");
             return;
         }
 
@@ -1102,7 +1107,7 @@ class DB
         // We have to check if the file exists
         if (!file_exists($importFile)) {
             // Does not exists
-            throw new \Exception("loadXml: Import file does not exists");
+            throw new Exception("loadXml: Import file does not exists");
             return;
         }
 
@@ -1165,7 +1170,7 @@ class DB
 
 
         if (empty($orderbyDirection) || !in_array($orderbyDirection, $allowedDirection)) {
-            throw new \Exception('Wrong order direction: ' . $orderbyDirection);
+            throw new Exception('Wrong order direction: ' . $orderbyDirection);
         }
 
         if (is_array($customFields)) {
@@ -1271,7 +1276,7 @@ class DB
             return true;
         } // Something went wrong
         else {
-            throw new \Exception("Locking of table " . $table . " failed", $errno);
+            throw new Exception("Locking of table " . $table . " failed", $errno);
         }
 
         // Return the success value
@@ -1303,7 +1308,7 @@ class DB
             return $this;
         } // Something went wrong
         else {
-            throw new \Exception("Unlocking of tables failed", $errno);
+            throw new Exception("Unlocking of tables failed", $errno);
         }
 
 
@@ -1521,7 +1526,7 @@ class DB
      *
      * @return array The results of the SQL fetch.
      */
-    protected function _dynamicBindResults(\mysqli_stmt $stmt)
+    protected function _dynamicBindResults(mysqli_stmt $stmt)
     {
         $parameters = array();
         $results = array();
@@ -1568,10 +1573,10 @@ class DB
 
         while ($stmt->fetch()) {
             if ($this->returnType == 'object') {
-                $result = new \stdClass ();
+                $result = new stdClass ();
                 foreach ($row as $key => $val) {
                     if (is_array($val)) {
-                        $result->$key = new \stdClass ();
+                        $result->$key = new stdClass ();
                         foreach ($val as $k => $v) {
                             $result->$key->$k = $v;
                         }
@@ -1705,7 +1710,7 @@ class DB
                     }
                     break;
                 default:
-                    throw new \Exception("Wrong operation");
+                    throw new Exception("Wrong operation");
             }
         }
         $this->_query = rtrim($this->_query, ', ');
@@ -1902,7 +1907,7 @@ class DB
             $msg = $this->mysqli()->error . " query: " . $this->_query;
             $num = $this->mysqli()->errno;
             $this->reset();
-            throw new \Exception($msg, $num);
+            throw new Exception($msg, $num);
         }
 
         if ($this->traceEnabled) {
@@ -2070,7 +2075,7 @@ class DB
             }
 
             if (!in_array($type, array_keys($types))) {
-                throw new \Exception("invalid interval type in '{$diff}'");
+                throw new Exception("invalid interval type in '{$diff}'");
             }
 
             $func .= " " . $incr . " interval " . $items . " " . $types[$type] . " ";
@@ -2105,7 +2110,7 @@ class DB
     public function inc($num = 1)
     {
         if (!is_numeric($num)) {
-            throw new \Exception('Argument supplied to inc must be a number');
+            throw new Exception('Argument supplied to inc must be a number');
         }
         return array("[I]" => "+" . $num);
     }
@@ -2120,7 +2125,7 @@ class DB
     public function dec($num = 1)
     {
         if (!is_numeric($num)) {
-            throw new \Exception('Argument supplied to dec must be a number');
+            throw new Exception('Argument supplied to dec must be a number');
         }
         return array("[I]" => "-" . $num);
     }

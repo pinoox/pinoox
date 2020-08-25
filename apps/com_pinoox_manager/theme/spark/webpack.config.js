@@ -32,8 +32,6 @@ module.exports = {
             {
                 test: /\.less$/,
                 use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
-
-
             },
             {
                 test: /\.vue$/,
@@ -70,9 +68,6 @@ module.exports = {
                     {
                         loader: 'image-webpack-loader',
                         options: {
-                            webp: {
-                                quality: 75,
-                            }
                         }
                     }
                 ]
@@ -93,12 +88,17 @@ module.exports = {
         new webpack.ProgressPlugin(),
         new CopyPlugin([
             {
-                from: './assets/images/backgrounds/*.jpg',
+                from: './assets/images/backgrounds/*',
                 to: 'images/backgrounds',
                 flatten: true,
             },
             {
                 from: './assets/js/pinoox.js',
+                flatten: true,
+            },
+            {
+                from: './assets/images/logo/logo-64.png',
+                to: 'images',
                 flatten: true,
             },
         ]),

@@ -43,27 +43,27 @@ class MainController extends MasterConfiguration
 
     public function lang()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function setup()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function rules()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function prerequisites()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function db()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function user()
@@ -78,7 +78,7 @@ class MainController extends MasterConfiguration
             HelperHeader::contentType('application/javascript', 'UTF-8');
             self::$template->view('dist/pinoox.js');
         } else {
-            self::_main();
+            $this->_main();
         }
     }
 }

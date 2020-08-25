@@ -1,15 +1,15 @@
 <?php
-//pinoox app file, generated at "2019-08-25 12:49"
+//pinoox app file, generated at "2020-05-19 00:41"
 
-return array(
-    'enable' => true,
-    'icon' => 'icon.png',
-    'name' => 'installer',
-    'theme' => 'magic',
-    'version-name' => '1.3',
-    'version-code' => 3,
-    'lang' => 'fa',
-    'user' => 'com_pinoox_manager',
+return array (
+  'enable' => true,
+  'icon' => 'icon.png',
+  'name' => 'installer',
+  'theme' => 'magic',
+  'version-name' => '1.4.3',
+  'version-code' => 5,
+  'lang' => 'en',
+  'user' => 'com_pinoox_manager',
 );
 
 //end of app

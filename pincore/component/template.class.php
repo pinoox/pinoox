@@ -37,6 +37,7 @@ class Template
     private $offFooterViewsList = array();
     private $offViewsList = array();
     private $linkBaseMapAssets = '';
+    private $isMinify = false;
 
     /*
      * Class Template
@@ -61,7 +62,7 @@ class Template
      */
     public function __construct($path = null, $folder = null)
     {
-        ob_start();
+        ob_start(array($this, 'minifyOutput'));
         self::$data['_title'] = '';
         self::$data['_user'] = array();
         $this->headerViewsList[] = 'header';
@@ -882,10 +883,10 @@ class Template
             if ($time > (time() - $recoveryTime))
                 return;
         }
-        $path = File::dir_file($locationSave);
+        $path = File::dir($locationSave);
         File::make_folder($path, true, 0777, false);
         $string = self::getProcessedText($file);
-        File::generate_file($locationSave, $string);
+        File::generate($locationSave, $string);
     }
 
     /**
@@ -897,10 +898,14 @@ class Template
      */
     public function getProcessedText($view, $replaceData = array())
     {
+        if ($_file = self::getPathView('functions.php')) {
+            include_once $_file;
+        }
+
         $view = self::actIncludeText($view);
 
         if (!empty($view)) {
-            ob_start();
+            ob_start(array($this, 'minifyOutput'));
 
             if (empty($replaceData))
                 $data = self::$data;
@@ -957,9 +962,34 @@ class Template
     public function loader($params)
     {
         $file = implode('/', $params);
-        $ext = File::ext_file($file);
+        $ext = File::extension($file);
         $mime = Config::get('~loader' . $ext);
         HelperHeader::contentType($mime, 'UTF-8');
         self::phpToAssets($file);
+    }
+
+    public function minify($status = true)
+    {
+        $this->isMinify = $status;
+    }
+
+    private function minifyOutput($buffer)
+    {
+        if(!$this->isMinify)
+            return $buffer;
+        $search = array(
+            '/\>[^\S ]+/s',
+            '/[^\S ]+\</s',
+            '/(\s)+/s'
+        );
+        $replace = array(
+            '>',
+            '<',
+            '\\1'
+        );
+        if (preg_match("/\<html/i", $buffer) == 1 && preg_match("/\<\/html\>/i", $buffer) == 1) {
+            $buffer = preg_replace($search, $replace, $buffer);
+        }
+        return $buffer;
     }
 }

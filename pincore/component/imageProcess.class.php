@@ -236,8 +236,8 @@ class ImageProcess
             }
         }
 
-        $ext = File::ext_file($img);
-        $ext_logo = File::ext_file($logo_path);
+        $ext = File::extension($img);
+        $ext_logo = File::extension($logo_path);
         $src_logo = false;
 
         #check size logo
@@ -384,7 +384,7 @@ class ImageProcess
 
         // return if ext image == $convert_type
         if ($is_no_self) {
-            $ext = File::ext_file($image);
+            $ext = File::extension($image);
             if ($ext == $convert_type) return false;
         }
 
@@ -395,7 +395,7 @@ class ImageProcess
         $getImage = imagecreatefromstring(file_get_contents($image));
 
         // create folder if null location dir for save new image
-        File::make_folder(File::dir_file($img_save), true);
+        File::make_folder(File::dir($img_save), true);
 
         // Convert Image
         switch ($convert_type) {
@@ -416,7 +416,7 @@ class ImageProcess
                 break;
         }
 
-        if ($is_old_delete) File::removedir($image);
+        if ($is_old_delete) File::remove($image);
 
             return $return;
     }

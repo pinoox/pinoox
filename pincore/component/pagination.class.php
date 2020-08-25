@@ -224,6 +224,7 @@ class Pagination
                 $prevPage[] = $page;
             }
         }
+        $info = [];
         $info['page']['count'] = $this->rowsCount;
         $info['page']['all'] = $pages;
         $info['page']['first'] = 1;

@@ -12,28 +12,156 @@
 
 namespace pinoox\component;
 
+use Closure;
+use ReflectionClass;
+use ReflectionMethod;
+
+/**
+ * Validation Help you to check validity of input data in a simple way
+ *
+ * Class Validation
+ * @package pinoox\component
+ */
 class Validation
 {
+
+    /**
+     * An instance of Validation Class
+     *
+     * @var Validation
+     */
     private static $obj;
+
+    /**
+     * Given inputs data from request component
+     *
+     * @var array
+     */
     private static $inputs;
+
+    /**
+     * Define conditions and rules
+     *
+     * @var array
+     */
     private static $rules;
+
+    /**
+     * By default all rules have some messages that you can set your own message for each rule
+     *
+     * @var array
+     */
     private static $customMessages;
+
+    /**
+     * List of validators
+     *
+     * @var
+     */
     private static $listMethodValidators;
-    private static $errors;
+
+    /**
+     * Error messages
+     *
+     * @var array
+     */
+    private static $errors = [];
+
+    /**
+     * Check is validation has error
+     *
+     * @var boolean
+     */
     private static $isFail;
+
+    /**
+     * Given data array for validating
+     *
+     * @var array
+     */
     private static $data;
+
+    /**
+     * Store key index of an array
+     *
+     * @var string
+     */
     private static $field_title;
+
+    /**
+     * Store current key of data
+     *
+     * @var string
+     */
     private static $currentKey;
+
+    /**
+     * Check is disclaimer
+     *
+     * @var bool
+     */
     private static $isNot = false;
+
+    /**
+     * Determine which rule is running
+     *
+     * @var string
+     */
     private static $activeMethod;
+
+    /**
+     * Checking for an error
+     *
+     * @var bool
+     */
     private static $isErr = false;
+
+    /**
+     * @var bool
+     */
     private static $resultMethod = true;
+
+    /**
+     * List of rule's params
+     *
+     * @var array
+     */
     private static $params = [];
+
+    /**
+     * Validators are methods that use as rule
+     *
+     * @var array
+     */
     private static $validators = [];
+
+    /**
+     * titles of data give for checking
+     *
+     * @var array
+     */
     private static $field_titles = [];
+
+    /**
+     * @var array
+     */
     private static $field_types = [];
+
+    /**
+     * Check is require
+     *
+     * @var bool
+     */
     private static $is_required = false;
 
+    /**
+     * Check and validate
+     *
+     * @param array $inputs pass an array from Request component
+     * @param array $rules define array of rules for checking
+     * @param null $messages custom message
+     * @return Validation
+     */
     public static function check($inputs, $rules, $messages = null)
     {
         self::$isErr = true;
@@ -47,6 +175,10 @@ class Validation
         return self::$obj;
     }
 
+    /**
+     * Initialize Validation component
+     *
+     */
     private static function init()
     {
         if (empty(self::$obj))
@@ -55,15 +187,19 @@ class Validation
         self::setFail(false);
     }
 
+    /**
+     * Get Validator methods (rules)
+     *
+     */
     private static function getDefinedValidators()
     {
         if (!empty(self::$listMethodValidators)) return;
 
-        $class = new \ReflectionClass(self::class);
+        $class = new ReflectionClass(self::class);
         $methods = $class->getMethods(
-            \ReflectionMethod::IS_PUBLIC |
-            \ReflectionMethod::IS_PROTECTED |
-            \ReflectionMethod::IS_PRIVATE
+            ReflectionMethod::IS_PUBLIC |
+            ReflectionMethod::IS_PROTECTED |
+            ReflectionMethod::IS_PRIVATE
         );
         foreach ($methods as $method) {
             $mName = $method->name;
@@ -73,27 +209,35 @@ class Validation
         }
     }
 
+    /**
+     * Set fail status in validate
+     *
+     * @param bool $status
+     */
     private static function setFail($status = true)
     {
         self::$isFail = $status;
     }
 
+    /**
+     * Validate inputs by validators (rules)
+     */
     private static function validateInputsByRules()
     {
         foreach (self::$rules as $key => $conditions) {
             self::$currentKey = $key;
             if (is_array($conditions)) {
-                $part_conds = $conditions[0];
+                $partsCond = $conditions[0];
                 self::$field_title = isset($conditions[1]) ? $conditions[1] : '';
             } else {
-                $part_conds = $conditions;
+                $partsCond = $conditions;
             }
 
             self::$field_titles[$key] = self::$field_title;
 
-            self::$data = HelperArray::searchArrayByPattern($key, self::$inputs);
+            self::$data = HelperArray::detachByPattern($key, self::$inputs);
 
-            $condParts = explode('|', $part_conds);
+            $condParts = is_array($partsCond) ? $partsCond : explode('|', $partsCond);
             self::$field_types[$key] = $condParts;
             self::$is_required = in_array('required', $condParts);
             foreach ($condParts as $cond) {
@@ -102,6 +246,12 @@ class Validation
         }
     }
 
+    /**
+     * Execute rule
+     *
+     * @param $ruleName
+     * @throws \ReflectionException
+     */
     private static function executeRuleMethod($ruleName)
     {
         $params = array();
@@ -132,6 +282,12 @@ class Validation
         }
     }
 
+    /**
+     * Get method name by pass rule
+     *
+     * @param $ruleName
+     * @return string
+     */
     private static function getMethodName($ruleName)
     {
         self::$isNot = false;
@@ -147,7 +303,14 @@ class Validation
         return $method;
     }
 
-    private static function executeRuleGenerate(\Closure $status, $err, \Closure $dataIntoMessage = null)
+    /**
+     * Execute rule
+     *
+     * @param Closure $status
+     * @param $err
+     * @param Closure|null $dataIntoMessage
+     */
+    private static function executeRuleGenerate(Closure $status, $err, Closure $dataIntoMessage = null)
     {
         $info = [
             'data' => self::getData(),
@@ -169,17 +332,35 @@ class Validation
         }
     }
 
+    /**
+     * Get data
+     *
+     * @return mixed
+     */
     private static function getData()
     {
         return self::$data['values'];
     }
 
+    /**
+     * Get first data
+     *
+     * @return null
+     */
     private static function getFirstData()
     {
         $data = self::getData();
         return isset($data[0]) ? $data[0] : null;
     }
 
+    /**
+     * Set multiple result
+     *
+     * @param boolean $status fail or success status
+     * @param string $err error message
+     * @param boolean $notErr success message
+     * @param array $dataToStr
+     */
     private static function setMultiResult($status, $err, $notErr, $dataToStr = array())
     {
         if ($status && self::$isNot) {
@@ -191,6 +372,12 @@ class Validation
         }
     }
 
+    /**
+     * Set error
+     *
+     * @param string $err
+     * @param array $dataToStr
+     */
     private static function setError($err = "No Message", $dataToStr = array())
     {
         if (self::$isErr) {
@@ -207,6 +394,11 @@ class Validation
         self::$resultMethod = false;
     }
 
+    /**
+     * Customize message
+     *
+     * @return bool|mixed|null
+     */
     private static function customizeMessage()
     {
         if (empty(self::$customMessages)) return false;
@@ -226,9 +418,15 @@ class Validation
         return null;
     }
 
-    // emails.*
-    // courses.*.seasons.*.lessons.*.title
-
+    /**
+     * Check params of rules is valid or not
+     *
+     * @param object $class
+     * @param string $method
+     * @param string $params
+     * @return bool
+     * @throws \ReflectionException
+     */
     private static function isValidCountParams($class, $method, $params)
     {
         $r = new \ReflectionMethod($class, $method);
@@ -246,12 +444,24 @@ class Validation
         return false;
     }
 
+    /**
+     * Call static methods
+     *
+     * @param object $class
+     * @param string $method
+     * @param string $params
+     */
     private static function callMethod($class, $method, $params)
     {
         if (self::ignore()) return;
         call_user_func_array(array($class, $method), $params);
     }
 
+    /**
+     * If don't use of required rule should ignore validate data
+     *
+     * @return bool
+     */
     private static function ignore()
     {
         $types = isset(self::$field_types[self::$currentKey]) ? self::$field_types[self::$currentKey] : [];
@@ -260,18 +470,27 @@ class Validation
         return false;
     }
 
+    /**
+     * Validate a value
+     *
+     * @param string $value
+     * @param string|array $rule
+     * @param null $patternArray
+     * @return bool
+     * @throws \ReflectionException
+     */
     public static function checkOne($value, $rule, $patternArray = null)
     {
         self::$resultMethod = true;
 
         if (!empty($patternArray)) {
-            self::$data = HelperArray::searchArrayByPattern($patternArray, $value);
+            self::$data = HelperArray::detachByPattern($patternArray, $value);
         } else {
             self::$data['required'] = true;
             self::$data['values'] = [$value];
         }
 
-        $condParts = explode('|', $rule);
+        $condParts = is_array($rule) ? $rule : explode('|', $rule);
         foreach ($condParts as $cond) {
             self::executeRuleMethod($cond);
         }
@@ -279,27 +498,22 @@ class Validation
         return self::$resultMethod;
     }
 
+    /**
+     * Check has error
+     *
+     * @return bool
+     */
     public static function isFail()
     {
         return self::$isFail;
     }
 
-    public static function getError()
-    {
-        $result = [];
-        if (!empty(self::$errors)) {
-            foreach (self::$errors as $err) {
-                $result = array_merge($result, array_values($err));
-            }
-        }
-
-        return $result;
-    }
-
     /**
-     * get first error
+     * Get first error
+     *
+     * @return array|mixed|null
      */
-    public static function first($key = null)
+    public static function first()
     {
         $errors = self::getError();
         if (!empty($errors)) {
@@ -317,16 +531,61 @@ class Validation
     }
 
     /**
-     * get errors
+     * Get errors
+     *
+     * @return array
+     */
+    public static function getError()
+    {
+        $result = [];
+        if (!empty(self::$errors)) {
+            foreach (self::$errors as $err) {
+                $result = array_merge($result, array_values($err));
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get errors
+     *
+     * @param string $key retrieve specific error
+     * @return array
      */
     public static function get($key = null)
     {
-        if (isset(self::$errors[$key]))
+        if (!is_null($key) && isset(self::$errors[$key]))
             return self::$errors[$key];
 
         return self::$errors;
     }
 
+    /**
+     * Get first errors by fields
+     *
+     * @return array
+     */
+    public static function getFieldError()
+    {
+        $result = [];
+        foreach (self::$errors as $key => $errs) {
+            if (isset($errs[0])) {
+                $result[$key] = $errs[0];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Call static methods
+     *
+     * @param $method
+     * @param $arguments
+     * @return bool
+     * @throws \ReflectionException
+     */
     public static function __callStatic($method, $arguments)
     {
         self::$resultMethod = true;
@@ -351,9 +610,15 @@ class Validation
         }
     }
 
-    // check count params of a method in class
-
-    public static function generate($name, \Closure $status, $err, \Closure $dataIntoMessage = null)
+    /**
+     * Generate
+     *
+     * @param $name
+     * @param Closure $status
+     * @param $err
+     * @param Closure|null $dataIntoMessage
+     */
+    public static function generate($name, Closure $status, $err, Closure $dataIntoMessage = null)
     {
         self::$validators['_' . $name] = [
             'status' => $status,
@@ -363,10 +628,13 @@ class Validation
     }
 
     /**
-     * @param $lengthParams : this params can mix with math operators
-     * example: >=2
+     * Length of value
+     *
+     * example: ">=2"
      * with getValueFromParams() can extract value : 2
      * with getOperatorFromParams() can extract operator : >=
+     *
+     * @param int $lengthParams this param can mix with math operators
      */
     private static function _length($lengthParams)
     {
@@ -391,9 +659,11 @@ class Validation
     }
 
     /**
-     * this method extract only value without operators
+     * This method extract only value without operators
      * example: input : >= 23
      *          output: 23
+     * @param $params
+     * @return mixed
      */
     private static function getValueFromParams($params)
     {
@@ -401,9 +671,12 @@ class Validation
     }
 
     /**
-     * this method extract only operator without value
+     * This method extract only operator without value
+     *
      * example: input : >= 23
      *          output: >=
+     * @param $params
+     * @return string
      */
     private static function getOperatorFromParams($params)
     {
@@ -411,52 +684,58 @@ class Validation
         return isset($out[0]) ? $out[0] : '';
     }
 
+    /**
+     * Compare length
+     * @param $dataLen
+     * @param $length
+     * @param $data
+     * @param $operator
+     */
     private static function compareLength($dataLen, $length, $data, $operator)
     {
         switch ($operator) {
             case '==':
-                {
-                    if ($dataLen != $length) self::setError(Lang::get('~validation.err.length_equal'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen != $length) self::setError(Lang::get('~validation.err.length_equal'), [self::$field_title, $length]);
+                break;
+            }
             case '!=':
-                {
-                    if ($dataLen == $length) self::setError(Lang::get('~validation.err.not_equal'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen == $length) self::setError(Lang::get('~validation.err.not_equal'), [self::$field_title, $length]);
+                break;
+            }
             case '>=':
-                {
-                    if ($dataLen < $length) self::setError(Lang::get('~validation.err.length_gte'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen < $length) self::setError(Lang::get('~validation.err.length_gte'), [self::$field_title, $length]);
+                break;
+            }
             case '<=':
-                {
-                    if ($dataLen > $length) self::setError(Lang::get('~validation.err.length_lte'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen > $length) self::setError(Lang::get('~validation.err.length_lte'), [self::$field_title, $length]);
+                break;
+            }
             case '>':
-                {
-                    if ($dataLen <= $length) self::setError(Lang::get('~validation.err.length_grater'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen <= $length) self::setError(Lang::get('~validation.err.length_grater'), [self::$field_title, $length]);
+                break;
+            }
             case '<':
-                {
-                    if ($dataLen >= $length) self::setError(Lang::get('~validation.err.length_lesser'), [self::$field_title, $length]);
-                    break;
-                }
+            {
+                if ($dataLen >= $length) self::setError(Lang::get('~validation.err.length_lesser'), [self::$field_title, $length]);
+                break;
+            }
         }
     }
 
     /*========================================= Validators ==========================================
      * All Rules Come Here...
-     * you can add your custom validators as a method and use it as a rule
+     * You can add your custom validators as a method and use it as a rule
      *
      * How to Define own validator ?
-     * your method must define as static method and must be start with underline:
+     * Your method must define as static method and must be start with underline:
      *  -- example -->  public static function _myRule(){ //do staff }
      * also rule support arguments
      */
-
     private static function _required()
     {
         if (!self::$data['required']) {
@@ -509,7 +788,7 @@ class Validation
         $checkField = $key;
         if (HelperString::firstHas($key, '[') && HelperString::lastHas($key, ']')) {
             $key = str_replace(['[', ']'], '', $key);
-            $values = HelperArray::searchArrayByPattern($key, self::$inputs);
+            $values = HelperArray::detachByPattern($key, self::$inputs);
             $checkField = isset($values['values'][0]) ? $values['values'][0] : null;
             $title2 = isset(self::$field_titles[$key]) ? self::$field_titles[$key] : $key;
         }
@@ -522,35 +801,35 @@ class Validation
     {
         switch ($operator) {
             case '==':
-                {
-                    if ($value1 != $value2) self::setError(Lang::get('~validation.err.value_equal'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 != $value2) self::setError(Lang::get('~validation.err.value_equal'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '!=':
-                {
-                    if ($value1 == $value2) self::setError(Lang::get('~validation.err.value_not_equal'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 == $value2) self::setError(Lang::get('~validation.err.value_not_equal'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '>=':
-                {
-                    if ($value1 < $value2) self::setError(Lang::get('~validation.err.value_gte'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 < $value2) self::setError(Lang::get('~validation.err.value_gte'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '<=':
-                {
-                    if ($value1 > $value2) self::setError(Lang::get('~validation.err.value_lte'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 > $value2) self::setError(Lang::get('~validation.err.value_lte'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '>':
-                {
-                    if ($value1 <= $value2) self::setError(Lang::get('~validation.err.value_grater'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 <= $value2) self::setError(Lang::get('~validation.err.value_grater'), [self::$field_title, $fieldName2]);
+                break;
+            }
             case '<':
-                {
-                    if ($value1 >= $value2) self::setError(Lang::get('~validation.err.value_lesser'), [self::$field_title, $fieldName2]);
-                    break;
-                }
+            {
+                if ($value1 >= $value2) self::setError(Lang::get('~validation.err.value_lesser'), [self::$field_title, $fieldName2]);
+                break;
+            }
         }
     }
 

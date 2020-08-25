@@ -9,18 +9,20 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\model;
 
+use pinoox\component\User;
 use pinoox\component\Date;
 use pinoox\component\MagicTrait;
 use pinoox\component\Security;
-use pinoox\component\User;
 
 class UserModel extends PinooxDatabase
 {
 
     const active = "active";
     const suspend = "suspend";
+    const pending = "pending";
 
     use MagicTrait;
 
@@ -39,6 +41,12 @@ class UserModel extends PinooxDatabase
         self::checkApp();
         self::$db->where('user_id', $user_id);
         return self::$db->getOne(self::user . ' u', $selected);
+    }
+
+    public static function get_app($user_id)
+    {
+        self::$db->where('user_id', $user_id);
+        return self::$db->getOne(self::user, 'app');
     }
 
 
@@ -71,6 +79,15 @@ class UserModel extends PinooxDatabase
         ));
     }
 
+    public static function update_status($user_id, $status)
+    {
+        self::checkApp();
+        self::$db->where('user_id', $user_id);
+        return self::$db->update(self::user, array(
+            'status' => $status
+        ));
+    }
+
     public static function update_avatar($user_id, $avatar_id)
     {
         self::checkApp();
@@ -80,9 +97,10 @@ class UserModel extends PinooxDatabase
         ));
     }
 
-    public static function fetch_all($limit = null, $isCount = false)
+    public static function fetch_all($limit = null, $isCount = false, $checkApp = true)
     {
-        self::checkApp();
+        if ($checkApp)
+            self::checkApp();
         $result = self::$db->get(self::user, $limit);
         if ($isCount) return count($result);
         return $result;
@@ -96,14 +114,14 @@ class UserModel extends PinooxDatabase
     public static function insert($data)
     {
         return self::$db->insert(self::user, [
-            'app' => isset($data['app'])? $data['app'] :  User::getApp(),
-            'fname' => $data['fname'],
-            'lname' => $data['lname'],
+            'app' => isset($data['app']) ? $data['app'] : User::getApp(),
+            'fname' => isset($data['fname']) ? $data['fname'] : null,
+            'lname' => isset($data['lname']) ? $data['lname'] : null,
             'email' => $data['email'],
-            'username' => isset($data['username'])? $data['username'] : null,
+            'username' => isset($data['username']) ? $data['username'] : null,
             'password' => Security::passHash($data['password']),
             'register_date' => Date::g('Y-m-d H:i:s'),
-            'status' => self::active,
+            'status' => isset($data['status']) ? $data['status'] : self::active,
         ]);
     }
 
@@ -157,11 +175,12 @@ class UserModel extends PinooxDatabase
         return self::$db->update(self::user, $formData);
     }
 
-    public static function update_password($user_id, $oldPassword, $newPassword)
+    public static function update_password($user_id, $newPassword, $oldPassword = null)
     {
         self::checkApp();
 
-        self::$db->where('password', Security::passHash($oldPassword));
+        if (!is_null($oldPassword))
+            self::$db->where('password', Security::passHash($oldPassword));
         self::$db->where('user_id', $user_id);
         return self::$db->update(self::user, [
             'password' => Security::passHash($newPassword),
@@ -173,6 +192,15 @@ class UserModel extends PinooxDatabase
         self::$db->where('password', Security::passHash($password));
         self::$db->where('user_id', $user_id);
         return self::$db->getOne(self::user);
+    }
+
+    public static function fetch_by_username($username, $no_user_id = null)
+    {
+        self::checkApp();
+        if (!empty($no_user_id))
+            self::$db->where('user_id', $no_user_id, ' != ');
+        self::$db->where('username', $username);
+        return self::$db->getOne(self::user, '*,CONCAT(fname," ",lname) full_name');
     }
 
     public static function delete($user_id)
@@ -191,6 +219,11 @@ class UserModel extends PinooxDatabase
     public static function where_status($status)
     {
         self::$db->where('status', $status);
+    }
+
+    public static function where_app($package_name)
+    {
+        self::$db->where('app', $package_name);
     }
 
     public static function where_search($keyword)

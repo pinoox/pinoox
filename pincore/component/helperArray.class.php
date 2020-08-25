@@ -9,22 +9,47 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component;
+
+use Closure;
+use ReflectionException;
 
 class HelperArray
 {
 
-    public static function array_depth($array, $childrenkey = "_no_children_")
+    /**
+     * Values search by a pattern of an array
+     *
+     * @var array
+     */
+    private static $resultArray = array();
+
+    /**
+     * Status required to search by a pattern of an array
+     *
+     * @var bool
+     */
+    private static $required = true;
+
+    /**
+     * Get count maximum depth of an array
+     *
+     * @param array $array
+     * @param string|null $childrenKey
+     * @return int
+     */
+    public static function depth($array, $childrenKey = null)
     {
-        if (!empty($array[$childrenkey])) {
-            $array = $array[$childrenkey];
+        if (!is_null($childrenKey) && !empty($array[$childrenKey])) {
+            $array = $array[$childrenKey];
         }
 
         $max_depth = 1;
 
         foreach ($array as $value) {
             if (is_array($value)) {
-                $depth = self::array_depth($value, $childrenkey) + 1;
+                $depth = self::depth($value, $childrenKey) + 1;
 
                 if ($depth > $max_depth) {
                     $max_depth = $depth;
@@ -35,27 +60,102 @@ class HelperArray
         return $max_depth;
     }
 
-    public static function groupByPattern($array, $pattern, $keyArray = '_KEY')
+    /**
+     * Transformation an array to pattern ideal
+     *
+     * @param array $array
+     * @param array $pattern
+     * @param string|null $keyArray
+     * @return array
+     */
+    public static function transformation($array, $pattern, $keyArray = null)
     {
         $result = [];
         foreach ($array as $key => $arr) {
-            if ($keyArray == '_KEY') {
+            if (is_null($keyArray)) {
                 if (isset($result[$key]))
-                    $result[$key] = self::getArrayForGroupPattern($arr, $pattern, $result[$key]);
+                    $result[$key] = self::convertByPattern($arr, $pattern, $result[$key]);
                 else
-                    $result[$key] = self::getArrayForGroupPattern($arr, $pattern);
+                    $result[$key] = self::convertByPattern($arr, $pattern);
 
             } else {
                 if (isset($result[$arr[$keyArray]]))
-                    $result[$arr[$keyArray]] = self::getArrayForGroupPattern($arr, $pattern, $result[$arr[$keyArray]]);
+                    $result[$arr[$keyArray]] = self::convertByPattern($arr, $pattern, $result[$arr[$keyArray]]);
                 else
-                    $result[$arr[$keyArray]] = self::getArrayForGroupPattern($arr, $pattern);
+                    $result[$arr[$keyArray]] = self::convertByPattern($arr, $pattern);
 
             }
         }
         return $result;
     }
 
+    /**
+     * Convert pattern for an array transformation
+     *
+     * @param array $array
+     * @param array $pattern
+     * @param array $result
+     * @return array
+     */
+    private static function convertByPattern($array, $pattern, $result = [])
+    {
+        foreach ($pattern as $key => $itemP) {
+            $key = self::getValueTransformation($key, $array, $result);
+
+            if (is_array($itemP)) {
+                $result[$key][] = self::convertByPattern($array, $itemP);
+            } else {
+
+                $value = self::getValueTransformation($itemP, $array, $result, $key);
+                $result[$key] = $value;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get value transformation
+     *
+     * @param Closure|string $value
+     * @param array $array
+     * @param array $result
+     * @param string|null $key
+     * @return bool|int|mixed|string|null
+     */
+    private static function getValueTransformation($value, $array, $result, $key = null)
+    {
+        if (is_callable($value)) {
+            return $value($array, $result);
+        }
+
+        $is_sum = false;
+        $is_variable = false;
+        if (!empty($key) && HelperString::firstHas($value, '+')) {
+            $value = HelperString::firstDelete($value, '+');
+            $is_sum = true;
+        }
+        if (HelperString::firstHas($value, '$')) {
+            $value = HelperString::firstDelete($value, '$');
+            $is_variable = true;
+        }
+
+        if ($is_variable)
+            $value = (isset($array[$value])) ? $array[$value] : null;
+
+        if ($is_sum) {
+            if (is_numeric($value)) $value = (isset($result[$key])) ? intval($result[$key]) + intval($value) : intval($value);
+            else $value = (isset($result[$key])) ? $result[$key] . $value : $value;
+        }
+
+        return $value;
+    }
+
+    /**
+     * Transform nested array to flat array
+     *
+     * @param array|string|mixed $input
+     * @return array
+     */
     public static function transformNestedArrayToFlatArray($input)
     {
         $output_array = [];
@@ -74,57 +174,13 @@ class HelperArray
         return $output_array;
     }
 
-    private static function getArrayForGroupPattern($array, $pattern, $result = [])
-    {
-        foreach ($pattern as $key => $itemP) {
-            $key = self::found_value_to_array_by_pattern($key,$array,$result);
-
-            if (is_array($itemP)) {
-                $result[$key][] = self::getArrayForGroupPattern($array, $itemP);
-            } else {
-
-                $value = self::found_value_to_array_by_pattern($itemP,$array,$result,$key);
-                $result[$key] = $value;
-            }
-        }
-        return $result;
-    }
-
-    private static function found_value_to_array_by_pattern($value,$array,$result,$key = null)
-    {
-        if(is_callable($value))
-        {
-           return $value($array,$result);
-        }
-
-        $is_sum = false;
-        $is_variable = false;
-        if(!empty($key) && HelperString::firstHas($value,'+'))
-        {
-            $value = HelperString::firstDelete($value,'+');
-            $is_sum = true;
-        }
-        if(HelperString::firstHas($value,'$'))
-        {
-            $value = HelperString::firstDelete($value,'$');
-            $is_variable = true;
-        }
-
-        if($is_variable)
-            $value = (isset($array[$value])) ? $array[$value] : null;
-
-        if($is_sum){
-            if(is_numeric($value)) $value = (isset($result[$key]))? intval($result[$key]) + intval($value) : intval($value);
-            else $value = (isset($result[$key]))? $result[$key] . $value : $value;
-        }
-
-        return $value;
-    }
-
-    private static $resultArray = array();
-    private static $required = true;
-
-    public static function searchArrayByPattern($pattern, $array, $delimiter = '.')
+    /**
+     * @param array|string|mixed $pattern
+     * @param array $array
+     * @param string $delimiter
+     * @return array
+     */
+    public static function detachByPattern($pattern, $array, $delimiter = '.')
     {
         self::$resultArray = array();
         self::$required = true;
@@ -132,6 +188,13 @@ class HelperArray
         return ['values' => self::$resultArray, 'required' => self::$required];
     }
 
+    /**
+     * Get values by star in pattern
+     *
+     * @param array|string|mixed $pattern
+     * @param array $array
+     * @param string $delimiter
+     */
     private static function getValuesByStar($pattern, $array, $delimiter = '.')
     {
         if (!is_array($pattern)) $pattern = HelperString::multiExplode($delimiter, $pattern);
@@ -166,7 +229,13 @@ class HelperArray
         }
     }
 
-    public static function removeValueByNestedKey(&$array, $keys)
+    /**
+     * Remove value by nested key
+     *
+     * @param array &$array
+     * @param string $keys
+     */
+    public static function removeNestedKey(&$array, $keys)
     {
         if (empty($keys)) return;
 
@@ -179,12 +248,19 @@ class HelperArray
         foreach ($keys as $k) {
             if (isset($array[$k])) {
                 array_shift($keys);
-                self::removeValueByNestedKey($array[$k], $keys);
+                self::removeNestedKey($array[$k], $keys);
             }
         }
     }
 
-    public static function isExistsValueByNestedKey($array, $keys)
+    /**
+     * Exists value by nested key
+     *
+     * @param array $array
+     * @param array $keys
+     * @return bool
+     */
+    public static function existsNestedKey($array, $keys)
     {
         foreach ($keys as $key) {
             if (isset($array[$key]))
@@ -195,7 +271,14 @@ class HelperArray
         return true;
     }
 
-    public static function getValueByNestedKey($array, $keys)
+    /**
+     * Get value by nested key
+     *
+     * @param array $array
+     * @param array $keys
+     * @return mixed|null
+     */
+    public static function getNestedKey($array, $keys)
     {
         foreach ($keys as $key) {
             if (isset($array[$key]))
@@ -206,19 +289,22 @@ class HelperArray
         return $array;
     }
 
+    /**
+     * Convert an array to an array for javascript
+     *
+     * @param array $array
+     * @return string
+     */
     public static function convertToArrayJavascript($array)
     {
         $result = "[";
         $isFirst = true;
-        foreach ($array as $item)
-        {
-            if(!$isFirst) $result .= ',';
-            if(is_array($item)) {
+        foreach ($array as $item) {
+            if (!$isFirst) $result .= ',';
+            if (is_array($item)) {
                 $item = self::convertToObjectJavascript($item);
-            }
-            else if(!is_numeric($item))
-            {
-                $item = "'".$item."'";
+            } else if (!is_numeric($item)) {
+                $item = "'" . $item . "'";
             }
 
             $result .= $item;
@@ -228,23 +314,26 @@ class HelperArray
         return $result;
     }
 
+    /**
+     * Convert an array to an object for javascript
+     *
+     * @param array $array
+     * @return string
+     */
     public static function convertToObjectJavascript($array)
     {
         $result = "{";
         $isFirst = true;
-        foreach ($array as $key=>$item)
-        {
-            if(!$isFirst) $result .= ',';
-            if(is_array($item)) {
+        foreach ($array as $key => $item) {
+            if (!$isFirst) $result .= ',';
+            if (is_array($item)) {
                 $item = self::convertToObjectJavascript($item);
-            }
-            else if(!is_numeric($item))
-            {
-                $item = "'".$item."'";
+            } else if (!is_numeric($item)) {
+                $item = "'" . $item . "'";
             }
 
-            $key = (is_numeric($key))? $key: "'".$key."'";
-            $result .= $key.":".$item;
+            $key = (is_numeric($key)) ? $key : "'" . $key . "'";
+            $result .= $key . ":" . $item;
             $isFirst = false;
         }
         $result .= "}";
@@ -252,23 +341,20 @@ class HelperArray
     }
 
     /**
-     * @param $keys : string, array
-     * Examples:
-     * @param $keys = 'userName, city'; // without defaults
-     * @param $keys = 'userName, city=tehran';// set default for specifics
-     * @param $keys = array('userName','city'=>'tehran');//set default for those haven't defaults
+     * Parse params an array
      *
-     * @param $default : string, float, int
-     * @param $validation : validation
-     * @param $removeNull : boolean  if value is null remove it from return array
-     *
-     * @param $array $_POST or $_GET
+     * @param array $array
+     * @param array|string $keys
+     * @param array|string|mixed|null $default
+     * @param string|null $validation
+     * @param bool $removeNull
      * @return array
+     * @throws ReflectionException
      */
     public static function parseParams($array, $keys, $default = null, $validation = null, $removeNull = false)
     {
         $data = [];
-        if($keys == '*') $keys = (!empty($array) && is_array($array)) ? array_keys($array) : $array;
+        if ($keys == '*') $keys = (!empty($array) && is_array($array)) ? array_keys($array) : $array;
         if (is_array($keys)) {
             foreach ($keys as $key => $val) {
                 // set default for array items
@@ -344,6 +430,16 @@ class HelperArray
         }
     }
 
+    /**
+     * Parse one param an array
+     *
+     * @param array $array
+     * @param string|array $key
+     * @param array|string|null $default
+     * @param string|null $validation
+     * @return array|mixed|string|null
+     * @throws ReflectionException
+     */
     public static function parseParam($array, $key, $default = null, $validation = null)
     {
         $isHtml = HelperString::has($key, '!') ? true : false;
@@ -360,46 +456,43 @@ class HelperArray
         return $value;
     }
 
-
-    public static function sort_week($weeks){
-        $sort=[];
-        $pattern = array('sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri');
-        foreach ($pattern as $v) {
-            //If the value in the template exists as a key in the actual array.. (condition)
-            if (array_key_exists($v, $weeks)) {
-                $sort[$v] = $weeks[$v]; //The value is assigned to the new array and the key of the actual array is assigned as a value to the new array
-            }
-        }
-        return $sort;
-    }
-
+    /**
+     * Get last key of array
+     *
+     * @param array $arr
+     * @return int|string|null
+     */
     public static function lastKey($arr)
     {
         end($arr);
         return key($arr);
     }
 
-    public static function flip($array,$isArray = true,$isMultiple = true)
+    /**
+     * Flip array (support multi array)
+     *
+     * @param array $array
+     * @param bool $isArray
+     * @param bool $isMultiple
+     * @return array|null
+     */
+    public static function flip($array, $isArray = true, $isMultiple = true)
     {
-        if(!$isMultiple)
+        if (!$isMultiple)
             return array_flip($array);
 
         $result = [];
-        foreach ($array as $key=>$value)
-        {
+        foreach ($array as $key => $value) {
 
-            if(empty($value) || !(is_numeric($value) || is_string($value)))
+            if (empty($value) || !(is_numeric($value) || is_string($value)))
                 continue;
 
-            if($isArray || isset($result[$value]))
-            {
-                if(!is_array($result[$value]))
+            if ($isArray || isset($result[$value])) {
+                if (!is_array($result[$value]))
                     $result[$value] = [$result[$value]];
 
                 $result[$value][] = $key;
-            }
-            else
-            {
+            } else {
                 $result[$value] = $key;
             }
         }

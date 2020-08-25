@@ -21,7 +21,7 @@ class MainController extends MasterConfiguration
 {
     public function _exception()
     {
-        self::_main();
+        $this->_main();
     }
 
     public function app($package_name)
@@ -30,11 +30,12 @@ class MainController extends MasterConfiguration
             $app = AppModel::fetch_by_package_name($package_name);
             if ($app['enable'] && !$app['open']) {
                 self::$template = null;
+                User::reset();
                 Router::build('manager/app/' . $package_name, $package_name);
                 exit;
             }
         }
-        self::_main();
+        $this->_main();
     }
 
     public function _main()
@@ -49,7 +50,7 @@ class MainController extends MasterConfiguration
             HelperHeader::contentType('application/javascript', 'UTF-8');
             self::$template->view('dist/pinoox.js');
         } else {
-            self::_main();
+            $this->_main();
         }
     }
 }

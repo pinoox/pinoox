@@ -1,3 +1,5 @@
+/** global: PINOOX */
+
 import Vue from 'vue';
 import Vuex from 'vuex';
 
@@ -12,7 +14,7 @@ export default new Vuex.Store({
             database: 'pinoox',
             username: 'root',
             password: '',
-            prefix: 'pin_',
+            prefix: '',
         },
         user:{
             fname:'',

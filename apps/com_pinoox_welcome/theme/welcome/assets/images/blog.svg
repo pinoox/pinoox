@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <g id="file" transform="translate(-124 -75)">
+    <g id="interface" transform="translate(124 75)">
+      <g id="Group_2" data-name="Group 2">
+        <g id="Group_1" data-name="Group 1">
+          <path id="Path_1" data-name="Path 1" d="M256,0C114.516,0,0,114.5,0,256,0,397.484,114.5,512,256,512c141.484,0,256-114.5,256-256C512,114.516,397.5,0,256,0Zm0,472A216,216,0,1,1,472,256,215.883,215.883,0,0,1,256,472Z" fill="#489BC3"/>
+        </g>
+      </g>
+    </g>
+    <g id="file-2" data-name="file" transform="translate(276.8 212.8)">
+      <path id="Path_2" data-name="Path 2" d="M195.5,0H0V209.4a27.827,27.827,0,0,0,27.8,27.8h181.61A27.827,27.827,0,0,0,237.2,209.4V111.651H195.5ZM27.8,223.3a13.914,13.914,0,0,1-13.9-13.9V13.9H181.606V209.4a27.621,27.621,0,0,0,3.739,13.9Zm195.5-97.752V209.4a13.9,13.9,0,0,1-27.8,0V125.549Zm0,0" fill="#489BC3"/>
+      <path id="Path_3" data-name="Path 3" d="M60,116.057H199.911V60H60ZM73.9,73.9H186.013v28.26H73.9Zm0,0" transform="translate(-32.203 -32.203)" fill="#489BC3"/>
+      <path id="Path_4" data-name="Path 4" d="M60,211h69.955v13.9H60Zm0,0" transform="translate(-32.203 -113.248)" fill="#489BC3"/>
+      <path id="Path_5" data-name="Path 5" d="M241,211h56.057v13.9H241Zm0,0" transform="translate(-129.349 -113.248)" fill="#489BC3"/>
+      <path id="Path_6" data-name="Path 6" d="M60,271h69.955v13.9H60Zm0,0" transform="translate(-32.203 -145.451)" fill="#489BC3"/>
+      <path id="Path_7" data-name="Path 7" d="M241,271h56.057v13.9H241Zm0,0" transform="translate(-129.349 -145.451)" fill="#489BC3"/>
+      <path id="Path_8" data-name="Path 8" d="M60,331h69.955v13.9H60Zm0,0" transform="translate(-32.203 -177.654)" fill="#489BC3"/>
+      <path id="Path_9" data-name="Path 9" d="M60,391h69.955v13.9H60Zm0,0" transform="translate(-32.203 -209.857)" fill="#489BC3"/>
+      <path id="Path_10" data-name="Path 10" d="M241,372.7h56.057V331H241Zm13.9-27.8h28.26v13.9H254.9Zm0,0" transform="translate(-129.349 -177.654)" fill="#489BC3"/>
+    </g>
+  </g>
+</svg>

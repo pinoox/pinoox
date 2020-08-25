@@ -335,9 +335,9 @@ class Upload
     private function getInfoFile($file)
     {
         $result['tmp_name'] = $file;
-        $result['name'] = File::name_and_ext_file($file);
-        $result['size'] = File::file_size($file);
-        $result['type'] = File::mime_type_file($file);
+        $result['name'] = File::fullname($file);
+        $result['size'] = File::size($file);
+        $result['type'] = File::mime_type($file);
         $result['error'] = 0;
         return $result;
     }
@@ -715,18 +715,18 @@ class Upload
         $f_filename = $file['name'];
         $f_size = $file['size'];
         $f_mimeType = $file['type'];
-        $f_name = File::name_file($f_filename);
-        $f_type = File::ext_file($f_filename);
+        $f_name = File::name($f_filename);
+        $f_type = File::extension($f_filename);
         $u_filename = $this->getFileNameForUpload($f_name, $f_type);
 
         $return = [
             "uploadname" => $u_filename,
             "realname" => $f_filename,
             "size" => $f_size,
-            "formattedSize" => File::convert_print_size($f_size, 2),
+            "formattedSize" => File::convert_auto_unit($f_size, 2),
             "ext" => $f_type,
             'mimeType' => $f_mimeType,
-            'type' => File::get_auto_file_type($f_mimeType),
+            'type' => File::mime_type($f_mimeType),
             'dir_file' => ($this->dirFolder . $this->dirSeparator),
             'path_file' => ($this->dirFolder . $this->dirSeparator . $u_filename)
         ];
@@ -735,7 +735,7 @@ class Upload
             $this->setError("ALLOW_TYPE", Lang::replace('~upload.err.allow_type', $f_type), true, $f_filename);
         } else if (!$this->validSize($f_type, $f_size)) {
             $isUpload = false;
-            $printSize = File::convert_print_size($this->getAllowSize($f_type));
+            $printSize = File::convert_auto_unit($this->getAllowSize($f_type));
             $this->setError("ALLOW_SIZE", Lang::replace('~upload.err.size', $f_type, $printSize), true, $f_filename);
         }
         if ($isUpload) {
@@ -883,11 +883,11 @@ class Upload
         $return = false;
 
         if ($this->isCopy) {
-            if (File::copyDir($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
+            if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
                 $return = true;
             }
         } else if ($this->isMove) {
-            if (File::moveDir($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
+            if (File::move($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
                 $return = true;
             }
         } else {
@@ -945,8 +945,8 @@ class Upload
                 $this->setError('MKDIR_THUMB', Lang::replace('~upload.err.mkdir', $dir));
             }
 
-            $name = File::name_file($filename);
-            $ext = File::ext_file($filename);
+            $name = File::name($filename);
+            $ext = File::extension($filename);
 
             if (is_array($this->thumbImg["size"])) {
                 foreach ($this->thumbImg["size"] as $size) {
