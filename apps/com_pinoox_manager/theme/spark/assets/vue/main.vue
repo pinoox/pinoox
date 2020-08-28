@@ -85,7 +85,7 @@
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp','getPinooxAuth']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp', 'getPinooxAuth']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -111,12 +111,16 @@
                 this.$http.get(this.URL.API + 'notification/').then((json) => {
                     if (json.data.status) {
                         this.notifications = json.data.result;
+                        setTimeout(() => {
+                            this.getNotifications();
+                        }, 180000)
                     }
                 });
             },
             checkVersion() {
                 this.$http.get(this.URL.API + 'update/checkVersion/').then((json) => {
                     this.pinoox = json.data;
+                    this.getNotifications();
                 });
             },
             locker() {
@@ -132,7 +136,6 @@
                 if (this.isLogin && !this.isLock) {
                     this.locker();
                     this.getApps();
-                    this.getNotifications();
                     this.checkVersion();
                     this.getReadyToInstallApp();
                 } else {
@@ -149,7 +152,7 @@
             userAccess() {
                 if (this.isLogin && !this.isLock) {
                     //this.$router.replace({name: this.startRoute.name});
-                   this.$router.replace({name: 'home'});
+                    this.$router.replace({name: 'home'});
                 } else {
                     this.$router.replace({name: 'login'});
                 }

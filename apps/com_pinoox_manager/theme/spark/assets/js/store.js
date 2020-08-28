@@ -60,7 +60,12 @@ export default new Vuex.Store({
             return Object.values(state.apps);
         },
         hasNotification: state => {
-            return state.notifications.length > 0;
+            for (let index in state.notifications) {
+                let notification = state.notifications[index];
+                if (notification.status === 'send')
+                    return true;
+            }
+            return false;
         },
     },
     mutations: {
@@ -98,8 +103,8 @@ export default new Vuex.Store({
             state.isOpenNotification = !state.isOpenNotification;
 
             $(document).mouseup(function (e) {
-                var notifications = $(".notifications");
-                var ntfDrawer = $(".ntf-drawer");
+                let notifications = $(".notifications");
+                let ntfDrawer = $(".ntf-drawer");
 
                 if (!notifications.is(e.target) && notifications.has(e.target).length === 0 &&
                     !ntfDrawer.is(e.target) && ntfDrawer.has(e.target).length === 0) {
