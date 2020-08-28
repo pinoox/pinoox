@@ -5,19 +5,19 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- Table structure for com_pinoox_manager_notification
 -- ----------------------------
 DROP TABLE IF EXISTS `com_pinoox_manager_notification`;
-CREATE TABLE `com_pinoox_manager_notification`
-(
-    `ntf_id`      int(10) UNSIGNED                                     NOT NULL AUTO_INCREMENT,
-    `title`       varchar(255) CHARACTER SET utf8 COLLATE utf8_bin     NULL DEFAULT NULL,
-    `message`     varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
-    `insert_date` datetime(0)                                          NULL DEFAULT NULL,
-    `is_seen`     tinyint(1)                                           NULL DEFAULT 0,
-    PRIMARY KEY (`ntf_id`) USING BTREE
-) ENGINE = InnoDB
-  AUTO_INCREMENT = 10
-  CHARACTER SET = utf8mb4
-  COLLATE = utf8mb4_bin
-  ROW_FORMAT = Compact;
+CREATE TABLE `com_pinoox_manager_notification`  (
+                                                    `ntf_id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
+                                                    `app` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+                                                    `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+                                                    `message` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+                                                    `action_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+                                                    `action_data` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
+                                                    `insert_date` datetime(0) NULL DEFAULT NULL,
+                                                    `push_date` datetime(0) NULL DEFAULT NULL,
+                                                    `status` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
+                                                    PRIMARY KEY (`ntf_id`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
+
 
 -- ----------------------------
 -- Table structure for pincore_file
@@ -39,7 +39,7 @@ CREATE TABLE `pincore_file`
     PRIMARY KEY (`file_id`) USING BTREE,
     INDEX `pincore_file_user_id` (`user_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 29
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_bin
   ROW_FORMAT = Compact;
@@ -107,7 +107,7 @@ CREATE TABLE `pincore_user`
     PRIMARY KEY (`user_id`) USING BTREE,
     INDEX `pincore_user_avatar_id` (`avatar_id`) USING BTREE
 ) ENGINE = InnoDB
-  AUTO_INCREMENT = 3
+  AUTO_INCREMENT = 1
   CHARACTER SET = utf8
   COLLATE = utf8_bin
   ROW_FORMAT = Compact;
