@@ -81,6 +81,10 @@ return [
     'installed' => 'installed',
     'installed_successfully' => 'installed successfully',
     'ready_to_install' => 'ready installation',
+    'users' => 'users',
+    'configs' => 'configs',
+    'apps_list' => 'applications list',
+    'manual_installation' => 'manual installation',
 
 ];
     

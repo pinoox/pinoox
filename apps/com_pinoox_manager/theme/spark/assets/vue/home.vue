@@ -25,7 +25,7 @@
 <script>
     import Widgets from './widgets.vue';
     import AppDetails from './app-details.vue';
-    import {mapState} from 'vuex';
+    import {mapState, mapMutations} from 'vuex';
 
     export default {
         data() {
@@ -39,12 +39,14 @@
             ...mapState(['apps', 'user']),
         },
         methods: {
+            ...mapMutations(['pushToAppManager']),
             openApp(app) {
                 if (app.open != null) {
                     this.$router.replace({name: app.open});
                 } else {
                     this.app = app;
                 }
+                this.pushToAppManager(app);
             },
         },
     };

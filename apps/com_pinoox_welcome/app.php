@@ -1,5 +1,5 @@
 <?php
-//pinoox app file, generated at "2019-12-25 19:03"
+//pinoox app file, generated at "2020-08-30 12:21"
 
 return array (
   'name' => 'welcome',
@@ -10,6 +10,8 @@ return array (
   'icon' => 'icon.png',
   'enable' => true,
   'theme' => 'welcome',
+  'lang' => 'fa',
+  'hidden' => true,
 );
 
 //end of app

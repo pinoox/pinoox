@@ -41,8 +41,10 @@ export default new Vuex.Store({
             interval: null,
         },
         pinooxAuth: {isLogin: false},
-        readyInstallCount: 0
+        readyInstallCount: 0,
+        appManager: [],
     },
+    setters: {},
     getters: {
         background: state => {
             if (state.options.background === 6)
@@ -158,11 +160,21 @@ export default new Vuex.Store({
                 state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
             });
         },
+        pushToAppManager: (state, app) => {
+            let result = state.appManager.find(a => a.package_name === app.package_name);
+            if (result === undefined)
+                state.appManager.push(app);
+        },
+        closeFromAppManager(state, app) {
+            state.appManager = state.appManager.filter(function (a) {
+                return a.package_name !== app.package_name;
+            });
+        }
     },
     actions: {
         run({commit}) {
             commit('startTimer');
             commit('running');
-        }
+        },
     }
 });

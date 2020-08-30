@@ -19,6 +19,7 @@
 @hoverColor: #ffe3b4;
 @bgColor: rgba(255, 255, 255, 0.06);
 @desktopColor: rgba(29, 29, 29, 0.94);
+@backgroundCard: rgba(0, 0, 0, 0.11);
 
 @notificationWidth: 330px;
 @notificationHeight: 100vh;
@@ -441,6 +442,11 @@ a {
   }
 }
 
+.window-card {
+  background: @backgroundCard;
+  border-radius: 4px;
+  padding: 10px 20px;
+}
 
 .truncate {
   white-space: nowrap;
@@ -753,6 +759,24 @@ body.ltr {
     .item.active {
       background: rgba(18, 97, 159, 0.22);
     }
+
+    .app-info {
+      min-height: 145px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background: fade(@warning, 10%);
+
+      .icon {
+        width: 96px;
+      }
+
+      .name {
+        color: @warning;
+      }
+    }
   }
 
   .content {
@@ -873,6 +897,8 @@ body.ltr {
     height: @pinbarHeight;
     background: rgba(0, 0, 0, 0.7);
     z-index: 100;
+    display: flex;
+
 
     .pin-icon {
       font-size: 13px;
@@ -955,6 +981,50 @@ body.ltr {
     .systemClock {
       min-width: 50px;
       text-align: center;
+    }
+
+    .appManage-tabs {
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      .tab-app {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        height: 100%;
+        font-size: 11px;
+        margin: 0 2px;
+        position: relative;
+        align-items: center;
+        opacity: 0.5;
+
+        &:hover{
+          opacity: 1;
+          cursor: pointer;
+        }
+
+        .icon {
+          position: absolute;
+          top: 4px;
+          right: 4px;
+          opacity: 0.4;
+          z-index: 10;
+
+          &:hover {
+            cursor: pointer;
+            opacity: 1;
+          }
+        }
+        .app-name{
+          z-index: 1;
+          height: 100%;
+          width: 100%;
+          display: block;
+          padding: 9px 25px 0 25px;
+        }
+      }
     }
   }
 
@@ -1536,7 +1606,7 @@ body.ltr {
   }
 }
 
-#settings {
+.windows-page {
   .window(true);
 
   .content {
@@ -2274,107 +2344,180 @@ body.ltr {
 
       }
 
-      .app-manager {
-        .apps {
-          padding: 30px 0;
+      .apps {
+        padding: 30px 0;
 
-          .app-item {
-            margin-bottom: 20px;
-            border-radius: 5px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.11);
-            align-items: center;
-            justify-content: center;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .app-item {
+          margin-bottom: 20px;
+          border-radius: 5px;
+          padding: 10px;
+          background: rgba(0, 0, 0, 0.11);
+          align-items: center;
+          justify-content: center;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
 
-            .icon {
-              display: flex;
-
-              img {
-                width: 96px;
-                height: 96px;
-                border-radius: 1rem;
-                .boxShadow();
-              }
-
-              .text {
-                flex-grow: 1;
-                padding: 10px;
-
-                .name {
-                  display: inline-block;
-                  font-size: 16px;
-                  font-weight: 700;
-                  color: #fff;
-                }
-
-                .info {
-                  font-size: 11px;
-                  font-weight: 200;
-                  color: rgba(255, 228, 185, 0.6);
-                }
-              }
-            }
-
-            .action {
-              text-align: left;
-
-              .btn {
-                color: #afafaf;
-
-                &:hover {
-                  color: #d8802b;
-                  cursor: pointer;
-                }
-              }
-            }
-
-          }
-        }
-
-        .empty {
-          padding: 15px;
-          color: rgba(203, 203, 203, 0.59);
-          font-size: 13px;
-        }
-
-        .users {
-          margin: 3% 0;
-
-          .item {
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.22);
+          .icon {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 13px;
 
-            .image {
-              width: 72px;
-
-              img {
-                border: 2px solid #fff;
-                border-radius: 50%;
-                height: 64px;
-                width: 64px;
-                .boxShadow();
-              }
+            img {
+              width: 96px;
+              height: 96px;
+              border-radius: 1rem;
+              .boxShadow();
             }
 
             .text {
-              text-align: center;
-              flex: 1;
+              flex-grow: 1;
+              padding: 10px;
+
+              .name {
+                display: inline-block;
+                font-size: 16px;
+                font-weight: 700;
+                color: #fff;
+              }
+
+              .info {
+                font-size: 11px;
+                font-weight: 200;
+                color: rgba(255, 228, 185, 0.6);
+              }
+            }
+          }
+
+          .action {
+            text-align: left;
+
+            .btn {
+              color: #afafaf;
+
+              &:hover {
+                color: #d8802b;
+                cursor: pointer;
+              }
+            }
+          }
+
+          &:hover {
+            cursor: pointer;
+          }
+
+        }
+      }
+
+      .empty {
+        padding: 15px;
+        color: rgba(203, 203, 203, 0.59);
+        font-size: 13px;
+      }
+
+      .users {
+        margin: 3% 0;
+
+        .item {
+          padding: 10px;
+          margin-bottom: 10px;
+          border-radius: 10px;
+          background: rgba(0, 0, 0, 0.22);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 13px;
+
+          .image {
+            width: 72px;
+
+            img {
+              border: 2px solid #fff;
+              border-radius: 50%;
+              height: 64px;
+              width: 64px;
+              .boxShadow();
+            }
+          }
+
+          .text {
+            text-align: center;
+            flex: 1;
+          }
+        }
+      }
+
+      .app-manager {
+        .info {
+          .item {
+            display: flex;
+            flex-direction: row;
+            margin: 20px 0;
+            font-size: 13px;
+
+            .label {
+              font-size: 1em;
+              flex-basis: 140px;
+              color: @warning;
+              font-weight: 700;
+              padding: 0 10px;
+            }
+
+            .text {
+              font-size: 1em;
+              flex-grow: 1;
+              padding: 0 10px;
+              font-weight: 300;
+              color: #efefef;
             }
           }
         }
       }
 
+      .manual-installation {
+
+        .upload-wrapper {
+          .window-card;
+          padding: 10px;
+          margin: auto;
+          margin-top: 5%;
+          max-width: 800px;
+          min-height: 300px;
+
+          .upload-panel {
+            border: 3px dashed rgba(239, 239, 239, 0.3);
+            width: 100%;
+            height: 100%;
+            min-height: 300px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            .icon {
+              margin-top: 10px;
+              width: 256px;
+              opacity: 0.7;
+              font-size: 8rem;
+              text-align: center;
+              color: #fff;
+
+              &:hover {
+                cursor: pointer;
+                opacity: 1;
+              }
+            }
+
+            .text {
+              padding: 10px 2px;
+            }
+          }
+        }
+
+      }
     }
+
   }
 }
+
 
 #login {
   position: fixed;
@@ -2524,7 +2667,7 @@ body.ltr {
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (max-width: 768px) {
-  #settings {
+  .windows-page {
     grid-template-columns: 100px calc(100% - 100px);
 
     .sidebar {
