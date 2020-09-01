@@ -8,6 +8,12 @@
                 <img src="@img/pin-icon.png">
                 <span v-if="hasNotification" class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
             </div>
+            <div class="appManage-tabs" v-if="appManager!=null && appManager.length>0">
+                <div class="tab-app" v-for="(app,index) in appManager">
+                    <i @click="closeTab(app)" class="icon fa fa-times"></i>
+                    <span @click="openTab(app)" class="app-name">{{app.name}}</span>
+                </div>
+            </div>
             <router-link :to="{name:'appManager-home'}" class="pin-icon" v-if="notifyInstaller>0">
                 <i class="fas fas fa-grip-horizontal fontIcon"></i> <span class="label">{{LANG.manager.ready_to_install}}</span>
                 <span class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
@@ -43,7 +49,7 @@
             }
         },
         computed: {
-            ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
+            ...mapState(['isLoading', 'isRun', 'time', 'isApp', 'appManager']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
             notifyInstaller: {
                 get() {
@@ -81,11 +87,19 @@
                 set(val) {
                     this.$store.state.notifications = val;
                 }
-            }
+            },
+            appManager: {
+                get() {
+                    return this.$store.state.appManager;
+                },
+                set(val) {
+                    this.$store.state.appManager = val;
+                }
+            },
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp', 'getPinooxAuth']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromAppManager']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -111,16 +125,12 @@
                 this.$http.get(this.URL.API + 'notification/').then((json) => {
                     if (json.data.status) {
                         this.notifications = json.data.result;
-                        setTimeout(() => {
-                            this.getNotifications();
-                        }, 180000)
                     }
                 });
             },
             checkVersion() {
                 this.$http.get(this.URL.API + 'update/checkVersion/').then((json) => {
                     this.pinoox = json.data;
-                    this.getNotifications();
                 });
             },
             locker() {
@@ -136,6 +146,7 @@
                 if (this.isLogin && !this.isLock) {
                     this.locker();
                     this.getApps();
+                    this.getNotifications();
                     this.checkVersion();
                     this.getReadyToInstallApp();
                 } else {
@@ -151,8 +162,9 @@
             },
             userAccess() {
                 if (this.isLogin && !this.isLock) {
-                    //this.$router.replace({name: this.startRoute.name});
-                    this.$router.replace({name: 'home'});
+                    let r = this.startRoute;
+                    this.$router.replace({name: r.name, params: r.params});
+                    //this.$router.replace({name: 'home'});
                 } else {
                     this.$router.replace({name: 'login'});
                 }
@@ -162,6 +174,30 @@
                     this.startRoute = this.$router.currentRoute;
                 else
                     this.startRoute = {name: 'home'};
+            },
+            openTab(app) {
+                if (!!app.open) {
+                    this.$router.push({
+                        name: app.open
+                    }).catch(err => {
+                    });
+                } else {
+                    this.$router.push({
+                        name: 'appManager-details',
+                        params: {package_name: app.package_name}
+                    }).catch(err => {
+                    });
+                }
+
+            },
+            closeTab(app) {
+                if (app.package_name === this.$route.params.package_name) {
+                    this.$router.replace({
+                        name: 'appManager-home'
+                    }).catch(err => {
+                    });
+                }
+                this.closeFromAppManager(app);
             }
         },
         created() {
