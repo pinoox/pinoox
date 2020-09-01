@@ -10,7 +10,7 @@
                 <span @click="actionNotification(logout())" href="javascript:;"><i
                         class="fas fa-power-off"></i></span>
             </div>
-            <div v-if="hasNotification">
+            <div v-if="!!notifications && notifications.length > 0">
                 <div class="list">
                     <transition-group name="list" tag="div">
                         <div class="item" v-bind:key="item.ntf_id" @click="hideNotification(index,item)"
@@ -32,19 +32,41 @@
 </template>
 
 <script>
-    import {mapState, mapGetters, mapMutations} from 'vuex';
+    import {mapGetters, mapMutations, mapState} from 'vuex';
 
     export default {
         name: "notifications",
         computed: {
-            ...mapState(['notifications', 'animDirection']),
+            ...mapState(['animDirection']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
+            notifications: {
+                get() {
+                    return this.$store.state.notifications;
+                },
+                set(val) {
+                    this.$store.state.notifications = val;
+                }
+            },
+            getIds() {
+                return this.notifications.map((row) => {
+                    return row['ntf_id'];
+                });
+            }
         },
         methods: {
             ...mapMutations(['logout', 'lock', 'toggleNotification']),
+            seenNotification: function () {
+                if(!this.hasNotification)
+                    return;
+                this.$http.post(PINOOX.URL.API + 'notification/seen', {notifications: this.getIds}).then((json) => {
+                    for (let index in this.notifications) {
+                        this.notifications[index].status = 'seen';
+                    }
+                });
+            },
             hideNotification: function (index, item) {
                 this.$http.post(PINOOX.URL.API + 'notification/hide', {ntf_id: item.ntf_id}).then((json) => {
-                    if (json.status) {
+                    if (json.data.status) {
                         this.notifications.splice(index, 1);
                     }
                 });
@@ -53,9 +75,14 @@
                 this.toggleNotification();
                 if (typeof action == 'string' || action instanceof String)
                     this.$router.replace({name: action});
-            }
+            },
         },
-        created() {
+        watch: {
+            isOpenNotification(status) {
+                if (status) {
+                    this.seenNotification();
+                }
+            }
         }
 
     };
