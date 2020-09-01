@@ -80,12 +80,12 @@
                     if (this.pinoox.isNewVersion) {
                         this.notifyUpdate();
                     } else {
-                        this._notify(this.LANG.manager.updating, this.LANG.manager.your_pinoox_is_up_to_date, null);
+                        this._notify(this.LANG.manager.update, this.LANG.manager.your_pinoox_is_up_to_date, null);
                     }
                 });
             },
             notifyUpdate() {
-                this._notify(this.LANG.manager.updating, this.LANG.manager.are_sure_update_pincore, null, [
+                this._notify(this.LANG.manager.update, this.LANG.manager.are_sure_update_pincore, null, [
                     {
                         text: this.LANG.manager.yes,
                         func: () => {
@@ -107,11 +107,11 @@
 
                     if (json.data.status) {
                         this.pinoox = json.data.result;
-                        this._notify(this.LANG.manager.updating,
+                        this._notify(this.LANG.manager.update,
                             this.LANG.manager.pinoox_successfully_update_to + this.pinoox.client.version_name + this.LANG.manager.updated, 'success');
                         this._redirect(this.URL.CURRENT,1);
                     } else {
-                        this._notify(this.LANG.manager.updating, this.LANG.manager.update_failed, 'danger');
+                        this._notify(this.LANG.manager.update, this.LANG.manager.update_failed, 'danger');
                     }
 
                 })
