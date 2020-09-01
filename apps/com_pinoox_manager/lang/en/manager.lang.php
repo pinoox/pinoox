@@ -85,6 +85,10 @@ return [
     'configs' => 'configs',
     'apps_list' => 'applications list',
     'manual_installation' => 'manual installation',
+    'app_details' => 'application details',
+    'app' => 'application',
+    'templates' => 'tempaltes',
+    'upload_pinoox_package_for_installing' => 'upload app with *.pin extension for installing',
 
 ];
     
