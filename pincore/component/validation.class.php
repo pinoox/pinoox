@@ -321,8 +321,6 @@ class Validation
         ];
         $options = self::$params;
         $status = $status($info, $options);
-        if($status) return;
-        
         if (!empty($dataIntoMessage))
             $dataIntoMessage = $dataIntoMessage($info, $options);
         if (is_array($err)) {

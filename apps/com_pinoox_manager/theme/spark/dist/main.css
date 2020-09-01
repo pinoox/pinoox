@@ -10248,11 +10248,6 @@ body.ltr .widget-clock .moment {
   height: 96px;
   border-radius: 1rem;
   box-shadow: 0 3px 10px rgba(22, 22, 22, 0.36);
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
 }
 .windows-page .content .page .apps .app-item .icon .text {
   flex-grow: 1;
