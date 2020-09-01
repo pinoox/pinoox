@@ -81,6 +81,14 @@ return [
     'installed' => 'نصب شده',
     'installed_successfully' => 'با موفقیت نصب شد',
     'ready_to_install' => 'آماده نصب',
+    'users' => 'کاربران',
+    'configs' => 'تنظیمات',
+    'apps_list' => 'لیست اپلیکیشن ها',
+    'manual_installation' => 'نصب دستی',
+    'app_details' => 'اطلاعات اپلیکیشن',
+    'app' => 'اپلیکیشن',
+    'templates' => 'قالب ها',
+    'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگزاری کنید',
 
 ];
     
