@@ -9,14 +9,16 @@ import SettingAccount from '../vue/setting/account.vue';
 import SettingRouter from '../vue/setting/router.vue';
 import SettingMarket from '../vue/setting/market.vue';
 import SettingAbout from '../vue/setting/about.vue';
-import SettingAppManager from '../vue/setting/appManager.vue';
-import AppManagerHome from '../vue/setting/appManager/home.vue';
-import AppManagerConfig from '../vue/setting/appManager/config.vue';
-import AppManagerUsers from '../vue/setting/appManager/users.vue';
 import MarketHome from '../vue/setting/market/home.vue';
 import MarketDetails from '../vue/setting/market/details.vue';
 import MarketLogin from '../vue/setting/market/login.vue';
 import MarketAccount from '../vue/setting/market/account.vue';
+import AppManager from '../vue/appManager/main.vue';
+import AppManagerHome from '../vue/appManager/home.vue';
+import AppManagerDetails from '../vue/appManager/details.vue';
+import AppManagerConfig from '../vue/appManager/config.vue';
+import AppManagerUsers from '../vue/appManager/users.vue';
+import AppManagerManual from '../vue/appManager/manual.vue';
 
 export const routes = [
     {
@@ -88,32 +90,49 @@ export const routes = [
                 ]
             },
             {
-                path: 'appManager',
-                component: SettingAppManager,
-                children: [
-                    {
-                        path: '',
-                        name: 'appManager-home',
-                        component: AppManagerHome
-                    },
-                    {
-                        path: 'config/:package_name',
-                        name: 'appManager-config',
-                        component: AppManagerConfig,
-                        props: true,
-                    },
-                    {
-                        path: 'users/:package_name',
-                        name: 'appManager-users',
-                        component: AppManagerUsers,
-                        props: true,
-                    },
-                ]
-            },
-            {
                 path: 'about',
                 name: 'setting-about',
                 component: SettingAbout
+            },
+        ]
+    },
+    {
+        path: PINOOX.URL.BASE + 'appManager',
+        component: AppManager,
+        children: [
+            {
+                path: '',
+                name: 'appManager-home',
+                component: AppManagerHome,
+                meta: {
+                    showMainMenu: true,
+                }
+            },
+            {
+                path: 'manuel',
+                name: 'appManager-manual',
+                component: AppManagerManual,
+                meta: {
+                    showMainMenu: true,
+                }
+            },
+            {
+                path: 'users/:package_name',
+                name: 'appManager-users',
+                component: AppManagerUsers,
+                props: true,
+            },
+            {
+                path: 'config/:package_name',
+                name: 'appManager-config',
+                component: AppManagerConfig,
+                props: true,
+            },
+            {
+                path: 'details/:package_name',
+                name: 'appManager-details',
+                component: AppManagerDetails,
+                props: true,
             },
         ]
     },
