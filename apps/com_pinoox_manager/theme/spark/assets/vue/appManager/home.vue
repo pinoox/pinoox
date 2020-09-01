@@ -26,14 +26,25 @@
             <div class="tab-content">
                 <div class="tab-pane fade show active">
                     <div class="apps" v-if="!_isEmptyObj(apps) && !isLoading">
-                        <div @click="showDetailsApp(app)" class="app-item" v-for="(app,index) in apps">
-                            <div class="icon">
+                        <div class="app-item" v-for="(app,index) in apps">
+                            <div class="icon" @click="showDetailsApp(app)" >
                                 <img :src="app.icon" :alt="app.name">
                                 <div class="text">
                                     <h2 class="name">{{app.name}}</h2>
                                     <h3 class="info">{{LANG.manager.developer}}: {{app.developer}}</h3>
                                     <h3 class="info">{{LANG.manager.version}}: {{app.version}}</h3>
                                 </div>
+                            </div>
+                            <div class="action" v-if="!app.sys_app">
+                                      <span @click="removeApp(app)" v-if="activeTab !== 'ready_install'" class="btn"> <i
+                                              class="fa fa-trash"></i></span>
+
+                                <!--installation-->
+                                <span v-if="activeTab === 'ready_install' && app.state==='install'" @click="installApp(app)"
+                                      class="btn">{{LANG.manager.install}}</span>
+                                <span v-if="activeTab === 'ready_install' && app.state==='installing'" class="btn"><span
+                                        class="pin-loader "><i class="fa fa-spinner"></i></span> {{LANG.manager.installing}}...</span>
+
                             </div>
                         </div>
                     </div>
@@ -81,11 +92,43 @@
                 });
             },
             showDetailsApp(app) {
+                if(app.sys_app || this.activeTab==='ready_install') return;
+
                 this.$parent.selectedApp = app;
                 this.pushToAppManager(app);
                 this.$router.push({name: 'appManager-details', params: {package_name: app.package_name}});
-            }
-
+            },
+            installApp(app) {
+                app.state = 'installing';
+                this.$http.get(this.URL.API + 'app/install/' + app.package_name).then((json) => {
+                    app.state = 'installed';
+                    this.$delete(this.apps, app.package_name);
+                    this.installCount--;
+                    this.getApps();
+                    this._notify(this.LANG.manager.installed_successfully, '', 'success');
+                });
+            },
+            removeApp(app) {
+                this._notify(this.LANG.manager.alert, this.LANG.manager.are_you_sure_delete_app, null, [
+                    {
+                        text: this.LANG.manager.do_delete,
+                        func: () => {
+                            this._loading = true;
+                            this.$http.post(this.URL.API + 'app/remove/' + app.package_name).then((json) => {
+                                this._loading = false;
+                                app.state = 'download';
+                                this.$delete(this.$store.state.apps, app.package_name);
+                                this.$delete(this.apps, app.package_name);
+                            });
+                        }
+                    },
+                    {
+                        text: this.LANG.manager.no,
+                        func: () => {
+                        }
+                    }
+                ]);
+            },
         },
         created() {
             this.loadApps();

@@ -15,3 +15,13 @@ downloads/*
 # Node Js
 node_modules/
 *.pin
+ 
+
+apps
+apps/com_pinoox_manager/config/
+pincore/config/
+
+!apps/com_pinoox_manager
+!apps/com_pinoox_welcome
+!apps/com_pinoox_market
+!apps/com_pinoox_installer

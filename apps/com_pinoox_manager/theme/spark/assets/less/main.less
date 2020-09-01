@@ -1000,7 +1000,7 @@ body.ltr {
         align-items: center;
         opacity: 0.5;
 
-        &:hover{
+        &:hover {
           opacity: 1;
           cursor: pointer;
         }
@@ -1017,7 +1017,8 @@ body.ltr {
             opacity: 1;
           }
         }
-        .app-name{
+
+        .app-name {
           z-index: 1;
           height: 100%;
           width: 100%;
@@ -2353,18 +2354,26 @@ body.ltr {
           padding: 10px;
           background: rgba(0, 0, 0, 0.11);
           align-items: center;
-          justify-content: center;
-          display: grid;
-          grid-template-columns: 1fr 1fr;
+          justify-content: space-between;
+          display: flex;
 
           .icon {
             display: flex;
+
+            &:hover {
+              cursor: pointer;
+              img{
+                .trans;
+                transform: scale(1.05);
+              }
+            }
 
             img {
               width: 96px;
               height: 96px;
               border-radius: 1rem;
               .boxShadow();
+              .trans;
             }
 
             .text {
@@ -2399,9 +2408,6 @@ body.ltr {
             }
           }
 
-          &:hover {
-            cursor: pointer;
-          }
 
         }
       }

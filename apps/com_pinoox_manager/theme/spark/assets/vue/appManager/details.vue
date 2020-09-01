@@ -38,17 +38,35 @@
             app: {
                 get() {
                     return !!this.$parent.selectedApp ? this.$parent.selectedApp : null;
+                },
+                set(val) {
+                    this.$parent.selectedApp = val;
                 }
-            }
+            },
+            apps: {
+                get() {
+                    return this.$store.state.apps;
+                }
+            },
         },
         methods: {
             initApp() {
                 this.$emit('onUpdatePackageName', this.package_name);
+            },
+            onUpdateAppInfo() {
+                this.app = this.apps[this.package_name];
             }
         },
         created() {
             this.initApp();
+            this.onUpdateAppInfo();
         },
+        watch: {
+            $route(to, from) {
+                if (to.params.package_name !== this.app.package_name)
+                    this.onUpdateAppInfo();
+            }
+        }
 
     }
 </script>

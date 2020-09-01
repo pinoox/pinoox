@@ -10226,18 +10226,33 @@ body.ltr .widget-clock .moment {
   padding: 10px;
   background: rgba(0, 0, 0, 0.11);
   align-items: center;
-  justify-content: center;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  justify-content: space-between;
+  display: flex;
 }
 .windows-page .content .page .apps .app-item .icon {
   display: flex;
+}
+.windows-page .content .page .apps .app-item .icon:hover {
+  cursor: pointer;
+}
+.windows-page .content .page .apps .app-item .icon:hover img {
+  -webkit-transition: 0.2s;
+  -moz-transition: 0.2s;
+  -ms-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
+  transform: scale(1.05);
 }
 .windows-page .content .page .apps .app-item .icon img {
   width: 96px;
   height: 96px;
   border-radius: 1rem;
   box-shadow: 0 3px 10px rgba(22, 22, 22, 0.36);
+  -webkit-transition: 0.2s;
+  -moz-transition: 0.2s;
+  -ms-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
 }
 .windows-page .content .page .apps .app-item .icon .text {
   flex-grow: 1;
@@ -10262,9 +10277,6 @@ body.ltr .widget-clock .moment {
 }
 .windows-page .content .page .apps .app-item .action .btn:hover {
   color: #d8802b;
-  cursor: pointer;
-}
-.windows-page .content .page .apps .app-item:hover {
   cursor: pointer;
 }
 .windows-page .content .page .empty {
