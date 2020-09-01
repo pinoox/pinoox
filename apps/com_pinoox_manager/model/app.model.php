@@ -22,7 +22,6 @@ use pinoox\model\PinooxDatabase;
 
 class AppModel extends PinooxDatabase
 {
-
     /**
      * @param null|boolean $sysApp null: return all installed and system apps | true: return all system apps | false: return all installed app
      * @param bool $isCheckHidden
@@ -48,11 +47,6 @@ class AppModel extends PinooxDatabase
             $isEnable = AppProvider::get('enable');
             if (!$isEnable)
                 continue;
-
-            $isHidden = AppProvider::get('hidden');
-            if ($isCheckHidden && $isHidden)
-                continue;
-
             $isRouter = AppProvider::get('router');
             if ($isCheckRouter && !$isRouter)
                 continue;
@@ -68,7 +62,7 @@ class AppModel extends PinooxDatabase
 
             $result[$package_key] = [
                 'package_name' => $package_key,
-                'hidden' => $isHidden,
+                'hidden' => AppProvider::get('hidden'),
                 'router' => $isRouter,
                 'name' => AppProvider::get('name'),
                 'description' => AppProvider::get('description'),
@@ -152,5 +146,6 @@ class AppModel extends PinooxDatabase
         }
 
     }
+
 
 }
