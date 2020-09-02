@@ -9,6 +9,9 @@
                 <span v-if="hasNotification" class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
             </div>
             <div class="appManage-tabs" v-if="appManager!=null && appManager.length>0">
+                <div class="tab-app">
+                    <router-link tag="span" :to="{name:'home'}" class="app-name home"><i class="fa fa-home"></i></router-link>
+                </div>
                 <div class="tab-app" v-for="(app,index) in appManager">
                     <i @click="closeTab(app)" class="icon fa fa-times"></i>
                     <span @click="openTab(app)" class="app-name">{{app.name}}</span>
