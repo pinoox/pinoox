@@ -994,7 +994,7 @@ body.ltr {
         color: #fff;
         background: rgba(255, 255, 255, 0.1);
         height: 100%;
-        font-size: 11px;
+        font-size: 12px;
         margin: 0 2px;
         position: relative;
         align-items: center;
@@ -1007,10 +1007,11 @@ body.ltr {
 
         .icon {
           position: absolute;
-          top: 4px;
+          top: 6px;
           right: 4px;
           opacity: 0.4;
           z-index: 10;
+          font-size: 14px;
 
           &:hover {
             cursor: pointer;
@@ -1023,11 +1024,19 @@ body.ltr {
           height: 100%;
           width: 100%;
           display: block;
-          padding: 9px 25px 0 25px;
+          padding: 5px 25px 0 25px;
 
           &.home {
             padding: 4px 10px 0 10px !important;
             font-size: 15px;
+          }
+
+          &.tab-icon {
+            i {
+              position: absolute;
+              left: 5px;
+              top: 8px;
+            }
           }
         }
       }
@@ -2367,7 +2376,8 @@ body.ltr {
 
             &:hover {
               cursor: pointer;
-              img{
+
+              img {
                 .trans;
                 transform: scale(1.05);
               }
@@ -2527,6 +2537,16 @@ body.ltr {
     }
 
   }
+
+
+  .app-view {
+    iframe {
+      background: #fff;
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+
 }
 
 
