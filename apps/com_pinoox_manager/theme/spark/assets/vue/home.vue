@@ -28,6 +28,9 @@
     import {mapState, mapMutations} from 'vuex';
 
     export default {
+        created(){
+            this.pushToTabs({key:'home'});
+        },
         data() {
             return {
                 app: null,
@@ -39,14 +42,12 @@
             ...mapState(['apps', 'user']),
         },
         methods: {
-            ...mapMutations(['pushToAppManager']),
             openApp(app) {
                 if (app.open != null) {
                     this.$router.replace({name: app.open});
                 } else {
                     this.app = app;
                 }
-                this.pushToAppManager(app);
             },
         },
     };

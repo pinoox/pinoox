@@ -2,11 +2,12 @@
     <section>
         <div class="windows-page">
             <div class="sidebar" data-simplebar :key="forceRenderKey">
-                <div @click="goBack()" class="item back">
+                <div>
+                <router-link tag="div" v-if="isMainMenu" :to="{name: 'setting-dashboard'}" class="item back">
                     <i class="fas fa-chevron-right"></i>&nbsp;
                     <span class="name"> {{LANG.manager.back}}</span>
-                </div>
-                <div>
+                </router-link>
+
                     <div class="app-info"  v-if="selectedApp!=null">
                         <img :src="selectedApp.icon" class="icon">
                         <span class="name">{{selectedApp.name}}</span>
@@ -110,13 +111,26 @@
                 }
             },
         },
-        created() {
-            this.switchMenus();
-        },
         methods: {
             switchMenus() {
                 this.menus = this.isMainMenu ? this.mainMenus : this.appMenus;
-                if (this.isMainMenu) this.selectedApp = null;
+                if (this.isMainMenu) {
+                    this.pushToTabs({
+                        key:'setting',
+                        label:'setting',
+                        icon: 'fa fa-cog',
+                    });
+                    this.selectedApp = null;
+                }
+                else if(!!this.packageName)
+                {
+                    let app = this.apps[this.packageName];
+                    this.pushToTabs({
+                        key:'setting:'+this.packageName,
+                        label:app.name,
+                        icon: 'fa fa-cog',
+                    });
+                }
             },
             updatePackageName(val) {
                 this.forceRenderKey++;
@@ -124,14 +138,13 @@
                 this.selectedApp = this.apps[val];
                 this.switchMenus();
             },
-            goBack() {
-                let route = this.isMainMenu ? {name: 'setting-dashboard'} : {name: 'appManager-home'};
-                this.$router.replace(route);
-            }
         },
         watch: {
-            $route(to, from) {
-                this.switchMenus();
+            $route: {
+                handler(){
+                    this.switchMenus();
+                },
+                immediate:true,
             },
         }
 
