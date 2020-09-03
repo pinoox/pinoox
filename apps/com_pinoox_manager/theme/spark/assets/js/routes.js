@@ -98,12 +98,12 @@ export const routes = [
         ]
     },
     {
-        path: PINOOX.URL.BASE + 'appManager',
+        path: PINOOX.URL.BASE + 'app',
         component: AppManager,
         children: [
             {
                 path: '',
-                name: 'appManager-home',
+                name: 'app-home',
                 component: AppManagerHome,
                 meta: {
                     showMainMenu: true,
@@ -111,7 +111,7 @@ export const routes = [
             },
             {
                 path: 'manuel',
-                name: 'appManager-manual',
+                name: 'app-manual',
                 component: AppManagerManual,
                 meta: {
                     showMainMenu: true,
@@ -119,19 +119,19 @@ export const routes = [
             },
             {
                 path: 'users/:package_name',
-                name: 'appManager-users',
+                name: 'app-users',
                 component: AppManagerUsers,
                 props: true,
             },
             {
                 path: 'config/:package_name',
-                name: 'appManager-config',
+                name: 'app-config',
                 component: AppManagerConfig,
                 props: true,
             },
             {
                 path: 'details/:package_name',
-                name: 'appManager-details',
+                name: 'app-details',
                 component: AppManagerDetails,
                 props: true,
             },

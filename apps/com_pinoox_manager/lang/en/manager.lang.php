@@ -40,6 +40,7 @@ return [
     'addresses' => 'Addresses',
     'about' => 'Pinoox',
     'invalid_request' => 'Invalid request',
+    'app_name' => 'App Name',
     'developer' => 'Developer',
     'version' => 'Version',
     'require_space' => 'Requirement space',

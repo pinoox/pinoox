@@ -10,6 +10,14 @@
             <div class="app-manager" v-if="app!=null">
                 <div class="info">
                     <div class="item">
+                        <div class="label">{{LANG.manager.app_name}}</div>
+                        <div class="text">{{app.name}}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">{{LANG.manager.package_name}}</div>
+                        <div class="text">{{app.package_name}}</div>
+                    </div>
+                    <div class="item">
                         <div class="label">{{LANG.manager.developer}}</div>
                         <div class="text">{{app.developer}}</div>
                     </div>
@@ -18,14 +26,10 @@
                         <div class="text">{{app.version_code}}</div>
                     </div>
                     <div class="item">
-                        <div class="label">{{LANG.manager.package_name}}</div>
-                        <div class="text">{{app.package_name}}</div>
-                    </div>
-                    <div class="item">
                         <div class="label">{{LANG.manager.description}}</div>
                         <div class="text">{{app.description}}</div>
                     </div>
-                    <div v-if="app.router" class="item mt-2">
+                    <div v-if="app.router && app.routes.length>0" class="item mt-2">
                         <div class="label">{{LANG.manager.addresses}}</div>
                     </div>
                 </div>
@@ -73,15 +77,11 @@
             },
         },
         methods: {
-            initApp() {
-                this.$emit('onUpdatePackageName', this.package_name);
-            },
             onUpdateAppInfo() {
                 this.app = this.apps[this.package_name];
             }
         },
         created() {
-            this.initApp();
             this.onUpdateAppInfo();
         },
         watch: {

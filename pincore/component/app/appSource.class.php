@@ -35,7 +35,7 @@ abstract class AppSource
      *
      * @var string|null
      */
-    protected static $open = null;
+    protected static $open = 'app-details';
 
     /**
      * How to appoint an application on the address page

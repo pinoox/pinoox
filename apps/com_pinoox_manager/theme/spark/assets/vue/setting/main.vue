@@ -11,7 +11,7 @@
                     <img v-if="menu.img!=null" :src="menu.img">
                     <i v-else class="fas" :class="menu.icon"></i>
                     &nbsp;<span class="name">{{LANG.manager[menu.label]}}</span>
-                    <div class="notify-effect" v-if="notifyInstaller && menu.name === 'appManager-home'">
+                    <div class="notify-effect" v-if="notifyInstaller && menu.name === 'app-home'">
                         <div class="double-bounce1"></div>
                         <div class="double-bounce2"></div>
                     </div>
@@ -59,7 +59,7 @@
                     },
 
                     {
-                        name: 'appManager-home',
+                        name: 'app-home',
                         label: 'app_manager',
                         icon: 'fas fa-grip-horizontal',
                         params: {},

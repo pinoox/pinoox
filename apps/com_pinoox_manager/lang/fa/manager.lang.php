@@ -40,6 +40,7 @@ return [
     'addresses' => 'آدرس ها',
     'about' => 'پینوکس',
     'invalid_request' => 'درخواست نامعتبر است',
+    'app_name' => 'نام اپلیکیشن',
     'developer' => 'توسعه دهنده',
     'version' => 'نسخه',
     'require_space' => 'فضای مورد نیاز',

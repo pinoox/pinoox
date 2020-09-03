@@ -43,12 +43,12 @@
         methods: {
             openApp(app) {
 
-                if(!app.open || app.open === 'app-setting')
+                if(!app.open || app.open === 'app-details')
                 {
-                    this.$router.replace({name: 'appManager-details',params:{package_name:app.package_name}});
+                    this.$router.replace({name: 'app-details',params:{package_name:app.package_name}});
                 }
                 else {
-                    this.$router.replace({name: app.open});
+                    this.$router.replace({name: app.open,params:{package_name:app.package_name}});
                 }
             },
         },
