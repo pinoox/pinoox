@@ -95,7 +95,6 @@
                 if(app.sys_app || this.activeTab==='ready_install') return;
 
                 this.$parent.selectedApp = app;
-                this.pushToTabs(app);
                 this.$router.push({name: 'appManager-details', params: {package_name: app.package_name}});
             },
             installApp(app) {

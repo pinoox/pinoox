@@ -211,6 +211,19 @@
                 } else {
                     this.$router.push({name: 'home'});
                 }
+            },
+            updateRouteTabs(route)
+            {
+                this.$nextTick(() => {
+                    if (!this.tabCurrent.key || this.tabCurrent.key === 'home')
+                        return;
+                    let tab = this.tabs.find(t => t.key === this.tabCurrent.key);
+                    tab.route = {
+                        name: route.name,
+                        params: route.params,
+                        query: route.query,
+                    };
+                });
             }
         },
         created() {
@@ -244,19 +257,10 @@
             },
             '$route': {
                 handler(route) {
-                    this.$nextTick(() => {
-                        if (!this.tabCurrent.key || this.tabCurrent.key === 'home')
-                            return;
-                        let tab = this.tabs.find(t => t.key === this.tabCurrent.key);
-                        tab.route = {
-                            name: route.name,
-                            params: route.params,
-                            query: route.query,
-                        };
-                    });
+                   this.updateRouteTabs(route);
                 },
                 immediate: true,
-            }
+            },
         }
     };
 
