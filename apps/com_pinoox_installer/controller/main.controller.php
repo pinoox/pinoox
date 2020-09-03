@@ -12,21 +12,9 @@
  */
 namespace pinoox\app\com_pinoox_installer\controller;
 
-use pinoox\component\app\AppProvider;
-use pinoox\component\Config;
-use pinoox\component\DB;
-use pinoox\component\Dir;
-use pinoox\component\File;
 use pinoox\component\HelperHeader;
-use pinoox\component\Lang;
-use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Router;
-use pinoox\component\System;
-use pinoox\component\User;
-use pinoox\component\Validation;
-use pinoox\model\PinooxDatabase;
-use pinoox\model\UserModel;
 
 class MainController extends MasterConfiguration
 {
