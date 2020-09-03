@@ -1,18 +1,17 @@
 # Pinoox
+apps
+!apps/com_pinoox_manager/*
+!apps/com_pinoox_welcome/*
+!apps/com_pinoox_installer/*
+!apps/com_pinoox_market/*
 upload
 uploads
 cache
 temp
 downloads
-apps
 *.pin
 *.config.php
 app.runner.php
-
-!apps/com_pinoox_manager
-!apps/com_pinoox_welcome
-!apps/com_pinoox_installer
-!apps/com_pinoox_market
 
 # IntelliJ IDEA
 .idea
