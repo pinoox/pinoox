@@ -19,6 +19,7 @@ import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
 import AppManagerManual from '../vue/appManager/manual.vue';
+import AppView from '../vue/pages/app-view.vue';
 
 export const routes = [
     {
@@ -135,5 +136,11 @@ export const routes = [
                 props: true,
             },
         ]
+    },
+    {
+        path: PINOOX.URL.BASE + 'demo/:package_name',
+        name: 'app-view',
+        component: AppView,
+        props:true,
     },
 ];

@@ -1005,6 +1005,11 @@ body.ltr {
           cursor: pointer;
         }
 
+        &.active {
+          opacity: 1;
+          cursor: default;
+        }
+
         .icon {
           position: absolute;
           top: 6px;
@@ -1017,9 +1022,10 @@ body.ltr {
             cursor: pointer;
             opacity: 1;
           }
+
         }
 
-        .app-name {
+        .tab-details {
           z-index: 1;
           height: 100%;
           width: 100%;
@@ -1031,13 +1037,25 @@ body.ltr {
             font-size: 15px;
           }
 
+          .app-name{
+            padding-left: 4px;
+          }
+
           &.tab-icon {
             i {
               position: absolute;
               left: 5px;
               top: 8px;
             }
+
+            img {
+              position: absolute;
+              left: 5px;
+              top: 6px;
+              width: 16px;
+            }
           }
+
         }
       }
     }

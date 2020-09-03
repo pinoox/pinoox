@@ -81,7 +81,7 @@
             },
         },
         methods: {
-            ...mapMutations(['getApps', 'pushToAppManager']),
+            ...mapMutations(['getApps']),
             loadApps(activeTab) {
                 this.isLoading = true;
                 if (activeTab != null)
@@ -95,7 +95,7 @@
                 if(app.sys_app || this.activeTab==='ready_install') return;
 
                 this.$parent.selectedApp = app;
-                this.pushToAppManager(app);
+                this.pushToTabs(app);
                 this.$router.push({name: 'appManager-details', params: {package_name: app.package_name}});
             },
             installApp(app) {

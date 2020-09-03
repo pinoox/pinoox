@@ -14,8 +14,8 @@
                                      v-bind:title="LANG.manager.router"><i class="fas fa-code-branch"></i></router-link>
                         <router-link :to="{name:'appManager-config',params:{package_name:selectedApp.package_name}}" class="btn" v-bind:title="LANG.manager.app_manager"><i
                                 class="fas fa-cogs"></i></router-link>
-                        <a target="_blank" class="btn" :href="URL.APP+ 'app/'+selectedApp.package_name" :title="LANG.manager.preview"><i
-                                class="fa fa-eye"></i></a>
+                        <router-link :to="{name:'app-view',params:{package_name:selectedApp.package_name}}" class="btn" :title="LANG.manager.preview"><i
+                                class="fa fa-eye"></i></router-link>
                     </div>
 
 
