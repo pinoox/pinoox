@@ -24,7 +24,6 @@
 
 <script>
     import Widgets from './widgets.vue';
-    import AppDetails from './app-details.vue';
     import {mapState, mapMutations} from 'vuex';
 
     export default {
@@ -37,16 +36,19 @@
                 isOpenInstaller: false,
             }
         },
-        components: {Widgets, AppDetails},
+        components: {Widgets},
         computed: {
             ...mapState(['apps', 'user']),
         },
         methods: {
             openApp(app) {
-                if (app.open != null) {
+
+                if(!app.open || app.open === 'app-setting')
+                {
+                    this.$router.replace({name: 'appManager-details',params:{package_name:app.package_name}});
+                }
+                else {
                     this.$router.replace({name: app.open});
-                } else {
-                    this.app = app;
                 }
             },
         },

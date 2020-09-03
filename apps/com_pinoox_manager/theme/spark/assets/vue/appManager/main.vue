@@ -3,14 +3,25 @@
         <div class="windows-page">
             <div class="sidebar" data-simplebar :key="forceRenderKey">
                 <div>
-                <router-link tag="div" v-if="isMainMenu" :to="{name: 'setting-dashboard'}" class="item back">
-                    <i class="fas fa-chevron-right"></i>&nbsp;
-                    <span class="name"> {{LANG.manager.back}}</span>
-                </router-link>
+                    <router-link tag="div" v-if="isMainMenu" :to="{name: 'setting-dashboard'}" class="item back">
+                        <i class="fas fa-chevron-right"></i>&nbsp;
+                        <span class="name"> {{LANG.manager.back_to_setting}}</span>
+                    </router-link>
 
-                    <div class="app-info"  v-if="selectedApp!=null">
+                    <div class="app-info" v-if="selectedApp!=null">
                         <img :src="selectedApp.icon" class="icon">
                         <span class="name">{{selectedApp.name}}</span>
+                        <div class="text">
+                            <router-link :to="{name:'appManager-home',params:{package_name:selectedApp.package_name}}"
+                                         class="btn" v-bind:title="LANG.manager.app_manager"><i
+                                    class="fas fa-boxes"></i></router-link>
+                            <router-link v-if="selectedApp.router" tag="span" :to="{name:'setting-router'}" class="btn"
+                                         v-bind:title="LANG.manager.router"><i class="fas fa-code-branch"></i>
+                            </router-link>
+                            <router-link :to="{name:'app-view',params:{package_name:selectedApp.package_name}}"
+                                         class="btn" :title="LANG.manager.preview"><i
+                                    class="fa fa-eye"></i></router-link>
+                        </div>
                     </div>
                 </div>
                 <router-link replace v-for="menu in menus" exact-active-class="active" class="item"
@@ -114,20 +125,21 @@
         methods: {
             switchMenus() {
                 this.menus = this.isMainMenu ? this.mainMenus : this.appMenus;
+                let packageName = (!!this.$route.params.package_name)? this.$route.params.package_name : null;
                 if (this.isMainMenu) {
                     this.pushToTabs({
-                        key:'setting',
-                        label:'setting',
+                        key: 'setting',
+                        label: 'setting',
                         icon: 'fa fa-cog',
                     });
                     this.selectedApp = null;
-                }
-                else if(!!this.packageName)
-                {
-                    let app = this.apps[this.packageName];
+                } else if (!!packageName) {
+
+                    console.log(packageName);
+                    let app = this.apps[packageName];
                     this.pushToTabs({
-                        key:'setting:'+this.packageName,
-                        label:app.name,
+                        key: 'app-setting:' + packageName,
+                        label: app.name,
                         icon: 'fa fa-cog',
                     });
                 }
@@ -141,10 +153,10 @@
         },
         watch: {
             $route: {
-                handler(){
+                handler() {
                     this.switchMenus();
                 },
-                immediate:true,
+                immediate: true,
             },
         }
 

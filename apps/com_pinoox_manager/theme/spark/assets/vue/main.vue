@@ -58,7 +58,7 @@
             }
         },
         computed: {
-            ...mapState(['isLoading', 'isRun', 'time', 'isApp', 'appManager', 'tabCurrent']),
+            ...mapState(['isLoading', 'isRun', 'time', 'isApp', 'appManager']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
             notifyInstaller: {
                 get() {
@@ -184,21 +184,6 @@
                 else
                     this.startRoute = {name: 'home'};
             },
-            openTab(app) {
-                if (!!app.open) {
-                    this.$router.push({
-                        name: app.open
-                    }).catch(err => {
-                    });
-                } else {
-                    this.$router.push({
-                        name: 'appManager-details',
-                        params: {package_name: app.package_name}
-                    }).catch(err => {
-                    });
-                }
-
-            },
             closeTab(key) {
                 this.closeFromTabs(key);
                 let length = this.tabs.length;
@@ -257,7 +242,7 @@
             },
             '$route': {
                 handler(route) {
-                   this.updateRouteTabs(route);
+                       this.updateRouteTabs(route);
                 },
                 immediate: true,
             },

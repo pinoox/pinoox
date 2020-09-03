@@ -30,6 +30,14 @@ Vue.mixin({
                 this.$store.state.isLogin = val;
             }
         },
+        tabCurrent: {
+            get() {
+                return this.$store.state.tabCurrent;
+            },
+            set(val) {
+                this.$store.state.tabCurrent = val;
+            }
+        },
         _loading: {
             get() {
                 return this.$store.state.isLoading;
