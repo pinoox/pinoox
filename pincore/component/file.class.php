@@ -136,13 +136,14 @@ class File
      *
      * @param string $file
      * @param string $newFile
+     * @param bool $safe
      * @return bool
      */
-    public static function copy($file, $newFile)
+    public static function copy($file, $newFile,$safe = false)
     {
         if (!file_exists($file)) return false;
         $folder = dirname($newFile);
-        self::make_folder($folder, true);
+        self::make_folder($folder, true,0777,$safe);
 
         $c = @copy($file, $newFile);
 
