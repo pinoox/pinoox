@@ -42,8 +42,7 @@
                 handler(){
                     this.pushToTabs({
                         key: 'app-view:'+this.package_name,
-                        label: this.appName + ' setting',
-                        //icon: 'fa fa-cog',
+                        label: this.appName,
                         image:this.appIcon,
                     });
                 },
