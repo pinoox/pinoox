@@ -19,6 +19,7 @@ import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
 import AppManagerManual from '../vue/appManager/manual.vue';
+import  Market from '../vue/market.vue';
 
 export const routes = [
     {
@@ -56,7 +57,7 @@ export const routes = [
                 name: 'setting-router',
                 component: SettingRouter
             },
-            {
+          /*  {
                 path: 'market',
                 component: SettingMarket,
                 children: [
@@ -88,7 +89,7 @@ export const routes = [
                         }
                     },
                 ]
-            },
+            },*/
             {
                 path: 'about',
                 name: 'setting-about',
@@ -135,5 +136,10 @@ export const routes = [
                 props: true,
             },
         ]
+    },
+    {
+        path: PINOOX.URL.BASE + 'market',
+        name: 'market',
+        component: Market
     },
 ];
