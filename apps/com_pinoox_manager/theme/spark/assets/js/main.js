@@ -18,7 +18,6 @@ axiosMethodOverride(axios);
 const instance = axios.create();
 axiosMethodOverride(instance);
 Vue.use(ToggleButton);
-
 Vue.use(VueAxios, axios);
 __webpack_public_path__ = PINOOX.URL.THEME + 'dist/';
 
