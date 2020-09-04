@@ -101,6 +101,11 @@ module.exports = {
                 to: 'images',
                 flatten: true,
             },
+            {
+                from: './assets/images/logo/favicon.ico',
+                to: 'images',
+                flatten: true,
+            },
         ]),
         new MiniCssExtractPlugin({
             filename: `[name].css${isRelease ? '?[chunkhash]' : ''}`,
