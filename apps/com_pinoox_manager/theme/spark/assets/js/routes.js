@@ -20,6 +20,7 @@ import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
 import AppManagerManual from '../vue/appManager/manual.vue';
 import AppView from '../vue/pages/app-view.vue';
+import Market from '../vue/market.vue';
 
 export const routes = [
     {
@@ -142,5 +143,10 @@ export const routes = [
         name: 'app-view',
         component: AppView,
         props:true,
+    },
+    {
+        path: PINOOX.URL.BASE + 'market2',
+        name: 'market',
+        component: Market,
     },
 ];
