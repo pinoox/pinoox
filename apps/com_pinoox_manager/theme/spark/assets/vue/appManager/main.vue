@@ -1,15 +1,27 @@
 <template>
     <section>
         <div class="windows-page">
-            <div class="sidebar" data-simplebar :key="forceRenderKey">
-                <div @click="goBack()" class="item back">
-                    <i class="fas fa-chevron-right"></i>&nbsp;
-                    <span class="name"> {{LANG.manager.back}}</span>
-                </div>
+            <div class="sidebar" data-simplebar>
                 <div>
-                    <div class="app-info"  v-if="selectedApp!=null">
+                    <router-link tag="div" v-if="isMainMenu" :to="{name: 'setting-dashboard'}" class="item back">
+                        <i class="fas fa-chevron-right"></i>&nbsp;
+                        <span class="name"> {{LANG.manager.back_to_setting}}</span>
+                    </router-link>
+
+                    <div class="app-info" v-if="!!this.packageName">
                         <img :src="selectedApp.icon" class="icon">
                         <span class="name">{{selectedApp.name}}</span>
+                        <div class="text">
+                            <router-link :to="{name:'app-home',params:{package_name:selectedApp.package_name}}"
+                                         class="btn" v-bind:title="LANG.manager.app_manager"><i
+                                    class="fas fa-boxes"></i></router-link>
+                            <router-link v-if="selectedApp.router" tag="span" :to="{name:'setting-router'}" class="btn"
+                                         v-bind:title="LANG.manager.router"><i class="fas fa-code-branch"></i>
+                            </router-link>
+                            <router-link :to="{name:'app-view',params:{package_name:selectedApp.package_name}}"
+                                         class="btn" :title="LANG.manager.preview"><i
+                                    class="fa fa-eye"></i></router-link>
+                        </div>
                     </div>
                 </div>
                 <router-link replace v-for="menu in menus" exact-active-class="active" class="item"
@@ -19,7 +31,7 @@
                     &nbsp;<span class="name">{{LANG.manager[menu.label]}}</span>
                 </router-link>
             </div>
-            <router-view @onUpdatePackageName="updatePackageName"></router-view>
+            <router-view></router-view>
         </div>
     </section>
 </template>
@@ -29,7 +41,6 @@
     export default {
         data() {
             return {
-                forceRenderKey: 0,
                 packageName: '',
                 menusList: [],
                 selectedApp: null,
@@ -58,19 +69,19 @@
                 get() {
                     return [
                         {
-                            name: 'appManager-details',
+                            name: 'app-details',
                             label: 'app_details',
                             icon: 'fas fa-file',
                             params: {package_name: this.packageName}
                         },
                         {
-                            name: 'appManager-config',
+                            name: 'app-config',
                             label: 'configs',
                             icon: 'fas fa-cog',
                             params: {package_name: this.packageName}
                         },
                         {
-                            name: 'appManager-users',
+                            name: 'app-users',
                             label: 'users',
                             icon: 'fas fa-users',
                             params: {package_name: this.packageName}
@@ -82,13 +93,13 @@
                 get() {
                     return [
                         {
-                            name: 'appManager-home',
+                            name: 'app-home',
                             label: 'apps_list',
                             icon: 'fas fa-grip-horizontal',
                         },
 
                         {
-                            name: 'appManager-manual',
+                            name: 'app-manual',
                             label: 'manual_installation',
                             icon: 'fas fa-archive',
                         },
@@ -110,28 +121,34 @@
                 }
             },
         },
-        created() {
-            this.switchMenus();
-        },
         methods: {
             switchMenus() {
-                this.menus = this.isMainMenu ? this.mainMenus : this.appMenus;
-                if (this.isMainMenu) this.selectedApp = null;
+                this.packageName = (!!this.$route.params.package_name)? this.$route.params.package_name : null;
+                this.menus = !this.packageName ? this.mainMenus : this.appMenus;
+
+                if (!this.packageName) {
+                    this.pushToTabs({
+                        key: 'setting',
+                        label: 'setting',
+                        icon: 'fa fa-cog',
+                    });
+                    this.selectedApp = null;
+                } else {
+                    this.selectedApp = this.apps[this.packageName];
+                    this.pushToTabs({
+                        key: 'app-setting:' + this.packageName,
+                        label: this.selectedApp.name,
+                        icon: 'fa fa-cog',
+                    });
+                }
             },
-            updatePackageName(val) {
-                this.forceRenderKey++;
-                this.packageName = val;
-                this.selectedApp = this.apps[val];
-                this.switchMenus();
-            },
-            goBack() {
-                let route = this.isMainMenu ? {name: 'setting-dashboard'} : {name: 'appManager-home'};
-                this.$router.replace(route);
-            }
         },
         watch: {
-            $route(to, from) {
-                this.switchMenus();
+            $route: {
+                handler() {
+                    this.switchMenus();
+                },
+                immediate: true,
             },
         }
 

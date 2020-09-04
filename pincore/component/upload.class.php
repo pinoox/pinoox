@@ -883,7 +883,7 @@ class Upload
         $return = false;
 
         if ($this->isCopy) {
-            if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
+            if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file,true)) {
                 $return = true;
             }
         } else if ($this->isMove) {

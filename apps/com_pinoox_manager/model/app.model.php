@@ -96,6 +96,7 @@ class AppModel extends PinooxDatabase
                 'router' => AppProvider::get('router'),
                 'enable' => AppProvider::get('enable'),
                 'open' => AppProvider::get('open'),
+                'sys-app' => AppProvider::get('sys-app'),
                 'description' => AppProvider::get('description'),
                 'version' => AppProvider::get('version-name'),
                 'version_code' => AppProvider::get('version-code'),

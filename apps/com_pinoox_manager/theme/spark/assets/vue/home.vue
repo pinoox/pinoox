@@ -24,29 +24,32 @@
 
 <script>
     import Widgets from './widgets.vue';
-    import AppDetails from './app-details.vue';
     import {mapState, mapMutations} from 'vuex';
 
     export default {
+        created(){
+            this.pushToTabs({key:'home'});
+        },
         data() {
             return {
                 app: null,
                 isOpenInstaller: false,
             }
         },
-        components: {Widgets, AppDetails},
+        components: {Widgets},
         computed: {
             ...mapState(['apps', 'user']),
         },
         methods: {
-            ...mapMutations(['pushToAppManager']),
             openApp(app) {
-                if (app.open != null) {
-                    this.$router.replace({name: app.open});
-                } else {
-                    this.app = app;
+
+                if(!app.open || app.open === 'app-details')
+                {
+                    this.$router.replace({name: 'app-details',params:{package_name:app.package_name}});
                 }
-                this.pushToAppManager(app);
+                else {
+                    this.$router.replace({name: app.open,params:{package_name:app.package_name}});
+                }
             },
         },
     };

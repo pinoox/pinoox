@@ -1,23 +1,21 @@
 # Pinoox
-upload/*
-uploads/*
-apps/*/upload/*
-apps/*/cache/*
-apps/*/uploads/*
-cache/*
-temp/*
-dist/*
-downloads/*
+apps
+!apps/com_pinoox_manager/*
+!apps/com_pinoox_welcome/*
+!apps/com_pinoox_installer/*
+!apps/com_pinoox_market/*
+upload
+uploads
+cache
+temp
+downloads
+*.pin
+*.config.php
+app.runner.php
 
 # IntelliJ IDEA
-.idea/
+.idea
 
 # Node Js
-node_modules/
-*.pin
-
-apps/**
-!apps/com_pinoox_manager/
-!apps/com_pinoox_welcome/
-!apps/com_pinoox_installer/
-!apps/com_pinoox_market/
+node_modules
+package-lock.json

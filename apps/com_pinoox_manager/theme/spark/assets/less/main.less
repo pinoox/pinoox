@@ -776,6 +776,26 @@ body.ltr {
       .name {
         color: @warning;
       }
+
+      .text {
+        margin-top: 8px;
+        display: block;
+
+        .app-name {
+          display: block;
+        }
+
+        .btn {
+          margin: 1px;
+          color: #FFF;
+
+          &:hover {
+            cursor: pointer;
+            transform: scale(1.2);
+            .trans;
+          }
+        }
+      }
     }
   }
 
@@ -994,7 +1014,7 @@ body.ltr {
         color: #fff;
         background: rgba(255, 255, 255, 0.1);
         height: 100%;
-        font-size: 11px;
+        font-size: 12px;
         margin: 0 2px;
         position: relative;
         align-items: center;
@@ -1005,25 +1025,57 @@ body.ltr {
           cursor: pointer;
         }
 
+        &.active {
+          opacity: 1;
+          cursor: default;
+        }
+
         .icon {
           position: absolute;
-          top: 4px;
+          top: 6px;
           right: 4px;
           opacity: 0.4;
           z-index: 10;
+          font-size: 14px;
 
           &:hover {
             cursor: pointer;
             opacity: 1;
           }
+
         }
 
-        .app-name {
+        .tab-details {
           z-index: 1;
           height: 100%;
           width: 100%;
           display: block;
-          padding: 9px 25px 0 25px;
+          padding: 5px 25px 0 25px;
+
+          &.home {
+            padding: 4px 10px 0 10px !important;
+            font-size: 15px;
+          }
+
+          .app-name{
+            padding-left: 4px;
+          }
+
+          &.tab-icon {
+            i {
+              position: absolute;
+              left: 5px;
+              top: 8px;
+            }
+
+            img {
+              position: absolute;
+              left: 5px;
+              top: 6px;
+              width: 16px;
+            }
+          }
+
         }
       }
     }
@@ -2478,6 +2530,45 @@ body.ltr {
         }
       }
 
+      .app-routes {
+        display: block;
+        clear: both;
+        border-top: 2px solid rgba(0,0,0,.1);
+        margin-top: 40px;
+        text-align: left;
+
+        a {
+          display: block;
+          background: rgba(69, 69, 69, 0.49);
+          padding: 6px;
+          margin-bottom: 5px;
+          font-size: 12px;
+          color: #fff;
+          direction: ltr;
+          .trans;
+
+          &:hover {
+            background: rgba(101, 101, 101, 0.49);
+            .trans;
+            text-decoration: none;
+          }
+        }
+
+        .message {
+          font-size: 12px;
+          text-align: center;
+
+          .text {
+            padding: 15px;
+            display: block;
+          }
+
+          a {
+            display: inline-block;
+          }
+        }
+      }
+
       .manual-installation {
 
         .upload-wrapper {
@@ -2523,6 +2614,16 @@ body.ltr {
     }
 
   }
+
+
+  .app-view {
+    iframe {
+      background: #fff;
+      width: 100vw;
+      height: 100vh;
+    }
+  }
+
 }
 
 

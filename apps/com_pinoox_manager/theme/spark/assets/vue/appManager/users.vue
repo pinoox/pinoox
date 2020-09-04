@@ -34,9 +34,6 @@
             }
         },
         methods: {
-            initApp() {
-                this.$emit('onUpdatePackageName', this.package_name);
-            },
             getUsers() {
                 this.$http.get(this.URL.API + 'user/getUsers/' + this.package_name).then((json) => {
                     this.users = json.data;
@@ -44,7 +41,6 @@
             }
         },
         created() {
-            this.initApp();
             this.getUsers();
         },
 

@@ -2,7 +2,7 @@
     <section>
         <div class="windows-page">
             <div class="sidebar" data-simplebar>
-                <router-link class="item back" :to="{name:'home'}">
+                <router-link v-if="false" class="item back" :to="{name:'home'}">
                     <i class="fas fa-chevron-right"></i>&nbsp;
                     <span class="name"> {{LANG.manager.back}}</span>
                 </router-link>
@@ -11,7 +11,7 @@
                     <img v-if="menu.img!=null" :src="menu.img">
                     <i v-else class="fas" :class="menu.icon"></i>
                     &nbsp;<span class="name">{{LANG.manager[menu.label]}}</span>
-                    <div class="notify-effect" v-if="notifyInstaller && menu.name === 'appManager-home'">
+                    <div class="notify-effect" v-if="notifyInstaller && menu.name === 'app-home'">
                         <div class="double-bounce1"></div>
                         <div class="double-bounce2"></div>
                     </div>
@@ -26,9 +26,16 @@
 </template>
 
 <script>
-    import {mapGetters} from 'vuex';
+    import {mapMutations} from 'vuex';
 
     export default {
+        created() {
+            this.pushToTabs({
+                key: 'setting',
+                label: 'setting',
+                icon: 'fa fa-cog',
+            });
+        },
         data() {
             return {
                 menus: [
@@ -52,7 +59,7 @@
                     },
 
                     {
-                        name: 'appManager-home',
+                        name: 'app-home',
                         label: 'app_manager',
                         icon: 'fas fa-grip-horizontal',
                         params: {},
@@ -83,7 +90,7 @@
                     return this.$store.state.readyInstallCount;
                 }
             }
-        }
+        },
     }
 </script>
 
