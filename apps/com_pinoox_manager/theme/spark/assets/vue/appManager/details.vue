@@ -64,32 +64,13 @@
         computed: {
             app: {
                 get() {
-                    return !!this.$parent.selectedApp ? this.$parent.selectedApp : null;
+                    return this.$parent.app;
                 },
                 set(val) {
-                    this.$parent.selectedApp = val;
-                }
-            },
-            apps: {
-                get() {
-                    return this.$store.state.apps;
+                    this.$parent.app = val;
                 }
             },
         },
-        methods: {
-            onUpdateAppInfo() {
-                this.app = this.apps[this.package_name];
-            }
-        },
-        created() {
-            this.onUpdateAppInfo();
-        },
-        watch: {
-            $route(to, from) {
-                if (to.params.package_name !== this.app.package_name)
-                    this.onUpdateAppInfo();
-            }
-        }
 
     }
 </script>

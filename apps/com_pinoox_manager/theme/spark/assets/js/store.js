@@ -20,6 +20,10 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
+        sidebar:{
+            back:false,
+            menus:[],
+        },
         clock: '',
         storage: '',
         options: {

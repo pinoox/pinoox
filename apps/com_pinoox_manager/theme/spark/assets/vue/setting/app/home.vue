@@ -1,6 +1,6 @@
 <template>
     <div class="content" data-simplebar>
-        <div class="header" v-if="$parent.selectedApp!=null">
+        <div class="header">
             <div class="text">
                 <h1>{{LANG.manager.apps_list}}</h1>
             </div>
@@ -95,7 +95,7 @@
                 if(app.sys_app || this.activeTab==='ready_install') return;
 
                 this.$parent.selectedApp = app;
-                this.$router.push({name: 'appManager-details', params: {package_name: app.package_name}});
+                this.$router.push({name: 'app-details', params: {package_name: app.package_name}});
             },
             installApp(app) {
                 app.state = 'installing';
