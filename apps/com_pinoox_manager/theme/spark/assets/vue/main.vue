@@ -197,8 +197,7 @@
                     this.$router.push({name: 'home'});
                 }
             },
-            updateRouteTabs(route)
-            {
+            updateRouteTabs(route) {
                 this.$nextTick(() => {
                     if (!this.tabCurrent.key || this.tabCurrent.key === 'home')
                         return;
@@ -242,7 +241,7 @@
             },
             '$route': {
                 handler(route) {
-                       this.updateRouteTabs(route);
+                    this.updateRouteTabs(route);
                 },
                 immediate: true,
             },
