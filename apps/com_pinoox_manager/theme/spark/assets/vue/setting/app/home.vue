@@ -1,6 +1,6 @@
 <template>
     <div class="content" data-simplebar>
-        <div class="header" v-if="$parent.selectedApp!=null">
+        <div class="header">
             <div class="text">
                 <h1>{{LANG.manager.apps_list}}</h1>
             </div>

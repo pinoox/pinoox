@@ -1,24 +1,8 @@
 <template>
     <section>
         <div class="windows-page">
-            <div class="sidebar" data-simplebar>
-                <router-link v-if="false" class="item back" :to="{name:'home'}">
-                    <i class="fas fa-chevron-right"></i>&nbsp;
-                    <span class="name"> {{LANG.manager.back}}</span>
-                </router-link>
-                <router-link v-for="menu in menus" exact-active-class="active" class="item"
-                             :to="{name:menu.name, params: menu.params}">
-                    <img v-if="menu.img!=null" :src="menu.img">
-                    <i v-else class="fas" :class="menu.icon"></i>
-                    &nbsp;<span class="name">{{LANG.manager[menu.label]}}</span>
-                    <div class="notify-effect" v-if="notifyInstaller && menu.name === 'app-home'">
-                        <div class="double-bounce1"></div>
-                        <div class="double-bounce2"></div>
-                    </div>
-                    <div v-if="pinooxAuth.isLogin && menu.name === 'setting-market'">
-                        <i class="fas fa-user-check"></i>
-                    </div>
-                </router-link>
+            <div v-if="_sidebar.enable" class="sidebar" data-simplebar>
+                <sidebar></sidebar>
             </div>
             <router-view></router-view>
         </div>
@@ -26,9 +10,10 @@
 </template>
 
 <script>
-    import {mapMutations} from 'vuex';
+    import Sidebar from '../sidebar.vue';
 
     export default {
+        components: {Sidebar},
         created() {
             this.pushToTabs({
                 key: 'setting',
@@ -38,59 +23,54 @@
         },
         data() {
             return {
-                menus: [
-                    {
-                        name: 'setting-dashboard',
-                        label: 'interface',
-                        icon: 'fa-tv',
-                        params: {},
-                    },
-                    {
-                        name: 'setting-account',
-                        label: 'account',
-                        icon: 'fa-user',
-                        params: {},
-                    },
-                    {
-                        name: 'setting-router',
-                        label: 'router',
-                        icon: 'fas fa-code-branch',
-                        params: {},
-                    },
+                sidebar: {
+                    back: false,
+                    menus: [
+                        {
+                            name: 'setting-dashboard',
+                            label: 'interface',
+                            icon: 'fas fa-tv',
+                            params: {},
+                        },
+                        {
+                            name: 'setting-account',
+                            label: 'account',
+                            icon: 'fas fa-user',
+                            params: {},
+                        },
+                        {
+                            name: 'setting-router',
+                            label: 'router',
+                            icon: 'fas fa-code-branch',
+                            params: {},
+                        },
+                        {
+                            name: 'apps-home',
+                            label: 'app_manager',
+                            icon: 'fas fa-grip-horizontal',
+                            params: {},
+                        },
+                        {
+                            name: 'setting-market',
+                            label: 'market',
+                            img: require('@img/market-icon.png'),
+                            left: {
+                                icon: 'fas fa-user-check',
+                                isLogin: true,
+                            },
+                            params: {},
+                        },
+                        {
+                            name: 'setting-about',
+                            label: 'about',
+                            img: require('@img/pin-icon.png'),
+                            params: {},
+                        },
+                    ],
+                }
+            }
+        },
 
-                    {
-                        name: 'app-home',
-                        label: 'app_manager',
-                        icon: 'fas fa-grip-horizontal',
-                        params: {},
-                    },
-                    {
-                        name: 'setting-market',
-                        label: 'market',
-                        img: require('@img/market-icon.png'),
-                        params: {},
-                    },
-                    {
-                        name: 'setting-about',
-                        label: 'about',
-                        img: require('@img/pin-icon.png'),
-                        params: {},
-                    },
-                ]
-            }
-        },
-        computed: {
-            pinooxAuth: {
-                get() {
-                    return this.$store.state.pinooxAuth;
-                }
-            },
-            notifyInstaller: {
-                get() {
-                    return this.$store.state.readyInstallCount;
-                }
-            }
-        },
     }
 </script>
 

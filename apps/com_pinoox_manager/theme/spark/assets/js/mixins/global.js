@@ -2,6 +2,12 @@ import Vue from "vue";
 import {mapMutations} from 'vuex';
 
 Vue.mixin({
+    created() {
+         if (!!this.$parent && !!this.$parent.sidebar) {
+            this._sidebar = this.$parent.sidebar;
+        }
+
+    },
     computed: {
         LANG: {
             set(val) {
@@ -9,6 +15,21 @@ Vue.mixin({
             },
             get() {
                 return this.$store.state.LANG;
+            }
+        },
+        _sidebar: {
+            set(val) {
+                this.$store.state.sidebar = val;
+            },
+            get() {
+                let sidebar = this.$store.state.sidebar;
+                return !!sidebar ? {
+                    enable: sidebar.enable !== undefined ? sidebar.enable : true,
+                    back: !!sidebar.back ? sidebar.back : false,
+                    menus: !!sidebar.menus ? sidebar.menus : [],
+                    topList: !!sidebar.topList ? sidebar.topList : [],
+                    app: !!sidebar.app ? sidebar.app : false,
+                } : false;
             }
         },
         URL() {
@@ -56,7 +77,7 @@ Vue.mixin({
         },
     },
     methods: {
-        ...mapMutations(['notify','pushToTabs','closeFromTabs']),
+        ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs']),
         _isEmptyObj(obj) {
             return Object.keys(obj).length === 0
         },

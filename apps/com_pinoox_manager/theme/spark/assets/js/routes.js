@@ -7,18 +7,19 @@ import Setting from '../vue/setting/main.vue';
 import SettingDashboard from '../vue/setting/dashboard.vue';
 import SettingAccount from '../vue/setting/account.vue';
 import SettingRouter from '../vue/setting/router.vue';
-import SettingMarket from '../vue/setting/market.vue';
+import SettingMarket from '../vue/setting/market/main.vue';
 import SettingAbout from '../vue/setting/about.vue';
 import MarketHome from '../vue/setting/market/home.vue';
 import MarketDetails from '../vue/setting/market/details.vue';
 import MarketLogin from '../vue/setting/market/login.vue';
 import MarketAccount from '../vue/setting/market/account.vue';
+import SettingApps from '../vue/setting/app/main.vue';
 import AppManager from '../vue/appManager/main.vue';
-import AppManagerHome from '../vue/appManager/home.vue';
+import AppsHome from '../vue/setting/app/home.vue';
+import AppsManual from '../vue/setting/app/manual.vue';
 import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
-import AppManagerManual from '../vue/appManager/manual.vue';
 import AppView from '../vue/pages/app-view.vue';
 import Market from '../vue/market.vue';
 
@@ -57,6 +58,22 @@ export const routes = [
                 path: 'router',
                 name: 'setting-router',
                 component: SettingRouter
+            },
+            {
+                path: 'apps',
+                component: SettingApps,
+                children: [
+                    {
+                        path: 'list',
+                        name: 'apps-home',
+                        component: AppsHome,
+                    },
+                    {
+                        path: 'manuel',
+                        name: 'apps-manual',
+                        component: AppsManual,
+                    },
+                ]
             },
             {
                 path: 'market',
@@ -99,39 +116,24 @@ export const routes = [
         ]
     },
     {
-        path: PINOOX.URL.BASE + 'app',
+        path: PINOOX.URL.BASE +'appManager/:package_name',
         component: AppManager,
+        props: true,
         children: [
             {
-                path: '',
-                name: 'app-home',
-                component: AppManagerHome,
-                meta: {
-                    showMainMenu: true,
-                }
-            },
-            {
-                path: 'manuel',
-                name: 'app-manual',
-                component: AppManagerManual,
-                meta: {
-                    showMainMenu: true,
-                }
-            },
-            {
-                path: 'users/:package_name',
+                path: 'users',
                 name: 'app-users',
                 component: AppManagerUsers,
                 props: true,
             },
             {
-                path: 'config/:package_name',
+                path: 'config',
                 name: 'app-config',
                 component: AppManagerConfig,
                 props: true,
             },
             {
-                path: 'details/:package_name',
+                path: 'details',
                 name: 'app-details',
                 component: AppManagerDetails,
                 props: true,
