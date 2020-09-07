@@ -93,6 +93,7 @@ return [
     'templates' => 'قالب ها',
     'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگزاری کنید',
     'downloads' => 'دانلود ها',
-
+    'market_home' => 'خانه',
+    'market_account' => 'حساب کاربری',
 ];
     

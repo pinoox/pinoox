@@ -23,10 +23,6 @@
                     </router-link>
                 </div>
             </div>
-            <router-link :to="{name:'app-home'}" class="pin-icon" v-if="notifyInstaller>0">
-                <i class="fas fas fa-grip-horizontal fontIcon"></i> <span class="label">{{LANG.manager.ready_to_install}}</span>
-                <span class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
-            </router-link>
         </div>
 
         <router-view></router-view>
