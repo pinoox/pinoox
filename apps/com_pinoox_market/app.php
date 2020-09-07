@@ -7,6 +7,6 @@ return array(
     'name' => 'Market',
     'version-name'=>'1.7',
     'version-code' => 3,
-    'open' => 'setting-market',
+    'open' => 'market-home',
     'sys-app' => true,
 );
