@@ -20,6 +20,10 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
+        manual:{
+            xhr:null,
+            percent:0,
+        },
         sidebar:{
             back:false,
             menus:[],
