@@ -23,11 +23,8 @@
                         {{LANG.manager.downloading}}
                     </div>
                     <span class="warn-text" v-if="state==='downloading'">{{LANG.setting.market.please_wait_until_download_complete}}</span>
-                    <div v-if="state==='install'" class="btn-install" @click="installApp()">{{LANG.manager.install}}
-                    </div>
-                    <div v-if="state==='install'" class="btn-install" @click="downloadApp()">
-                        {{LANG.manager.re_download}}
-                    </div>
+                    <div v-if="state==='install'" class="btn-install" @click="installApp()">{{LANG.manager.install}}</div>
+                    <div v-if="state==='install'" class="btn-install" @click="downloadApp()">{{LANG.manager.re_download}}</div>
 
                     <div v-if="state==='installing'" class="btn-install">
                         {{LANG.setting.market.installing}}
@@ -109,7 +106,8 @@
                 }
             },
             installApp() {
-                this.state = 'installing';
+            this._openFloatInstaller(this.app);
+              /*  this.state = 'installing';
                 this._loading = true;
                 this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
                     this._loading = false;
@@ -121,7 +119,7 @@
                     } else {
                         this.state = 'install';
                     }
-                });
+                });*/
             },
             updateApp() {
                 this.isLoadingUpdate = true;
