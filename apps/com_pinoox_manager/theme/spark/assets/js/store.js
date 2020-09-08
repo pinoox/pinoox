@@ -20,13 +20,13 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
-        manual:{
-            xhr:null,
-            percent:0,
+        manual: {
+            xhr: null,
+            percent: 0,
         },
-        sidebar:{
-            back:false,
-            menus:[],
+        sidebar: {
+            back: false,
+            menus: [],
         },
         clock: '',
         storage: '',
@@ -37,7 +37,10 @@ export default new Vuex.Store({
         },
         apps: {},
         isOpenNotification: false,
-        notifications: [],
+        notifications: {
+            db: [],
+            setting: [],
+        },
         notifier: {
             isShow: false,
             actions: {},
@@ -51,7 +54,7 @@ export default new Vuex.Store({
         pinooxAuth: {isLogin: false},
         readyInstallCount: 0,
         tabs: [],
-        tabCurrent:{},
+        tabCurrent: {},
 
     },
     setters: {},
@@ -72,7 +75,13 @@ export default new Vuex.Store({
             return Object.values(state.apps);
         },
         hasNotification: state => {
-            return state.notifications.length > 0;
+            let db = state.notifications.db.filter(function (notification) {
+                return notification.status === 'send';
+            });
+            let setting = state.notifications.setting.filter(function (notification) {
+                return notification.status === 'send';
+            });
+            return (setting.length + db.length) > 0;
         },
     },
     mutations: {
@@ -172,14 +181,14 @@ export default new Vuex.Store({
         },
         pushToTabs: (state, info) => {
             state.tabCurrent = {
-                key:info.key,
-                label:!!info.label? info.label : null,
-                icon:!!info.icon? info.icon : null,
-                image:!!info.image? info.image : null,
-                route:{},
+                key: info.key,
+                label: !!info.label ? info.label : null,
+                icon: !!info.icon ? info.icon : null,
+                image: !!info.image ? info.image : null,
+                route: {},
             };
 
-            if(info.key === 'home')
+            if (info.key === 'home')
                 return;
             let result = state.tabs.find(tab => tab.key === state.tabCurrent.key);
             if (result === undefined)
@@ -188,6 +197,33 @@ export default new Vuex.Store({
         closeFromTabs(state, key) {
             state.tabs = state.tabs.filter(function (tab) {
                 return tab.key !== key;
+            });
+        },
+        pushToNotifications: (state, data) => {
+            data = {
+                key: data.key,
+                title: !!data.title ? data.title : null,
+                message: !!data.message ? data.message : null,
+                route: !!data.route ? data.route : null,
+                percent: !!data.percent ? data.percent : null,
+            };
+
+            let index = state.notifications.setting.findIndex(notification => notification.key === data.key);
+            if (index < 0)
+            {
+                data.status = 'send';
+                state.notifications.setting.push(data);
+            }
+            else
+            {
+                if(!!state.notifications.setting[index].status)
+                    data.status = state.notifications.setting[index].status;
+                Vue.set(state.notifications.setting, index, data);
+            }
+        },
+        closeFromNotifications(state, key) {
+            state.notifications.setting = state.notifications.setting.filter(function (notification) {
+                return notification.key !== key;
             });
         }
     },

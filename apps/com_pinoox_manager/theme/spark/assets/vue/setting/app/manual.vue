@@ -77,8 +77,26 @@
             },
             cancel()
             {
-                this.percent = 0;
+                this.setPercent(0);
                 this.xhr.cancel('stop upload');
+            },
+            setPercent(percent)
+            {
+                this.percent = percent;
+                if(percent > 0)
+                {
+                    this.pushToNotifications({
+                        key:'setup-manual',
+                        title:'نصب دستی',
+                        message:'لطفا منتظر بمانید در حال بارگزاری فایل ها ...',
+                        route:{name:'apps-manual'},
+                        percent:percent,
+                    })
+                }
+                else
+                {
+                    this.closeFromNotifications('setup-manual');
+                }
             },
             uploadFiles() {
                 let data = new FormData();
@@ -93,11 +111,11 @@
                 this.$http.post('test', data, {
                  cancelToken: this.xhr.token ,
                     onUploadProgress: (progressEvent) => {
-                        let percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                        this.percent = percentCompleted;
+                        let percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        this.setPercent(percent);
                     }
                 }).then((json) => {
-                    this.process = 0;
+                    this.setPercent(0);
                 }).catch(function (thrown) {
                 });
             },
