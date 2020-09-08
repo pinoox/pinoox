@@ -1168,27 +1168,9 @@ body.ltr {
       .content {
         display: flex;
 
-        .progressbar {
-          position: relative;
 
-          .percent {
-            display: inline-block;
-            position: absolute;
-            right: 0;
-            left: 0;
-            text-align: center;
-            top: 34%;
-            font-size: 25px;
-          }
-
-          .progress-ring__circle {
-            transition: 0.35s stroke-dashoffset;
-            // axis compensation
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            -webkit-svg-shadow: 0 0 7px #53BE12;
-          }
-
+        .vm-progress__text{
+          color: #fff;
         }
 
         .info {
