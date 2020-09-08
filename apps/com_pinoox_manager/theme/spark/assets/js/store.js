@@ -20,9 +20,9 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
-        sidebar:{
-            back:false,
-            menus:[],
+        sidebar: {
+            back: false,
+            menus: [],
         },
         clock: '',
         storage: '',
@@ -47,7 +47,8 @@ export default new Vuex.Store({
         pinooxAuth: {isLogin: false},
         readyInstallCount: 0,
         tabs: [],
-        tabCurrent:{},
+        tabCurrent: {},
+        floatApp: null
 
     },
     setters: {},
@@ -168,14 +169,14 @@ export default new Vuex.Store({
         },
         pushToTabs: (state, info) => {
             state.tabCurrent = {
-                key:info.key,
-                label:!!info.label? info.label : null,
-                icon:!!info.icon? info.icon : null,
-                image:!!info.image? info.image : null,
-                route:{},
+                key: info.key,
+                label: !!info.label ? info.label : null,
+                icon: !!info.icon ? info.icon : null,
+                image: !!info.image ? info.image : null,
+                route: {},
             };
 
-            if(info.key === 'home')
+            if (info.key === 'home')
                 return;
             let result = state.tabs.find(tab => tab.key === state.tabCurrent.key);
             if (result === undefined)

@@ -9013,177 +9013,6 @@ body.ltr .widget-clock .moment {
   text-align: left;
   font-weight: 100;
 }
-#pinoox-container #workspace .app-details {
-  position: absolute;
-  left: 10%;
-  right: 10%;
-  top: 30%;
-  min-width: 30%;
-  max-width: 40%;
-  min-height: 40%;
-  max-height: 60%;
-  border-radius: 1rem;
-  border-top-left-radius: 2rem;
-  border-top-right-radius: 2rem;
-  background: rgba(0, 0, 0, 0.75);
-  margin: auto;
-  color: #fff;
-}
-#pinoox-container #workspace .app-details ._close i {
-  position: absolute;
-  top: -10px;
-  width: 28px;
-  height: 28px;
-  background: #dc3545;
-  border-radius: 50%;
-  padding: 6px 8px 0 5px;
-  color: #f8f9fa;
-  font-size: 17px;
-  cursor: pointer;
-  z-index: 99;
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-}
-#pinoox-container #workspace .app-details ._close i:hover {
-  transform: scale(1.2);
-}
-#pinoox-container #workspace .app-details .header {
-  display: block;
-  padding: 15px 30px;
-  background: rgba(0, 0, 0, 0.15);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  border-top-left-radius: 2rem;
-  border-top-right-radius: 2rem;
-}
-#pinoox-container #workspace .app-details .header:empty {
-  display: none;
-}
-#pinoox-container #workspace .app-details .content {
-  margin: 13px;
-  overflow-y: scroll;
-  height: 280px;
-}
-#pinoox-container #workspace .app-details .content.pretty-scroll {
-  padding-left: 10px;
-}
-#pinoox-container #workspace .app-details .content .sections {
-  display: grid;
-  grid-template-columns: 30% 70%;
-  padding-top: 15px;
-}
-#pinoox-container #workspace .app-details .content .sections .app {
-  text-align: center;
-}
-#pinoox-container #workspace .app-details .content .sections .app .icon {
-  width: 96px;
-}
-#pinoox-container #workspace .app-details .content .sections .app .text {
-  margin-top: 8px;
-  display: block;
-}
-#pinoox-container #workspace .app-details .content .sections .app .text .app-name {
-  display: block;
-}
-#pinoox-container #workspace .app-details .content .sections .app .text .btn {
-  margin: 1px;
-  color: #FFF;
-}
-#pinoox-container #workspace .app-details .content .sections .app .text .btn:hover {
-  cursor: pointer;
-  transform: scale(1.2);
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-}
-#pinoox-container #workspace .app-details .content .sections .info ul {
-  list-style: none;
-}
-#pinoox-container #workspace .app-details .content .sections .info ul li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-#pinoox-container #workspace .app-details .content .sections .info ul li .name {
-  flex-grow: 1;
-  font-weight: 300;
-  font-size: 13px;
-}
-#pinoox-container #workspace .app-details .content .sections .info ul li .value {
-  flex-grow: 1;
-  font-size: 10px;
-  font-weight: 100;
-  color: #d9d9d9;
-}
-#pinoox-container #workspace .app-details .content .routes {
-  display: block;
-  clear: both;
-  border-top: 1px solid rgba(96, 96, 96, 0.35);
-  text-align: left;
-}
-#pinoox-container #workspace .app-details .content .routes a {
-  display: block;
-  background: rgba(69, 69, 69, 0.49);
-  padding: 6px;
-  margin-bottom: 5px;
-  font-size: 12px;
-  color: #fff;
-  direction: ltr;
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-}
-#pinoox-container #workspace .app-details .content .routes a:hover {
-  background: rgba(101, 101, 101, 0.49);
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-  text-decoration: none;
-}
-#pinoox-container #workspace .app-details .content .routes .message {
-  font-size: 12px;
-  text-align: center;
-}
-#pinoox-container #workspace .app-details .content .routes .message .text {
-  padding: 15px;
-  display: block;
-}
-#pinoox-container #workspace .app-details .content .routes .message a {
-  display: inline-block;
-}
-#pinoox-container #workspace .app-details .input {
-  margin-top: 10px;
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  background: rgba(255, 255, 255, 0.11);
-  display: block;
-  padding: 10px;
-  width: 100%;
-  font-size: 13px;
-  outline: none;
-  font-weight: normal;
-  -webkit-transition: 0.2s;
-  -moz-transition: 0.2s;
-  -ms-transition: 0.2s;
-  -o-transition: 0.2s;
-  transition: 0.2s;
-}
-#pinoox-container #workspace .app-details .input::placeholder {
-  color: #939393;
-}
-#pinoox-container #workspace .app-details .input:focus {
-  background: rgba(255, 255, 255, 0.16);
-}
 #pinoox-container #pin-dock {
   position: fixed;
   bottom: 0;
@@ -9413,6 +9242,76 @@ body.ltr .widget-clock .moment {
   margin-top: 10px;
   font-size: 0.75rem;
   font-weight: 300;
+}
+#pinoox-container .float-installer {
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  top: 22%;
+  width: 20%;
+  height: 50%;
+  border-radius: 1rem;
+  background: #343a40;
+  margin: auto;
+  color: #fff;
+  z-index: 1;
+}
+#pinoox-container .float-installer .header {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.15);
+  border-top-right-radius: 1rem;
+  border-top-left-radius: 1rem;
+}
+#pinoox-container .float-installer .header:empty {
+  display: none;
+}
+#pinoox-container .float-installer .header ._close {
+  width: 35px;
+  height: 35px;
+  text-align: center;
+  border-radius: 5px;
+  padding-top: 6px;
+  background: rgba(0, 0, 0, 0.1);
+  -webkit-transition: 0.2s;
+  -moz-transition: 0.2s;
+  -ms-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
+}
+#pinoox-container .float-installer .header ._close:hover {
+  -webkit-transition: 0.2s;
+  -moz-transition: 0.2s;
+  -ms-transition: 0.2s;
+  -o-transition: 0.2s;
+  transition: 0.2s;
+  background: #af0013;
+  cursor: pointer;
+}
+#pinoox-container .float-installer .header .header-content {
+  padding: 0 10px;
+}
+#pinoox-container .float-installer .header .header-content .app-icon {
+  width: 35px;
+}
+#pinoox-container .float-installer .content {
+  margin: 13px;
+  height: 240px;
+  overflow: auto;
+}
+#pinoox-container .float-installer .content.pretty-scroll {
+  padding-left: 10px;
+}
+#pinoox-container .float-installer .content .text {
+  padding: 0 10px;
+  line-height: 2.1;
+  font-weight: 100;
+  font-size: 11px;
+  color: #bdbdbd;
+}
+#pinoox-container .float-installer .actions {
+  margin: 10px;
 }
 .windows-page {
   position: fixed;

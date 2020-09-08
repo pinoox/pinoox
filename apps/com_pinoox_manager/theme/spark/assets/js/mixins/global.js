@@ -3,7 +3,7 @@ import {mapMutations} from 'vuex';
 
 Vue.mixin({
     created() {
-         if (!!this.$parent && !!this.$parent.sidebar) {
+        if (!!this.$parent && !!this.$parent.sidebar) {
             this._sidebar = this.$parent.sidebar;
         }
 
@@ -75,6 +75,14 @@ Vue.mixin({
                 this.$store.state.isLock = val;
             }
         },
+        floatApp: {
+            get() {
+                return this.$store.state.floatApp;
+            },
+            set(val) {
+                this.$store.state.floatApp = val;
+            }
+        },
     },
     methods: {
         ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs']),
@@ -89,6 +97,9 @@ Vue.mixin({
         },
         _notify(title, message, type = '', actions = null, timer = 5) {
             this.notify({title: title, message: message, type: type, actions: actions, timer: timer});
+        },
+        _openFloatInstaller(app) {
+            this.floatApp = app;
         },
         _delay: (function () {
             let timer = 0;
