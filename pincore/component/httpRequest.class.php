@@ -347,7 +347,7 @@ class HttpRequest
 
         // method and options
         $headers = $this->getHeaders();
-        $headers = implode(' \r\n ', $headers);
+        $headers = implode("\r\n", $headers);
         $options = array(
             'http' => array(
                 'header' => $headers,
