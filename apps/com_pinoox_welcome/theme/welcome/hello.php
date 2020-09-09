@@ -8,7 +8,6 @@
     <title><?php lang('welcome.welcome_to_pinoox'); ?></title>
     <link rel="icon" href="<?php echo $_url; ?>assets/images/logo-64.png">
     <link rel="stylesheet" href="<?php echo $_url ?>assets/css/style.css">
-    <link rel="stylesheet" href="<?php echo $_url ?>assets/fonts/FontAwesome/css/all.css">
 </head>
 <body class="<?php lang('welcome.direction'); ?>">
 
