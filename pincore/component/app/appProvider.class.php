@@ -83,7 +83,7 @@ class AppProvider extends AppSource
     private function build($app = null, $packageName = null)
     {
         $app = ($app === '~') ? null : $app;
-        $this->path = (empty($packageName)) ? Dir::path('app.runner.php', $app) : Dir::path('app.runner.php', $packageName);
+        $this->path = (empty($packageName)) ? Dir::path('pinker/app.php', $app) : Dir::path('pinker/app.php', $packageName);
         if(!is_file($this->path))
         {
             $app_file = (empty($packageName)) ? Dir::path('app.php', $app) : Dir::path('app.php', $packageName);
@@ -215,7 +215,7 @@ class AppProvider extends AppSource
     public static function save()
     {
         $app = (self::$app !== '~')? self::$app : null;
-        $file = Dir::path('app.runner.php', $app);
+        $file = Dir::path('pinker/app.php', $app);
 
         $data = self::get();
         $replaces = [];

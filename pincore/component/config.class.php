@@ -189,9 +189,9 @@ class Config
     private static function loadFile($app, $filename)
     {
         if ($app !== '~')
-            $file = Dir::path('config/' . $filename . '.config.php', $app);
+            $file = Dir::path('pinker/config/' . $filename . '.config.php', $app);
         else
-            $file = Dir::path('~pincore/config/' . $filename . '.config.php');
+            $file = Dir::path('~pincore/pinker/config/' . $filename . '.config.php');
 
         if (!is_file($file)) {
            self::initFile($file,$app,$filename);
@@ -214,9 +214,9 @@ class Config
     private static function initFile($file,$app,$filename)
     {
         if ($app !== '~')
-            $f = Dir::path('config/' . $filename . '.init.php', $app);
+            $f = Dir::path('config/' . $filename . '.config.php', $app);
         else
-            $f = Dir::path('~pincore/config/' . $filename . '.init.php');
+            $f = Dir::path('~pincore/config/' . $filename . '.config.php');
 
         if(is_file($f))
             File::copy($f,$file);
@@ -245,10 +245,10 @@ class Config
         $filename = $name . '.config.php';
 
         if (!HelperString::firstHas($filename, '~')) {
-            $file = Dir::path('config/' . $filename, self::$app);
+            $file = Dir::path('pinker/config/' . $filename, self::$app);
         } else {
             $filename = HelperString::firstDelete($filename, '~');
-            $file = Dir::path('~pincore/config/' . $filename);
+            $file = Dir::path('~pincore/pinker/config/' . $filename);
         }
 
         $data_for_save = '<?' . 'php' . "\n";
