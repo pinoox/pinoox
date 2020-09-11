@@ -133,6 +133,14 @@ class HttpRequest
         return self::$http;
     }
 
+    public static function isOnline()
+    {
+        if (checkdnsrr('pinoox.com') || checkdnsrr('w3.org') || checkdnsrr('google.com'))
+            return true;
+
+        return false;
+    }
+
     /**
      * Set params for request
      *
@@ -252,85 +260,13 @@ class HttpRequest
 
         if ($this->checkEnableLib('file_content')) {
             $result = $this->sendContents();
-        }
-        else if ($this->checkEnableLib('curl')) {
+        } else if ($this->checkEnableLib('curl')) {
             $result = $this->sendCurl();
         }
 
         $result = ($result && $raw === self::json) ? HelperString::decodeJson($result) : $result;
 
         return $result;
-    }
-
-    /**
-     *  send request by curl library
-     *
-     * @return bool|string|array|null|mixed
-     */
-    private function sendCurl()
-    {
-        try {
-            // init
-            $curl = curl_init();
-            $url = $this->url;
-
-            if ($curl === false) {
-                throw new Exception('Curl failed to initialize');
-            }
-
-            // method
-            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->method);
-
-            switch ($this->method) {
-                case self::POST:
-                    curl_setopt($curl, CURLOPT_POST, 1);
-                    break;
-                case self::GET:
-                    if ($this->params)
-                        $url = sprintf("%s?%s", $this->url, http_build_query($this->params));
-                    break;
-            }
-
-            if(in_array($this->method,[self::PATCH,self::PUT,self::POST]))
-            {
-                if ($this->params)
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $this->params);
-            }
-
-            // options
-            $headers = $this->getHeaders();
-            curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-            $timeout = $this->getTimeout();
-            if (!empty($timeout))
-                curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
-
-            $user_agent = $this->getHeaders('User-Agent');
-            if (!empty($user_agent))
-                curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
-
-            // execute
-            $result = curl_exec($curl);
-            curl_close($curl);
-        } catch (Exception $error) {
-            trigger_error(sprintf(
-                'Curl failed with error #%d: %s',
-                $error->getCode(), $error->getMessage()),
-                E_USER_ERROR);
-        }
-        return $result ? $result : false;
-    }
-
-    /**
-     * Get ms timeout
-     *
-     * @return int|null
-     */
-    private function getTimeout()
-    {
-        return isset($this->options['timeout']) ? $this->options['timeout'] : null;
     }
 
     /**
@@ -344,7 +280,6 @@ class HttpRequest
         switch ($type) {
             case 'curl':
                 return function_exists('curl_init');
-                break;
             case 'file_content':
                 return function_exists('file_get_contents');
         }
@@ -393,6 +328,16 @@ class HttpRequest
     }
 
     /**
+     * Get ms timeout
+     *
+     * @return int|null
+     */
+    private function getTimeout()
+    {
+        return isset($this->options['timeout']) ? $this->options['timeout'] : null;
+    }
+
+    /**
      * Get params by type
      *
      * @return array|false|string
@@ -406,5 +351,65 @@ class HttpRequest
             return http_build_query($this->params);
         else
             return $this->params;
+    }
+
+    /**
+     *  send request by curl library
+     *
+     * @return bool|string|array|null|mixed
+     */
+    private function sendCurl()
+    {
+        try {
+            // init
+            $curl = curl_init();
+            $url = $this->url;
+
+            if ($curl === false) {
+                throw new Exception('Curl failed to initialize');
+            }
+
+            // method
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->method);
+
+            switch ($this->method) {
+                case self::POST:
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    break;
+                case self::GET:
+                    if (!empty($this->params))
+                        $url = sprintf("%s?%s", $this->url, http_build_query($this->params));
+                    break;
+            }
+
+            if (in_array($this->method, [self::PATCH, self::PUT, self::POST])) {
+                if (!empty($this->params))
+                    curl_setopt($curl, CURLOPT_POSTFIELDS, $this->params);
+            }
+
+            // options
+            $headers = $this->getHeaders();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            $timeout = $this->getTimeout();
+            if (!empty($timeout))
+                curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
+
+            $user_agent = $this->getHeaders('User-Agent');
+            if (!empty($user_agent))
+                curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+
+            // execute
+            $result = curl_exec($curl);
+            curl_close($curl);
+        } catch (Exception $error) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $error->getCode(), $error->getMessage()),
+                E_USER_ERROR);
+        }
+        return $result ? $result : false;
     }
 }
