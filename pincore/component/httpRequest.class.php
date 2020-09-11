@@ -15,6 +15,8 @@
 namespace pinoox\component;
 
 
+use mysql_xdevapi\Exception;
+
 class HttpRequest
 {
 
@@ -22,6 +24,7 @@ class HttpRequest
     const GET = 'GET';
     const PUT = 'PUT';
     const DELETE = 'DELETE';
+    const PATCH = 'PATCH';
 
 
     const json = 'json';
@@ -247,10 +250,11 @@ class HttpRequest
         if (empty($user_agent))
             $this->setHeader('User-Agent', HelperHeader::getUserAgent() . ' pinoox');
 
-        if (false) {
-            $result = $this->sendCurl();
-        } else if ($this->checkEnableLib('content')) {
+        if ($this->checkEnableLib('file_content')) {
             $result = $this->sendContents();
+        }
+        else if ($this->checkEnableLib('curl')) {
+            $result = $this->sendCurl();
         }
 
         $result = ($result && $raw === self::json) ? HelperString::decodeJson($result) : $result;
@@ -265,44 +269,57 @@ class HttpRequest
      */
     private function sendCurl()
     {
-        // init
-        $curl = curl_init();
-        $url = $this->url;
+        try {
+            // init
+            $curl = curl_init();
+            $url = $this->url;
 
-        // method
-        switch ($this->method) {
-            case "POST":
-                curl_setopt($curl, CURLOPT_POST, 1);
+            if ($curl === false) {
+                throw new Exception('Curl failed to initialize');
+            }
+
+            // method
+            curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $this->method);
+
+            switch ($this->method) {
+                case self::POST:
+                    curl_setopt($curl, CURLOPT_POST, 1);
+                    break;
+                case self::GET:
+                    if ($this->params)
+                        $url = sprintf("%s?%s", $this->url, http_build_query($this->params));
+                    break;
+            }
+
+            if(in_array($this->method,[self::PATCH,self::PUT,self::POST]))
+            {
                 if ($this->params)
                     curl_setopt($curl, CURLOPT_POSTFIELDS, $this->params);
-                break;
-            case "PUT":
-                curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-                if ($this->params)
-                    curl_setopt($curl, CURLOPT_POSTFIELDS, $this->params);
-                break;
-            default:
-                if ($this->params)
-                    $url = sprintf("%s?%s", $this->url, http_build_query($this->params));
+            }
+
+            // options
+            $headers = $this->getHeaders();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+            $timeout = $this->getTimeout();
+            if (!empty($timeout))
+                curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
+
+            $user_agent = $this->getHeaders('User-Agent');
+            if (!empty($user_agent))
+                curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
+
+            // execute
+            $result = curl_exec($curl);
+            curl_close($curl);
+        } catch (Exception $error) {
+            trigger_error(sprintf(
+                'Curl failed with error #%d: %s',
+                $error->getCode(), $error->getMessage()),
+                E_USER_ERROR);
         }
-
-        // options
-        $headers = $this->getHeaders();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-        $timeout = $this->getTimeout();
-        if (!empty($timeout))
-            curl_setopt($curl, CURLOPT_CONNECTTIMEOUT_MS, $timeout);
-
-        $user_agent = $this->getHeaders('User-Agent');
-        if(!empty($user_agent))
-            curl_setopt($curl, CURLOPT_USERAGENT, $user_agent);
-
-        // execute
-        $result = curl_exec($curl);
-        curl_close($curl);
         return $result ? $result : false;
     }
 
@@ -328,7 +345,7 @@ class HttpRequest
             case 'curl':
                 return function_exists('curl_init');
                 break;
-            case 'content':
+            case 'file_content':
                 return function_exists('file_get_contents');
         }
 
@@ -359,11 +376,11 @@ class HttpRequest
             $options['http']['timeout'] = $timeout / 1000;
 
         $user_agent = $this->getHeaders('User-Agent');
-        if(!empty($user_agent))
+        if (!empty($user_agent))
             $options['http']['user_agent'] = $user_agent;
 
         // params
-        if ($this->method === self::POST || $this->method === self::PUT)
+        if ($this->method === self::POST || $this->method === self::PUT || $this->method === self::PATCH)
             $options['http']['content'] = $this->getParamsByType();
         else
             $url = sprintf("%s?%s", $this->url, http_build_query($this->params));
