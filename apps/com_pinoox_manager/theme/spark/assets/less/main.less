@@ -1545,7 +1545,7 @@ body.ltr {
 
     }
 
-    .actions{
+    .actions {
       margin: 10px;
     }
   }
@@ -2108,6 +2108,7 @@ body.ltr {
           }
 
           .content-details {
+            margin-top: 40px;
             padding: 0;
             clear: both;
             overflow: hidden;
@@ -2139,6 +2140,33 @@ body.ltr {
               h4 {
                 font-weight: bold;
                 font-size: 17px;
+              }
+            }
+
+            .templates {
+              padding: 20px 0;
+              display: grid;
+              grid-template-columns: repeat(auto-fit, 220px);
+              grid-gap: 2rem;
+
+              .item {
+                text-align: center;
+                background: rgba(0, 0, 0, 0.3);
+                border-radius: 10px;
+
+                .thumb {
+                  width: 100%;
+                  border-top-right-radius: 10px;
+                  border-top-left-radius: 10px;
+                }
+
+                .name {
+                  padding: 10px 0;
+                }
+
+                .actions {
+                  padding: 10px 0;
+                }
               }
             }
 
