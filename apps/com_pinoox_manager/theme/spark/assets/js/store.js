@@ -48,7 +48,7 @@ export default new Vuex.Store({
         readyInstallCount: 0,
         tabs: [],
         tabCurrent: {},
-        floatApp: null
+        floatInstaller: null,
 
     },
     setters: {},

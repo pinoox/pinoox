@@ -3,7 +3,7 @@
         <img v-show="isBackground" :src="background" class="cover-background" alt="">
         <notifier></notifier>
         <Notifications></Notifications>
-        <FloatInstaller v-if="floatApp!=null" :app="floatApp" @close="floatApp=null"></FloatInstaller>
+        <FloatInstaller v-if="floatInstaller!=null" :app="floatInstaller" @close="floatInstaller=null"></FloatInstaller>
         <div id="pin-bar" v-if="isLogin && !isLock && $router.currentRoute.name !== 'loading'">
             <div class="pin-icon ntf-drawer" @click="toggleNotification()">
                 <img src="@img/pin-icon.png">
@@ -103,12 +103,12 @@
                     this.$store.state.tabs = val;
                 }
             },
-            floatApp: {
+            floatInstaller: {
                 get() {
-                    return this.$store.state.floatApp;
+                    return this.$store.state.floatInstaller;
                 },
                 set(app) {
-                    this.$store.state.floatApp = app;
+                    this.$store.state.floatInstaller = app;
                 }
             }
         },
