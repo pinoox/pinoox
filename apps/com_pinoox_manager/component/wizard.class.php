@@ -19,6 +19,7 @@ use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\app\AppProvider;
 use pinoox\component\Cache;
 use pinoox\component\Config;
+use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\Router;
 use pinoox\component\Service;
@@ -42,7 +43,7 @@ class Wizard
         if (is_file($appDB)) {
             $prefix = Config::get('~database.prefix');
             $query = file_get_contents($appDB);
-            $query = str_replace('{dbprefix}', $prefix . $packageName.'_', $query);
+            $query = str_replace('{dbprefix}', $prefix . $packageName . '_', $query);
             $queryArr = explode(';', $query);
 
             PinooxDatabase::$db->startTransaction();
@@ -165,8 +166,12 @@ class Wizard
     public static function is_installed($package_name)
     {
         $app = AppModel::fetch_by_package_name($package_name);
-        if (!empty($app))
-            return true;
-        return false;
+        return !empty($app);
+    }
+
+    public static function is_downloaded($package_name)
+    {
+        $file = Dir::path('downloads>apps>' . $package_name . '.pin');
+        return (!empty($file) && file_exists($file));
     }
 }
