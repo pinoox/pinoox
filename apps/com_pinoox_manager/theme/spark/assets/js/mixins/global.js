@@ -75,12 +75,12 @@ Vue.mixin({
                 this.$store.state.isLock = val;
             }
         },
-        floatApp: {
+        floatInstaller: {
             get() {
-                return this.$store.state.floatApp;
+                return this.$store.state.floatInstaller;
             },
             set(val) {
-                this.$store.state.floatApp = val;
+                this.$store.state.floatInstaller = val;
             }
         },
     },
@@ -98,8 +98,8 @@ Vue.mixin({
         _notify(title, message, type = '', actions = null, timer = 5) {
             this.notify({title: title, message: message, type: type, actions: actions, timer: timer});
         },
-        _openFloatInstaller(app) {
-            this.floatApp = app;
+        _openFloatInstaller(pack) {
+            this.floatInstaller = pack; //app or template
         },
         _delay: (function () {
             let timer = 0;

@@ -68,10 +68,11 @@ class AppController extends MasterConfiguration
     {
         $config = Request::inputOne('config');
 
-        if ($key == 'hidden')
-            $config = !$config ? true : false;
+        if ( $key == 'dock')
+            $config = !$config;
         if ($key == 'router')
             $config = $config === 'multiple' ? 'single' : 'multiple';
+
         $currentApp = AppProvider::app();
         if (!is_null($config)) {
             AppProvider::app($packageName);
@@ -91,8 +92,8 @@ class AppController extends MasterConfiguration
         if (empty($packageName))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
-        $file = Dir::path('downloads>apps>' . $packageName . '.pin');
-        Wizard::installApp($file);
+        $file = Wizard::get_downloaded($packageName);
+        Wizard::installApp($file, $packageName);
         Response::json(rlang('manager.done_successfully'), true);
     }
 

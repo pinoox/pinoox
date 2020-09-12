@@ -106,5 +106,14 @@ return [
     'market_home' => 'اپلیکیشن ها',
     'market_account' => 'حساب کاربری',
     'live_preview' => 'پیش نمایش',
+    'float_installer_message_app' => 'اپلیکیشن آماده نصب است، جهت تکمیل و بهره مندی از امکانات آن فرآیند نصب را انجام دهید',
+    'float_installer_message_template' => 'جهت نصب و استفاده از قالب روی دکمه نصب کلیک کنید',
+    'finish' => 'پایان',
+    'please_wait_until_complete' => 'تا پایان نصب لطفا منتظر بمانید',
+    'go_to_app_manager' => 'رفتن به تنظیمات',
+    'request_install_template_not_valid' => 'درخواست نصب قالب معتبر نیست',
+    'go_to_templates' => 'رفتن به قالب ها',
+    'this_folder_is_duplicated' => 'نام قالب تکراری است',
+    'are_you_sure_delete_template' => 'آیا از حذف قالب مطمئن هستید؟',
 ];
     
