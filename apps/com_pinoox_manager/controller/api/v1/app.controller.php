@@ -92,7 +92,7 @@ class AppController extends MasterConfiguration
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
         $file = Dir::path('downloads>apps>' . $packageName . '.pin');
-        Wizard::installApp($file, $packageName);
+        Wizard::installApp($file);
         Response::json(rlang('manager.done_successfully'), true);
     }
 
@@ -112,27 +112,8 @@ class AppController extends MasterConfiguration
             $file = path('temp/' . $data['packageName'] . '.pin');
             Download::fetch($data['downloadLink'], $file)->process();
 
-            Zip::remove($file, [
-                $data['packageName'] . '/config/',
-                $data['packageName'] . '/cache/',
-                $data['packageName'] . '/app.php',
-                $data['packageName'] . '/app.db',
-            ]);
-
-            $appPath = path('~apps/');
-
-            Zip::extract($file, $appPath);
-            File::remove_file($file);
-
+            Wizard::updateApp($file);
             $message = rlang('manager.update_successfully');
-            Router::setApp($data['packageName']);
-            AppProvider::app($data['packageName']);
-            AppProvider::set('version-code', $data['versionCode']);
-            AppProvider::set('version-name', $data['versionName']);
-            Cache::app($data['packageName']);
-            Service::app($data['packageName']);
-            Service::run('app>update');
-            AppProvider::save();
             Response::json($message, true);
         }
 
