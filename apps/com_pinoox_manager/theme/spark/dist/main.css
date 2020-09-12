@@ -8702,7 +8702,11 @@ a:hover {
 body.rtl {
   direction: rtl;
   text-align: right;
+<<<<<<< Updated upstream
   font-family: 'shabnam', 'Karla', serif !important;
+=======
+  font-family: 'shabnam', 'Karla' !important;
+>>>>>>> Stashed changes
 }
 body.rtl #pinoox-container #workspace .app-details .content .sections .info ul li .value {
   text-align: left;
@@ -8716,7 +8720,11 @@ body.rtl .widget-clock .moment {
 body.ltr {
   direction: ltr;
   text-align: left;
+<<<<<<< Updated upstream
   font-family: 'Karla', 'shabnam', serif !important;
+=======
+  font-family: 'Karla', 'shabnam' !important;
+>>>>>>> Stashed changes
 }
 body.ltr .notifier {
   bottom: 30px;
@@ -8976,8 +8984,28 @@ body.ltr .widget-clock .moment {
 #pinoox-container #workspace .widget-storage .content {
   display: flex;
 }
+<<<<<<< Updated upstream
 #pinoox-container #workspace .widget-storage .content .vm-progress__text {
   color: #fff;
+=======
+#pinoox-container #workspace .widget-storage .content .progressbar {
+  position: relative;
+}
+#pinoox-container #workspace .widget-storage .content .progressbar .percent {
+  display: inline-block;
+  position: absolute;
+  right: 0;
+  left: 0;
+  text-align: center;
+  top: 34%;
+  font-size: 25px;
+}
+#pinoox-container #workspace .widget-storage .content .progressbar .progress-ring__circle {
+  transition: 0.35s stroke-dashoffset;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+  -webkit-svg-shadow: 0 0 7px #53BE12;
+>>>>>>> Stashed changes
 }
 #pinoox-container #workspace .widget-storage .content .info {
   margin-top: 20px;
@@ -9195,6 +9223,12 @@ body.ltr .widget-clock .moment {
   position: relative;
   top: 12px;
 }
+<<<<<<< Updated upstream
+=======
+#pinoox-container .notifications .content .list {
+  margin-top: 50px;
+}
+>>>>>>> Stashed changes
 #pinoox-container .notifications .content .list .list-enter-active,
 #pinoox-container .notifications .content .list .list-leave-active {
   transition: all 0.33s;
@@ -9225,9 +9259,12 @@ body.ltr .widget-clock .moment {
   font-size: 0.75rem;
   font-weight: 300;
 }
+<<<<<<< Updated upstream
 #pinoox-container .notifications .content .list .item .vm-progress {
   margin-top: 5px;
 }
+=======
+>>>>>>> Stashed changes
 #pinoox-container .float-installer {
   position: absolute;
   left: 10%;
@@ -9870,6 +9907,7 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .about .update .message.warning {
   color: #de8f05;
 }
+<<<<<<< Updated upstream
 .windows-page .content .page .pin-packages .files-list {
   display: block;
   margin-top: 50px;
@@ -10136,6 +10174,8 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .pin-packages .market-login .user .logout:hover {
   cursor: pointer;
 }
+=======
+>>>>>>> Stashed changes
 .windows-page .content .page .market .apps-list {
   display: block;
   margin-top: 50px;
@@ -10604,6 +10644,7 @@ body.ltr .widget-clock .moment {
   align-items: center;
   justify-content: center;
 }
+<<<<<<< Updated upstream
 .windows-page .content .page .manual-installation .upload-wrapper .upload-panel input[type="file"] {
   display: none;
 }
@@ -10613,6 +10654,8 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .manual-installation .upload-wrapper .upload-panel .btn-pin {
   margin-top: 10px;
 }
+=======
+>>>>>>> Stashed changes
 .windows-page .content .page .manual-installation .upload-wrapper .upload-panel .icon {
   margin-top: 10px;
   width: 256px;
@@ -10628,6 +10671,7 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .manual-installation .upload-wrapper .upload-panel .text {
   padding: 10px 2px;
 }
+<<<<<<< Updated upstream
 .windows-page .content .page .manual-installation .show-errs {
   width: 100%;
   text-align: center;
@@ -10643,6 +10687,8 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .manual-installation .show-errs .alert-danger {
   color: #fff;
 }
+=======
+>>>>>>> Stashed changes
 .windows-page .content .page .templates {
   padding: 20px 0;
   display: grid;
