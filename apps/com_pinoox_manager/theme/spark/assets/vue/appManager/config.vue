@@ -8,12 +8,12 @@
         </div>
         <div class="page">
 
-            <div class="config" v-if="appConfig.hidden!=null">
-                <h2 class="title">{{LANG.setting.appManager.opt_hidden}}
-                    <toggle-button class="switch" :value="appConfig.hidden" @change="toggleSwitch('hidden', true)"
+            <div class="config" v-if="appConfig.dock!=null">
+                <h2 class="title">{{LANG.setting.appManager.opt_dock}}
+                    <toggle-button class="switch" :value="appConfig.dock" @change="toggleSwitch('dock', true)"
                                    :labels="false"/>
                 </h2>
-                <h3 class="description">{{LANG.setting.appManager.opt_hidden_text}}</h3>
+                <h3 class="description">{{LANG.setting.appManager.opt_dock_text}}</h3>
             </div>
 
             <div class="config" v-if="appConfig.router!=null">

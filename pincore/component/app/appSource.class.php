@@ -247,4 +247,11 @@ abstract class AppSource
      * @var boolean
      */
     protected static $sysApp = false;
+
+    /**
+     * Visibility of Apps in manager Dock
+     *
+     * @var boolean
+     */
+    protected static $dock = true;
 }
