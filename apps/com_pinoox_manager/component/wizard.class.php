@@ -174,4 +174,31 @@ class Wizard
         $file = Dir::path('downloads>apps>' . $package_name . '.pin');
         return (!empty($file) && file_exists($file));
     }
+
+    public static function get_downloaded($package_name)
+    {
+        return Dir::path('downloads>apps>' . $package_name . '.pin');
+    }
+
+    public static function is_installed_template($package_name, $uid)
+    {
+        $file = Dir::path("~apps>$package_name>theme>$uid>index.php");
+        return (!empty($file) && file_exists($file));
+    }
+
+    public static function is_downloaded_template($uid)
+    {
+        $file = Dir::path("downloads>templates>$uid.pin");
+        return (!empty($file) && file_exists($file));
+    }
+    public static function get_downloaded_template($uid)
+    {
+        return Dir::path("downloads>templates>$uid.pin");
+    }
+
+    public static function installTemplate($file, $packageName)
+    {
+        Zip::extract($file, path("~apps>$packageName>theme>"));
+        File::remove_file($file);
+    }
 }
