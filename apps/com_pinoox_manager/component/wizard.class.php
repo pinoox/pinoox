@@ -178,7 +178,7 @@ class Wizard
         File::remove_file($file);
         Cache::clean('version');
         Cache::get('version');
-        Config::reset('~pinoox');
+        Config::bake('~pinoox');
         Service::run('~core>update');
 
         Cache::app('com_pinoox_manager');

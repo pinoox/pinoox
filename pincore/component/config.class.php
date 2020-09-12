@@ -251,6 +251,31 @@ class Config
     }
 
     /**
+     * bake data in config
+     *
+     * @param string $key
+     */
+    public static function bake($filename)
+    {
+        self::reset($filename);
+        $filename = str_replace(['/', '\\'], '>', $filename);
+
+        if (HelperString::firstHas($filename, '~')) {
+            $filename = HelperString::firstDelete($filename, '~');
+            $app = '~';
+        } else {
+            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+        }
+
+        if ($app !== '~')
+            $file = Dir::path('pinker/config/' . $filename . '.config.php', $app);
+        else
+            $file = Dir::path('~pincore/pinker/config/' . $filename . '.config.php');
+
+        self::initFile($file, $app, $filename);
+    }
+
+    /**
      * Remove target data in config
      *
      * @param string $pointer
