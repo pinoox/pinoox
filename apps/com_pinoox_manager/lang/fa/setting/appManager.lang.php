@@ -1,10 +1,10 @@
 <?php
 
 return [
-    'opt_hidden' => 'مخفی کردن',
-    'opt_hidden_text' => 'مخفی کردن اپلیکیشن از داک در میزکار',
     'opt_router' => 'مسیریابی چندگانه',
     'opt_router_text' => 'در صورتی که فعال باشد امکان اختصاص چند مسیر (url) به اپ وجود دارد',
+    'opt_dock' => 'داک',
+    'opt_dock_text' => 'نمایش اپلیکیشن در داک میزکار',
 
     'enable' => 'فعال',
     'disable' => 'غیرفعال',
@@ -12,4 +12,6 @@ return [
     'empty_users' => 'هیچ کاربری وجود ندارد',
 
     'empty_templates' => 'هیچ قالبی وجود ندارد',
+    'activate_template' => 'فعال کردن',
+    'deactivate_template' => 'غیر فعال کردن',
 ];

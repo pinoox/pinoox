@@ -213,8 +213,9 @@
                                 this.$router.push({name: 'market-login'});
                             }
                         } else {
-                            this.readyInstall++;
+                            template.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
+                            this._openFloatInstaller(template);
                         }
                     });
 
@@ -229,7 +230,7 @@
                     this.templates = json.data;
                 });
             },
-            installTemplate(template){
+            installTemplate(template) {
                 this._openFloatInstaller(template);
             }
         },

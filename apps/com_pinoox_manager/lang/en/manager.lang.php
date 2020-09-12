@@ -111,5 +111,8 @@ return [
     'go_to_app_manager' => 'app settings',
     'request_install_template_not_valid' => 'The template installation request is not valid',
     'go_to_templates' => 'open templates',
+    'this_folder_is_duplicated' => 'this template folder name is duplicated',
+    'are_you_sure_delete_template' => 'Are you sure to delete template?',
+
 ];
     
