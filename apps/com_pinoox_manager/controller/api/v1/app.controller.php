@@ -88,7 +88,7 @@ class AppController extends MasterConfiguration
         if (empty($packageName))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
-        $file = Dir::path('downloads>apps>' . $packageName . '.pin');
+        $file = Wizard::get_downloaded($packageName);
         Wizard::installApp($file, $packageName);
         Response::json(rlang('manager.done_successfully'), true);
     }

@@ -1519,9 +1519,11 @@ body.ltr {
 
       .header-content {
         padding: 0 10px;
+        flex-grow: 1;
 
         .app-icon {
           width: 35px;
+          margin: 0 5px;
         }
       }
     }
@@ -2533,6 +2535,33 @@ body.ltr {
           }
         }
 
+      }
+
+      .templates {
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 220px);
+        grid-gap: 2rem;
+
+        .item {
+          text-align: center;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+
+          .thumb {
+            width: 100%;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+          }
+
+          .name {
+            padding: 10px 0;
+          }
+
+          .actions {
+            padding: 10px 0;
+          }
+        }
       }
     }
 

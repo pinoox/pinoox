@@ -90,10 +90,17 @@ return [
     'manual_installation' => 'manual installation',
     'app_details' => 'application details',
     'app' => 'application',
-    'templates' => 'tempaltes',
+    'templates' => 'templates',
     'upload_pinoox_package_for_installing' => 'upload app with *.pin extension for installing',
     'market_home' => 'applications',
     'market_account' => 'account',
     'live_preview' => 'live preview',
+    'float_installer_message_app' => 'The application is ready to install, to complete and benefit from its , continue the installation process',
+    'float_installer_message_template' => 'Click the install button to use the template',
+    'finish' => 'finish',
+    'please_wait_until_complete' => 'please wait until installing complete',
+    'go_to_app_manager' => 'app settings',
+    'request_install_template_not_valid' => 'The template installation request is not valid',
+    'go_to_templates' => 'open templates',
 ];
     

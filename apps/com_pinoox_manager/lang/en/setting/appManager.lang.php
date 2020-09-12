@@ -10,4 +10,6 @@ return [
     'disable' => 'disable',
     'empty_app' => 'there is no app',
     'empty_users' => 'there are no users',
+
+    'empty_templates' => 'there are no templates',
 ];
