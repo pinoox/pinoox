@@ -1,8 +1,9 @@
 <template>
     <div id="pinoox-container">
-        <img v-show="isBackground" :src="background" class="cover-background">
+        <img v-show="isBackground" :src="background" class="cover-background" alt="">
         <notifier></notifier>
         <Notifications></Notifications>
+        <FloatInstaller v-if="floatApp!=null" :app="floatApp" @close="floatApp=null"></FloatInstaller>
         <div id="pin-bar" v-if="isLogin && !isLock && $router.currentRoute.name !== 'loading'">
             <div class="pin-icon ntf-drawer" @click="toggleNotification()">
                 <img src="@img/pin-icon.png">
@@ -23,10 +24,6 @@
                     </router-link>
                 </div>
             </div>
-            <router-link :to="{name:'app-home'}" class="pin-icon" v-if="notifyInstaller>0">
-                <i class="fas fas fa-grip-horizontal fontIcon"></i> <span class="label">{{LANG.manager.ready_to_install}}</span>
-                <span class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
-            </router-link>
         </div>
 
         <router-view></router-view>
@@ -48,9 +45,10 @@
     import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
     import Notifications from "./notifications.vue";
     import Notifier from "./notifier.vue";
+    import FloatInstaller from "./pages/float-installer.vue";
 
     export default {
-        components: {Notifications, Notifier},
+        components: {Notifications, Notifier, FloatInstaller},
         data() {
             return {
                 timeSleep: 0,
@@ -58,7 +56,7 @@
             }
         },
         computed: {
-            ...mapState(['isLoading', 'isRun', 'time', 'isApp', 'appManager']),
+            ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
             notifyInstaller: {
                 get() {
@@ -105,10 +103,18 @@
                     this.$store.state.tabs = val;
                 }
             },
+            floatApp: {
+                get() {
+                    return this.$store.state.floatApp;
+                },
+                set(app) {
+                    this.$store.state.floatApp = app;
+                }
+            }
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromTabs']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromTabs']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;

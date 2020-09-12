@@ -101,5 +101,8 @@ return [
     'upload_files' => 'آپلود فایل ها',
     'process_upload_waiting' => 'لطفا منتظر بمانید در حال بارگذاری فایل ها ...',
     'latest_status' => 'نمایش آخرین وضعیت',
+    'market_home' => 'اپلیکیشن ها',
+    'market_account' => 'حساب کاربری',
+    'live_preview' => 'پیش نمایش',
 ];
     

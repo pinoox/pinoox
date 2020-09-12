@@ -2,7 +2,6 @@
     <section>
         <div id="workspace">
             <Widgets></Widgets>
-            <AppDetails v-if="app!=null" :app="app" @close="app=null"></AppDetails>
         </div>
 
         <div id="pin-dock">
@@ -33,7 +32,6 @@
         data() {
             return {
                 app: null,
-                isOpenInstaller: false,
             }
         },
         components: {Widgets},
@@ -42,14 +40,7 @@
         },
         methods: {
             openApp(app) {
-
-                if(!app.open || app.open === 'app-details')
-                {
-                    this.$router.replace({name: 'app-details',params:{package_name:app.package_name}});
-                }
-                else {
-                    this.$router.replace({name: app.open,params:{package_name:app.package_name}});
-                }
+                this.$router.replace({name: app.open,params:{package_name:app.package_name}});
             },
         },
     };
