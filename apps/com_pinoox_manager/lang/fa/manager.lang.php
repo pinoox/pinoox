@@ -111,5 +111,7 @@ return [
     'go_to_app_manager' => 'رفتن به تنظیمات',
     'request_install_template_not_valid' => 'درخواست نصب قالب معتبر نیست',
     'go_to_templates' => 'رفتن به قالب ها',
+    'this_folder_is_duplicated' => 'نام قالب تکراری است',
+    'are_you_sure_delete_template' => 'آیا از حذف قالب مطمئن هستید؟',
 ];
     
