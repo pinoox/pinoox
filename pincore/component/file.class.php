@@ -281,6 +281,50 @@ class File
     }
 
     /**
+     * Get automatic size (TB,GB,MB,KB,B)
+     *
+     * @param $size
+     * @param int $round
+     * @return float|int|string|null
+     */
+    public static function print_size($size, $round = 2)
+    {
+        $result = null;
+        $size = floatval($size);
+        $arBytes = array(
+            0 => array(
+                "UNIT" => "TB",
+                "VALUE" => pow(1024, 4)
+            ),
+            1 => array(
+                "UNIT" => "GB",
+                "VALUE" => pow(1024, 3)
+            ),
+            2 => array(
+                "UNIT" => "MB",
+                "VALUE" => pow(1024, 2)
+            ),
+            3 => array(
+                "UNIT" => "KB",
+                "VALUE" => 1024
+            ),
+            4 => array(
+                "UNIT" => "B",
+                "VALUE" => 1
+            ),
+        );
+
+        foreach ($arBytes as $arItem) {
+            if ($size >= $arItem["VALUE"]) {
+                $result = $size / $arItem["VALUE"];
+                $result = Lang::replace('~file.units.'.$arItem["UNIT"],str_replace(".", ",", strval(round($result, $round))));
+                break;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get file time
      *
      * @param string $file
