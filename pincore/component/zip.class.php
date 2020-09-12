@@ -15,6 +15,8 @@ use ZipArchive;
 
 class Zip
 {
+    private static $entries = null;
+
     public static function folders($zippedFile, $isJustCurrent = false, $dir = null)
     {
         $files = self::info($zippedFile, $isJustCurrent, $dir);
@@ -111,12 +113,26 @@ class Zip
 
     }
 
+
+    public static function addEntries($filename)
+    {
+        if(!is_array(self::$entries))
+            self::$entries = [];
+        array_push(self::$entries,$filename);
+    }
+
+    public static function entries($filenames)
+    {
+        self::$entries = $filenames;
+    }
+
     public static function extract($zippedFile, $dir)
     {
         $zip = new ZipArchive;
         $res = $zip->open($zippedFile);
         if ($res === TRUE) {
-            $zip->extractTo($dir);
+            $zip->extractTo($dir,self::$entries);
+            self::$entries = null;
             $zip->close();
             return true;
         } else {

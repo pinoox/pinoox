@@ -47,17 +47,6 @@ class Config
     }
 
     /**
-     * Set data in config
-     *
-     * @param string $key
-     * @param mixed $value
-     */
-    public static function set($key, $value)
-    {
-        self::push($key, $value, 'set');
-    }
-
-    /**
      * Set target data in config
      *
      * @param string $pointer
@@ -67,56 +56,115 @@ class Config
     public static function setLinear($pointer, $key, $value)
     {
         $data = self::get($pointer);
-        $data = is_array($data)? $data : [];
+        $data = is_array($data) ? $data : [];
         $data[$key] = $value;
-        self::set($pointer,$data);
+        self::set($pointer, $data);
     }
 
     /**
-     * Get target data from config
+     * Get data from config
      *
-     * @param string $pointer
-     * @param string $key
+     * @param string $value
      * @return mixed|null
      */
-    public static function getLinear($pointer, $key)
+    public static function get($value)
     {
-        $data = self::get($pointer);
-        return isset($data[$key])? $data[$key] : null;
+        if (empty($value)) return null;
+
+        $info = explode('.', $value);
+        $filename = array_shift($info);
+        $filename = str_replace(['/', '\\'], '>', $filename);
+
+        if (HelperString::firstHas($filename, '~')) {
+            $filename = HelperString::firstDelete($filename, '~');
+            $app = '~';
+        } else {
+            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+        }
+
+        if (!isset(self::$data[$app][$filename])) {
+            self::$data[$app][$filename] = self::loadFile($app, $filename);
+        }
+
+        return self::result($app, $filename, $info);
     }
 
     /**
-     * Remove data in config
+     * Load config file
      *
-     * @param string $key
+     * @param $app
+     * @param $filename
+     * @return mixed|null
      */
-    public static function remove($key)
+    private static function loadFile($app, $filename)
     {
-        self::push($key, null, 'del');
+        if ($app !== '~')
+            $file = Dir::path('pinker/config/' . $filename . '.config.php', $app);
+        else
+            $file = Dir::path('~pincore/pinker/config/' . $filename . '.config.php');
+
+        if (!is_file($file)) {
+            self::initFile($file, $app, $filename);
+        }
+
+        if (is_file($file)) {
+            return (include $file);
+        }
+
+        return null;
     }
 
     /**
-     * Remove target data in config
+     * init config file
      *
-     * @param string $pointer
-     * @param string $key
+     * @param $file
+     * @param $app
+     * @param $filename
      */
-    public static function removeLinear($pointer, $key)
+    private static function initFile($file, $app, $filename)
     {
-        $data = self::get($pointer);
-        $data = is_array($data)? $data : [];
-        unset($data[$key]);
-        self::set($pointer,$data);
+        if ($app !== '~')
+            $f = Dir::path('config/' . $filename . '.config.php', $app);
+        else
+            $f = Dir::path('~pincore/config/' . $filename . '.config.php');
+
+        if (is_file($f))
+            File::copy($f, $file);
     }
 
     /**
-     * Reset data in config with config file
+     * Result request get data
+     *
+     * @param string $app
+     * @param string $filename
+     * @param array $info
+     * @param bool $isTemp
+     * @return mixed|null
+     */
+    private static function result($app, $filename, $info, $isTemp = false)
+    {
+        $result = ($isTemp) ? self::$tempData[$app][$filename] : self::$data[$app][$filename];
+        foreach ($info as $value) {
+            if (isset($result[$value])) {
+                $result = $result[$value];
+            } else {
+                $result = null;
+                break;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Set data in config
      *
      * @param string $key
+     * @param mixed $value
      */
-    public static function reset($key)
+    public static function set($key, $value)
     {
-        self::push($key, null, 'reset');
+        self::push($key, $value, 'set');
     }
 
     /**
@@ -140,10 +188,10 @@ class Config
             $app = '~';
         }
 
-        if(isset(self::$data[$app][$filename]) && $type == 'reset')
+        if (isset(self::$data[$app][$filename]) && $type == 'reset')
             unset(self::$data[$app][$filename]);
 
-        if($type == 'reset') return;
+        if ($type == 'reset') return;
 
         if (!isset(self::$data[$app][$filename])) {
 
@@ -180,46 +228,50 @@ class Config
     }
 
     /**
-     * Load config file
+     * Get target data from config
      *
-     * @param $app
-     * @param $filename
+     * @param string $pointer
+     * @param string $key
      * @return mixed|null
      */
-    private static function loadFile($app, $filename)
+    public static function getLinear($pointer, $key)
     {
-        if ($app !== '~')
-            $file = Dir::path('config/' . $filename . '.config.php', $app);
-        else
-            $file = Dir::path('~pincore/config/' . $filename . '.config.php');
-
-        if (!is_file($file)) {
-           self::initFile($file,$app,$filename);
-        }
-
-        if (is_file($file)) {
-            return (include $file);
-        }
-
-        return null;
+        $data = self::get($pointer);
+        return isset($data[$key]) ? $data[$key] : null;
     }
 
     /**
-     * init config file
+     * Remove data in config
      *
-     * @param $file
-     * @param $app
-     * @param $filename
+     * @param string $key
      */
-    private static function initFile($file,$app,$filename)
+    public static function remove($key)
     {
-        if ($app !== '~')
-            $f = Dir::path('config/' . $filename . '.init.php', $app);
-        else
-            $f = Dir::path('~pincore/config/' . $filename . '.init.php');
+        self::push($key, null, 'del');
+    }
 
-        if(is_file($f))
-            File::copy($f,$file);
+    /**
+     * Remove target data in config
+     *
+     * @param string $pointer
+     * @param string $key
+     */
+    public static function removeLinear($pointer, $key)
+    {
+        $data = self::get($pointer);
+        $data = is_array($data) ? $data : [];
+        unset($data[$key]);
+        self::set($pointer, $data);
+    }
+
+    /**
+     * Reset data in config with config file
+     *
+     * @param string $key
+     */
+    public static function reset($key)
+    {
+        self::push($key, null, 'reset');
     }
 
     /**
@@ -245,10 +297,10 @@ class Config
         $filename = $name . '.config.php';
 
         if (!HelperString::firstHas($filename, '~')) {
-            $file = Dir::path('config/' . $filename, self::$app);
+            $file = Dir::path('pinker/config/' . $filename, self::$app);
         } else {
             $filename = HelperString::firstDelete($filename, '~');
-            $file = Dir::path('~pincore/config/' . $filename);
+            $file = Dir::path('~pincore/pinker/config/' . $filename);
         }
 
         $data_for_save = '<?' . 'php' . "\n";
@@ -256,58 +308,6 @@ class Config
         $data_for_save .= 'return ' . var_export($data, true) . ";\n\n//end of config";
 
         File::generate($file, $data_for_save);
-    }
-
-    /**
-     * Get data from config
-     *
-     * @param string $value
-     * @return mixed|null
-     */
-    public static function get($value)
-    {
-        if (empty($value)) return null;
-
-        $info = explode('.', $value);
-        $filename = array_shift($info);
-        $filename = str_replace(['/', '\\'], '>', $filename);
-
-        if (HelperString::firstHas($filename, '~')) {
-            $filename = HelperString::firstDelete($filename, '~');
-            $app = '~';
-        } else {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
-        }
-
-        if (!isset(self::$data[$app][$filename])) {
-            self::$data[$app][$filename] = self::loadFile($app, $filename);
-        }
-
-        return self::result($app, $filename, $info);
-    }
-
-    /**
-     * Result request get data
-     *
-     * @param string $app
-     * @param string $filename
-     * @param array $info
-     * @param bool $isTemp
-     * @return mixed|null
-     */
-    private static function result($app, $filename, $info, $isTemp = false)
-    {
-        $result = ($isTemp) ? self::$tempData[$app][$filename] : self::$data[$app][$filename];
-        foreach ($info as $value) {
-            if (isset($result[$value])) {
-                $result = $result[$value];
-            } else {
-                $result = null;
-                break;
-            }
-        }
-
-        return $result;
     }
 }
     

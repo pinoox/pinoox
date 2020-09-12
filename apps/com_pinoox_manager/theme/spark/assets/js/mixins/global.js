@@ -85,7 +85,7 @@ Vue.mixin({
         },
     },
     methods: {
-        ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs']),
+        ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs','pushToNotifications','closeFromNotifications']),
         _isEmptyObj(obj) {
             return Object.keys(obj).length === 0
         },

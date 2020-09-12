@@ -23,6 +23,7 @@ use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\Router;
 use pinoox\component\Service;
+use pinoox\component\Url;
 use pinoox\component\User;
 use pinoox\component\Zip;
 use pinoox\model\PinooxDatabase;
@@ -84,10 +85,7 @@ class Wizard
     public static function updateApp($file, $packageName, $linkApp, $versionCode, $versionName)
     {
         Zip::remove($file, [
-            $packageName . '/config/',
-            $packageName . '/cache/',
-            $packageName . '/app.php',
-            $packageName . '/app.db',
+            $packageName . '/pinker/',
         ]);
 
         $appPath = path('~apps/');
@@ -200,5 +198,44 @@ class Wizard
     {
         Zip::extract($file, path("~apps>$packageName>theme>"));
         File::remove_file($file);
+    }
+
+    public static function pullDataPackage($pinFile)
+    {
+        $filename = File::fullname($pinFile);
+        $name = File::name($pinFile);
+        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
+
+        if (!is_file($configFile)) {
+            Zip::addEntries('app.php');
+            Zip::extract($pinFile, $dir);
+        }
+
+        $app = new AppProvider($configFile);
+        $iconPath = $app->icon;
+
+        $icon = Url::file('resources/default.png');
+        if (!empty($iconPath)) {
+            $iconFile = Dir::path($dir . '>' . $app->icon);
+            if (!is_file($iconFile)) {
+                Zip::addEntries($app->icon);
+                Zip::extract($pinFile, $dir);
+            }
+
+            if(is_file($iconFile))
+                $icon = Url::file($dir . '>' . $app->icon);
+        }
+
+        return [
+            'filename' => $filename,
+            'package_name' => $app->packageName,
+            'name' => $app->name,
+            'description' => $app->description,
+            'version' => $app->versionName,
+            'version_code' => $app->versionCode,
+            'developer' => $app->developer,
+            'icon' => $icon,
+        ];
     }
 }

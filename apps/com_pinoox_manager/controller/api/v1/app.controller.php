@@ -19,37 +19,40 @@ use pinoox\component\Cache;
 use pinoox\component\Dir;
 use pinoox\component\Download;
 use pinoox\component\File;
+use pinoox\component\Lang;
 use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Router;
 use pinoox\component\Service;
-use pinoox\component\Validation;
+use pinoox\component\Uploader;
 use pinoox\component\Zip;
 
 class AppController extends MasterConfiguration
 {
+    const manuelPath = 'downloads/packages/manuel/';
+
     public function get($filter = null)
     {
         switch ($filter) {
             case 'installed':
-                {
-                    $result = AppModel::fetch_all(false);
-                    break;
-                }
+            {
+                $result = AppModel::fetch_all(false);
+                break;
+            }
             case 'ready_install':
-                {
-                    $result = AppModel::fetch_all_ready_to_install();
-                    break;
-                }
+            {
+                $result = AppModel::fetch_all_ready_to_install();
+                break;
+            }
             case 'systems':
-                {
-                    $result = AppModel::fetch_all(true);
-                    break;
-                }
+            {
+                $result = AppModel::fetch_all(true);
+                break;
+            }
             default:
-                {
-                    $result = AppModel::fetch_all(null, true);
-                }
+            {
+                $result = AppModel::fetch_all(null, true);
+            }
         }
 
         Response::json($result);
@@ -66,7 +69,7 @@ class AppController extends MasterConfiguration
         $config = Request::inputOne('config');
 
         if ($key == 'hidden')
-            $config = !$config? true : false;
+            $config = !$config ? true : false;
         if ($key == 'router')
             $config = $config === 'multiple' ? 'single' : 'multiple';
         $currentApp = AppProvider::app();
@@ -147,5 +150,50 @@ class AppController extends MasterConfiguration
     {
         $apps = AppModel::fetch_all_ready_to_install();
         Response::json(count($apps));
+    }
+
+    public function files()
+    {
+        $path = Dir::path(self::manuelPath);
+        $files = File::get_files_by_pattern($path, '*.pin');
+        $files = array_map(function ($file) {
+            return Wizard::pullDataPackage($file);
+        }, $files);
+        Response::json($files);
+    }
+
+    public function filesUpload()
+    {
+        if (Request::isFile('files')) {
+            $path = Dir::path(self::manuelPath);
+            $up = Uploader::init('files', $path)->allowedTypes("pin", '*')
+                ->changeName('none')
+                ->finish();
+
+            $result = $up->result();
+            $length = count($result);
+            $errs = $up->error(true);
+            $uploaded = array_filter($result,function ($row){
+                return $row? true : false;
+            });
+
+            $lengthUploaded = count($uploaded);
+
+            if($length === 1 && $lengthUploaded === $length)
+            {
+                Response::json(Lang::get('manager.file_uploaded_correctly'),true);
+            }
+            else if($lengthUploaded === $length)
+            {
+                Response::json(Lang::get('manager.files_uploaded_correctly'),true);
+            }
+            else
+            {
+                Response::json([
+                    'message' => Lang::replace('manager.some_files_uploaded_correctly',$length,$lengthUploaded),
+                    'errs' => $errs
+                ],false);
+            }
+        }
     }
 }

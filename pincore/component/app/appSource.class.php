@@ -31,6 +31,13 @@ abstract class AppSource
     protected static $hidden = false;
 
     /**
+     * Package Name
+     *
+     * @var string
+     */
+    protected static $packageName = null;
+
+    /**
      * Name router for Open in manager
      *
      * @var string|null
