@@ -68,10 +68,10 @@ class AppProvider extends AppSource
      * @param string|null $path
      * @param bool $isApp
      */
-    public function __construct($path = null, $isApp = false)
+    public function __construct($packageName = null, $isApp = false)
     {
         $this->isApp = $isApp;
-        $this->build(self::$app, $path);
+        $this->build(self::$app, $packageName);
     }
 
     /**
@@ -80,10 +80,17 @@ class AppProvider extends AppSource
      * @param string|null $app
      * @param string|null $path
      */
-    private function build($app = null, $path = null)
+    private function build($app = null, $packageName = null)
     {
         $app = ($app === '~') ? null : $app;
-        $this->path = (empty($path)) ? Dir::path('app.php', $app) : $path;
+        $this->path = (empty($packageName)) ? Dir::path('app.runner.php', $app) : Dir::path('app.runner.php', $packageName);
+        if(!is_file($this->path))
+        {
+            $app_file = (empty($packageName)) ? Dir::path('app.php', $app) : Dir::path('app.php', $packageName);
+            if(is_file($app_file))
+                File::copy($app_file,$this->path);
+        }
+
         $this->options = $this->getOptionsApp();
         $this->setOptionsApp();
     }
@@ -139,13 +146,13 @@ class AppProvider extends AppSource
     /**
      * Create an instance AppProvider
      *
-     * @param string|null $path
+     * @param string|null $packageName
      * @return AppProvider
      */
-    public static function bake($path = null)
+    public static function bake($packageName = null)
     {
         if (empty(self::$obj))
-            self::$obj = new AppProvider($path, true);
+            self::$obj = new AppProvider($packageName, true);
 
         return self::$obj;
     }
@@ -208,7 +215,7 @@ class AppProvider extends AppSource
     public static function save()
     {
         $app = (self::$app !== '~')? self::$app : null;
-        $file = Dir::path('app.php', $app);
+        $file = Dir::path('app.runner.php', $app);
 
         $data = self::get();
         $replaces = [];

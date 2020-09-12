@@ -200,7 +200,7 @@ class Router
             if ($isBake){
                 $app = self::$app;
                 self::$app = $packageName;
-                self::setAppProvider($app_file);
+                self::setAppProvider($packageName);
                 self::$app = $app;
             }
 
@@ -209,9 +209,9 @@ class Router
         return false;
     }
 
-    private static function setAppProvider($app_path = null)
+    private static function setAppProvider($packageName = null)
     {
-        AppProvider::bake($app_path);
+        AppProvider::bake($packageName);
     }
 
     public static function getApp()

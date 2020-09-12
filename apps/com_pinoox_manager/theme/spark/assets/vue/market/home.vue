@@ -1,5 +1,5 @@
 <template>
-    <div class="market-home">
+    <div>
         <input v-model="keyword" @keyup="search()" type="text" class="pin-input"
                :placeholder="LANG.setting.market.search_placeholder">
         <div v-if="isLoading" class="pin-spinner"></div>
@@ -12,7 +12,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 <script>

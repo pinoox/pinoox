@@ -32,12 +32,15 @@ return [
     'logout' => 'Logout',
     'lock' => 'Lock',
     'back' => 'Return',
+    'back_to_setting' => 'Back to Setting',
     'account' => 'Account',
     'interface' => 'General',
     'market' => 'Market',
     'router' => 'Routing',
+    'addresses' => 'Addresses',
     'about' => 'Pinoox',
     'invalid_request' => 'Invalid request',
+    'app_name' => 'App Name',
     'developer' => 'Developer',
     'version' => 'Version',
     'require_space' => 'Requirement space',
@@ -89,6 +92,8 @@ return [
     'app' => 'application',
     'templates' => 'tempaltes',
     'upload_pinoox_package_for_installing' => 'upload app with *.pin extension for installing',
-
+    'market_home' => 'applications',
+    'market_account' => 'account',
+    'live_preview' => 'live preview',
 ];
     

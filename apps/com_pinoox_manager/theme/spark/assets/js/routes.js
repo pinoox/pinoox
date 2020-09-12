@@ -7,18 +7,20 @@ import Setting from '../vue/setting/main.vue';
 import SettingDashboard from '../vue/setting/dashboard.vue';
 import SettingAccount from '../vue/setting/account.vue';
 import SettingRouter from '../vue/setting/router.vue';
-import SettingMarket from '../vue/setting/market.vue';
 import SettingAbout from '../vue/setting/about.vue';
-import MarketHome from '../vue/setting/market/home.vue';
-import MarketDetails from '../vue/setting/market/details.vue';
-import MarketLogin from '../vue/setting/market/login.vue';
-import MarketAccount from '../vue/setting/market/account.vue';
+import SettingApps from '../vue/setting/app/main.vue';
 import AppManager from '../vue/appManager/main.vue';
-import AppManagerHome from '../vue/appManager/home.vue';
+import AppsHome from '../vue/setting/app/home.vue';
+import AppsManual from '../vue/setting/app/manual.vue';
 import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
-import AppManagerManual from '../vue/appManager/manual.vue';
+import AppView from '../vue/pages/app-view.vue';
+import Market from '../vue/market/main.vue';
+import MarketHome from '../vue/market/home.vue';
+import MarketDetails from '../vue/market/details.vue';
+import MarketLogin from '../vue/market/login.vue';
+import MarketAccount from '../vue/market/account.vue';
 
 export const routes = [
     {
@@ -57,35 +59,18 @@ export const routes = [
                 component: SettingRouter
             },
             {
-                path: 'market',
-                component: SettingMarket,
+                path: 'apps',
+                component: SettingApps,
                 children: [
                     {
-                        path: '',
-                        name: 'setting-market',
-                        component: MarketHome
+                        path: 'list',
+                        name: 'apps-home',
+                        component: AppsHome,
                     },
                     {
-                        path: 'details/:package_name',
-                        name: 'market-details',
-                        component: MarketDetails,
-                        props: true,
-                    },
-                    {
-                        path: 'login',
-                        name: 'market-login',
-                        component: MarketLogin,
-                        meta: {
-                            requireAuth: false,
-                        }
-                    },
-                    {
-                        path: 'account',
-                        name: 'market-account',
-                        component: MarketAccount,
-                        meta: {
-                            requireAuth: true,
-                        }
+                        path: 'manuel',
+                        name: 'apps-manual',
+                        component: AppsManual,
                     },
                 ]
             },
@@ -97,43 +82,67 @@ export const routes = [
         ]
     },
     {
-        path: PINOOX.URL.BASE + 'appManager',
-        component: AppManager,
+        path: PINOOX.URL.BASE +'market',
+        component: Market,
         children: [
             {
                 path: '',
-                name: 'appManager-home',
-                component: AppManagerHome,
+                name: 'market-home',
+                component: MarketHome
+            },
+            {
+                path: 'details/:package_name',
+                name: 'market-details',
+                component: MarketDetails,
+                props: true,
+            },
+            {
+                path: 'login',
+                name: 'market-login',
+                component: MarketLogin,
                 meta: {
-                    showMainMenu: true,
+                    requireAuth: false,
                 }
             },
             {
-                path: 'manuel',
-                name: 'appManager-manual',
-                component: AppManagerManual,
+                path: 'account',
+                name: 'market-account',
+                component: MarketAccount,
                 meta: {
-                    showMainMenu: true,
+                    requireAuth: true,
                 }
             },
+        ]
+    },
+    {
+        path: PINOOX.URL.BASE +'appManager/:package_name',
+        component: AppManager,
+        props: true,
+        children: [
             {
-                path: 'users/:package_name',
-                name: 'appManager-users',
+                path: 'users',
+                name: 'app-users',
                 component: AppManagerUsers,
                 props: true,
             },
             {
-                path: 'config/:package_name',
-                name: 'appManager-config',
+                path: 'config',
+                name: 'app-config',
                 component: AppManagerConfig,
                 props: true,
             },
             {
-                path: 'details/:package_name',
-                name: 'appManager-details',
+                path: 'details',
+                name: 'app-details',
                 component: AppManagerDetails,
                 props: true,
             },
         ]
+    },
+    {
+        path: PINOOX.URL.BASE + 'demo/:package_name',
+        name: 'app-view',
+        component: AppView,
+        props:true,
     },
 ];

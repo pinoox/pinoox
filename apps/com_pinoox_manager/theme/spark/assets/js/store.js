@@ -20,6 +20,10 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
+        sidebar: {
+            back: false,
+            menus: [],
+        },
         clock: '',
         storage: '',
         options: {
@@ -42,7 +46,10 @@ export default new Vuex.Store({
         },
         pinooxAuth: {isLogin: false},
         readyInstallCount: 0,
-        appManager: [],
+        tabs: [],
+        tabCurrent: {},
+        floatApp: null
+
     },
     setters: {},
     getters: {
@@ -160,14 +167,24 @@ export default new Vuex.Store({
                 state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
             });
         },
-        pushToAppManager: (state, app) => {
-            let result = state.appManager.find(a => a.package_name === app.package_name);
+        pushToTabs: (state, info) => {
+            state.tabCurrent = {
+                key: info.key,
+                label: !!info.label ? info.label : null,
+                icon: !!info.icon ? info.icon : null,
+                image: !!info.image ? info.image : null,
+                route: {},
+            };
+
+            if (info.key === 'home')
+                return;
+            let result = state.tabs.find(tab => tab.key === state.tabCurrent.key);
             if (result === undefined)
-                state.appManager.push(app);
+                state.tabs.push(state.tabCurrent);
         },
-        closeFromAppManager(state, app) {
-            state.appManager = state.appManager.filter(function (a) {
-                return a.package_name !== app.package_name;
+        closeFromTabs(state, key) {
+            state.tabs = state.tabs.filter(function (tab) {
+                return tab.key !== key;
             });
         }
     },

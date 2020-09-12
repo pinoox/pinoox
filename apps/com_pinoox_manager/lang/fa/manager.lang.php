@@ -32,12 +32,15 @@ return [
     'logout' => 'خروج',
     'lock' => 'قفل',
     'back' => 'برگشت',
+    'back_to_setting' => 'برگشت به تنظیمات',
     'account' => 'پنل کاربری',
     'interface' => 'ظاهری',
     'market' => 'مارکت',
     'router' => 'مسیریابی',
+    'addresses' => 'آدرس ها',
     'about' => 'پینوکس',
     'invalid_request' => 'درخواست نامعتبر است',
+    'app_name' => 'نام اپلیکیشن',
     'developer' => 'توسعه دهنده',
     'version' => 'نسخه',
     'require_space' => 'فضای مورد نیاز',
@@ -89,6 +92,8 @@ return [
     'app' => 'اپلیکیشن',
     'templates' => 'قالب ها',
     'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگزاری کنید',
-
+    'market_home' => 'اپلیکیشن ها',
+    'market_account' => 'حساب کاربری',
+    'live_preview' => 'پیش نمایش',
 ];
     

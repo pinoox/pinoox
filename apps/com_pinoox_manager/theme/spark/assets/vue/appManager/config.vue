@@ -41,9 +41,6 @@
         },
         methods: {
             ...mapMutations(['getApps']),
-            initApp() {
-                this.$emit('onUpdatePackageName', this.package_name);
-            },
             toggleSwitch(key) {
                 this.$http.post(this.URL.API + 'app/setConfig/' + this.package_name + "/" + key, {config: this.appConfig[key]}).then((json) => {
                     if (json.data.status) {
@@ -59,7 +56,6 @@
             }
         },
         created() {
-            this.initApp();
             this.getConfig();
         },
 

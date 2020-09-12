@@ -1,23 +1,29 @@
 <template>
     <div id="pinoox-container">
-        <img v-show="isBackground" :src="background" class="cover-background">
+        <img v-show="isBackground" :src="background" class="cover-background" alt="">
         <notifier></notifier>
         <Notifications></Notifications>
+        <FloatInstaller v-if="floatApp!=null" :app="floatApp" @close="floatApp=null"></FloatInstaller>
         <div id="pin-bar" v-if="isLogin && !isLock && $router.currentRoute.name !== 'loading'">
             <div class="pin-icon ntf-drawer" @click="toggleNotification()">
                 <img src="@img/pin-icon.png">
                 <span v-if="hasNotification" class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
             </div>
-            <div class="appManage-tabs" v-if="appManager!=null && appManager.length>0">
-                <div class="tab-app" v-for="(app,index) in appManager">
-                    <i @click="closeTab(app)" class="icon fa fa-times"></i>
-                    <span @click="openTab(app)" class="app-name">{{app.name}}</span>
+            <div class="appManage-tabs" v-if="tabs!=null && tabs.length>0">
+                <div :class="!!tabCurrent.key && tabCurrent.key === 'home'? 'active' : ''" class="tab-app">
+                    <router-link tag="span" :to="{name:'home'}" class="tab-details home"><i class="fa fa-home"></i>
+                    </router-link>
+                </div>
+                <div :class="!!tabCurrent.key && tabCurrent.key === tab.key? 'active' : ''" class="tab-app"
+                     v-for="(tab,index) in tabs">
+                    <i @click="closeTab(tab.key)" class="icon fa fa-times"></i>
+                    <router-link tag="div" :to="tab.route" class="tab-details tab-icon">
+                        <span v-if="!!tab.label" class="app-name"> {{tab.label}}</span>
+                        <i v-if="!!tab.icon" :class="tab.icon"></i>
+                        <img v-else-if="!!tab.image" :src="tab.image">
+                    </router-link>
                 </div>
             </div>
-            <router-link :to="{name:'appManager-home'}" class="pin-icon" v-if="notifyInstaller>0">
-                <i class="fas fas fa-grip-horizontal fontIcon"></i> <span class="label">{{LANG.manager.ready_to_install}}</span>
-                <span class="notify"><i class="fa fa-bell  animated bounceIn loop"></i></span>
-            </router-link>
         </div>
 
         <router-view></router-view>
@@ -39,9 +45,10 @@
     import {mapActions, mapGetters, mapMutations, mapState} from 'vuex';
     import Notifications from "./notifications.vue";
     import Notifier from "./notifier.vue";
+    import FloatInstaller from "./pages/float-installer.vue";
 
     export default {
-        components: {Notifications, Notifier},
+        components: {Notifications, Notifier, FloatInstaller},
         data() {
             return {
                 timeSleep: 0,
@@ -49,7 +56,7 @@
             }
         },
         computed: {
-            ...mapState(['isLoading', 'isRun', 'time', 'isApp', 'appManager']),
+            ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
             notifyInstaller: {
                 get() {
@@ -88,18 +95,26 @@
                     this.$store.state.notifications = val;
                 }
             },
-            appManager: {
+            tabs: {
                 get() {
-                    return this.$store.state.appManager;
+                    return this.$store.state.tabs;
                 },
                 set(val) {
-                    this.$store.state.appManager = val;
+                    this.$store.state.tabs = val;
                 }
             },
+            floatApp: {
+                get() {
+                    return this.$store.state.floatApp;
+                },
+                set(app) {
+                    this.$store.state.floatApp = app;
+                }
+            }
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getLang', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromAppManager']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromTabs']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -175,29 +190,30 @@
                 else
                     this.startRoute = {name: 'home'};
             },
-            openTab(app) {
-                if (!!app.open) {
-                    this.$router.push({
-                        name: app.open
-                    }).catch(err => {
-                    });
+            closeTab(key) {
+                this.closeFromTabs(key);
+                let length = this.tabs.length;
+                if (length > 0) {
+                    if (!!this.tabCurrent.key && key === this.tabCurrent.key) {
+                        length--;
+                        let tab = this.tabs[length];
+                        this.$router.push(tab.route);
+                    }
                 } else {
-                    this.$router.push({
-                        name: 'appManager-details',
-                        params: {package_name: app.package_name}
-                    }).catch(err => {
-                    });
+                    this.$router.push({name: 'home'});
                 }
-
             },
-            closeTab(app) {
-                if (app.package_name === this.$route.params.package_name) {
-                    this.$router.replace({
-                        name: 'appManager-home'
-                    }).catch(err => {
-                    });
-                }
-                this.closeFromAppManager(app);
+            updateRouteTabs(route) {
+                this.$nextTick(() => {
+                    if (!this.tabCurrent.key || this.tabCurrent.key === 'home')
+                        return;
+                    let tab = this.tabs.find(t => t.key === this.tabCurrent.key);
+                    tab.route = {
+                        name: route.name,
+                        params: route.params,
+                        query: route.query,
+                    };
+                });
             }
         },
         created() {
@@ -228,7 +244,13 @@
                 if (lockAvailable && this.timeSleep >= timeEnd) {
                     this.lock();
                 }
-            }
+            },
+            '$route': {
+                handler(route) {
+                    this.updateRouteTabs(route);
+                },
+                immediate: true,
+            },
         }
     };
 

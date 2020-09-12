@@ -193,11 +193,33 @@ class Config
         else
             $file = Dir::path('~pincore/config/' . $filename . '.config.php');
 
+        if (!is_file($file)) {
+           self::initFile($file,$app,$filename);
+        }
+
         if (is_file($file)) {
             return (include $file);
         }
 
         return null;
+    }
+
+    /**
+     * init config file
+     *
+     * @param $file
+     * @param $app
+     * @param $filename
+     */
+    private static function initFile($file,$app,$filename)
+    {
+        if ($app !== '~')
+            $f = Dir::path('config/' . $filename . '.init.php', $app);
+        else
+            $f = Dir::path('~pincore/config/' . $filename . '.init.php');
+
+        if(is_file($f))
+            File::copy($f,$file);
     }
 
     /**

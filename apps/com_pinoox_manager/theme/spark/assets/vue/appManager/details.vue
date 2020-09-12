@@ -10,6 +10,14 @@
             <div class="app-manager" v-if="app!=null">
                 <div class="info">
                     <div class="item">
+                        <div class="label">{{LANG.manager.app_name}}</div>
+                        <div class="text">{{app.name}}</div>
+                    </div>
+                    <div class="item">
+                        <div class="label">{{LANG.manager.package_name}}</div>
+                        <div class="text">{{app.package_name}}</div>
+                    </div>
+                    <div class="item">
                         <div class="label">{{LANG.manager.developer}}</div>
                         <div class="text">{{app.developer}}</div>
                     </div>
@@ -21,7 +29,26 @@
                         <div class="label">{{LANG.manager.description}}</div>
                         <div class="text">{{app.description}}</div>
                     </div>
+                    <div v-if="app.router && app.routes.length>0" class="item mt-2">
+                        <div class="label">{{LANG.manager.addresses}}</div>
+                    </div>
                 </div>
+            </div>
+            <div class="app-routes" v-if="app.router">
+                <div v-if="app.routes.length>0">
+                    <a target="_blank" v-for="r in app.routes"
+                       :href="URL.SITE+(r==='*' ? '' :r)">{{URL.SITE}}{{r==='*'
+                        ? '' : r}}</a>
+                </div>
+                <div v-else>
+                    <div class="message">
+                        <div class="text">{{LANG.manager.app_routes_empty}}</div>
+                        <router-link :to="{name:'setting-router'}" class="pin-btn">{{LANG.manager.router}}
+                        </router-link>
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
@@ -37,36 +64,13 @@
         computed: {
             app: {
                 get() {
-                    return !!this.$parent.selectedApp ? this.$parent.selectedApp : null;
+                    return this.$parent.app;
                 },
                 set(val) {
-                    this.$parent.selectedApp = val;
-                }
-            },
-            apps: {
-                get() {
-                    return this.$store.state.apps;
+                    this.$parent.app = val;
                 }
             },
         },
-        methods: {
-            initApp() {
-                this.$emit('onUpdatePackageName', this.package_name);
-            },
-            onUpdateAppInfo() {
-                this.app = this.apps[this.package_name];
-            }
-        },
-        created() {
-            this.initApp();
-            this.onUpdateAppInfo();
-        },
-        watch: {
-            $route(to, from) {
-                if (to.params.package_name !== this.app.package_name)
-                    this.onUpdateAppInfo();
-            }
-        }
 
     }
 </script>
