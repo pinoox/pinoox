@@ -47,6 +47,11 @@ class AppModel extends PinooxDatabase
             $isEnable = AppProvider::get('enable');
             if (!$isEnable)
                 continue;
+
+            $isHidden = AppProvider::get('hidden');
+            if ($isHidden)
+                continue;
+
             $isRouter = AppProvider::get('router');
             if ($isCheckRouter && !$isRouter)
                 continue;
@@ -62,7 +67,8 @@ class AppModel extends PinooxDatabase
 
             $result[$package_key] = [
                 'package_name' => $package_key,
-                'hidden' => AppProvider::get('hidden'),
+                'hidden' => $isHidden,
+                'dock' => AppProvider::get('dock'),
                 'router' => $isRouter,
                 'name' => AppProvider::get('name'),
                 'description' => AppProvider::get('description'),
@@ -93,6 +99,7 @@ class AppModel extends PinooxDatabase
             $result = [
                 'name' => AppProvider::get('name'),
                 'hidden' => AppProvider::get('hidden'),
+                'dock' => AppProvider::get('dock'),
                 'router' => AppProvider::get('router'),
                 'enable' => AppProvider::get('enable'),
                 'open' => AppProvider::get('open'),

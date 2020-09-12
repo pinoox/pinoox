@@ -1,19 +1,19 @@
 <template>
     <div class="content" data-simplebar>
-        <div class="header" v-if="$parent.selectedApp!=null">
+        <div class="header" v-if="app!=null">
             <div class="text">
-                <h1>{{LANG.manager.app}} {{$parent.selectedApp.name}}</h1>
-                <h2>{{$parent.selectedApp.description}}</h2>
+                <h1>{{LANG.manager.app}} {{app.name}}</h1>
+                <h2>{{app.description}}</h2>
             </div>
         </div>
         <div class="page">
 
-            <div class="config" v-if="appConfig.hidden!=null">
-                <h2 class="title">{{LANG.setting.appManager.opt_hidden}}
-                    <toggle-button class="switch" :value="appConfig.hidden" @change="toggleSwitch('hidden', true)"
+            <div class="config" v-if="appConfig.dock!=null">
+                <h2 class="title">{{LANG.setting.appManager.opt_dock}}
+                    <toggle-button class="switch" :value="appConfig.dock" @change="toggleSwitch('dock', true)"
                                    :labels="false"/>
                 </h2>
-                <h3 class="description">{{LANG.setting.appManager.opt_hidden_text}}</h3>
+                <h3 class="description">{{LANG.setting.appManager.opt_dock_text}}</h3>
             </div>
 
             <div class="config" v-if="appConfig.router!=null">
@@ -34,6 +34,16 @@
 
     export default {
         props: ['package_name'],
+        computed: {
+            app: {
+                get() {
+                    return this.$parent.app;
+                },
+                set(val) {
+                    this.$parent.app = val;
+                }
+            },
+        },
         data() {
             return {
                 appConfig: {}
