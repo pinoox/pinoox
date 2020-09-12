@@ -180,7 +180,7 @@ class Wizard
 
     public static function is_installed_template($package_name, $uid)
     {
-        $file = Dir::path("~apps>$package_name>theme>$uid>index.php");
+        $file = Dir::path("~apps>$package_name>theme>$uid");
         return (!empty($file) && file_exists($file));
     }
 
@@ -189,15 +189,28 @@ class Wizard
         $file = Dir::path("downloads>templates>$uid.pin");
         return (!empty($file) && file_exists($file));
     }
+
     public static function get_downloaded_template($uid)
     {
         return Dir::path("downloads>templates>$uid.pin");
     }
 
-    public static function installTemplate($file, $packageName)
+    public static function installTemplate($file, $packageName, $meta)
     {
-        Zip::extract($file, path("~apps>$packageName>theme>"));
+        Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']));
         File::remove_file($file);
+    }
+
+    public static function deleteTemplate($packageName, $folderName)
+    {
+        $templatePath = path('~apps/' . $packageName . '>theme>' . $folderName);
+        File::remove($templatePath);
+    }
+
+    public static function checkTemplateFolderName($packageName, $templateFolderName)
+    {
+        $file = path("~apps>$packageName>theme>" . $templateFolderName);
+        return file_exists($file);
     }
 
     public static function pullDataPackage($pinFile)
@@ -223,7 +236,7 @@ class Wizard
                 Zip::extract($pinFile, $dir);
             }
 
-            if(is_file($iconFile))
+            if (is_file($iconFile))
                 $icon = Url::file($dir . '>' . $app->icon);
         }
 
@@ -238,4 +251,18 @@ class Wizard
             'icon' => $icon,
         ];
     }
+
+    public static function pullTemplateMeta($file)
+    {
+        $name = File::name($file);
+        $dir = File::dir($file) . DIRECTORY_SEPARATOR . $name;
+        if (Zip::extract($file, $dir)) {
+            $meta = file_get_contents(Dir::path($dir . '>meta.json'));
+            $meta = json_decode($meta, true);
+            File::remove($dir);
+            return $meta;
+        }
+        return null;
+    }
+
 }
