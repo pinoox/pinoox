@@ -169,8 +169,9 @@ class Wizard
         return false;
     }
 
-    public static function getDataPackage($pinFile)
+    public static function pullDataPackage($pinFile)
     {
+        $filename = File::fullname($pinFile);
         $name = File::name($pinFile);
         $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
         $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
@@ -181,19 +182,22 @@ class Wizard
         }
 
         $app = new AppProvider($configFile);
+        $iconPath = $app->icon;
 
-        if (!empty($app->icon)) {
+        $icon = Url::file('resources/default.png');
+        if (!empty($iconPath)) {
             $iconFile = Dir::path($dir . '>' . $app->icon);
             if (!is_file($iconFile)) {
                 Zip::addEntries($app->icon);
                 Zip::extract($pinFile, $dir);
             }
+
+            if(is_file($iconFile))
+                $icon = Url::file($dir . '>' . $app->icon);
         }
 
-        $icon_default = Url::file('resources/default.png');
-        $icon = Url::check(Url::file($app->icon), $icon_default);
-
         return [
+            'filename' => $filename,
             'package_name' => $app->packageName,
             'name' => $app->name,
             'description' => $app->description,

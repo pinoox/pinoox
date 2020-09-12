@@ -88,10 +88,18 @@ return [
     'configs' => 'تنظیمات',
     'apps_list' => 'لیست اپلیکیشن ها',
     'manual_installation' => 'نصب دستی',
+    'package_files' => 'فایل ها',
+    'package_files_help' => 'فایل هایی که توسط شما آپلود شده اند',
+    'empty_files_package' => 'فایلی برای نمایش وجود ندارد',
     'app_details' => 'اطلاعات اپلیکیشن',
     'app' => 'اپلیکیشن',
     'templates' => 'قالب ها',
-    'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگزاری کنید',
-
+    'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگذاری کنید',
+    'file_uploaded_correctly' => 'فایل مورد نظر به درستی بارگذاری شد',
+    'files_uploaded_correctly' => 'همه فایل ها به درستی بارگذاری شدند',
+    'some_files_uploaded_correctly' => 'خطا ها را بررسی کنید از {0} فایل، {1} فایل به درستی بارگذاری شد',
+    'upload_files' => 'آپلود فایل ها',
+    'process_upload_waiting' => 'لطفا منتظر بمانید در حال بارگذاری فایل ها ...',
+    'latest_status' => 'نمایش آخرین وضعیت',
 ];
     

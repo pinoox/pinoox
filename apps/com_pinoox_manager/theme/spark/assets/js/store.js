@@ -23,6 +23,8 @@ export default new Vuex.Store({
         manual: {
             xhr: null,
             percent: 0,
+            errs:null,
+            message:null,
         },
         sidebar: {
             back: false,

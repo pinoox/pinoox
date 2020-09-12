@@ -805,12 +805,13 @@ class Upload
 
     private function getFileNameForUpload($name, $type)
     {
+        $dir = $this->dirFolder . $this->dirSeparator;
         if ($this->isName) {
             return $this->prefix . $this->convert . $this->postfix . "." . $type;
         }
         $filename = $name;
         $convert = strtolower($this->convert);
-        $filename = HelperString::get_unique_string($filename, $convert, $this->prefix, $this->postfix);
+        $filename = HelperString::get_unique_string($filename, $convert, $this->prefix, $this->postfix,null,$dir,$type);
         $filename .= "." . $type;
         return $filename;
     }

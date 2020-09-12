@@ -19,9 +19,18 @@
                         <vm-progress v-else type="circle" :percentage="percent"></vm-progress>
                         <span @click="cancel" class="btn-pin">{{LANG.manager.cancel}}</span>
                     </div>
+
+                </div>
+
+                <div class="show-errs" v-if="!!message">
+                    <span class="badge badge-info">{{LANG.manager.latest_status}}</span>
+                    <div class="alert alert-info">{{message}}</div>
+                    <div class="alert alert-danger" v-if="!!errs && errs.length >0" v-for="err in errs ">{{err}}</div>
                 </div>
             </div>
+
         </div>
+
     </div>
 </template>
 <script>
@@ -52,6 +61,24 @@
                 set(val)
                 {
                     this.$store.state.manual.xhr = val;
+                },
+            },
+            message:{
+                get(){
+                    return this.$store.state.manual.message;
+                },
+                set(val)
+                {
+                    this.$store.state.manual.message = val;
+                },
+            },
+            errs:{
+                get(){
+                    return !!this.$store.state.manual.errs? this.$store.state.manual.errs : null;
+                },
+                set(val)
+                {
+                    this.$store.state.manual.errs = val;
                 },
             }
         },
@@ -87,8 +114,8 @@
                 {
                     this.pushToNotifications({
                         key:'setup-manual',
-                        title:'نصب دستی',
-                        message:'لطفا منتظر بمانید در حال بارگزاری فایل ها ...',
+                        title: this.LANG.manager.manual_installation,
+                        message:this.LANG.manager.process_upload_waiting,
                         route:{name:'apps-manual'},
                         percent:percent,
                     })
@@ -107,8 +134,11 @@
                     i++;
                 });
 
+                this.files = [];
+                this.message = null;
+                this.errs = null;
                 this.xhr = this.$http.CancelToken.source();
-                this.$http.post('test', data, {
+                this.$http.post(this.URL.API + 'app/filesUpload/', data, {
                  cancelToken: this.xhr.token ,
                     onUploadProgress: (progressEvent) => {
                         let percent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -116,6 +146,16 @@
                     }
                 }).then((json) => {
                     this.setPercent(0);
+                    if(json.data.status)
+                    {
+                        this.message = json.data.result.message;
+                    }
+                    else
+                    {
+                        this.message = json.data.result.message;
+                        this.errs = json.data.result.errs;
+                        this._notify(this.LANG.manager.upload_files, this.message, 'danger');
+                    }
                 }).catch(function (thrown) {
                 });
             },
