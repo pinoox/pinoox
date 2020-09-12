@@ -88,6 +88,9 @@ return [
     'configs' => 'configs',
     'apps_list' => 'applications list',
     'manual_installation' => 'manual installation',
+    'package_files' => 'Files',
+    'package_files_help' => 'Files uploaded by you',
+    'empty_files_package' => 'There is no file to display',
     'app_details' => 'application details',
     'app' => 'application',
     'templates' => 'tempaltes',
@@ -95,5 +98,11 @@ return [
     'market_home' => 'applications',
     'market_account' => 'account',
     'live_preview' => 'live preview',
+    'file_uploaded_correctly' => 'Your file was uploaded correctly',
+    'files_uploaded_correctly' => 'Your files have been uploaded correctly',
+    'some_files_uploaded_correctly' => 'Out of {0} available files, {1} files were uploaded correctly',
+    'upload_files' => 'Upload files',
+    'process_upload_waiting' => 'Please wait while the files are uploading ...',
+    'latest_status' => 'Show the latest status',
 ];
     

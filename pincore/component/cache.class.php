@@ -107,11 +107,11 @@ class Cache
 
         if (HelperString::firstHas($filename, '~')) {
             $filename = HelperString::firstDelete($filename, '~');
-            $file = Dir::path('~pincore/cache/' . $filename . '.cache.php');
+            $file = Dir::path('~pincore/pinker/cache/' . $filename . '.cache.php');
             $app = '~';
         } else {
             $app = (empty(self::$app)) ? Router::getApp() : self::$app;
-            $file = Dir::path('cache/' . $filename . '.cache.php', $app);
+            $file = Dir::path('pinker/cache/' . $filename . '.cache.php', $app);
         }
 
         unset(self::$data[$app][$filename]);
@@ -185,9 +185,9 @@ class Cache
         if (isset(self::$data[$app][$filename])) return;
 
         if ($app !== '~') {
-            $file = Dir::path('cache/' . $filename . '.cache.php', $app);
+            $file = Dir::path('pinker/cache/' . $filename . '.cache.php', $app);
         } else {
-            $file = Dir::path('~pincore/cache/' . $filename . '.cache.php');
+            $file = Dir::path('~pincore/pinker/cache/' . $filename . '.cache.php');
         }
 
 
@@ -265,9 +265,9 @@ class Cache
         $filename = $name . '.cache.php';
 
         if ($isApp) {
-            $file = Dir::path('cache/' . $filename, self::$app);
+            $file = Dir::path('pinker/cache/' . $filename, self::$app);
         } else {
-            $file = Dir::path('~pincore/cache/' . $filename);
+            $file = Dir::path('~pincore/pinker/cache/' . $filename);
         }
 
         $data_for_save = '<?' . 'php' . "\n";

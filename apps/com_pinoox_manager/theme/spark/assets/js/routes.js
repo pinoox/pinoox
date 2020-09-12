@@ -12,6 +12,7 @@ import SettingApps from '../vue/setting/app/main.vue';
 import AppManager from '../vue/appManager/main.vue';
 import AppsHome from '../vue/setting/app/home.vue';
 import AppsManual from '../vue/setting/app/manual.vue';
+import AppsFiles from '../vue/setting/app/files.vue';
 import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
@@ -71,6 +72,11 @@ export const routes = [
                         path: 'manuel',
                         name: 'apps-manual',
                         component: AppsManual,
+                    },
+                    {
+                        path: 'files',
+                        name: 'apps-files',
+                        component: AppsFiles,
                     },
                 ]
             },

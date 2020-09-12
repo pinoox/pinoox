@@ -10,19 +10,23 @@
                 <span @click="actionNotification(logout())" href="javascript:;"><i
                         class="fas fa-power-off"></i></span>
             </div>
-            <div v-if="!!notifications && notifications.length > 0">
-                <div class="list">
-                    <transition-group name="list" tag="div">
-                        <div class="item" v-bind:key="item.ntf_id" @click="hideNotification(index,item)"
-                             v-for="(item,index) in notifications">
-                            <div class="title">{{item.title}}</div>
-                            <div class="message">{{item.message}}</div>
-                        </div>
-                    </transition-group>
+            <div class="list">
+                <div v-if="activeNotifications">
+                    <div class="item" @click="routeNotification(index,item)"
+                         v-for="(item,index) in notifications.setting">
+                        <div v-if="!!item.title" class="title">{{item.title}}</div>
+                        <div v-if="!!item.message" class="message">{{item.message}}</div>
+                        <vm-progress class="percent" v-if="!!item.percent" :percentage="item.percent" :text-inside="true" :stroke-width="15" :striped="true"></vm-progress>
+                    </div>
+                    <div class="item" @click="hideNotification(index,item)"
+                         v-for="(item,index) in notifications.db">
+                        <div class="title">{{item.title}}</div>
+                        <div class="message">{{item.message}}</div>
+                    </div>
                 </div>
-            </div>
-            <div v-else>
-                <div class="no-notification">{{LANG.manager.no_new_notification}}</div>
+                <div v-else>
+                    <div class="no-notification">{{LANG.manager.no_new_notification}}</div>
+                </div>
             </div>
 
 
@@ -35,7 +39,6 @@
     import {mapGetters, mapMutations, mapState} from 'vuex';
 
     export default {
-        name: "notifications",
         computed: {
             ...mapState(['animDirection']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
@@ -47,8 +50,11 @@
                     this.$store.state.notifications = val;
                 }
             },
+            activeNotifications() {
+                return this.notifications.setting.length + this.notifications.db.length > 0
+            },
             getIds() {
-                return this.notifications.map((row) => {
+                return this.notifications.db.map((row) => {
                     return row['ntf_id'];
                 });
             }
@@ -56,20 +62,33 @@
         methods: {
             ...mapMutations(['logout', 'lock', 'toggleNotification']),
             seenNotification: function () {
-                if(!this.hasNotification)
+                if (!this.hasNotification)
                     return;
+
+                // setting notifications
+                this.notifications.setting.forEach(notification=>{
+                    notification.status = 'seen';
+                });
+
+                // db notification
                 this.$http.post(PINOOX.URL.API + 'notification/seen', {notifications: this.getIds}).then((json) => {
-                    for (let index in this.notifications) {
-                        this.notifications[index].status = 'seen';
-                    }
+                    this.notifications.db.forEach(notification=>{
+                        notification.status = 'seen';
+                    });
                 });
             },
             hideNotification: function (index, item) {
                 this.$http.post(PINOOX.URL.API + 'notification/hide', {ntf_id: item.ntf_id}).then((json) => {
                     if (json.data.status) {
-                        this.notifications.splice(index, 1);
+                        this.notifications.db.splice(index, 1);
                     }
                 });
+            },
+            routeNotification: function (index, item) {
+                if (!item.route)
+                    this.notifications.setting.splice(index, 1);
+                else
+                    this.$router.replace(item.route).catch(error => {});
             },
             actionNotification: function (action) {
                 this.toggleNotification();
@@ -82,7 +101,7 @@
                 if (status) {
                     this.seenNotification();
                 }
-            }
+            },
         }
 
     };

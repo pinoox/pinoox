@@ -139,7 +139,7 @@
             getNotifications() {
                 this.$http.get(this.URL.API + 'notification/').then((json) => {
                     if (json.data.status) {
-                        this.notifications = json.data.result;
+                        this.notifications.db = json.data.result;
                     }
                 });
             },
