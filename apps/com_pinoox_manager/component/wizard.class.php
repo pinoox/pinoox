@@ -21,7 +21,6 @@ use pinoox\component\Cache;
 use pinoox\component\Config;
 use pinoox\component\Dir;
 use pinoox\component\File;
-use pinoox\component\HelperString;
 use pinoox\component\Router;
 use pinoox\component\Service;
 use pinoox\component\Url;
@@ -36,16 +35,23 @@ class Wizard
 {
     private static $isApp = false;
 
-    public static function installApp($file, $packageName)
+    public static function installApp($pinFile)
     {
-        Zip::extract($file, path('~apps/'));
+
+        $data = self::pullDataPackage($pinFile);
+
+        if(!self::isValidNamePackage($data['package_name']))
+            return;
+
+        $appPath = path('~apps/'.$data['package_name'].'/');
+        Zip::extract($pinFile, $appPath);
 
         //check database
-        $appDB = path('~apps/' . $packageName . '/app.db');
+        $appDB = path('~apps/' . $data['package_name'] . '/app.db');
         if (is_file($appDB)) {
             $prefix = Config::get('~database.prefix');
             $query = file_get_contents($appDB);
-            $query = str_replace('{dbprefix}', $prefix . $packageName . '_', $query);
+            $query = str_replace('{dbprefix}', $prefix . $data['package_name'] . '_', $query);
             $queryArr = explode(';', $query);
 
             PinooxDatabase::$db->startTransaction();
@@ -55,14 +61,14 @@ class Wizard
             }
 
             //copy new user
-            UserModel::copy(User::get('user_id'), $packageName);
+            UserModel::copy(User::get('user_id'), $data['package_name']);
 
             PinooxDatabase::$db->commit();
             File::remove_file($appDB);
-            self::runService($packageName, 'install');
+            self::runService($data['package_name'], 'install');
         }
 
-        File::remove_file($file);
+        self::deletePackageFile($pinFile);
     }
 
     private static function runService($packageName, $state = 'install')
@@ -83,22 +89,40 @@ class Wizard
         AppProvider::app($packageName);
     }
 
-    public static function updateApp($file, $packageName, $linkApp, $versionCode, $versionName)
+    public static function isValidNamePackage($packageName)
     {
-        Zip::remove($file, [
-            $packageName . '/pinker/',
+        $parts = explode('_',$packageName);
+        return count($parts) >= 2;
+    }
+
+    public static function updateApp($pinFile)
+    {
+        $data = self::pullDataPackage($pinFile);
+
+        if(!self::isValidNamePackage($data['package_name']))
+            return;
+
+        Zip::remove($pinFile, [
+             'pinker/',
         ]);
 
-        $appPath = path('~apps/');
+        $appPath = path('~apps/'.$data['package_name'].'/');
 
-        Zip::extract($file, $appPath);
-        File::remove_file($file);
+        Zip::extract($pinFile, $appPath);
+        File::remove_file($pinFile);
 
 
-        self::setApp($packageName);
-        AppProvider::set('version-code', $versionCode);
-        AppProvider::set('version-name', $versionName);
-        self::runService($packageName, 'update');
+        self::setApp($data['package_name']);
+        AppProvider::set('version-code', $data['version-code']);
+        AppProvider::set('version-name', $data['version']);
+        AppProvider::set('name', $data['name']);
+        AppProvider::set('developer', $data['developer']);
+        AppProvider::set('description', $data['description']);
+        AppProvider::set('icon', $data['path_icon']);
+        AppProvider::save();
+        self::runService($data['package_name'], 'update');
+
+        self::deletePackageFile($pinFile);
     }
 
     public static function deleteApp($packageName)
@@ -214,6 +238,7 @@ class Wizard
             'version' => $app->versionName,
             'version_code' => $app->versionCode,
             'developer' => $app->developer,
+            'path_icon' => $app->icon,
             'icon' => $icon,
             'size' => File::print_size($size,1),
         ];
