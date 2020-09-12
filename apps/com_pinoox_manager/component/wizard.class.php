@@ -21,6 +21,7 @@ use pinoox\component\Cache;
 use pinoox\component\Config;
 use pinoox\component\Dir;
 use pinoox\component\File;
+use pinoox\component\HelperString;
 use pinoox\component\Router;
 use pinoox\component\Service;
 use pinoox\component\Url;
@@ -169,9 +170,18 @@ class Wizard
         return false;
     }
 
+    public static function deletePackageFile($pinFile)
+    {
+        $name = File::name($pinFile);
+        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        File::remove_file($pinFile);
+        File::remove($dir);
+    }
+
     public static function pullDataPackage($pinFile)
     {
         $filename = File::fullname($pinFile);
+        $size = File::size($pinFile);
         $name = File::name($pinFile);
         $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
         $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
@@ -205,6 +215,7 @@ class Wizard
             'version_code' => $app->versionCode,
             'developer' => $app->developer,
             'icon' => $icon,
+            'size' => File::print_size($size,1),
         ];
     }
 }

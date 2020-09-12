@@ -162,6 +162,21 @@ class AppController extends MasterConfiguration
         Response::json($files);
     }
 
+    public function deleteFile()
+    {
+        $filename = Request::inputOne('filename', null, '!empty');
+
+        if (empty($filename))
+            Response::json(Lang::get('manager.error_happened'), false);
+
+        $pinFile = Dir::path(self::manuelPath . $filename);
+        if (!is_file($pinFile))
+            Response::json(Lang::get('manager.error_happened'), false);
+
+        Wizard::deletePackageFile($pinFile);
+        Response::json(Lang::get('manager.delete_successfully'), true);
+    }
+
     public function filesUpload()
     {
         if (Request::isFile('files')) {
@@ -173,26 +188,21 @@ class AppController extends MasterConfiguration
             $result = $up->result();
             $length = count($result);
             $errs = $up->error(true);
-            $uploaded = array_filter($result,function ($row){
-                return $row? true : false;
+            $uploaded = array_filter($result, function ($row) {
+                return $row ? true : false;
             });
 
             $lengthUploaded = count($uploaded);
 
-            if($length === 1 && $lengthUploaded === $length)
-            {
-                Response::json(Lang::get('manager.file_uploaded_correctly'),true);
-            }
-            else if($lengthUploaded === $length)
-            {
-                Response::json(Lang::get('manager.files_uploaded_correctly'),true);
-            }
-            else
-            {
+            if ($length === 1 && $lengthUploaded === $length) {
+                Response::json(Lang::get('manager.file_uploaded_correctly'), true);
+            } else if ($lengthUploaded === $length) {
+                Response::json(Lang::get('manager.files_uploaded_correctly'), true);
+            } else {
                 Response::json([
-                    'message' => Lang::replace('manager.some_files_uploaded_correctly',$length,$lengthUploaded),
+                    'message' => Lang::replace('manager.some_files_uploaded_correctly', $length, $lengthUploaded),
                     'errs' => $errs
-                ],false);
+                ], false);
             }
         }
     }

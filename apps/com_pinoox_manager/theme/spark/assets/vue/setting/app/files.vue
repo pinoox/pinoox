@@ -12,18 +12,23 @@
                 <div class="empty" v-else-if="files.length <=0">
                     <div>{{LANG.manager.empty_files_package}}</div>
                 </div>
-                <div class="files-home" v-else>
-                    <div class="files-list">
-                        <div class="file-item" v-for="(file,index) in files">
-                            <div class="app-icon">
-                                <img :src="file.icon" alt="app.app_name">
-                                <span class="version">v{{file.version}}</span>
+                <div class="apps" v-else>
+                    <div class="app-item" v-for="(file,index) in files">
+                        <div class="icon">
+                            <img :src="file.icon" :alt="file.name">
+                            <div class="text">
+                                <h2 class="name">{{file.filename}}</h2>
+                                <h3 class="info">{{file.name}} (v{{file.version}})</h3>
+                                <h3 class="info">{{LANG.manager.file_size}}: {{file.size}}</h3>
                             </div>
-                            <div class="name">{{file.name}}</div>
-                            <div class="filename">({{file.filename}})</div>
+                        </div>
+                        <div class="action">
+                            <span class="btn-pin">{{LANG.manager.install}}</span>
+                            <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -49,6 +54,27 @@
                     this.files = json.data;
                 });
             },
+            deleteFile(index)
+            {
+                let file = this.files[index];
+                this._notify(this.LANG.manager.alert, this.LANG.manager.are_you_sure_delete_file, '', [
+                    {
+                        text: this.LANG.manager.delete,
+                        func: () => {
+                            this._loading = true;
+                            this.$http.post(this.URL.API + 'app/deleteFile', {filename: file.filename}).then((json) => {
+                                this._loading = false;
+                                if (json.data.status) {
+                                    this.$delete(this.files, index);
+                                }
+                            });
+                        }
+                    }, {
+                        text: this.LANG.manager.cancel,
+                        func: () => {
+                        }
+                    }]);
+            }
         }
     }
 </script>
