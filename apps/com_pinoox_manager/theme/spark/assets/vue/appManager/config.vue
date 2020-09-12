@@ -1,9 +1,9 @@
 <template>
     <div class="content" data-simplebar>
-        <div class="header" v-if="$parent.selectedApp!=null">
+        <div class="header" v-if="app!=null">
             <div class="text">
-                <h1>{{LANG.manager.app}} {{$parent.selectedApp.name}}</h1>
-                <h2>{{$parent.selectedApp.description}}</h2>
+                <h1>{{LANG.manager.app}} {{app.name}}</h1>
+                <h2>{{app.description}}</h2>
             </div>
         </div>
         <div class="page">
@@ -34,6 +34,16 @@
 
     export default {
         props: ['package_name'],
+        computed: {
+            app: {
+                get() {
+                    return this.$parent.app;
+                },
+                set(val) {
+                    this.$parent.app = val;
+                }
+            },
+        },
         data() {
             return {
                 appConfig: {}
