@@ -51,7 +51,7 @@
                             params: {},
                         },
                         {
-                            name: 'setting-market',
+                            name: 'market-home',
                             label: 'market',
                             img: require('@img/market-icon.png'),
                             left: {

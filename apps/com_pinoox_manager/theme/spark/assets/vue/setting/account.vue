@@ -49,8 +49,8 @@
                     <input type="text" class="form-control" :placeholder="LANG.user.email" v-model="params.email">
                 </div>
                 <div class="form-group col-sm-5">
-                    <div v-if="isLoadingInfo" class="btnSave pin-loader"><i class="fa fa-spinner"></i></div>
-                    <div v-else @click="changeInfo()" class="btnSave"><i class="fa fa-save"></i> {{LANG.manager.save}}
+                    <div v-if="isLoadingInfo" class="btn-pin pin-loader"><i class="fa fa-spinner"></i></div>
+                    <div v-else @click="changeInfo()" class="btn-pin"><i class="fa fa-save"></i> {{LANG.manager.save}}
                     </div>
                 </div>
             </div>
@@ -70,8 +70,8 @@
                 </div>
 
                 <div class="form-group col-sm-5">
-                    <div v-if="isLoadingPass" class="btnSave pin-loader"><i class="fa fa-spinner"></i></div>
-                    <div v-else @click="changePassword()" class="btnSave"><i class="fa fa-save"></i>
+                    <div v-if="isLoadingPass" class="btn-pin pin-loader"><i class="fa fa-spinner"></i></div>
+                    <div v-else @click="changePassword()" class="btn-pin"><i class="fa fa-save"></i>
                         {{LANG.manager.save}}
                     </div>
                 </div>
