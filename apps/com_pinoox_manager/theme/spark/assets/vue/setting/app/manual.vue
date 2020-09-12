@@ -148,7 +148,9 @@
                     this.setPercent(0);
                     if(json.data.status)
                     {
-                        this.message = json.data.result.message;
+                        this.message = json.data.result;
+                        this._notify(this.LANG.manager.upload_files, this.message, 'success');
+                        this.$router.replace({name:'apps-files'}).catch();
                     }
                     else
                     {

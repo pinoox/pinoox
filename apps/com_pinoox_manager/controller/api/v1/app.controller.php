@@ -92,7 +92,7 @@ class AppController extends MasterConfiguration
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
         $file = Dir::path('downloads>apps>' . $packageName . '.pin');
-        Wizard::installApp($file, $packageName);
+        Wizard::installApp($file);
         Response::json(rlang('manager.done_successfully'), true);
     }
 
@@ -112,27 +112,8 @@ class AppController extends MasterConfiguration
             $file = path('temp/' . $data['packageName'] . '.pin');
             Download::fetch($data['downloadLink'], $file)->process();
 
-            Zip::remove($file, [
-                $data['packageName'] . '/config/',
-                $data['packageName'] . '/cache/',
-                $data['packageName'] . '/app.php',
-                $data['packageName'] . '/app.db',
-            ]);
-
-            $appPath = path('~apps/');
-
-            Zip::extract($file, $appPath);
-            File::remove_file($file);
-
+            Wizard::updateApp($file);
             $message = rlang('manager.update_successfully');
-            Router::setApp($data['packageName']);
-            AppProvider::app($data['packageName']);
-            AppProvider::set('version-code', $data['versionCode']);
-            AppProvider::set('version-name', $data['versionName']);
-            Cache::app($data['packageName']);
-            Service::app($data['packageName']);
-            Service::run('app>update');
-            AppProvider::save();
             Response::json($message, true);
         }
 
@@ -162,6 +143,21 @@ class AppController extends MasterConfiguration
         Response::json($files);
     }
 
+    public function deleteFile()
+    {
+        $filename = Request::inputOne('filename', null, '!empty');
+
+        if (empty($filename))
+            Response::json(Lang::get('manager.error_happened'), false);
+
+        $pinFile = Dir::path(self::manuelPath . $filename);
+        if (!is_file($pinFile))
+            Response::json(Lang::get('manager.error_happened'), false);
+
+        Wizard::deletePackageFile($pinFile);
+        Response::json(Lang::get('manager.delete_successfully'), true);
+    }
+
     public function filesUpload()
     {
         if (Request::isFile('files')) {
@@ -173,26 +169,21 @@ class AppController extends MasterConfiguration
             $result = $up->result();
             $length = count($result);
             $errs = $up->error(true);
-            $uploaded = array_filter($result,function ($row){
-                return $row? true : false;
+            $uploaded = array_filter($result, function ($row) {
+                return $row ? true : false;
             });
 
             $lengthUploaded = count($uploaded);
 
-            if($length === 1 && $lengthUploaded === $length)
-            {
-                Response::json(Lang::get('manager.file_uploaded_correctly'),true);
-            }
-            else if($lengthUploaded === $length)
-            {
-                Response::json(Lang::get('manager.files_uploaded_correctly'),true);
-            }
-            else
-            {
+            if ($length === 1 && $lengthUploaded === $length) {
+                Response::json(Lang::get('manager.file_uploaded_correctly'), true);
+            } else if ($lengthUploaded === $length) {
+                Response::json(Lang::get('manager.files_uploaded_correctly'), true);
+            } else {
                 Response::json([
-                    'message' => Lang::replace('manager.some_files_uploaded_correctly',$length,$lengthUploaded),
+                    'message' => Lang::replace('manager.some_files_uploaded_correctly', $length, $lengthUploaded),
                     'errs' => $errs
-                ],false);
+                ], false);
             }
         }
     }
