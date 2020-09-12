@@ -23,8 +23,11 @@
                         {{LANG.manager.downloading}}
                     </div>
                     <span class="warn-text" v-if="state==='downloading'">{{LANG.setting.market.please_wait_until_download_complete}}</span>
-                    <div v-if="state==='install'" class="btn-install" @click="installApp()">{{LANG.manager.install}}</div>
-                    <div v-if="state==='install'" class="btn-install" @click="downloadApp()">{{LANG.manager.re_download}}</div>
+                    <div v-if="state==='install'" class="btn-install" @click="installApp()">{{LANG.manager.install}}
+                    </div>
+                    <div v-if="state==='install'" class="btn-install" @click="downloadApp()">
+                        {{LANG.manager.re_download}}
+                    </div>
 
                     <div v-if="state==='installing'" class="btn-install">
                         {{LANG.setting.market.installing}}
@@ -38,7 +41,40 @@
                 </div>
             </div>
             <div class="content-details">
-                <div class="text" v-html="app.description"></div>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <span class="nav-link"
+                              @click="changeTab('description')"
+                              :class="{active:activeTab==='description'}">{{LANG.manager.description}}</span>
+                    </li>
+                    <li class="nav-item">
+                        <span class="nav-link"
+                              @click="changeTab('templates')"
+                              :class="{active:activeTab==='templates'}">{{LANG.manager.templates}}</span>
+                    </li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane fade show active">
+                        <div v-if="activeTab==='description'">
+                            <div class="text" v-html="app.description"></div>
+                        </div>
+                        <div v-else-if="activeTab==='templates'">
+
+                            <div class="templates" v-if="templates!=null">
+                                <div class="item" v-for="(t,index) in templates">
+                                    <img class="thumb" :src="t.cover">
+                                    <div class="name">{{t.template_name}}</div>
+                                    <div class="actions">
+                                        <div class="btn-pin btn-success">{{LANG.manager.download}}</div>
+                                        <div class="btn-pin">{{LANG.manager.live_preview}}</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
         </div>
@@ -53,7 +89,9 @@
             return {
                 isLoading: false,
                 state: 'download',
-                app: {}
+                app: {},
+                activeTab: 'description',
+                templates: null,
             }
         },
         computed: {
@@ -106,20 +144,20 @@
                 }
             },
             installApp() {
-            this._openFloatInstaller(this.app);
-              /*  this.state = 'installing';
-                this._loading = true;
-                this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
-                    this._loading = false;
-                    if (json.data.status) {
-                        this._notify(this.LANG.manager.installed_successfully, '', 'success');
-                        this.state = 'installed';
-                        this.readyInstall--;
-                        this.getApps();
-                    } else {
-                        this.state = 'install';
-                    }
-                });*/
+                this._openFloatInstaller(this.app);
+                /*  this.state = 'installing';
+                  this._loading = true;
+                  this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
+                      this._loading = false;
+                      if (json.data.status) {
+                          this._notify(this.LANG.manager.installed_successfully, '', 'success');
+                          this.state = 'installed';
+                          this.readyInstall--;
+                          this.getApps();
+                      } else {
+                          this.state = 'install';
+                      }
+                  });*/
             },
             updateApp() {
                 this.isLoadingUpdate = true;
@@ -161,9 +199,45 @@
                     }
                 ]);
             },
+            changeTab(tab) {
+                this.activeTab = tab;
+                if (tab === 'templates' && this.templates == null)
+                    this.getTemplates();
+            },
+            downloadTemplate() {
+                if (this.pinooxAuth.isLogin) {
+                    this.state = 'downloading';
+                    this._loading = true;
+                    this.$http.post(this.URL.API + 'market/downloadRequest/' + this.package_name, {auth: this.pinooxAuth}).then((json) => {
+                        this._loading = false;
+                        if (!json.data.status) {
+                            this.state = 'download';
+                            this._notify(this.LANG.user.login_to_pinoox, json.data.result.message, 'warning');
+                            if (json.data.result.require_auth) {
+                                this.logoutPinooxAuth();
+                                this.$router.push({name: 'market-login'});
+                            }
+                        } else {
+                            this.state = 'install';
+                            this.readyInstall++;
+                            this._notify(this.LANG.manager.success, json.data.result, 'success');
+                        }
+                    });
+
+                } else {
+                    this.$router.push({name: 'market-login'});
+                }
+            },
+            getTemplates() {
+                this.isLoading = true;
+                this.$http.get(this.URL.API + 'market/getTemplates/' + this.package_name).then((json) => {
+                    this.isLoading = false;
+                    this.templates = json.data;
+                });
+            }
         },
         created() {
             this.getApp();
-        }
+        },
     }
 </script>
