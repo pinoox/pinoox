@@ -203,6 +203,9 @@ class Wizard
         $packageName = $data['package_name'];
         $versionCode = @$data['version_code'];
 
+        if(!Router::existApp($packageName))
+            return true;
+
         $app = new AppProvider($packageName);
         $versionCodeApp = $app->versionCode;
 
