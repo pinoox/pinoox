@@ -68,20 +68,11 @@ class MarketController extends MasterConfiguration
 
     public function getOneApp($package_name)
     {
-
         $data = Request::sendGet("https://www.pinoox.com/api/manager/v1/market/getApp/" . $package_name);
         HelperHeader::contentType('application/json', 'UTF-8');
         $arr = json_decode($data, true);
-
-        //check app state
-        $arr['state'] = 'download';
-        if (Wizard::is_installed($package_name))
-            $arr['state'] = 'installed';
-        else if (Wizard::is_downloaded($package_name))
-            $arr['state'] = 'install';
-
+        $arr['state'] =  Wizard::app_state($package_name);
         Response::json($arr);
-
     }
 
     public function downloadRequest($package_name)
@@ -121,13 +112,7 @@ class MarketController extends MasterConfiguration
         if (!empty($result)) {
             foreach ($result as $t) {
                 //check template state
-                if (Wizard::is_installed_template($package_name, $t['uid']))
-                    $t['state'] = 'installed';
-                else if (Wizard::is_downloaded_template($t['uid']))
-                    $t['state'] = 'install';
-                else
-                    $t['state'] = 'download';
-
+                $t['state'] = Wizard::template_state($package_name, $t['uid']);
                 $templates[] = $t;
             }
         }
