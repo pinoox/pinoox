@@ -6,8 +6,8 @@ return array (
   'icon' => 'icon.png',
   'name' => 'installer',
   'theme' => 'magic',
-  'version-name' => '1.4.3',
-  'version-code' => 5,
+  'version-name' => '1.4.4',
+  'version-code' => 6,
   'lang' => 'en',
   'user' => 'com_pinoox_manager',
 );
