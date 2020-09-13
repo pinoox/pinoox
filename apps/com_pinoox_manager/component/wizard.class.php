@@ -69,12 +69,13 @@ class Wizard
 
             PinooxDatabase::$db->commit();
             File::remove_file($appDB);
-
-            self::changeLang($data['package_name']);
-            self::runService($data['package_name'], 'install');
-            self::deletePackageFile($pinFile);
-            return true;
         }
+
+        self::changeLang($data['package_name']);
+        self::runService($data['package_name'], 'install');
+        self::deletePackageFile($pinFile);
+        self::setApp('com_pinoox_manager',true);
+        return true;
     }
 
     public static function pullDataPackage($pinFile)
@@ -138,9 +139,9 @@ class Wizard
         Router::setApp($current);
     }
 
-    private static function setApp($packageName)
+    private static function setApp($packageName,$isAgain = false)
     {
-        if (self::$isApp) return;
+        if (self::$isApp && !$isAgain) return;
         self::$isApp = true;
         Router::setApp($packageName);
         AppProvider::app($packageName);
@@ -187,6 +188,8 @@ class Wizard
         self::runService($data['package_name'], 'update');
 
         self::deletePackageFile($pinFile);
+        self::setApp('com_pinoox_manager',true);
+
         return true;
 
     }
