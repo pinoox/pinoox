@@ -12,12 +12,15 @@ import SettingApps from '../vue/setting/app/main.vue';
 import AppManager from '../vue/appManager/main.vue';
 import AppsHome from '../vue/setting/app/home.vue';
 import AppsManual from '../vue/setting/app/manual.vue';
+import AppsFiles from '../vue/setting/app/files.vue';
 import AppManagerDetails from '../vue/appManager/details.vue';
 import AppManagerConfig from '../vue/appManager/config.vue';
 import AppManagerUsers from '../vue/appManager/users.vue';
+import AppManagerTemplates from '../vue/appManager/templates.vue';
 import AppView from '../vue/pages/app-view.vue';
 import Market from '../vue/market/main.vue';
 import MarketHome from '../vue/market/home.vue';
+import MarketDownloads from '../vue/market/downloads.vue';
 import MarketDetails from '../vue/market/details.vue';
 import MarketLogin from '../vue/market/login.vue';
 import MarketAccount from '../vue/market/account.vue';
@@ -68,9 +71,14 @@ export const routes = [
                         component: AppsHome,
                     },
                     {
-                        path: 'manuel',
+                        path: 'manual',
                         name: 'apps-manual',
                         component: AppsManual,
+                    },
+                    {
+                        path: 'files',
+                        name: 'apps-files',
+                        component: AppsFiles,
                     },
                 ]
             },
@@ -82,7 +90,7 @@ export const routes = [
         ]
     },
     {
-        path: PINOOX.URL.BASE +'market',
+        path: PINOOX.URL.BASE + 'market',
         component: Market,
         children: [
             {
@@ -91,9 +99,15 @@ export const routes = [
                 component: MarketHome
             },
             {
-                path: 'details/:package_name',
+                path: 'details/:package_name/:tab?',
                 name: 'market-details',
                 component: MarketDetails,
+                props: true,
+            },
+            {
+                path: 'downloads',
+                name: 'market-downloads',
+                component: MarketDownloads,
                 props: true,
             },
             {
@@ -115,7 +129,7 @@ export const routes = [
         ]
     },
     {
-        path: PINOOX.URL.BASE +'appManager/:package_name',
+        path: PINOOX.URL.BASE + 'appManager/:package_name',
         component: AppManager,
         props: true,
         children: [
@@ -137,12 +151,18 @@ export const routes = [
                 component: AppManagerDetails,
                 props: true,
             },
+            {
+                path: 'templates',
+                name: 'app-templates',
+                component: AppManagerTemplates,
+                props: true,
+            },
         ]
     },
     {
         path: PINOOX.URL.BASE + 'demo/:package_name',
         name: 'app-view',
         component: AppView,
-        props:true,
+        props: true,
     },
 ];

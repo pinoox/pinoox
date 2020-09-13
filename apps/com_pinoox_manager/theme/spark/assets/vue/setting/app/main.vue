@@ -19,6 +19,11 @@
                             label: 'manual_installation',
                             icon: 'fas fa-archive',
                         },
+                        {
+                            name: 'apps-files',
+                            label: 'package_files',
+                            icon: 'fa fa-file-download',
+                        },
                     ]
                 }
             }

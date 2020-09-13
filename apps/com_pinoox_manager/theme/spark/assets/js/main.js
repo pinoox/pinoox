@@ -11,7 +11,8 @@ import VueAxios from 'vue-axios';
 import store from './store';
 import Main from '../vue/main.vue';
 import router from './router';
-import ToggleButton from 'vue-js-toggle-button'
+import ToggleButton from 'vue-js-toggle-button';
+import Progress from 'vue-multiple-progress';
 
 axios.defaults.headers['Content-Type'] = 'application/x-www-form-urlencoded';
 axiosMethodOverride(axios);
@@ -19,6 +20,7 @@ const instance = axios.create();
 axiosMethodOverride(instance);
 Vue.use(ToggleButton);
 Vue.use(VueAxios, axios);
+Vue.use(Progress);
 __webpack_public_path__ = PINOOX.URL.THEME + 'dist/';
 
 new Vue({

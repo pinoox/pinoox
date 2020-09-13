@@ -20,6 +20,12 @@ export default new Vuex.Store({
         isLock: null,
         isRun: false,
         isApp: false,
+        manual: {
+            xhr: null,
+            percent: 0,
+            errs:null,
+            message:null,
+        },
         sidebar: {
             back: false,
             menus: [],
@@ -33,7 +39,10 @@ export default new Vuex.Store({
         },
         apps: {},
         isOpenNotification: false,
-        notifications: [],
+        notifications: {
+            db: [],
+            setting: [],
+        },
         notifier: {
             isShow: false,
             actions: {},
@@ -45,16 +54,15 @@ export default new Vuex.Store({
             interval: null,
         },
         pinooxAuth: {isLogin: false},
-        readyInstallCount: 0,
         tabs: [],
         tabCurrent: {},
-        floatApp: null
+        floatInstaller: null,
 
     },
     setters: {},
     getters: {
         background: state => {
-            if (state.options.background === 6)
+            if (false)
                 return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.svg';
             else
                 return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';
@@ -69,7 +77,13 @@ export default new Vuex.Store({
             return Object.values(state.apps);
         },
         hasNotification: state => {
-            return state.notifications.length > 0;
+            let db = state.notifications.db.filter(function (notification) {
+                return notification.status === 'send';
+            });
+            let setting = state.notifications.setting.filter(function (notification) {
+                return notification.status === 'send';
+            });
+            return (setting.length + db.length) > 0;
         },
     },
     mutations: {
@@ -157,11 +171,6 @@ export default new Vuex.Store({
             });
 
         },
-        getReadyToInstallApp: (state) => {
-            $http.get(PINOOX.URL.API + 'app/readyInstallCount').then((json) => {
-                state.readyInstallCount = json.data;
-            });
-        },
         getPinooxAuth: (state) => {
             $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
                 state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
@@ -185,6 +194,33 @@ export default new Vuex.Store({
         closeFromTabs(state, key) {
             state.tabs = state.tabs.filter(function (tab) {
                 return tab.key !== key;
+            });
+        },
+        pushToNotifications: (state, data) => {
+            data = {
+                key: data.key,
+                title: !!data.title ? data.title : null,
+                message: !!data.message ? data.message : null,
+                route: !!data.route ? data.route : null,
+                percent: !!data.percent ? data.percent : null,
+            };
+
+            let index = state.notifications.setting.findIndex(notification => notification.key === data.key);
+            if (index < 0)
+            {
+                data.status = 'send';
+                state.notifications.setting.push(data);
+            }
+            else
+            {
+                if(!!state.notifications.setting[index].status)
+                    data.status = state.notifications.setting[index].status;
+                Vue.set(state.notifications.setting, index, data);
+            }
+        },
+        closeFromNotifications(state, key) {
+            state.notifications.setting = state.notifications.setting.filter(function (notification) {
+                return notification.key !== key;
             });
         }
     },

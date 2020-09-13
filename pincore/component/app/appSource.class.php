@@ -31,6 +31,13 @@ abstract class AppSource
     protected static $hidden = false;
 
     /**
+     * Package Name
+     *
+     * @var string
+     */
+    protected static $packageName = null;
+
+    /**
      * Name router for Open in manager
      *
      * @var string|null
@@ -240,4 +247,11 @@ abstract class AppSource
      * @var boolean
      */
     protected static $sysApp = false;
+
+    /**
+     * Visibility of Apps in manager Dock
+     *
+     * @var boolean
+     */
+    protected static $dock = true;
 }

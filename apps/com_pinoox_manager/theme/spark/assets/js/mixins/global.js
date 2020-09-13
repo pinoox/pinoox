@@ -25,6 +25,7 @@ Vue.mixin({
                 let sidebar = this.$store.state.sidebar;
                 return !!sidebar ? {
                     enable: sidebar.enable !== undefined ? sidebar.enable : true,
+                    title: !!sidebar.title ? sidebar.title : false,
                     back: !!sidebar.back ? sidebar.back : false,
                     menus: !!sidebar.menus ? sidebar.menus : [],
                     topList: !!sidebar.topList ? sidebar.topList : [],
@@ -75,17 +76,17 @@ Vue.mixin({
                 this.$store.state.isLock = val;
             }
         },
-        floatApp: {
+        floatInstaller: {
             get() {
-                return this.$store.state.floatApp;
+                return this.$store.state.floatInstaller;
             },
             set(val) {
-                this.$store.state.floatApp = val;
+                this.$store.state.floatInstaller = val;
             }
         },
     },
     methods: {
-        ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs']),
+        ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs','pushToNotifications','closeFromNotifications']),
         _isEmptyObj(obj) {
             return Object.keys(obj).length === 0
         },
@@ -98,8 +99,12 @@ Vue.mixin({
         _notify(title, message, type = '', actions = null, timer = 5) {
             this.notify({title: title, message: message, type: type, actions: actions, timer: timer});
         },
-        _openFloatInstaller(app) {
-            this.floatApp = app;
+        _openFloatInstaller(pack,state,actionSuccessful = null,actionUnsuccessful = null) {
+
+            this.floatInstaller = pack;
+            this.floatInstaller['state'] = state; //market or theme or manual
+            this.floatInstaller['actionSuccessful'] = actionSuccessful;
+            this.floatInstaller['actionUnsuccessful'] = actionUnsuccessful;
         },
         _delay: (function () {
             let timer = 0;

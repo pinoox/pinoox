@@ -3,7 +3,7 @@
         <img v-show="isBackground" :src="background" class="cover-background" alt="">
         <notifier></notifier>
         <Notifications></Notifications>
-        <FloatInstaller v-if="floatApp!=null" :app="floatApp" @close="floatApp=null"></FloatInstaller>
+        <FloatInstaller v-if="floatInstaller!=null" :app="floatInstaller" @close="floatInstaller=null"></FloatInstaller>
         <div id="pin-bar" v-if="isLogin && !isLock && $router.currentRoute.name !== 'loading'">
             <div class="pin-icon ntf-drawer" @click="toggleNotification()">
                 <img src="@img/pin-icon.png">
@@ -58,11 +58,6 @@
         computed: {
             ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
-            notifyInstaller: {
-                get() {
-                    return this.$store.state.readyInstallCount;
-                }
-            },
             options: {
                 get() {
                     return this.$store.state.options;
@@ -103,18 +98,18 @@
                     this.$store.state.tabs = val;
                 }
             },
-            floatApp: {
+            floatInstaller: {
                 get() {
-                    return this.$store.state.floatApp;
+                    return this.$store.state.floatInstaller;
                 },
                 set(app) {
-                    this.$store.state.floatApp = app;
+                    this.$store.state.floatInstaller = app;
                 }
             }
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromTabs']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getPinooxAuth', 'closeFromTabs']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -139,7 +134,7 @@
             getNotifications() {
                 this.$http.get(this.URL.API + 'notification/').then((json) => {
                     if (json.data.status) {
-                        this.notifications = json.data.result;
+                        this.notifications.db = json.data.result;
                     }
                 });
             },
@@ -163,7 +158,6 @@
                     this.getApps();
                     this.getNotifications();
                     this.checkVersion();
-                    this.getReadyToInstallApp();
                 } else {
                     this.$store.state.apps = {};
                 }

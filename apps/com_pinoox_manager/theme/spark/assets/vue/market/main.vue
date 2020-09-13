@@ -32,13 +32,18 @@
             ...mapState(['apps']),
             sidebar() {
                 return {
-                    enable: true,
+                    title: this.LANG.setting.market.pinoox_market_title,
                     back: false,
                     menus: [
                         {
                             name: 'market-home',
                             label: 'market_home',
                             img: require('@img/market-icon.png'),
+                        },
+                        {
+                            name: 'market-downloads',
+                            label: 'recent_downloads',
+                            icon: 'fas fa-file-download',
                         },
                         {
                             name: 'market-account',

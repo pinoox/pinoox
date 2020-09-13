@@ -82,14 +82,18 @@ class AppProvider extends AppSource
      */
     private function build($app = null, $packageName = null)
     {
-        $app = ($app === '~') ? null : $app;
-        $this->path = (empty($packageName)) ? Dir::path('app.runner.php', $app) : Dir::path('app.runner.php', $packageName);
-        if(!is_file($this->path))
-        {
-            $app_file = (empty($packageName)) ? Dir::path('app.php', $app) : Dir::path('app.php', $packageName);
-            if(is_file($app_file))
-                File::copy($app_file,$this->path);
+        if (!is_file($packageName)) {
+            $app = ($app === '~') ? null : $app;
+            $this->path = (empty($packageName)) ? Dir::path('pinker/app.php', $app) : Dir::path('pinker/app.php', $packageName);
+            if (!is_file($this->path)) {
+                $app_file = (empty($packageName)) ? Dir::path('app.php', $app) : Dir::path('app.php', $packageName);
+                if (is_file($app_file))
+                    File::copy($app_file, $this->path);
+            }
+        } else {
+            $this->path = $packageName;
         }
+
 
         $this->options = $this->getOptionsApp();
         $this->setOptionsApp();
@@ -114,11 +118,11 @@ class AppProvider extends AppSource
     private function setOptionsApp()
     {
         foreach ($this->options as $option => $value) {
+            $option = HelperString::camelCase($option);
             if ($this->isApp)
                 $this->data[self::$app][$option] = $value;
             else
                 $this->data[$option] = $value;
-
         }
     }
 
@@ -165,7 +169,7 @@ class AppProvider extends AppSource
      */
     public static function set($key, $value)
     {
-        $key = HelperString::camelToUnderscore($key);
+        $key = HelperString::camelCase($key);
         self::$obj->data[self::$app][$key] = $value;
     }
 
@@ -193,6 +197,8 @@ class AppProvider extends AppSource
      */
     public static function get($key = null)
     {
+        $key = HelperString::camelCase($key);
+
         $result = null;
         if (empty($key))
             $result = self::$obj->data[self::$app];
@@ -200,8 +206,6 @@ class AppProvider extends AppSource
             $result = isset(self::$obj->data[self::$app][$key]) ? self::$obj->data[self::$app][$key] : $result;
 
         if (is_null($result)) {
-            $key = HelperString::camelCase($key);
-
             if (isset(self::$$key))
                 $result = self::$$key;
         }
@@ -214,26 +218,30 @@ class AppProvider extends AppSource
      */
     public static function save()
     {
-        $app = (self::$app !== '~')? self::$app : null;
-        $file = Dir::path('app.runner.php', $app);
+        $app = (self::$app !== '~') ? self::$app : null;
+        $file = Dir::path('pinker/app.php', $app);
 
         $data = self::get();
         $replaces = [];
+        $printData = [];
         foreach ($data as $k => $v) {
+            $k = HelperString::camelToUnderscore($k);
             if (is_callable($v)) {
                 $replaces['{_{' . $k . '}_}'] = HelperObject::closure_dump($v);
-                $data[$k] = '{_{' . $k . '}_}';
+                $printData[$k] = '{_{' . $k . '}_}';
+            } else {
+                $printData[$k] = $v;
             }
         }
-        $data = var_export($data, true);
+        $printData = var_export($printData, true);
 
         foreach ($replaces as $k => $v) {
-            $data = str_replace("'$k'", $v, $data);
+            $printData = str_replace("'$k'", $v, $printData);
         }
 
         $data_for_save = '<?' . 'php' . "\n";
         $data_for_save .= '//pinoox app file, generated at "' . gmdate('Y-m-d H:i') . "\"\n\n";
-        $data_for_save .= 'return ' . $data . ";\n\n//end of app";
+        $data_for_save .= 'return ' . $printData . ";\n\n//end of app";
 
         File::generate($file, $data_for_save);
     }
@@ -294,16 +302,16 @@ class AppProvider extends AppSource
     public function __get($key)
     {
         $result = null;
+        $key = HelperString::camelCase($key);
         if (empty($key))
             $result = $this->data;
         else
             $result = isset($this->data[$key]) ? $this->data[$key] : $result;
 
         if (is_null($result)) {
-            $key = HelperString::camelCase($key);
 
-            if (isset($this->$key))
-                $result = $this->$key;
+            if (isset(self::$$key))
+                $result = self::$$key;
         }
 
         return $result;
@@ -317,7 +325,7 @@ class AppProvider extends AppSource
      */
     public function __set($name, $value)
     {
-        $name = HelperString::camelToUnderscore($name);
+        $name = HelperString::camelCase($name);
         $this->data[$name] = $value;
     }
 }

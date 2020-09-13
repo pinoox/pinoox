@@ -15,32 +15,38 @@ namespace pinoox\component;
 class HelperString
 {
     // get unique form one string by time,md5,exists,uniqid,...
-    public static function get_unique_string($string, $decoding_type = "", $pre = "", $ext = "", $i_loop = "")
+    public static function get_unique_string($string, $decoding_type = "", $prefix = "", $postfix = "", $i_loop = "", $dir = null,$ext = null)
     {
         #change it, time..
         if ($decoding_type == "time") {
             list($usec, $sec) = explode(" ", microtime());
             $extra = str_replace('.', '', (float)$usec + (float)$sec);
-            $return = $pre . $extra . $i_loop . $ext;
+            $return = $prefix . $extra . $i_loop . $postfix;
         } # md5
         elseif ($decoding_type == "md5") {
             list($usec, $sec) = explode(" ", microtime());
             $extra = md5(((float)$usec + (float)$sec) . $string);
             $extra = substr($extra, 0, 12);
-            $return = $pre . $extra . $i_loop . $ext;
+            $return = $prefix . $extra . $i_loop . $postfix;
         } # exists before, change it a little
         elseif ($decoding_type == 'exists') {
-            $return = $string . '_' . substr(md5(time() . $i_loop), rand(0, 20), 5) . $ext;
-            $return = $pre . $return;
+            $return = $string . '_' . substr(md5(time() . $i_loop), rand(0, 20), 5) . $postfix;
+            $return = $prefix . $return;
         } elseif ($decoding_type == 'uniqid') {
-            $return = $pre . uniqid($string) . $i_loop . $ext;
+            $return = $prefix . uniqid($string) . $i_loop . $postfix;
         } #nothing
         else {
-            $return = self::changeSignsToOneSing($string) . $ext;
+            $return = self::changeSignsToOneSing($string).$i_loop . $postfix;
             $return = preg_replace('/-+/', '-', $return);
-            $return = $pre . $return;
+            $return = $prefix . $return;
         }
 
+        if(!empty($dir) && !empty($ext) && is_file($dir.$return.'.'.$ext))
+        {
+            $i_loop = !empty($i_loop)? $i_loop : 0;
+            $i_loop++;
+            $return = self::get_unique_string($string, $decoding_type, $prefix, $postfix, $i_loop, $dir,$ext);
+        }
         return $return;
     }
 

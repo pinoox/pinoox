@@ -51,16 +51,6 @@
                             params: {},
                         },
                         {
-                            name: 'market-home',
-                            label: 'market',
-                            img: require('@img/market-icon.png'),
-                            left: {
-                                icon: 'fas fa-user-check',
-                                isLogin: true,
-                            },
-                            params: {},
-                        },
-                        {
                             name: 'setting-about',
                             label: 'about',
                             img: require('@img/pin-icon.png'),

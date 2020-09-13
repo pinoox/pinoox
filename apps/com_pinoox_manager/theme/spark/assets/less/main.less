@@ -693,14 +693,14 @@ a {
 body.rtl {
   .rtl;
 
-  font-family: 'shabnam', 'Karla' !important;
+  font-family: 'shabnam', 'Karla', serif !important;
 
 
 }
 
 body.ltr {
   .ltr;
-  font-family: 'Karla', 'shabnam' !important;
+  font-family: 'Karla', 'shabnam', serif !important;
 
 }
 
@@ -762,6 +762,19 @@ body.ltr {
 
     .item.active {
       background: rgba(18, 97, 159, 0.22);
+    }
+
+    .sidebar-title {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 21px 10px;
+      background: fade(@warning, 10%);
+
+      .name {
+        color: @warning;
+      }
     }
 
     .app-info {
@@ -1173,27 +1186,9 @@ body.ltr {
       .content {
         display: flex;
 
-        .progressbar {
-          position: relative;
 
-          .percent {
-            display: inline-block;
-            position: absolute;
-            right: 0;
-            left: 0;
-            text-align: center;
-            top: 34%;
-            font-size: 25px;
-          }
-
-          .progress-ring__circle {
-            transition: 0.35s stroke-dashoffset;
-            // axis compensation
-            transform: rotate(-90deg);
-            transform-origin: 50% 50%;
-            -webkit-svg-shadow: 0 0 7px #53BE12;
-          }
-
+        .vm-progress__text {
+          color: #fff;
         }
 
         .info {
@@ -1434,8 +1429,6 @@ body.ltr {
       }
 
       .list {
-        margin-top: 50px;
-
         .list-enter-active, .list-leave-active {
           transition: all 0.33s;
         }
@@ -1468,6 +1461,10 @@ body.ltr {
             margin-top: 10px;
             font-size: 0.75rem;
             font-weight: 300;
+          }
+
+          .vm-progress {
+            margin-top: 5px;
           }
         }
       }
@@ -1519,9 +1516,11 @@ body.ltr {
 
       .header-content {
         padding: 0 10px;
+        flex-grow: 1;
 
         .app-icon {
           width: 35px;
+          margin: 0 5px;
         }
       }
     }
@@ -1603,7 +1602,8 @@ body.ltr {
         input {
           border: none;
           border-radius: 4px;
-          color: #000;
+          color: #fff;
+          opacity: 0.7;
           background: rgba(255, 255, 255, 0.11);
           .trans;
 
@@ -1989,6 +1989,317 @@ body.ltr {
         }
       }
 
+      .pin-packages {
+        .files-list {
+          display: block;
+          margin-top: 50px;
+
+          .file-item {
+            display: inline-block;
+            margin: 15px 0 15px 35px;
+            text-align: center;
+            position: relative;
+            width: 200px;
+            .trans;
+
+            .btn {
+              color: #afafaf;
+
+              &:hover {
+                color: #d8802b;
+                cursor: pointer;
+              }
+            }
+
+            &:hover {
+              cursor: pointer;
+              transform: scale(1.1);
+            }
+
+            .app-icon {
+              position: relative;
+              width: 100px;
+              margin: 0 auto;
+
+              img {
+                width: 100px;
+              }
+
+              .version {
+                font-family: 'Karla', 'shabnam', serif !important;
+                position: absolute;
+                left: 5px;
+                top: 5px;
+                font-size: 11px;
+                background: rgba(0, 0, 0, 0.4);
+                display: block;
+                padding: 2px 5px 1px 9px;
+                color: #fff;
+                text-align: center;
+                border-top-left-radius: 1.2rem;
+                border-bottom-right-radius: 15px;
+              }
+            }
+
+            .name {
+              margin-top: 5px;
+              display: block;
+              padding: 2px;
+              color: #f0f3dc;
+            }
+
+            .filename {
+              font-family: 'Karla', 'shabnam', serif !important;
+              margin-top: 2px;
+              display: block;
+              padding: 2px;
+              font-size: 10px;
+              color: #fff;
+            }
+          }
+        }
+
+        .app-details {
+
+          .header-details {
+            display: flex;
+            align-items: center;
+
+            .app-icon {
+              width: 128px;
+            }
+
+            .app-info {
+              flex-grow: 0.6;
+              padding: 0 15px;
+
+              h2 {
+                font-size: 16px;
+                font-weight: 700;
+              }
+
+              h3 {
+                font-size: 11px;
+                font-weight: 200;
+                color: rgba(255, 228, 185, 0.6);
+              }
+            }
+
+            .action {
+              flex-grow: 1;
+              text-align: left;
+
+              .btn-install {
+                position: relative;
+                display: inline-block;
+                background: rgba(255, 255, 255, 0.13);
+                border-radius: 3px;
+                padding: 4px 25px;
+                text-align: left;
+                .trans;
+
+                &:hover {
+                  background: rgba(255, 255, 255, 0.23);
+                  cursor: pointer;
+                  .trans;
+                }
+              }
+
+              .warn-text {
+                margin-top: 5px;
+                display: block;
+                font-size: 12px;
+                color: rgba(247, 247, 247, 0.47);
+              }
+            }
+
+          }
+
+          .content-details {
+            padding: 0;
+            clear: both;
+            overflow: hidden;
+
+            .links {
+              padding: 8px;
+              border-bottom: 1px solid rgba(239, 239, 239, 0.15);
+
+              a {
+                font-size: 12px;
+                display: inline-block;
+                color: @warning;
+                text-decoration: none;
+                margin: 5px 15px;
+
+                &:hover {
+                  color: @secondary;
+                }
+              }
+            }
+
+            .text {
+              padding: 25px 0;
+              font-size: 12px;
+              line-height: 2.2;
+              color: #efefef;
+              font-weight: 300;
+
+              h4 {
+                font-weight: bold;
+                font-size: 17px;
+              }
+            }
+
+          }
+        }
+
+        .installing {
+          .tips {
+            margin-top: 100px;
+            padding: 13px;
+            font-size: 13px;
+            font-weight: 200;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.27)
+
+          }
+        }
+
+        .finish {
+          text-align: center;
+
+          .message {
+            text-align: center;
+            margin-top: 15px;
+          }
+
+          .app {
+            .icon {
+              img {
+                width: 128px;
+              }
+            }
+          }
+        }
+
+        .market-login {
+          .message {
+            text-align: center;
+            font-size: 14px;
+
+            h2 {
+              font-size: 14px;
+            }
+
+            a {
+              color: #d8ae63;
+
+              &:hover {
+                text-decoration: none;
+                color: #d8863a;
+              }
+            }
+          }
+
+          .form {
+            width: 250px;
+            text-align: center;
+            margin: 5% auto;
+            color: #fff;
+
+            .user-image {
+              margin: 10px auto;
+              width: 128px;
+              height: 128px;
+              border-radius: 50%;
+              border: 3px solid #FFF;
+              display: block;
+
+              .boxShadow();
+            }
+
+            .user-input {
+              margin: 10px 0;
+              position: relative;
+              display: inline-block;
+
+              input {
+                border-radius: 3px;
+                border: 0;
+                padding: 8px 45px 8px 25px;
+                width: 100%;
+                background: rgba(255, 255, 255, 0.43);
+                .trans;
+
+                &::placeholder {
+                  color: #FFF;
+                }
+
+                &:focus {
+                  .trans;
+                  outline: none;
+                  background: rgba(255, 255, 255, 0.56);
+                  .boxShadow(0.2);
+                }
+              }
+
+              i {
+                right: 10px;
+                top: 10px;
+                position: absolute;
+                color: rgba(255, 255, 255, 0.67);
+                font-size: 18px;
+              }
+            }
+
+            .user-btn {
+              margin-top: 20px;
+              background: rgba(255, 227, 180, 0.21);
+              padding: 8px 25px;
+              display: block;
+              width: 100%;
+              color: #fff;
+              border: 2px solid #FFF;
+              border-radius: 4px;
+              .trans;
+
+              &:hover {
+                text-decoration: none;
+                cursor: pointer;
+                background: rgba(255, 255, 255, 0.49);
+                .trans;
+              }
+
+            }
+          }
+
+          .user {
+            text-align: center;
+
+            .user-image {
+              margin: 10px auto;
+              width: 128px;
+              height: 128px;
+              border-radius: 50%;
+              border: 3px solid #FFF;
+              display: block;
+
+              .boxShadow();
+            }
+
+            .logout {
+              display: inline-block;
+              margin-top: 15px;
+
+              &:hover {
+                cursor: pointer;
+              }
+            }
+          }
+        }
+
+      }
+
       .market {
 
         .apps-list {
@@ -2166,6 +2477,16 @@ body.ltr {
 
                 .actions {
                   padding: 10px 0;
+                }
+
+                .alert-template {
+                  font-size: 11px;
+                  color: @warning;
+                  opacity: 0.9;
+
+                  &.success {
+                    color: @success !important;
+                  }
                 }
               }
             }
@@ -2513,6 +2834,18 @@ body.ltr {
             align-items: center;
             justify-content: center;
 
+            input[type="file"] {
+              display: none;
+            }
+
+            .vm-progress__text {
+              color: #fff;
+            }
+
+            .btn-pin {
+              margin-top: 10px;
+            }
+
             .icon {
               margin-top: 10px;
               width: 256px;
@@ -2533,6 +2866,51 @@ body.ltr {
           }
         }
 
+        .show-errs {
+          width: 100%;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          margin: 20px 20px 50px 20px;
+
+          .alert-info {
+            margin-bottom: 10px;
+          }
+
+          .alert-danger {
+            color: #fff;
+          }
+        }
+      }
+
+      .templates {
+        padding: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 220px);
+        grid-gap: 2rem;
+
+        .item {
+          text-align: center;
+          background: rgba(0, 0, 0, 0.3);
+          border-radius: 10px;
+
+          .thumb {
+            width: 100%;
+            height: 200px;
+            border-top-right-radius: 10px;
+            border-top-left-radius: 10px;
+          }
+
+          .name {
+            padding: 10px 0;
+          }
+
+          .actions {
+            padding: 10px 0;
+          }
+        }
       }
     }
 
@@ -2701,21 +3079,11 @@ body.ltr {
 
     .sidebar {
       .item {
-
-        &:first-child {
-          padding-top: 15px;
-          height: 65px;
-
-          i, .name {
-            display: inline-block;
-          }
-        }
-
-        padding: 8px;
+        padding: 12px 3px;
         text-align: center;
 
-        i {
-          display: block;
+        i, img {
+          display: none;
         }
 
         .name {
@@ -2724,8 +3092,16 @@ body.ltr {
           margin-top: 5px;
         }
 
+        &.back {
+          padding: 20px 3px;
+        }
+
       }
 
+      .sidebar-title {
+        font-size: 12px;
+        padding: 24px 3px;
+      }
     }
 
     .content {
@@ -2780,7 +3156,45 @@ body.ltr {
             }
           }
         }
+
+        .market {
+          .app-details {
+            .header-details {
+              text-align: center;
+              flex-direction: column;
+
+              .app-info {
+                h2 {
+                  padding: 10px 0;
+                }
+              }
+
+              .action {
+                flex-grow: 1;
+                text-align: left;
+                margin-top: 20px;
+              }
+            }
+
+            .content-details {
+              .templates {
+                justify-content: center;
+              }
+            }
+          }
+        }
+
+        .templates{
+          justify-content: center;
+        }
       }
+    }
+  }
+
+  #pinoox-container {
+    .float-installer {
+      width: 65%;
+      height: 55%;
     }
   }
 }

@@ -10,7 +10,7 @@
             </div>
             <div class="apps">
                 <div class="apps-holder pretty-scroll">
-                    <div v-for="(app,key) in apps" class="app-item" @click="openApp(app)" v-if="!app.hidden">
+                    <div v-for="(app,key) in apps" class="app-item" @click="openApp(app)" v-if="app.dock">
                         <img :src="app.icon" class="app-icon">
                         <span class="app-name">{{app.name}}</span>
                     </div>

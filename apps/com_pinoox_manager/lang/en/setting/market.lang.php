@@ -14,4 +14,5 @@ return [
     'not_found_result_try_again' => 'the search failed. please try again',
     'please_wait_until_download_complete' => 'please wait until download complete...',
     'please_wait_until_install_complete' => 'please wait until install complete',
+    'recent_downloads' => 'Recent downloads',
 ];

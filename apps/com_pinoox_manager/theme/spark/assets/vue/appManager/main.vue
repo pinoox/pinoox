@@ -40,9 +40,9 @@
                             params: {package_name: this.package_name}
                         },
                         {
-                            name: 'app-users',
-                            label: 'users',
-                            icon: 'fas fa-users',
+                            name: 'app-templates',
+                            label: 'templates',
+                            icon: 'fas fa-paint-brush',
                             params: {package_name: this.package_name}
                         },
                     ],
@@ -70,11 +70,6 @@
             pinooxAuth: {
                 get() {
                     return this.$store.state.pinooxAuth;
-                }
-            },
-            notifyInstaller: {
-                get() {
-                    return this.$store.state.readyInstallCount;
                 }
             },
             apps: {

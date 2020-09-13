@@ -25,16 +25,15 @@
                     <span class="warn-text" v-if="state==='downloading'">{{LANG.setting.market.please_wait_until_download_complete}}</span>
                     <div v-if="state==='install'" class="btn-install" @click="installApp()">{{LANG.manager.install}}
                     </div>
-                    <div v-if="state==='install'" class="btn-install" @click="downloadApp()">
-                        {{LANG.manager.re_download}}
-                    </div>
 
                     <div v-if="state==='installing'" class="btn-install">
                         {{LANG.setting.market.installing}}
                     </div>
                     <span class="warn-text" v-if="state==='installing'">{{LANG.setting.market.please_wait_until_install_complete}}</span>
 
-
+                    <router-link tag="span" :to="{name:'app-details',params:{package_name:this.package_name}}" v-if="state==='installed'" class="btn-install">
+                        {{LANG.manager.setting}}
+                    </router-link>
                     <div v-if="state==='installed'" class="btn-install" @click="removeApp()">
                         {{LANG.manager.delete}}
                     </div>
@@ -47,7 +46,7 @@
                               @click="changeTab('description')"
                               :class="{active:activeTab==='description'}">{{LANG.manager.description}}</span>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item" v-if="templates!=null && templates.length>0">
                         <span class="nav-link"
                               @click="changeTab('templates')"
                               :class="{active:activeTab==='templates'}">{{LANG.manager.templates}}</span>
@@ -64,9 +63,27 @@
                                 <div class="item" v-for="(t,index) in templates">
                                     <img class="thumb" :src="t.cover">
                                     <div class="name">{{t.template_name}}</div>
-                                    <div class="actions">
-                                        <div class="btn-pin btn-success">{{LANG.manager.download}}</div>
-                                        <div class="btn-pin">{{LANG.manager.live_preview}}</div>
+                                    <div class="actions" v-if="state==='installed'">
+                                        <div v-if="t.state==='download'"
+                                             @click="downloadTemplate(t)"
+                                             class="btn-pin btn-success">
+                                            {{LANG.manager.download}}
+                                        </div>
+                                        <div v-else-if="t.state==='install'"
+                                             @click="installTemplate(t)"
+                                             class="btn-pin btn-success">
+                                            {{LANG.manager.install}}
+                                        </div>
+                                        <div v-else-if="t.state==='installed'"
+                                             class="alert-template success">
+                                            {{LANG.manager.installed}}
+                                        </div>
+                                        <a :href="t.live_preview" v-if="t.live_preview!=null" class="btn-pin">{{LANG.manager.live_preview}}</a>
+                                    </div>
+                                    <div class="actions" v-else>
+                                        <span class="alert-template">
+                                            {{LANG.manager.must_install_application}}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -81,10 +98,10 @@
     </div>
 </template>
 <script>
-    import {mapGetters, mapMutations} from 'vuex';
+    import {mapMutations, mapState} from 'vuex';
 
     export default {
-        props: ['package_name'],
+        props: ['package_name','tab'],
         data() {
             return {
                 isLoading: false,
@@ -100,14 +117,11 @@
                     return this.$store.state.pinooxAuth;
                 }
             },
-            readyInstall: {
-                set(val) {
-                    this.$store.state.readyInstallCount = val;
-                },
+            installedApps: {
                 get() {
-                    return this.$store.state.readyInstallCount;
+                    return this.$store.state.apps;
                 }
-            }
+            },
         },
         methods: {
             ...mapMutations(['getApps', 'logoutPinooxAuth']),
@@ -134,8 +148,8 @@
                             }
                         } else {
                             this.state = 'install';
-                            this.readyInstall++;
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
+                            this._openFloatInstaller(this.app,'market');
                         }
                     });
 
@@ -144,20 +158,7 @@
                 }
             },
             installApp() {
-                this._openFloatInstaller(this.app);
-                /*  this.state = 'installing';
-                  this._loading = true;
-                  this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
-                      this._loading = false;
-                      if (json.data.status) {
-                          this._notify(this.LANG.manager.installed_successfully, '', 'success');
-                          this.state = 'installed';
-                          this.readyInstall--;
-                          this.getApps();
-                      } else {
-                          this.state = 'install';
-                      }
-                  });*/
+                this._openFloatInstaller(this.app,'market');
             },
             updateApp() {
                 this.isLoadingUpdate = true;
@@ -201,26 +202,25 @@
             },
             changeTab(tab) {
                 this.activeTab = tab;
-                if (tab === 'templates' && this.templates == null)
-                    this.getTemplates();
             },
-            downloadTemplate() {
+            downloadTemplate(template) {
                 if (this.pinooxAuth.isLogin) {
-                    this.state = 'downloading';
                     this._loading = true;
-                    this.$http.post(this.URL.API + 'market/downloadRequest/' + this.package_name, {auth: this.pinooxAuth}).then((json) => {
+                    this.$http.post(this.URL.API + 'market/downloadRequestTemplate/' + template.uid, {
+                        package_name: this.package_name,
+                        auth: this.pinooxAuth
+                    }).then((json) => {
                         this._loading = false;
                         if (!json.data.status) {
-                            this.state = 'download';
                             this._notify(this.LANG.user.login_to_pinoox, json.data.result.message, 'warning');
                             if (json.data.result.require_auth) {
                                 this.logoutPinooxAuth();
                                 this.$router.push({name: 'market-login'});
                             }
                         } else {
-                            this.state = 'install';
-                            this.readyInstall++;
+                            template.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
+                            this._openFloatInstaller(template,'theme');
                         }
                     });
 
@@ -234,10 +234,21 @@
                     this.isLoading = false;
                     this.templates = json.data;
                 });
+            },
+            installTemplate(template) {
+                this._openFloatInstaller(template,'theme');
             }
         },
         created() {
             this.getApp();
+            this.getTemplates();
+            if(!!this.tab)
+                this.changeTab(this.tab);
         },
+        watch: {
+            installedApps(newApps, oldApps) {
+                this.state = !!newApps[this.package_name] ? 'installed' : this.state;
+            }
+        }
     }
 </script>

@@ -1,9 +1,9 @@
 <template>
     <div class="content" data-simplebar>
         <div class="header">
-          <div class="text">
-              <h1>{{LANG.manager.interface}}</h1>
-          </div>
+            <div class="text">
+                <h1>{{LANG.manager.interface}}</h1>
+            </div>
         </div>
         <div class="page">
             <div class="config">
@@ -90,10 +90,7 @@
                 });
             },
             getImage(n) {
-                if (n === 6)
-                    return this.URL.THEME + 'dist/images/backgrounds/' + n + '.svg';
-                else
-                    return this.URL.THEME + 'dist/images/backgrounds/' + n + '.jpg';
+                return this.URL.THEME + 'dist/images/backgrounds/' + n + '.jpg';
             }
 
         },
