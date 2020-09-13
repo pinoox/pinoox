@@ -62,7 +62,7 @@ export default new Vuex.Store({
     setters: {},
     getters: {
         background: state => {
-            if (state.options.background === 6)
+            if (false)
                 return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.svg';
             else
                 return PINOOX.URL.THEME + 'dist/images/backgrounds/' + state.options.background + '.jpg';

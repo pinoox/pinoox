@@ -87,7 +87,8 @@ return [
     'downloading' => 'در حال دانلود',
     'download_completed' => 'دانلود به پایان رسید',
     'installed' => 'نصب شده',
-    'installed_successfully' => 'با موفقیت نصب شد',
+    'installed_successfully' => 'نصب نشد',
+    'not_installed' => 'Can not installed',
     'ready_to_install' => 'آماده نصب',
     'users' => 'کاربران',
     'configs' => 'تنظیمات',
@@ -99,6 +100,7 @@ return [
     'app_details' => 'اطلاعات اپلیکیشن',
     'app' => 'اپلیکیشن',
     'templates' => 'قالب ها',
+    'add_template' => 'افزودن قالب',
     'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگذاری کنید',
     'file_uploaded_correctly' => 'فایل مورد نظر به درستی بارگذاری شد',
     'files_uploaded_correctly' => 'همه فایل ها به درستی بارگذاری شدند',
@@ -120,5 +122,7 @@ return [
     'this_folder_is_duplicated' => 'نام قالب تکراری است',
     'are_you_sure_delete_template' => 'آیا از حذف قالب مطمئن هستید؟',
     'there_is_no_app' => 'چنین اپلیکیشن وجود ندارد',
+    'newer_version_installed' => 'یک نسخه جدیدتر بر روی سیستم شما نصب می باشد',
+    'version_already_installed' => 'این نسخه قبلا روی سیستم شما نصب می باشد',
 ];
     

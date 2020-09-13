@@ -21,6 +21,7 @@ use pinoox\component\Cache;
 use pinoox\component\Config;
 use pinoox\component\Dir;
 use pinoox\component\File;
+use pinoox\component\Lang;
 use pinoox\component\Router;
 use pinoox\component\Service;
 use pinoox\component\Url;
@@ -34,6 +35,7 @@ use pinoox\model\UserModel;
 class Wizard
 {
     private static $isApp = false;
+    private static $message = null;
 
     public static function installApp($pinFile)
     {
@@ -41,6 +43,9 @@ class Wizard
         $data = self::pullDataPackage($pinFile);
 
         if (!self::isValidNamePackage($data['package_name']))
+            return false;
+
+        if(!self::checkVersion($data))
             return false;
 
         $appPath = path('~apps/' . $data['package_name'] . '/');
@@ -153,11 +158,13 @@ class Wizard
     {
         $data = self::pullDataPackage($pinFile);
 
-        if (!self::isValidNamePackage($data['package_name']))
-        {
+        if (!self::isValidNamePackage($data['package_name'])) {
             self::deletePackageFile($pinFile);
             return false;
         }
+
+        if(!self::checkVersion($data))
+            return false;
 
         Zip::remove($pinFile, [
             'pinker/',
@@ -182,6 +189,32 @@ class Wizard
         self::deletePackageFile($pinFile);
         return true;
 
+    }
+
+    public static function getMessage()
+    {
+        $message = self::$message;
+        self::$message = null;
+        return $message;
+    }
+
+    public static function checkVersion($data)
+    {
+        $packageName = $data['package_name'];
+        $versionCode = @$data['version_code'];
+
+        $app = new AppProvider($packageName);
+        $versionCodeApp = $app->versionCode;
+
+        if ($versionCodeApp == $versionCode) {
+            self::$message = Lang::get('manager.version_already_installed');
+            return false;
+        } else if ($versionCodeApp > $versionCode) {
+            self::$message = Lang::get('manager.newer_version_installed');
+            return false;
+        }
+
+        return true;
     }
 
     public static function deleteApp($packageName)

@@ -99,7 +99,7 @@ export const routes = [
                 component: MarketHome
             },
             {
-                path: 'details/:package_name',
+                path: 'details/:package_name/:tab?',
                 name: 'market-details',
                 component: MarketDetails,
                 props: true,

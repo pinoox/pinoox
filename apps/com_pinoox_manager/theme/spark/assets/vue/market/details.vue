@@ -32,7 +32,7 @@
                     <span class="warn-text" v-if="state==='installing'">{{LANG.setting.market.please_wait_until_install_complete}}</span>
 
                     <router-link tag="span" :to="{name:'app-details',params:{package_name:this.package_name}}" v-if="state==='installed'" class="btn-install">
-                        {{LANG.manager.app_details}}
+                        {{LANG.manager.setting}}
                     </router-link>
                     <div v-if="state==='installed'" class="btn-install" @click="removeApp()">
                         {{LANG.manager.delete}}
@@ -75,7 +75,6 @@
                                             {{LANG.manager.install}}
                                         </div>
                                         <div v-else-if="t.state==='installed'"
-                                             @click="installTemplate(t)"
                                              class="alert-template success">
                                             {{LANG.manager.installed}}
                                         </div>
@@ -102,7 +101,7 @@
     import {mapMutations, mapState} from 'vuex';
 
     export default {
-        props: ['package_name'],
+        props: ['package_name','tab'],
         data() {
             return {
                 isLoading: false,
@@ -243,6 +242,8 @@
         created() {
             this.getApp();
             this.getTemplates();
+            if(!!this.tab)
+                this.changeTab(this.tab);
         },
         watch: {
             installedApps(newApps, oldApps) {

@@ -5,9 +5,13 @@
                 <h1>{{LANG.manager.app}} {{app.name}}</h1>
                 <h2>{{app.description}}</h2>
             </div>
+            <div class="action">
+                <router-link :to="{name: 'market-details',params:{package_name:app.package_name,tab:'templates'}}" class="btn-header"><i class="fa fa-plus"></i> {{LANG.manager.add_template}}
+                </router-link>
+            </div>
         </div>
         <div class="page">
-            <div class="templates" v-if="templates!=null">
+            <div class="templates" v-if="templates!=null" data-simplebar>
                 <div class="item" v-for="(t,index) in templates">
                     <img class="thumb" :src="t.cover">
                     <div class="name">{{t.template_name}}</div>

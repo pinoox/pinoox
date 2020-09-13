@@ -22,15 +22,16 @@
                 <span v-else>{{LANG.manager.float_installer_message_app}}</span>
             </div>
             <div v-else-if="state==='installing'" class="text">{{LANG.manager.please_wait_until_complete}}</div>
+            <div v-else-if="state==='error'" class="text">{{LANG.manager.installed_successfully}}</div>
             <div v-else class="text">{{LANG.manager.installed_successfully}}</div>
         </div>
         <div class="actions">
             <div v-if="state==='install'">
                 <div class="btn-pin"
                      v-if="!!apps[app.package_name] && !!app.version_code && app.version_code > apps[app.package_name].version_code"
-                     @click="install(app.state)">{{LANG.manager.install}}
+                     @click="update(app.state)">{{LANG.manager.update}}
                 </div>
-                <div class="btn-pin" v-else @click="update(app.state)">{{LANG.manager.update}}</div>
+                <div class="btn-pin" v-else @click="install(app.state)">{{LANG.manager.install}}</div>
                 <div class="btn-pin" v-else-if="app.state === 'manual'" @click="installPackage()">
                     {{LANG.manager.install}}
                 </div>
@@ -119,7 +120,7 @@
                 this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
                     this._loading = false;
                     this.getApps();
-                    this.sendNotify(json.data, this.LANG.manager.install_app);
+                    this.sendNotify(json.data, this.LANG.setting.market.install_app);
                 });
             },
             installManual() {
@@ -128,7 +129,7 @@
                 this.$http.get(this.URL.API + 'app/installPackage/' + this.app.filename).then((json) => {
                     this._loading = false;
                     this.getApps();
-                    this.sendNotify(json.data, this.LANG.manager.install_app);
+                    this.sendNotify(json.data, this.LANG.setting.market.install_app);
                 });
             },
             installTheme() {
@@ -160,6 +161,7 @@
             updateTheme() {
             },
             sendNotify(data, title) {
+                console.log(title);
                 if (data.status) {
                     this.state = 'complete';
                     this._notify(title, data.result, 'success');
