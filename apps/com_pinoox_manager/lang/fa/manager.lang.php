@@ -115,5 +115,6 @@ return [
     'go_to_templates' => 'رفتن به قالب ها',
     'this_folder_is_duplicated' => 'نام قالب تکراری است',
     'are_you_sure_delete_template' => 'آیا از حذف قالب مطمئن هستید؟',
+    'there_is_no_app' => 'چنین اپلیکیشن وجود ندارد',
 ];
     
