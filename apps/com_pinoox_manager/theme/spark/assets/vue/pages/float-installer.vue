@@ -161,13 +161,16 @@
             updateTheme() {
             },
             sendNotify(data, title) {
-                console.log(title);
                 if (data.status) {
                     this.state = 'complete';
                     this._notify(title, data.result, 'success');
+                    if(!!this.app.actionSuccessful && typeof this.app.actionSuccessful === 'function')
+                        this.app.actionSuccessful(data);
                 } else {
                     this.state = 'error';
                     this._notify(title, data.result, 'danger');
+                    if(!!this.app.actionUnsuccessful && typeof this.app.actionUnsuccessful === 'function')
+                        this.app.actionUnsuccessful(data);
                 }
             }
         }

@@ -19,6 +19,18 @@ class Lang
     private static $lang = PINOOX_DEFAULT_LANG;
     private static $app = null;
 
+    public static function exists($lang,$app = null)
+    {
+        if(is_null($app))
+            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+        if ($app !== '~')
+            $path = Dir::path('lang/' . $lang . '/', $app);
+        else
+            $path = Dir::path('~pincore/lang/' . $lang . '/');
+
+        return file_exists($path);
+    }
+
     public static function current()
     {
         return self::$lang;
@@ -96,11 +108,6 @@ class Lang
         }
 
         return null;
-    }
-
-    public static function set($key, $value)
-    {
-        self::push($key, $value, 'set');
     }
 
     public static function replace()
@@ -193,7 +200,6 @@ class Lang
         File::generate($file, $data_for_save);
     }
 
-
     /**
      * Set target data in lang
      *
@@ -204,9 +210,14 @@ class Lang
     public static function setLinear($pointer, $key, $value)
     {
         $data = self::get($pointer);
-        $data = is_array($data)? $data : [];
+        $data = is_array($data) ? $data : [];
         $data[$key] = $value;
-        self::set($pointer,$data);
+        self::set($pointer, $data);
+    }
+
+    public static function set($key, $value)
+    {
+        self::push($key, $value, 'set');
     }
 
     /**
@@ -219,7 +230,7 @@ class Lang
     public static function getLinear($pointer, $key)
     {
         $data = self::get($pointer);
-        return isset($data[$key])? $data[$key] : null;
+        return isset($data[$key]) ? $data[$key] : null;
     }
 
 }

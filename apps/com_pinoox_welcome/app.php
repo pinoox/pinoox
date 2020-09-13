@@ -2,7 +2,7 @@
 //pinoox app file, generated at "2019-12-25 19:03"
 
 return array (
-  'package_name' => 'com_pinoox_welcome',
+  'package-name' => 'com_pinoox_welcome',
   'name' => 'welcome',
   'developer' => 'pinoox',
   'description' => 'pinoox sample',

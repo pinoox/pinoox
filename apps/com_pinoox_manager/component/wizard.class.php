@@ -69,12 +69,13 @@ class Wizard
 
             PinooxDatabase::$db->commit();
             File::remove_file($appDB);
-
-            self::changeLang($data['package_name']);
-            self::runService($data['package_name'], 'install');
         }
 
+        self::changeLang($data['package_name']);
+        self::runService($data['package_name'], 'install');
+        self::setApp('com_pinoox_manager',true);
         self::deletePackageFile($pinFile);
+
         return true;
     }
 
@@ -139,9 +140,9 @@ class Wizard
         Router::setApp($current);
     }
 
-    private static function setApp($packageName)
+    private static function setApp($packageName,$isAgain = false)
     {
-        if (self::$isApp) return;
+        if (self::$isApp && !$isAgain) return;
         self::$isApp = true;
         Router::setApp($packageName);
         AppProvider::app($packageName);
@@ -178,7 +179,7 @@ class Wizard
 
 
         self::setApp($data['package_name']);
-        AppProvider::set('version-code', $data['version-code']);
+        AppProvider::set('version-code', $data['version_code']);
         AppProvider::set('version-name', $data['version']);
         AppProvider::set('name', $data['name']);
         AppProvider::set('developer', $data['developer']);
@@ -187,7 +188,9 @@ class Wizard
         AppProvider::save();
         self::runService($data['package_name'], 'update');
 
+        self::setApp('com_pinoox_manager',true);
         self::deletePackageFile($pinFile);
+
         return true;
 
     }
@@ -373,9 +376,12 @@ class Wizard
     public static function changeLang($package_name)
     {
         $lang = Lang::current();
+        if(!Lang::exists($lang,$package_name))
+            return false;
         self::setApp($package_name);
         AppProvider::set('lang', $lang);
         AppProvider::save();
+        return true;
     }
 
 }
