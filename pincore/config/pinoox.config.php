@@ -1,6 +1,6 @@
 <?php
 
 return [
-    'version_code' => 9,
-    'version_name' => '1.4.6',
+    'version_code' => 10,
+    'version_name' => '1.5.5',
 ];

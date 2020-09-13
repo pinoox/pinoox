@@ -45,7 +45,7 @@ class Wizard
         if (!self::isValidNamePackage($data['package_name']))
             return false;
 
-        if(!self::checkVersion($data))
+        if (!self::checkVersion($data))
             return false;
 
         $appPath = path('~apps/' . $data['package_name'] . '/');
@@ -163,7 +163,7 @@ class Wizard
             return false;
         }
 
-        if(!self::checkVersion($data))
+        if (!self::checkVersion($data))
             return false;
 
         Zip::remove($pinFile, [
@@ -203,7 +203,7 @@ class Wizard
         $packageName = $data['package_name'];
         $versionCode = @$data['version_code'];
 
-        if(!Router::existApp($packageName))
+        if (!Router::existApp($packageName))
             return true;
 
         $app = new AppProvider($packageName);
@@ -283,8 +283,19 @@ class Wizard
 
     public static function is_installed($package_name)
     {
-        $app = AppModel::fetch_by_package_name($package_name);
-        return !empty($app);
+        return Router::existApp($package_name);
+    }
+
+    public static function app_state($package_name)
+    {
+        if (self::is_installed($package_name))
+            $state = 'installed';
+        else if (self::is_downloaded($package_name))
+            $state = 'install';
+        else
+            $state = 'download';
+
+        return $state;
     }
 
     public static function is_downloaded($package_name)
@@ -302,6 +313,18 @@ class Wizard
     {
         $file = Dir::path("~apps>$package_name>theme>$uid");
         return (!empty($file) && file_exists($file));
+    }
+
+    public static function template_state($package_name, $uid)
+    {
+        if (self::is_installed_template($package_name, $uid))
+            $state = 'installed';
+        else if (self::is_downloaded_template($uid))
+            $state = 'install';
+        else
+            $state = 'download';
+
+        return $state;
     }
 
     public static function is_downloaded_template($uid)
