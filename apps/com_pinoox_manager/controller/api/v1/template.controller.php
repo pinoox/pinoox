@@ -57,6 +57,8 @@ class TemplateController extends MasterConfiguration
         if (empty($packageName))
             Response::json(rlang('manager.request_install_template_not_valid'), false);
 
+        if (!Wizard::is_installed($packageName))
+            Response::json(rlang('manager.there_is_no_app'), false);
 
         $file = Wizard::get_downloaded_template($uid);
         $meta = Wizard::pullTemplateMeta($file);

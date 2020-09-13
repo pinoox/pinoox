@@ -110,8 +110,11 @@ class MarketController extends MasterConfiguration
 
     public function downloadRequestTemplate($uid)
     {
-        $auth = Request::inputOne('auth');
-        $params = $this->getAuthParams($auth);
+        $data = Request::input('auth,package_name', null, '!empty');
+        $params = $this->getAuthParams($data['auth']);
+
+        if (!Wizard::is_installed($data['package_name']))
+            exit();
 
         $res = Request::sendPost('https://www.pinoox.com/api/manager/v1/market/downloadRequestTemplate/' . $uid, $params);
         if (!empty($res)) {

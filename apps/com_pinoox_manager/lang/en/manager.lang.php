@@ -113,6 +113,7 @@ return [
     'go_to_templates' => 'open templates',
     'this_folder_is_duplicated' => 'this template folder name is duplicated',
     'are_you_sure_delete_template' => 'Are you sure to delete template?',
+    'there_is_no_app' => 'there is no this app',
 
 ];
     

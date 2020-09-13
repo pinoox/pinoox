@@ -61,7 +61,7 @@
                                 <div class="item" v-for="(t,index) in templates">
                                     <img class="thumb" :src="t.cover">
                                     <div class="name">{{t.template_name}}</div>
-                                    <div class="actions">
+                                    <div class="actions" v-if="state==='installed'">
                                         <div v-if="t.state==='download'"
                                              @click="downloadTemplate(t)"
                                              class="btn-pin btn-success">
@@ -204,7 +204,10 @@
             downloadTemplate(template) {
                 if (this.pinooxAuth.isLogin) {
                     this._loading = true;
-                    this.$http.post(this.URL.API + 'market/downloadRequestTemplate/' + template.uid, {auth: this.pinooxAuth}).then((json) => {
+                    this.$http.post(this.URL.API + 'market/downloadRequestTemplate/' + template.uid, {
+                        package_name: this.package_name,
+                        auth: this.pinooxAuth
+                    }).then((json) => {
                         this._loading = false;
                         if (!json.data.status) {
                             this._notify(this.LANG.user.login_to_pinoox, json.data.result.message, 'warning');
