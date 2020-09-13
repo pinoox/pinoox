@@ -10840,24 +10840,24 @@ body.ltr .widget-clock .moment {
     grid-template-columns: 100px calc(100% - 100px);
   }
   .windows-page .sidebar .item {
-    padding: 8px;
+    padding: 12px 3px;
     text-align: center;
   }
-  .windows-page .sidebar .item:first-child {
-    padding-top: 15px;
-    height: 65px;
-  }
-  .windows-page .sidebar .item:first-child i,
-  .windows-page .sidebar .item:first-child .name {
-    display: inline-block;
-  }
-  .windows-page .sidebar .item i {
-    display: block;
+  .windows-page .sidebar .item i,
+  .windows-page .sidebar .item img {
+    display: none;
   }
   .windows-page .sidebar .item .name {
     font-size: 11px;
     display: block;
     margin-top: 5px;
+  }
+  .windows-page .sidebar .item.back {
+    padding: 20px 3px;
+  }
+  .windows-page .sidebar .sidebar-title {
+    font-size: 12px;
+    padding: 24px 3px;
   }
   .windows-page .content .header {
     width: calc(100% - 100px);
@@ -10896,6 +10896,28 @@ body.ltr .widget-clock .moment {
   .windows-page .content .page .app-manager .users .item .text {
     margin-top: 5px;
     padding: 5px;
+  }
+  .windows-page .content .page .market .app-details .header-details {
+    text-align: center;
+    flex-direction: column;
+  }
+  .windows-page .content .page .market .app-details .header-details .app-info h2 {
+    padding: 10px 0;
+  }
+  .windows-page .content .page .market .app-details .header-details .action {
+    flex-grow: 1;
+    text-align: left;
+    margin-top: 20px;
+  }
+  .windows-page .content .page .market .app-details .content-details .templates {
+    justify-content: center;
+  }
+  .windows-page .content .page .templates {
+    justify-content: center;
+  }
+  #pinoox-container .float-installer {
+    width: 65%;
+    height: 55%;
   }
 }
 /* Large devices (laptops/desktops, 992px and up) */

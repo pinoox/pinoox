@@ -31,7 +31,9 @@
                     </div>
                     <span class="warn-text" v-if="state==='installing'">{{LANG.setting.market.please_wait_until_install_complete}}</span>
 
-
+                    <router-link tag="span" :to="{name:'app-details',params:{package_name:this.package_name}}" v-if="state==='installed'" class="btn-install">
+                        {{LANG.manager.app_details}}
+                    </router-link>
                     <div v-if="state==='installed'" class="btn-install" @click="removeApp()">
                         {{LANG.manager.delete}}
                     </div>
