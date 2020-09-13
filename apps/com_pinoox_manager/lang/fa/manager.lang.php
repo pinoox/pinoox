@@ -33,6 +33,7 @@ return [
     'logout' => 'خروج',
     'lock' => 'قفل',
     'back' => 'برگشت',
+    'close' => 'بستن',
     'back_to_setting' => 'برگشت به تنظیمات',
     'account' => 'پنل کاربری',
     'interface' => 'ظاهری',

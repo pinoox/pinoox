@@ -109,7 +109,7 @@
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getReadyToInstallApp', 'getPinooxAuth', 'closeFromTabs']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getPinooxAuth', 'closeFromTabs']),
             getOptions() {
                 this.$http.get(this.URL.API + 'options/get').then((json) => {
                     this.options = json.data;
@@ -158,7 +158,6 @@
                     this.getApps();
                     this.getNotifications();
                     this.checkVersion();
-                    this.getReadyToInstallApp();
                 } else {
                     this.$store.state.apps = {};
                 }

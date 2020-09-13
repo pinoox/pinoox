@@ -26,9 +26,16 @@
         </div>
         <div class="actions">
             <div v-if="state==='install'">
-                <div class="btn-pin" v-if="!!app.uid" @click="installTemplate()">{{LANG.manager.install}}</div>
-                <div class="btn-pin" v-else-if="!!app.filename" @click="installPackage()">{{LANG.manager.install}}</div>
-                <div class="btn-pin" v-else @click="installApp()">{{LANG.manager.install}}</div>
+                <div class="btn-pin"
+                     v-if="!!apps[app.package_name] && !!app.version_code && app.version_code > apps[app.package_name].version_code"
+                     @click="install(app.state)">{{LANG.manager.install}}
+                </div>
+                <div class="btn-pin" v-else @click="update(app.state)">{{LANG.manager.update}}</div>
+                <div class="btn-pin" v-else-if="app.state === 'manual'" @click="installPackage()">
+                    {{LANG.manager.install}}
+                </div>
+                <div class="btn-pin" v-else-if="app.state === 'market'" @click="installApp()">{{LANG.manager.install}}
+                </div>
                 <div class="btn-pin" @click="close()">{{LANG.manager.cancel}}</div>
             </div>
             <div v-else-if="state==='complete'">
@@ -37,6 +44,9 @@
                     <span v-else> {{LANG.manager.go_to_app_manager}}</span>
                 </div>
                 <div class="btn-pin" @click="close()">{{LANG.manager.finish}}</div>
+            </div>
+            <div v-else-if="state==='error'">
+                <div class="btn-pin" @click="close()">{{LANG.manager.close}}</div>
             </div>
         </div>
     </div>
@@ -58,6 +68,16 @@
             let drag = document.getElementById('float-installer');
             new PlainDraggable(drag);
         },
+        computed: {
+            apps: {
+                get() {
+                    return this.$store.state.apps;
+                },
+                set(val) {
+                    this.$store.state.apps = val;
+                }
+            },
+        },
         methods: {
             ...mapMutations(['getApps']),
             close() {
@@ -67,41 +87,87 @@
                 this.close();
                 this.$router.push({name: route, params: {package_name: this.app.package_name}});
             },
-            installApp() {
+            update(state) {
+                switch (state) {
+                    case 'market':
+                        this.updateMarket();
+                        break;
+                    case 'manual':
+                        this.updateManual();
+                        break;
+                    case 'theme':
+                        this.updateTheme();
+                        break;
+                }
+            },
+            install(state) {
+                switch (state) {
+                    case 'market':
+                        this.installMarket();
+                        break;
+                    case 'manual':
+                        this.installManual();
+                        break;
+                    case 'theme':
+                        this.installTheme();
+                        break;
+                }
+            },
+            installMarket() {
                 this._loading = true;
                 this.state = 'installing';
                 this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
                     this._loading = false;
                     this.getApps();
-                    this.state = 'complete';
-                    if (json.data.status)
-                        this._notify(this.LANG.manager.installed_successfully, '', 'success');
-
+                    this.sendNotify(json.data, this.LANG.manager.install_app);
                 });
             },
-            installPackage() {
+            installManual() {
                 this._loading = true;
                 this.state = 'installing';
                 this.$http.get(this.URL.API + 'app/installPackage/' + this.app.filename).then((json) => {
                     this._loading = false;
                     this.getApps();
-                    this.state = 'complete';
-                    if (json.data.status)
-                        this._notify(this.LANG.manager.installed_successfully, '', 'success');
-
+                    this.sendNotify(json.data, this.LANG.manager.install_app);
                 });
             },
-            installTemplate() {
+            installTheme() {
                 this._loading = true;
                 this.state = 'installing';
                 this.$http.get(this.URL.API + 'template/install/' + this.app.uid + '/' + this.app.package_name).then((json) => {
                     this._loading = false;
-                    this.state = 'complete';
-                    if (json.data.status)
-                        this._notify(this.LANG.manager.installed_successfully, '', 'success');
-
+                    this.sendNotify(json.data, this.LANG.manager.install);
                 });
             },
+            updateMarket() {
+                this._loading = true;
+                this.state = 'installing';
+                this.$http.get(this.URL.API + 'app/update/' + this.app.package_name).then((json) => {
+                    this._loading = false;
+                    this.getApps();
+                    this.sendNotify(json.data, this.LANG.manager.update_app);
+                });
+            },
+            updateManual() {
+                this._loading = true;
+                this.state = 'installing';
+                this.$http.get(this.URL.API + 'app/updatePackage/' + this.app.filename).then((json) => {
+                    this._loading = false;
+                    this.getApps();
+                    this.sendNotify(json.data, this.LANG.manager.update_app);
+                });
+            },
+            updateTheme() {
+            },
+            sendNotify(data, title) {
+                if (data.status) {
+                    this.state = 'complete';
+                    this._notify(title, data.result, 'success');
+                } else {
+                    this.state = 'error';
+                    this._notify(title, data.result, 'danger');
+                }
+            }
         }
     }
 </script>

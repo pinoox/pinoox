@@ -12,6 +12,7 @@
 
 namespace pinoox\app\com_pinoox_manager\model;
 
+use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\component\app\AppProvider;
 use pinoox\component\Config;
 use pinoox\component\Dir;
@@ -87,6 +88,18 @@ class AppModel extends PinooxDatabase
         return $result;
     }
 
+    public static function fetch_all_aliases_by_package_name($packageName)
+    {
+        $routes = Config::get('~app');
+        $aliases = [];
+        foreach ($routes as $alias => $package) {
+            if ($package == $packageName) {
+                $aliases[] = $alias;
+            }
+        }
+        return $aliases;
+    }
+
     public static function fetch_by_package_name($packageName)
     {
         $icon_default = Url::file('resources/default.png');
@@ -117,42 +130,29 @@ class AppModel extends PinooxDatabase
         return $result;
     }
 
-    public static function fetch_all_aliases_by_package_name($packageName)
+    public static function fetch_all_downloads()
     {
-        $routes = Config::get('~app');
-        $aliases = [];
-        foreach ($routes as $alias => $package) {
-            if ($package == $packageName) {
-                $aliases[] = $alias;
-            }
-        }
-        return $aliases;
-    }
-
-    public static function fetch_all_ready_to_install()
-    {
-        $ready_to_install = [];
         $folders = File::get_dir_folders(Dir::path('downloads>apps'));
         if (!empty($folders) && isset($folders[0])) {
             $folder = $folders[0];
             $files = File::get_files_by_pattern($folder, '*.pin');
+            $result = [];
 
-            if (!empty($files)) {
-                foreach ($files as $file) {
-                    $size = File::size($file);
-                    $package_name = str_replace('.pin', '', basename($file));
-                    $info = Config::get('market.' . $package_name);
-                    if (!empty($info)) {
-                        $arr = json_decode($info, true);
-                        $app = $arr[$package_name];
-                        $app['state'] = 'install';
-                        $app['size'] = File::print_size($size,1);
-                        $app['package_name'] = $package_name;
-                        $ready_to_install[$package_name] = $app;
-                    }
+            foreach ($files as $file)
+            {
+                $data = Wizard::pullDataPackage($file);
+                if (!Wizard::isValidNamePackage($data['package_name']) || !Config::getLinear('market',$data['package_name']))
+                {
+                    Wizard::deletePackageFile($file);
+                    Config::remove('market.' . $data['package_name']);
+                    Config::save('market');
+                    continue;
                 }
+                $data['market'] = Config::get('market.' . $data['package_name']);
+                $result[] = $data;
             }
-            return $ready_to_install;
+
+            return $result;
         }
 
     }

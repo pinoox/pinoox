@@ -32,6 +32,7 @@ return [
     'logout' => 'Logout',
     'lock' => 'Lock',
     'back' => 'Return',
+    'close' => 'Close',
     'back_to_setting' => 'Back to Setting',
     'account' => 'Account',
     'interface' => 'General',

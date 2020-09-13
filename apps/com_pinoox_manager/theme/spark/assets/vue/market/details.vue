@@ -138,7 +138,7 @@
                         } else {
                             this.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
-                            this._openFloatInstaller(this.app);
+                            this._openFloatInstaller(this.app,'market');
                         }
                     });
 
@@ -147,7 +147,7 @@
                 }
             },
             installApp() {
-                this._openFloatInstaller(this.app);
+                this._openFloatInstaller(this.app,'market');
             },
             updateApp() {
                 this.isLoadingUpdate = true;
@@ -209,7 +209,7 @@
                         } else {
                             template.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
-                            this._openFloatInstaller(template);
+                            this._openFloatInstaller(template,'theme');
                         }
                     });
 
@@ -225,7 +225,7 @@
                 });
             },
             installTemplate(template) {
-                this._openFloatInstaller(template);
+                this._openFloatInstaller(template,'theme');
             }
         },
         created() {

@@ -71,7 +71,7 @@ export const routes = [
                         component: AppsHome,
                     },
                     {
-                        path: 'manuel',
+                        path: 'manual',
                         name: 'apps-manual',
                         component: AppsManual,
                     },
