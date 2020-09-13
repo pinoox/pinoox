@@ -10318,6 +10318,14 @@ body.ltr .widget-clock .moment {
 .windows-page .content .page .market .app-details .content-details .templates .item .actions {
   padding: 10px 0;
 }
+.windows-page .content .page .market .app-details .content-details .templates .item .alert-template {
+  font-size: 11px;
+  color: #de8f05;
+  opacity: 0.9;
+}
+.windows-page .content .page .market .app-details .content-details .templates .item .alert-template.success {
+  color: #58af7e !important;
+}
 .windows-page .content .page .market .installing .tips {
   margin-top: 100px;
   padding: 13px;
