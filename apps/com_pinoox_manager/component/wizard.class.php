@@ -39,7 +39,6 @@ class Wizard
 
     public static function installApp($pinFile)
     {
-
         $data = self::pullDataPackage($pinFile);
 
         if (!self::isValidNamePackage($data['package_name']))
@@ -70,6 +69,8 @@ class Wizard
 
             PinooxDatabase::$db->commit();
             File::remove_file($appDB);
+
+            self::changeLang($data['package_name']);
             self::runService($data['package_name'], 'install');
         }
 
@@ -367,6 +368,14 @@ class Wizard
             return $meta;
         }
         return null;
+    }
+
+    public static function changeLang($package_name)
+    {
+        $lang = Lang::current();
+        self::setApp($package_name);
+        AppProvider::set('lang', $lang);
+        AppProvider::save();
     }
 
 }
