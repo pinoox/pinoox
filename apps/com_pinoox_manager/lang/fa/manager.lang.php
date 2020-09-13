@@ -87,7 +87,8 @@ return [
     'downloading' => 'در حال دانلود',
     'download_completed' => 'دانلود به پایان رسید',
     'installed' => 'نصب شده',
-    'installed_successfully' => 'با موفقیت نصب شد',
+    'installed_successfully' => 'نصب نشد',
+    'not_installed' => 'Can not installed',
     'ready_to_install' => 'آماده نصب',
     'users' => 'کاربران',
     'configs' => 'تنظیمات',
@@ -120,5 +121,7 @@ return [
     'this_folder_is_duplicated' => 'نام قالب تکراری است',
     'are_you_sure_delete_template' => 'آیا از حذف قالب مطمئن هستید؟',
     'there_is_no_app' => 'چنین اپلیکیشن وجود ندارد',
+    'newer_version_installed' => 'یک نسخه جدیدتر بر روی سیستم شما نصب می باشد',
+    'version_already_installed' => 'این نسخه قبلا روی سیستم شما نصب می باشد',
 ];
     

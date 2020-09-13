@@ -16,7 +16,6 @@ use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\app\AppProvider;
 use pinoox\component\Dir;
-use pinoox\component\Download;
 use pinoox\component\File;
 use pinoox\component\Lang;
 use pinoox\component\Request;
@@ -86,8 +85,16 @@ class AppController extends MasterConfiguration
         $pinFile = Wizard::get_downloaded($packageName);
         if (!is_file($pinFile))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
-        Wizard::installApp($pinFile);
-        Response::json(rlang('manager.done_successfully'), true);
+
+        if (Wizard::installApp($pinFile)) {
+            Response::json(rlang('manager.done_successfully'), true);
+        } else {
+            $message = Wizard::getMessage();
+            if (empty($message))
+                Response::json(rlang('manager.request_install_app_not_valid'), false);
+            else
+                Response::json($message, false);
+        }
     }
 
     public function installPackage($filename)
@@ -98,10 +105,15 @@ class AppController extends MasterConfiguration
         $pinFile = Dir::path(self::manualPath . $filename);
         if (!is_file($pinFile))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
-        if (Wizard::installApp($pinFile))
+        if (Wizard::installApp($pinFile)) {
             Response::json(rlang('manager.done_successfully'), true);
-        else
-            Response::json(rlang('manager.request_install_app_not_valid'), false);
+        } else {
+            $message = Wizard::getMessage();
+            if (empty($message))
+                Response::json(rlang('manager.request_install_app_not_valid'), false);
+            else
+                Response::json($message, false);
+        }
     }
 
     public function updatePackage($filename)
@@ -112,10 +124,15 @@ class AppController extends MasterConfiguration
         $pinFile = Dir::path(self::manualPath . $filename);
         if (!is_file($pinFile))
             Response::json(rlang('manager.request_update_app_not_valid'), false);
-        if (Wizard::updateApp($pinFile))
+        if (Wizard::updateApp($pinFile)) {
             Response::json(rlang('manager.update_successfully'), true);
-        else
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+        } else {
+            $message = Wizard::getMessage();
+            if (empty($message))
+                Response::json(rlang('manager.request_update_app_not_valid'), false);
+            else
+                Response::json($message, false);
+        }
     }
 
     public function update($packageName)
@@ -127,10 +144,15 @@ class AppController extends MasterConfiguration
         if (!is_file($pinFile))
             Response::json(rlang('manager.request_update_app_not_valid'), false);
 
-        if (Wizard::updateApp($pinFile))
+        if (Wizard::updateApp($pinFile)) {
             Response::json(rlang('manager.update_successfully'), true);
-        else
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+        } else {
+            $message = Wizard::getMessage();
+            if (empty($message))
+                Response::json(rlang('manager.request_update_app_not_valid'), false);
+            else
+                Response::json($message, false);
+        }
     }
 
     public function remove($packageName)

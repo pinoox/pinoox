@@ -86,6 +86,7 @@ return [
     'download_completed' => 'download completed',
     'installed' => 'installed',
     'installed_successfully' => 'installed successfully',
+    'not_installed' => 'Can not installed',
     'ready_to_install' => 'ready installation',
     'users' => 'users',
     'configs' => 'configs',
@@ -117,6 +118,8 @@ return [
     'this_folder_is_duplicated' => 'this template folder name is duplicated',
     'are_you_sure_delete_template' => 'Are you sure to delete template?',
     'there_is_no_app' => 'there is no this app',
+    'newer_version_installed' => 'A newer version is installed on your system',
+    'version_already_installed' => 'This version is already installed on your system',
 
 ];
     

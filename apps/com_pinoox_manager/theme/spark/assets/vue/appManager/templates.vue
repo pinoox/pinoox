@@ -7,7 +7,7 @@
             </div>
         </div>
         <div class="page">
-            <div class="templates" v-if="templates!=null">
+            <div class="templates" v-if="templates!=null" data-simplebar>
                 <div class="item" v-for="(t,index) in templates">
                     <img class="thumb" :src="t.cover">
                     <div class="name">{{t.template_name}}</div>
