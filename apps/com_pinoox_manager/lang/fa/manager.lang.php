@@ -100,6 +100,7 @@ return [
     'app_details' => 'اطلاعات اپلیکیشن',
     'app' => 'اپلیکیشن',
     'templates' => 'قالب ها',
+    'add_template' => 'افزودن قالب',
     'upload_pinoox_package_for_installing' => ' اپلیکیشن را با پسوند pin.* جهت نصب بارگذاری کنید',
     'file_uploaded_correctly' => 'فایل مورد نظر به درستی بارگذاری شد',
     'files_uploaded_correctly' => 'همه فایل ها به درستی بارگذاری شدند',

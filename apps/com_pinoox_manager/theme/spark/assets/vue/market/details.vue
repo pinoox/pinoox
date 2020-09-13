@@ -101,7 +101,7 @@
     import {mapMutations, mapState} from 'vuex';
 
     export default {
-        props: ['package_name'],
+        props: ['package_name','tab'],
         data() {
             return {
                 isLoading: false,
@@ -242,6 +242,8 @@
         created() {
             this.getApp();
             this.getTemplates();
+            if(!!this.tab)
+                this.changeTab(this.tab);
         },
         watch: {
             installedApps(newApps, oldApps) {
