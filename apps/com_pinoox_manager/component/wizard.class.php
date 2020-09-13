@@ -373,9 +373,12 @@ class Wizard
     public static function changeLang($package_name)
     {
         $lang = Lang::current();
+        if(!Lang::exists($lang,$package_name))
+            return false;
         self::setApp($package_name);
         AppProvider::set('lang', $lang);
         AppProvider::save();
+        return true;
     }
 
 }
