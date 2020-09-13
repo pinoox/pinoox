@@ -27,13 +27,14 @@
         <div class="actions">
             <div v-if="state==='install'">
                 <div class="btn-pin" v-if="!!app.uid" @click="installTemplate()">{{LANG.manager.install}}</div>
+                <div class="btn-pin" v-else-if="!!app.filename" @click="installPackage()">{{LANG.manager.install}}</div>
                 <div class="btn-pin" v-else @click="installApp()">{{LANG.manager.install}}</div>
                 <div class="btn-pin" @click="close()">{{LANG.manager.cancel}}</div>
             </div>
             <div v-else-if="state==='complete'">
                 <div @click="goToAppManager(!!app.uid ? 'app-templates' : 'app-details')" class="btn-pin">
-                   <span v-if="!!app.uid"> {{LANG.manager.go_to_templates}}</span>
-                   <span v-else> {{LANG.manager.go_to_app_manager}}</span>
+                    <span v-if="!!app.uid"> {{LANG.manager.go_to_templates}}</span>
+                    <span v-else> {{LANG.manager.go_to_app_manager}}</span>
                 </div>
                 <div class="btn-pin" @click="close()">{{LANG.manager.finish}}</div>
             </div>
@@ -70,6 +71,18 @@
                 this._loading = true;
                 this.state = 'installing';
                 this.$http.get(this.URL.API + 'app/install/' + this.app.package_name).then((json) => {
+                    this._loading = false;
+                    this.getApps();
+                    this.state = 'complete';
+                    if (json.data.status)
+                        this._notify(this.LANG.manager.installed_successfully, '', 'success');
+
+                });
+            },
+            installPackage() {
+                this._loading = true;
+                this.state = 'installing';
+                this.$http.get(this.URL.API + 'app/installPackage/' + this.app.filename).then((json) => {
                     this._loading = false;
                     this.getApps();
                     this.state = 'complete';

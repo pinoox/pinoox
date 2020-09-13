@@ -15,17 +15,13 @@ namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\app\AppProvider;
-use pinoox\component\Cache;
 use pinoox\component\Dir;
 use pinoox\component\Download;
 use pinoox\component\File;
 use pinoox\component\Lang;
 use pinoox\component\Request;
 use pinoox\component\Response;
-use pinoox\component\Router;
-use pinoox\component\Service;
 use pinoox\component\Uploader;
-use pinoox\component\Zip;
 
 class AppController extends MasterConfiguration
 {
@@ -68,7 +64,7 @@ class AppController extends MasterConfiguration
     {
         $config = Request::inputOne('config');
 
-        if ( $key == 'dock')
+        if ($key == 'dock')
             $config = !$config;
         if ($key == 'router')
             $config = $config === 'multiple' ? 'single' : 'multiple';
@@ -92,9 +88,25 @@ class AppController extends MasterConfiguration
         if (empty($packageName))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
-        $file = Wizard::get_downloaded($packageName);
-        Wizard::installApp($file, $packageName);
+        $pinFile = Wizard::get_downloaded($packageName);
+        if (!is_file($pinFile))
+            Response::json(rlang('manager.request_install_app_not_valid'), false);
+        Wizard::installApp($pinFile);
         Response::json(rlang('manager.done_successfully'), true);
+    }
+
+    public function installPackage($filename)
+    {
+        if (empty($filename))
+            Response::json(rlang('manager.request_install_app_not_valid'), false);
+
+        $pinFile = Dir::path(self::manuelPath . $filename);
+        if (!is_file($pinFile))
+            Response::json(rlang('manager.request_install_app_not_valid'), false);
+        if (Wizard::installApp($pinFile))
+            Response::json(rlang('manager.done_successfully'), true);
+        else
+            Response::json(rlang('manager.request_install_app_not_valid'), false);
     }
 
     public function update()

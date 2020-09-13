@@ -41,7 +41,7 @@ class Wizard
         $data = self::pullDataPackage($pinFile);
 
         if(!self::isValidNamePackage($data['package_name']))
-            return;
+            return false;
 
         $appPath = path('~apps/'.$data['package_name'].'/');
         Zip::extract($pinFile, $appPath);
@@ -69,6 +69,7 @@ class Wizard
         }
 
         self::deletePackageFile($pinFile);
+        return true;
     }
 
     private static function runService($packageName, $state = 'install')
@@ -100,7 +101,7 @@ class Wizard
         $data = self::pullDataPackage($pinFile);
 
         if(!self::isValidNamePackage($data['package_name']))
-            return;
+            return false;
 
         Zip::remove($pinFile, [
              'pinker/',
@@ -123,6 +124,8 @@ class Wizard
         self::runService($data['package_name'], 'update');
 
         self::deletePackageFile($pinFile);
+        return true;
+
     }
 
     public static function deleteApp($packageName)
