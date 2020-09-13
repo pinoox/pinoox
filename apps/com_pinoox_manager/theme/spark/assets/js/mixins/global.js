@@ -99,8 +99,10 @@ Vue.mixin({
         _notify(title, message, type = '', actions = null, timer = 5) {
             this.notify({title: title, message: message, type: type, actions: actions, timer: timer});
         },
-        _openFloatInstaller(pack) {
-            this.floatInstaller = pack; //app or template
+        _openFloatInstaller(pack,state) {
+            this.floatInstaller = pack;
+            this.floatInstaller['state'] = state; //market or theme or manual
+
         },
         _delay: (function () {
             let timer = 0;

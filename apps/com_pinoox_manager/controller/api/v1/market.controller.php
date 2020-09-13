@@ -27,7 +27,7 @@ class MarketController extends MasterConfiguration
 {
     public function getDownloads()
     {
-        $result = AppModel::fetch_all_ready_to_install();
+        $result = AppModel::fetch_all_downloads();
         Response::json($result);
     }
 
@@ -100,9 +100,9 @@ class MarketController extends MasterConfiguration
                 exit($res);
             } else {
                 $path = path("downloads>apps>" . $package_name . ".pin");
-                Config::set('market.'.$package_name, json_encode([$package_name => $response['result']]));
-                Config::save('market');
                 Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result']['hash'], $path)->process();
+                Config::set('market.'.$package_name, $response['result']);
+                Config::save('market');
                 Response::json(rlang('manager.download_completed'), true);
             }
         }

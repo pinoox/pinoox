@@ -13,7 +13,8 @@
                     <div class="name">{{t.template_name}}</div>
                     <div class="actions">
                         <div v-if="!t.activate" @click="setTemplate(t)" class="btn-pin btn-primary">{{LANG.setting.appManager.activate_template}}</div>
-                        <div @click="removeTemplate(t)" class="btn-pin btn-danger">{{LANG.manager.delete}}</div>
+                        <div v-if="!t.activate" @click="removeTemplate(t)" class="btn-pin btn-danger">{{LANG.manager.delete}}</div>
+                        <div v-if="t.activate" class="btn-pin btn-success">{{LANG.manager.active}}</div>
                     </div>
                 </div>
             </div>

@@ -40,10 +40,10 @@ class Wizard
 
         $data = self::pullDataPackage($pinFile);
 
-        if(!self::isValidNamePackage($data['package_name']))
+        if (!self::isValidNamePackage($data['package_name']))
             return false;
 
-        $appPath = path('~apps/'.$data['package_name'].'/');
+        $appPath = path('~apps/' . $data['package_name'] . '/');
         Zip::extract($pinFile, $appPath);
 
         //check database
@@ -72,6 +72,57 @@ class Wizard
         return true;
     }
 
+    public static function pullDataPackage($pinFile)
+    {
+        $filename = File::fullname($pinFile);
+        $size = File::size($pinFile);
+        $name = File::name($pinFile);
+        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
+
+        if (!is_file($configFile)) {
+            Zip::addEntries('app.php');
+            Zip::extract($pinFile, $dir);
+        }
+
+        $app = new AppProvider($configFile);
+        $iconPath = $app->icon;
+
+        $icon = Url::file('resources/default.png');
+        if (!empty($iconPath)) {
+            $iconFile = Dir::path($dir . '>' . $app->icon);
+            if (!is_file($iconFile)) {
+                Zip::addEntries($app->icon);
+                Zip::extract($pinFile, $dir);
+            }
+
+            if (is_file($iconFile))
+                $icon = Url::file($dir . '>' . $app->icon);
+        }
+
+        return [
+            'filename' => $filename,
+            'package_name' => $app->packageName,
+            'name' => $app->name,
+            'description' => $app->description,
+            'version' => $app->versionName,
+            'version_code' => $app->versionCode,
+            'developer' => $app->developer,
+            'path_icon' => $app->icon,
+            'icon' => $icon,
+            'size' => File::print_size($size, 1),
+        ];
+    }
+
+    public static function isValidNamePackage($packageName)
+    {
+        if (!empty($packageName)) {
+            $parts = explode('_', $packageName);
+            return count($parts) >= 2;
+        }
+        return false;
+    }
+
     private static function runService($packageName, $state = 'install')
     {
         $current = Router::getApp();
@@ -90,24 +141,29 @@ class Wizard
         AppProvider::app($packageName);
     }
 
-    public static function isValidNamePackage($packageName)
+    public static function deletePackageFile($pinFile)
     {
-        $parts = explode('_',$packageName);
-        return count($parts) >= 2;
+        $name = File::name($pinFile);
+        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        File::remove_file($pinFile);
+        File::remove($dir);
     }
 
     public static function updateApp($pinFile)
     {
         $data = self::pullDataPackage($pinFile);
 
-        if(!self::isValidNamePackage($data['package_name']))
+        if (!self::isValidNamePackage($data['package_name']))
+        {
+            self::deletePackageFile($pinFile);
             return false;
+        }
 
         Zip::remove($pinFile, [
-             'pinker/',
+            'pinker/',
         ]);
 
-        $appPath = path('~apps/'.$data['package_name'].'/');
+        $appPath = path('~apps/' . $data['package_name'] . '/');
 
         Zip::extract($pinFile, $appPath);
         File::remove_file($pinFile);
@@ -239,56 +295,6 @@ class Wizard
     {
         $file = path("~apps>$packageName>theme>" . $templateFolderName);
         return file_exists($file);
-    }
-
-    public static function deletePackageFile($pinFile)
-    {
-        $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
-        File::remove_file($pinFile);
-        File::remove($dir);
-    }
-
-    public static function pullDataPackage($pinFile)
-    {
-        $filename = File::fullname($pinFile);
-        $size = File::size($pinFile);
-        $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
-        $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
-
-        if (!is_file($configFile)) {
-            Zip::addEntries('app.php');
-            Zip::extract($pinFile, $dir);
-        }
-
-        $app = new AppProvider($configFile);
-        $iconPath = $app->icon;
-
-        $icon = Url::file('resources/default.png');
-        if (!empty($iconPath)) {
-            $iconFile = Dir::path($dir . '>' . $app->icon);
-            if (!is_file($iconFile)) {
-                Zip::addEntries($app->icon);
-                Zip::extract($pinFile, $dir);
-            }
-
-            if (is_file($iconFile))
-                $icon = Url::file($dir . '>' . $app->icon);
-        }
-
-        return [
-            'filename' => $filename,
-            'package_name' => $app->packageName,
-            'name' => $app->name,
-            'description' => $app->description,
-            'version' => $app->versionName,
-            'version_code' => $app->versionCode,
-            'developer' => $app->developer,
-            'path_icon' => $app->icon,
-            'icon' => $icon,
-            'size' => File::print_size($size,1),
-        ];
     }
 
     public static function pullTemplateMeta($file)

@@ -72,7 +72,17 @@
                                              class="btn-pin btn-success">
                                             {{LANG.manager.install}}
                                         </div>
+                                        <div v-else-if="t.state==='installed'"
+                                             @click="installTemplate(t)"
+                                             class="alert-template success">
+                                            {{LANG.manager.installed}}
+                                        </div>
                                         <a :href="t.live_preview" v-if="t.live_preview!=null" class="btn-pin">{{LANG.manager.live_preview}}</a>
+                                    </div>
+                                    <div class="actions" v-else>
+                                        <span class="alert-template">
+                                            {{LANG.manager.must_install_application}}
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -138,7 +148,7 @@
                         } else {
                             this.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
-                            this._openFloatInstaller(this.app);
+                            this._openFloatInstaller(this.app,'market');
                         }
                     });
 
@@ -147,7 +157,7 @@
                 }
             },
             installApp() {
-                this._openFloatInstaller(this.app);
+                this._openFloatInstaller(this.app,'market');
             },
             updateApp() {
                 this.isLoadingUpdate = true;
@@ -209,7 +219,7 @@
                         } else {
                             template.state = 'install';
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
-                            this._openFloatInstaller(template);
+                            this._openFloatInstaller(template,'theme');
                         }
                     });
 
@@ -225,7 +235,7 @@
                 });
             },
             installTemplate(template) {
-                this._openFloatInstaller(template);
+                this._openFloatInstaller(template,'theme');
             }
         },
         created() {

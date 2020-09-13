@@ -25,7 +25,7 @@ use pinoox\component\Uploader;
 
 class AppController extends MasterConfiguration
 {
-    const manuelPath = 'downloads/packages/manuel/';
+    const manualPath = 'downloads/packages/manual/';
 
     public function get($filter = null)
     {
@@ -33,11 +33,6 @@ class AppController extends MasterConfiguration
             case 'installed':
             {
                 $result = AppModel::fetch_all(false);
-                break;
-            }
-            case 'ready_install':
-            {
-                $result = AppModel::fetch_all_ready_to_install();
                 break;
             }
             case 'systems':
@@ -100,7 +95,7 @@ class AppController extends MasterConfiguration
         if (empty($filename))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
-        $pinFile = Dir::path(self::manuelPath . $filename);
+        $pinFile = Dir::path(self::manualPath . $filename);
         if (!is_file($pinFile))
             Response::json(rlang('manager.request_install_app_not_valid'), false);
         if (Wizard::installApp($pinFile))
@@ -109,29 +104,33 @@ class AppController extends MasterConfiguration
             Response::json(rlang('manager.request_install_app_not_valid'), false);
     }
 
-    public function update()
+    public function updatePackage($filename)
     {
-        $data = Request::input('packageName,downloadLink,versionCode,versionName');
-
-        if (empty($data['packageName']) || empty($data['downloadLink']))
+        if (empty($filename))
             Response::json(rlang('manager.request_update_app_not_valid'), false);
 
-        $app = AppModel::fetch_by_package_name($data['packageName']);
-        if (!empty($app)) {
+        $pinFile = Dir::path(self::manualPath . $filename);
+        if (!is_file($pinFile))
+            Response::json(rlang('manager.request_update_app_not_valid'), false);
+        if (Wizard::updateApp($pinFile))
+            Response::json(rlang('manager.update_successfully'), true);
+        else
+            Response::json(rlang('manager.request_update_app_not_valid'), false);
+    }
 
-            if ($app['version_code'] >= $data['versionCode'])
-                Response::json(rlang('manager.request_update_app_not_valid'), false);
+    public function update($packageName)
+    {
+        if (empty($packageName))
+            Response::json(rlang('manager.request_update_app_not_valid'), false);
 
-            $file = path('temp/' . $data['packageName'] . '.pin');
-            Download::fetch($data['downloadLink'], $file)->process();
+        $pinFile = Wizard::get_downloaded($packageName);
+        if (!is_file($pinFile))
+            Response::json(rlang('manager.request_update_app_not_valid'), false);
 
-            Wizard::updateApp($file);
-            $message = rlang('manager.update_successfully');
-            Response::json($message, true);
-        }
-
-
-        Response::json(rlang('manager.error_happened'), true);
+        if (Wizard::updateApp($pinFile))
+            Response::json(rlang('manager.update_successfully'), true);
+        else
+            Response::json(rlang('manager.request_update_app_not_valid'), false);
     }
 
     public function remove($packageName)
@@ -142,7 +141,7 @@ class AppController extends MasterConfiguration
 
     public function files()
     {
-        $path = Dir::path(self::manuelPath);
+        $path = Dir::path(self::manualPath);
         $files = File::get_files_by_pattern($path, '*.pin');
         $files = array_map(function ($file) {
             return Wizard::pullDataPackage($file);
@@ -157,7 +156,7 @@ class AppController extends MasterConfiguration
         if (empty($filename))
             Response::json(Lang::get('manager.error_happened'), false);
 
-        $pinFile = Dir::path(self::manuelPath . $filename);
+        $pinFile = Dir::path(self::manualPath . $filename);
         if (!is_file($pinFile))
             Response::json(Lang::get('manager.error_happened'), false);
 
@@ -168,7 +167,7 @@ class AppController extends MasterConfiguration
     public function filesUpload()
     {
         if (Request::isFile('files')) {
-            $path = Dir::path(self::manuelPath);
+            $path = Dir::path(self::manualPath);
             $up = Uploader::init('files', $path)->allowedTypes("pin", '*')
                 ->changeName('none')
                 ->finish();
