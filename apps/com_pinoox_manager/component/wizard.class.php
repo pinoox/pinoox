@@ -178,7 +178,7 @@ class Wizard
 
 
         self::setApp($data['package_name']);
-        AppProvider::set('version-code', $data['version-code']);
+        AppProvider::set('version-code', $data['version_code']);
         AppProvider::set('version-name', $data['version']);
         AppProvider::set('name', $data['name']);
         AppProvider::set('developer', $data['developer']);
