@@ -72,10 +72,9 @@ class Wizard
 
             self::changeLang($data['package_name']);
             self::runService($data['package_name'], 'install');
+            self::deletePackageFile($pinFile);
+            return true;
         }
-
-        self::deletePackageFile($pinFile);
-        return true;
     }
 
     public static function pullDataPackage($pinFile)

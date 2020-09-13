@@ -161,7 +161,6 @@
             updateTheme() {
             },
             sendNotify(data, title) {
-                console.log(title);
                 if (data.status) {
                     this.state = 'complete';
                     this._notify(title, data.result, 'success');
