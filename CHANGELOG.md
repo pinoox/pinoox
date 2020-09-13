@@ -12,7 +12,7 @@
 - Add notifications
 - Add drag & drop for manual installation packages templates
 - Add Pinoox Baker (pinker) for easier app management & development
-- Add float Installer 
+- Add floating Installer 
 - Add sidebar component in manager for managing menus
 - Add download and install templates from market 
 
