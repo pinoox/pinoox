@@ -41,6 +41,11 @@
                             img: require('@img/market-icon.png'),
                         },
                         {
+                            name: 'market-downloads',
+                            label: 'recent_downloads',
+                            icon: 'fas fa-file-download',
+                        },
+                        {
                             name: 'market-account',
                             label: 'market_account',
                             icon: 'fas fa-user',
@@ -48,11 +53,6 @@
                                 icon: 'fas fa-user-check',
                                 isLogin: true,
                             },
-                        },
-                        {
-                            name: 'market-downloads',
-                            label: 'recent_downloads',
-                            icon: 'fas fa-file-download',
                         },
                     ],
                 };

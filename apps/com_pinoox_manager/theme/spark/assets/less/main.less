@@ -2478,12 +2478,12 @@ body.ltr {
                   padding: 10px 0;
                 }
 
-                .alert-template{
+                .alert-template {
                   font-size: 11px;
                   color: @warning;
                   opacity: 0.9;
 
-                  &.success{
+                  &.success {
                     color: @success !important;
                   }
                 }
@@ -2865,7 +2865,7 @@ body.ltr {
           }
         }
 
-        .show-errs{
+        .show-errs {
           width: 100%;
           text-align: center;
           display: flex;
@@ -2873,10 +2873,12 @@ body.ltr {
           align-items: center;
           justify-content: center;
           margin: 20px 20px 50px 20px;
-          .alert-info{
+
+          .alert-info {
             margin-bottom: 10px;
           }
-          .alert-danger{
+
+          .alert-danger {
             color: #fff;
           }
         }
@@ -3076,21 +3078,11 @@ body.ltr {
 
     .sidebar {
       .item {
-
-        &:first-child {
-          padding-top: 15px;
-          height: 65px;
-
-          i, .name {
-            display: inline-block;
-          }
-        }
-
-        padding: 8px;
+        padding: 12px 3px;
         text-align: center;
 
-        i {
-          display: block;
+        i, img {
+          display: none;
         }
 
         .name {
@@ -3099,8 +3091,16 @@ body.ltr {
           margin-top: 5px;
         }
 
+        &.back {
+          padding: 20px 3px;
+        }
+
       }
 
+      .sidebar-title {
+        font-size: 12px;
+        padding: 24px 3px;
+      }
     }
 
     .content {
@@ -3155,7 +3155,45 @@ body.ltr {
             }
           }
         }
+
+        .market {
+          .app-details {
+            .header-details {
+              text-align: center;
+              flex-direction: column;
+
+              .app-info {
+                h2 {
+                  padding: 10px 0;
+                }
+              }
+
+              .action {
+                flex-grow: 1;
+                text-align: left;
+                margin-top: 20px;
+              }
+            }
+
+            .content-details {
+              .templates {
+                justify-content: center;
+              }
+            }
+          }
+        }
+
+        .templates{
+          justify-content: center;
+        }
       }
+    }
+  }
+
+  #pinoox-container {
+    .float-installer {
+      width: 65%;
+      height: 55%;
     }
   }
 }
