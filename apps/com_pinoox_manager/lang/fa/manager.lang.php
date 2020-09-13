@@ -105,6 +105,7 @@ return [
     'latest_status' => 'نمایش آخرین وضعیت',
     'market_home' => 'بازار اپلیکیشن ها',
     'market_account' => 'حساب کاربری',
+    'recent_downloads' => 'دانلودهای اخیر',
     'live_preview' => 'پیش نمایش',
     'float_installer_message_app' => 'اپلیکیشن آماده نصب است، جهت تکمیل و بهره مندی از امکانات آن فرآیند نصب را انجام دهید',
     'float_installer_message_template' => 'جهت نصب و استفاده از قالب روی دکمه نصب کلیک کنید',

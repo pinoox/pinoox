@@ -31,7 +31,6 @@
         computed: {
             ...mapState(['apps']),
             sidebar() {
-                console.log(this.LANG);
                 return {
                     title: this.LANG.setting.market.pinoox_market_title,
                     back: false,
@@ -49,6 +48,11 @@
                                 icon: 'fas fa-user-check',
                                 isLogin: true,
                             },
+                        },
+                        {
+                            name: 'market-downloads',
+                            label: 'recent_downloads',
+                            icon: 'fas fa-file-download',
                         },
                     ],
                 };

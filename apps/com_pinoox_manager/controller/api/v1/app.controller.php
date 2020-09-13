@@ -140,12 +140,6 @@ class AppController extends MasterConfiguration
         Response::json(rlang('manager.done_successfully'), true);
     }
 
-    public function readyInstallCount()
-    {
-        $apps = AppModel::fetch_all_ready_to_install();
-        Response::json(count($apps));
-    }
-
     public function files()
     {
         $path = Dir::path(self::manuelPath);

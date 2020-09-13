@@ -40,7 +40,6 @@
             return {
                 isLoading: false,
                 files: [],
-                keyword: '',
             }
         },
         created() {

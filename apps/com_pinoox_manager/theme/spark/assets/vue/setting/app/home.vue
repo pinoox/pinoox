@@ -17,11 +17,6 @@
                           @click="loadApps('systems')"
                           :class="activeTab === 'systems'? 'active' : ''">{{LANG.manager.systems_apps}}</span>
                 </li>
-                <li class="nav-item" v-if="installCount>0">
-                    <span class="nav-link"
-                          @click="loadApps('ready_install')"
-                          :class="activeTab === 'ready_install'? 'active' : ''">{{LANG.manager.ready_to_install}} ({{installCount}})</span>
-                </li>
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active">
@@ -36,15 +31,8 @@
                                 </div>
                             </div>
                             <div class="action" v-if="!app.sys_app">
-                                      <span @click="removeApp(app)" v-if="activeTab !== 'ready_install'" class="btn"> <i
+                                      <span @click="removeApp(app)" class="btn"> <i
                                               class="fa fa-trash"></i></span>
-
-                                <!--installation-->
-                                <span v-if="activeTab === 'ready_install' && app.state==='install'" @click="installApp(app)"
-                                      class="btn">{{LANG.manager.install}}</span>
-                                <span v-if="activeTab === 'ready_install' && app.state==='installing'" class="btn"><span
-                                        class="pin-loader "><i class="fa fa-spinner"></i></span> {{LANG.manager.installing}}...</span>
-
                             </div>
                         </div>
                     </div>
@@ -70,16 +58,6 @@
                 apps: []
             }
         },
-        computed: {
-            installCount: {
-                get() {
-                    return this.$store.state.readyInstallCount;
-                },
-                set(val) {
-                    this.$store.state.readyInstallCount = val;
-                }
-            },
-        },
         methods: {
             ...mapMutations(['getApps']),
             loadApps(activeTab) {
@@ -92,20 +70,10 @@
                 });
             },
             showDetailsApp(app) {
-                if(app.sys_app || this.activeTab==='ready_install') return;
+                if(app.sys_app) return;
 
                 this.$parent.selectedApp = app;
                 this.$router.push({name: 'app-details', params: {package_name: app.package_name}});
-            },
-            installApp(app) {
-                app.state = 'installing';
-                this.$http.get(this.URL.API + 'app/install/' + app.package_name).then((json) => {
-                    app.state = 'installed';
-                    this.$delete(this.apps, app.package_name);
-                    this.installCount--;
-                    this.getApps();
-                    this._notify(this.LANG.manager.installed_successfully, '', 'success');
-                });
             },
             removeApp(app) {
                 this._notify(this.LANG.manager.alert, this.LANG.manager.are_you_sure_delete_app, null, [

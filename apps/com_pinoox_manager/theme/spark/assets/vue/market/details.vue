@@ -106,14 +106,6 @@
                     return this.$store.state.pinooxAuth;
                 }
             },
-            readyInstall: {
-                set(val) {
-                    this.$store.state.readyInstallCount = val;
-                },
-                get() {
-                    return this.$store.state.readyInstallCount;
-                }
-            },
             installedApps: {
                 get() {
                     return this.$store.state.apps;
@@ -145,7 +137,6 @@
                             }
                         } else {
                             this.state = 'install';
-                            this.readyInstall++;
                             this._notify(this.LANG.manager.success, json.data.result, 'success');
                             this._openFloatInstaller(this.app);
                         }

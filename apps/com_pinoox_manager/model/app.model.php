@@ -139,12 +139,14 @@ class AppModel extends PinooxDatabase
 
             if (!empty($files)) {
                 foreach ($files as $file) {
+                    $size = File::size($file);
                     $package_name = str_replace('.pin', '', basename($file));
                     $info = Config::get('market.' . $package_name);
                     if (!empty($info)) {
                         $arr = json_decode($info, true);
                         $app = $arr[$package_name];
                         $app['state'] = 'install';
+                        $app['size'] = File::print_size($size,1);
                         $app['package_name'] = $package_name;
                         $ready_to_install[$package_name] = $app;
                     }
