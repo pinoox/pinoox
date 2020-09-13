@@ -1,6 +1,37 @@
 # Release Notes
 ## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
 
+## [v1.5.5 (2020-09-13)](https://github.com/pinoox/pinoox/compare/1.5.5...master)   
+
+## Added
+
+- Add tabs and improved navigation in the manager
+- Add app preview privately in the manager (secret view)
+- Add template management 
+- Add dashboard app
+- Add notifications
+- Add drag & drop for manual installation packages templates
+- Add Pinoox Baker (pinker) for easier app management & development
+- Add float Installer 
+- Add sidebar component in manager for managing menus
+- Add download and install templates from market 
+
+## Changed
+
+- Improved the installation and update process
+- Improved market UI/UX
+- Upgrade File, Zip, Lang, and Upload components
+- Improved downloader in the market
+- Improved progress bar in manager
+
+## Fixed
+
+- Fixed bug headers HttpRequest component
+- Fixed static text title and use Lang system instead
+- Fixed alert messages text 
+- Fixed routes in app manager
+- Fixed bug for scrolling app details in the market
+
 
 ## [v1.4.6 (2020-05-19)](https://github.com/pinoox/pinoox/compare/1.4.6...master)   
 
