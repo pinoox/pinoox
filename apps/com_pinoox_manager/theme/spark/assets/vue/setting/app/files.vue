@@ -23,7 +23,7 @@
                             </div>
                         </div>
                         <div class="action">
-                            <span class="btn-pin">{{LANG.manager.install}}</span>
+                            <span class="btn-pin" @click="_openFloatInstaller(file)">{{LANG.manager.install}}</span>
                             <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
                         </div>
                     </div>
@@ -40,7 +40,6 @@
             return {
                 isLoading: false,
                 files: [],
-                keyword: '',
             }
         },
         created() {

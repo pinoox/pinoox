@@ -54,7 +54,6 @@ export default new Vuex.Store({
             interval: null,
         },
         pinooxAuth: {isLogin: false},
-        readyInstallCount: 0,
         tabs: [],
         tabCurrent: {},
         floatInstaller: null,
@@ -171,11 +170,6 @@ export default new Vuex.Store({
                 state.pinooxAuth = {isLogin: false};
             });
 
-        },
-        getReadyToInstallApp: (state) => {
-            $http.get(PINOOX.URL.API + 'app/readyInstallCount').then((json) => {
-                state.readyInstallCount = json.data;
-            });
         },
         getPinooxAuth: (state) => {
             $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {

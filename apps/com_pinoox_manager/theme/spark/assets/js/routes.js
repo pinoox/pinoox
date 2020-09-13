@@ -20,6 +20,7 @@ import AppManagerTemplates from '../vue/appManager/templates.vue';
 import AppView from '../vue/pages/app-view.vue';
 import Market from '../vue/market/main.vue';
 import MarketHome from '../vue/market/home.vue';
+import MarketDownloads from '../vue/market/downloads.vue';
 import MarketDetails from '../vue/market/details.vue';
 import MarketLogin from '../vue/market/login.vue';
 import MarketAccount from '../vue/market/account.vue';
@@ -101,6 +102,12 @@ export const routes = [
                 path: 'details/:package_name',
                 name: 'market-details',
                 component: MarketDetails,
+                props: true,
+            },
+            {
+                path: 'downloads',
+                name: 'market-downloads',
+                component: MarketDownloads,
                 props: true,
             },
             {

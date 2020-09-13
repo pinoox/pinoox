@@ -72,11 +72,6 @@
                     return this.$store.state.pinooxAuth;
                 }
             },
-            notifyInstaller: {
-                get() {
-                    return this.$store.state.readyInstallCount;
-                }
-            },
             apps: {
                 get() {
                     return this.$store.state.apps;

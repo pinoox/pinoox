@@ -58,11 +58,6 @@
         computed: {
             ...mapState(['isLoading', 'isRun', 'time', 'isApp']),
             ...mapGetters(['background', 'isBackground', 'isOpenNotification', 'hasNotification']),
-            notifyInstaller: {
-                get() {
-                    return this.$store.state.readyInstallCount;
-                }
-            },
             options: {
                 get() {
                     return this.$store.state.options;

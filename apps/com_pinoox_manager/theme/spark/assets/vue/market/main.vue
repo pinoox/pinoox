@@ -32,7 +32,7 @@
             ...mapState(['apps']),
             sidebar() {
                 return {
-                    enable: true,
+                    title: this.LANG.setting.market.pinoox_market_title,
                     back: false,
                     menus: [
                         {
@@ -48,6 +48,11 @@
                                 icon: 'fas fa-user-check',
                                 isLogin: true,
                             },
+                        },
+                        {
+                            name: 'market-downloads',
+                            label: 'recent_downloads',
+                            icon: 'fas fa-file-download',
                         },
                     ],
                 };
