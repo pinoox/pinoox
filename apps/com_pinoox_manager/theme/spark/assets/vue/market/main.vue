@@ -31,8 +31,9 @@
         computed: {
             ...mapState(['apps']),
             sidebar() {
+                console.log(this.LANG);
                 return {
-                    enable: true,
+                    title: this.LANG.setting.market.pinoox_market_title,
                     back: false,
                     menus: [
                         {

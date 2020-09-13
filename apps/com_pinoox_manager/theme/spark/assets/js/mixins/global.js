@@ -25,6 +25,7 @@ Vue.mixin({
                 let sidebar = this.$store.state.sidebar;
                 return !!sidebar ? {
                     enable: sidebar.enable !== undefined ? sidebar.enable : true,
+                    title: !!sidebar.title ? sidebar.title : false,
                     back: !!sidebar.back ? sidebar.back : false,
                     menus: !!sidebar.menus ? sidebar.menus : [],
                     topList: !!sidebar.topList ? sidebar.topList : [],

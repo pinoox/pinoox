@@ -95,7 +95,7 @@ return [
     'app' => 'application',
     'templates' => 'templates',
     'upload_pinoox_package_for_installing' => 'upload app with *.pin extension for installing',
-    'market_home' => 'applications',
+    'market_home' => 'applications market',
     'market_account' => 'account',
     'live_preview' => 'live preview',
     'file_uploaded_correctly' => 'Your file was uploaded correctly',

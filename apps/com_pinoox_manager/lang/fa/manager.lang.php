@@ -103,7 +103,7 @@ return [
     'upload_files' => 'آپلود فایل ها',
     'process_upload_waiting' => 'لطفا منتظر بمانید در حال بارگذاری فایل ها ...',
     'latest_status' => 'نمایش آخرین وضعیت',
-    'market_home' => 'اپلیکیشن ها',
+    'market_home' => 'بازار اپلیکیشن ها',
     'market_account' => 'حساب کاربری',
     'live_preview' => 'پیش نمایش',
     'float_installer_message_app' => 'اپلیکیشن آماده نصب است، جهت تکمیل و بهره مندی از امکانات آن فرآیند نصب را انجام دهید',

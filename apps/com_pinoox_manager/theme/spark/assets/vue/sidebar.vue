@@ -1,5 +1,8 @@
 <template>
     <div>
+        <div v-if="!!title" class="sidebar-title">
+            <span class="name">{{title}}</span>
+        </div>
         <router-link v-if="!!back" class="item back"
                      :to="{name:typeof _sidebar.back === 'string'? _sidebar.back : 'setting-dashboard'}">
             <i class="fas fa-chevron-right"></i>&nbsp;
@@ -37,6 +40,9 @@
         computed: {
             back() {
                 return !!this._sidebar.back ? this._sidebar.back : false;
+            },
+            title() {
+                return !!this._sidebar.title ? this._sidebar.title : false;
             },
             topList() {
                 return !!this._sidebar.topList && this._sidebar.topList.length > 0? this._sidebar.topList : [];
