@@ -81,7 +81,7 @@ return [
     'app_manager'=>'اپلیکیشن ها',
     'app_manager_title'=>'مدیریت اپلیکیشن ها',
     'installed_apps'=>'نصب شده ها',
-    'must_install_application'=>'ابتدا بایداپلیکیشن را نصب کنید',
+    'must_install_application'=>'ابتدا باید اپلیکیشن را نصب کنید',
     'downloading_apps'=>'در حال دانلود',
     'systems_apps'=>'سیستمی',
     'downloading' => 'در حال دانلود',
