@@ -23,7 +23,7 @@
                             </div>
                         </div>
                         <div class="action">
-                            <span class="btn-pin" @click="_openFloatInstaller(file,'manual')">{{LANG.manager.install}}</span>
+                            <span class="btn-pin" @click="setup(index)">{{LANG.manager.install}}</span>
                             <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
                         </div>
                     </div>
@@ -46,6 +46,13 @@
             this.getFiles();
         },
         methods: {
+            setup(index)
+            {
+                let file = this.files[index];
+                this._openFloatInstaller(file,'manual',() => {
+                    this.$delete(this.files, index);
+                });
+            },
             getFiles() {
                 this.isLoading = true;
                 this.$http.get(this.URL.API + 'app/files/').then((json) => {

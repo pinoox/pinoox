@@ -73,8 +73,9 @@ class Wizard
 
         self::changeLang($data['package_name']);
         self::runService($data['package_name'], 'install');
-        self::deletePackageFile($pinFile);
         self::setApp('com_pinoox_manager',true);
+        self::deletePackageFile($pinFile);
+
         return true;
     }
 
@@ -187,8 +188,8 @@ class Wizard
         AppProvider::save();
         self::runService($data['package_name'], 'update');
 
-        self::deletePackageFile($pinFile);
         self::setApp('com_pinoox_manager',true);
+        self::deletePackageFile($pinFile);
 
         return true;
 

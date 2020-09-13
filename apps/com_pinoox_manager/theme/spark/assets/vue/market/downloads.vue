@@ -15,8 +15,8 @@
                     </div>
                 </div>
                 <div class="action">
-                    <span v-if="!!apps[file.package_name] && file.version_code > apps[file.package_name].version_code" class="btn-pin" @click="_openFloatInstaller(file,'market')">{{LANG.manager.update}}</span>
-                    <span v-else class="btn-pin" @click="_openFloatInstaller(file,'market')">{{LANG.manager.install}}</span>
+                    <span v-if="!!apps[file.package_name] && file.version_code > apps[file.package_name].version_code" class="btn-pin" @click="setup(index)">{{LANG.manager.update}}</span>
+                    <span v-else class="btn-pin" @click="setup(index)">{{LANG.manager.install}}</span>
 
                     <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
                 </div>
@@ -48,6 +48,13 @@
             },
         },
         methods: {
+            setup(index)
+            {
+                let file = this.files[index];
+                this._openFloatInstaller(file,'market',() => {
+                    this.$delete(this.files, index);
+                });
+            },
             getDownloads() {
                 this.isLoading = true;
                 this.$http.get(this.URL.API + 'market/getDownloads').then((json) => {
