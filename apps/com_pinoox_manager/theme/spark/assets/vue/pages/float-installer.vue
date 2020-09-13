@@ -28,9 +28,9 @@
             <div v-if="state==='install'">
                 <div class="btn-pin"
                      v-if="!!apps[app.package_name] && !!app.version_code && app.version_code > apps[app.package_name].version_code"
-                     @click="install(app.state)">{{LANG.manager.install}}
+                     @click="update(app.state)">{{LANG.manager.update}}
                 </div>
-                <div class="btn-pin" v-else @click="update(app.state)">{{LANG.manager.update}}</div>
+                <div class="btn-pin" v-else @click="install(app.state)">{{LANG.manager.install}}</div>
                 <div class="btn-pin" v-else-if="app.state === 'manual'" @click="installPackage()">
                     {{LANG.manager.install}}
                 </div>

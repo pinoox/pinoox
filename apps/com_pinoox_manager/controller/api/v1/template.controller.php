@@ -18,7 +18,6 @@ use pinoox\component\app\AppProvider;
 use pinoox\component\File;
 use pinoox\component\Lang;
 use pinoox\component\Response;
-use pinoox\component\Router;
 use pinoox\component\Url;
 
 class TemplateController extends MasterConfiguration
@@ -34,7 +33,7 @@ class TemplateController extends MasterConfiguration
             $meta = json_decode(file_get_contents($metaJson), true);
             $coverDefault = Url::file('resources/theme.jpg');
 
-            $meta['cover'] = Url::check(Url::file('~apps/' . $packageName . '/theme/' . $meta['name'] . '/' . $meta['cover']),$coverDefault);
+            $meta['cover'] = (!empty($meta['cover'])) ? Url::check(Url::file('~apps/' . $packageName . '/theme/' . $meta['name'] . '/' . $meta['cover']), $coverDefault) : $meta['cover'];
 
             if (empty($meta['title'][Lang::current()])) {
                 $first = reset($meta['title']);
