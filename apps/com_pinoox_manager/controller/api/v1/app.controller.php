@@ -93,7 +93,7 @@ class AppController extends MasterConfiguration
             Response::json(rlang('manager.request_install_app_not_valid'), false);
 
         $file = Wizard::get_downloaded($packageName);
-        Wizard::installApp($file, $packageName);
+        Wizard::installApp($file);
         Response::json(rlang('manager.done_successfully'), true);
     }
 
