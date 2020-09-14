@@ -15,17 +15,21 @@
 namespace pinoox\app\com_pinoox_manager\service\app;
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
+use pinoox\component\Config;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\interfaces\ServiceInterface;
+use pinoox\component\User;
+use pinoox\model\PinooxDatabase;
+use pinoox\model\UserModel;
 
 class UpdateService implements ServiceInterface
 {
 
     public function _run()
     {
-        $dir = Dir::path('pinupdate');
-        if(!file_exists($dir))
+        $dir = Dir::path('pinupdate/','com_pinoox_manager');
+        if(!is_dir($dir))
             return;
 
         $pinoox_version_code = config('~pinoox.version_code');
@@ -41,9 +45,29 @@ class UpdateService implements ServiceInterface
         File::remove($dir);
     }
 
-    private function runQuery($file)
+    private static function runQuery($appDB)
     {
-        Wizard::runQuery($file, 'com_pinoox_manager', true, false);
+        if (is_file($appDB)) {
+            $package_name = 'com_pinoox_manager';
+
+            $prefix = Config::get('~database.prefix');
+            $query = file_get_contents($appDB);
+            $query = str_replace('{dbprefix}', $prefix . $package_name . '_', $query);
+            $queryArr = explode(';', $query);
+
+            PinooxDatabase::$db->startTransaction();
+            foreach ($queryArr as $q) {
+                if (empty($q)) continue;
+                PinooxDatabase::$db->mysqli()->query($q);
+            }
+
+            PinooxDatabase::$db->commit();
+
+            File::remove_file($appDB);
+
+            return true;
+        }
+        return false;
     }
 
     public function _stop()

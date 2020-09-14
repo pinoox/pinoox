@@ -15,7 +15,6 @@
 namespace pinoox\app\com_pinoox_manager\component;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\app\AppProvider;
 use pinoox\component\Cache;
 use pinoox\component\Config;
@@ -52,28 +51,11 @@ class Wizard
 
         //check database
         $appDB = path('~apps/' . $data['package_name'] . '/app.db');
-        if (is_file($appDB)) {
-            $prefix = Config::get('~database.prefix');
-            $query = file_get_contents($appDB);
-            $query = str_replace('{dbprefix}', $prefix . $data['package_name'] . '_', $query);
-            $queryArr = explode(';', $query);
 
-            PinooxDatabase::$db->startTransaction();
-            foreach ($queryArr as $q) {
-                if (empty($q)) continue;
-                PinooxDatabase::$db->mysqli()->query($q);
-            }
-
-            //copy new user
-            UserModel::copy(User::get('user_id'), $data['package_name']);
-
-            PinooxDatabase::$db->commit();
-            File::remove_file($appDB);
-        }
-
+        self::runQuery($appDB,$data['package_name']);
         self::changeLang($data['package_name']);
         self::runService($data['package_name'], 'install');
-        self::setApp('com_pinoox_manager',true);
+        self::setApp('com_pinoox_manager', true);
         self::deletePackageFile($pinFile);
 
         return true;
@@ -130,6 +112,75 @@ class Wizard
         return false;
     }
 
+    public static function checkVersion($data)
+    {
+        $packageName = $data['package_name'];
+        $versionCode = @$data['version_code'];
+
+        if (!Router::existApp($packageName))
+            return true;
+
+        $app = new AppProvider($packageName);
+        $versionCodeApp = $app->versionCode;
+
+        if ($versionCodeApp == $versionCode) {
+            self::$message = Lang::get('manager.version_already_installed');
+            return false;
+        } else if ($versionCodeApp > $versionCode) {
+            self::$message = Lang::get('manager.newer_version_installed');
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function runQuery($appDB, $package_name, $isRemoveFile = true, $isCopyUser = true)
+    {
+        if (is_file($appDB)) {
+            $prefix = Config::get('~database.prefix');
+            $query = file_get_contents($appDB);
+            $query = str_replace('{dbprefix}', $prefix . $package_name . '_', $query);
+            $queryArr = explode(';', $query);
+
+            PinooxDatabase::$db->startTransaction();
+            foreach ($queryArr as $q) {
+                if (empty($q)) continue;
+                PinooxDatabase::$db->mysqli()->query($q);
+            }
+
+            //copy new user
+            if ($isCopyUser)
+                UserModel::copy(User::get('user_id'), $package_name);
+
+            PinooxDatabase::$db->commit();
+
+            if ($isRemoveFile)
+                File::remove_file($appDB);
+
+            return true;
+        }
+        return false;
+    }
+
+    public static function changeLang($package_name)
+    {
+        $lang = Lang::current();
+        if (!Lang::exists($lang, $package_name))
+            return false;
+        self::setApp($package_name);
+        AppProvider::set('lang', $lang);
+        AppProvider::save();
+        return true;
+    }
+
+    private static function setApp($packageName, $isAgain = false)
+    {
+        if (self::$isApp && !$isAgain) return;
+        self::$isApp = true;
+        Router::setApp($packageName);
+        AppProvider::app($packageName);
+    }
+
     private static function runService($packageName, $state = 'install')
     {
         $current = Router::getApp();
@@ -138,14 +189,6 @@ class Wizard
         Service::app($packageName);
         Service::run('app>' . $state);
         Router::setApp($current);
-    }
-
-    private static function setApp($packageName,$isAgain = false)
-    {
-        if (self::$isApp && !$isAgain) return;
-        self::$isApp = true;
-        Router::setApp($packageName);
-        AppProvider::app($packageName);
     }
 
     public static function deletePackageFile($pinFile)
@@ -188,7 +231,7 @@ class Wizard
         AppProvider::save();
         self::runService($data['package_name'], 'update');
 
-        self::setApp('com_pinoox_manager',true);
+        self::setApp('com_pinoox_manager', true);
         self::deletePackageFile($pinFile);
 
         return true;
@@ -200,28 +243,6 @@ class Wizard
         $message = self::$message;
         self::$message = null;
         return $message;
-    }
-
-    public static function checkVersion($data)
-    {
-        $packageName = $data['package_name'];
-        $versionCode = @$data['version_code'];
-
-        if (!Router::existApp($packageName))
-            return true;
-
-        $app = new AppProvider($packageName);
-        $versionCodeApp = $app->versionCode;
-
-        if ($versionCodeApp == $versionCode) {
-            self::$message = Lang::get('manager.version_already_installed');
-            return false;
-        } else if ($versionCodeApp > $versionCode) {
-            self::$message = Lang::get('manager.newer_version_installed');
-            return false;
-        }
-
-        return true;
     }
 
     public static function deleteApp($packageName)
@@ -285,11 +306,6 @@ class Wizard
         Service::run('app>update');
     }
 
-    public static function is_installed($package_name)
-    {
-        return Router::existApp($package_name);
-    }
-
     public static function app_state($package_name)
     {
         if (self::is_installed($package_name))
@@ -300,6 +316,11 @@ class Wizard
             $state = 'download';
 
         return $state;
+    }
+
+    public static function is_installed($package_name)
+    {
+        return Router::existApp($package_name);
     }
 
     public static function is_downloaded($package_name)
@@ -313,12 +334,6 @@ class Wizard
         return Dir::path('downloads>apps>' . $package_name . '.pin');
     }
 
-    public static function is_installed_template($package_name, $uid)
-    {
-        $file = Dir::path("~apps>$package_name>theme>$uid");
-        return (!empty($file) && file_exists($file));
-    }
-
     public static function template_state($package_name, $uid)
     {
         if (self::is_installed_template($package_name, $uid))
@@ -329,6 +344,12 @@ class Wizard
             $state = 'download';
 
         return $state;
+    }
+
+    public static function is_installed_template($package_name, $uid)
+    {
+        $file = Dir::path("~apps>$package_name>theme>$uid");
+        return (!empty($file) && file_exists($file));
     }
 
     public static function is_downloaded_template($uid)
@@ -372,16 +393,4 @@ class Wizard
         }
         return null;
     }
-
-    public static function changeLang($package_name)
-    {
-        $lang = Lang::current();
-        if(!Lang::exists($lang,$package_name))
-            return false;
-        self::setApp($package_name);
-        AppProvider::set('lang', $lang);
-        AppProvider::save();
-        return true;
-    }
-
 }
