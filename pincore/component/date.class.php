@@ -51,17 +51,6 @@ class Date
     private static $formatValid = null;
 
     /**
-     * Filter by format valid for the date
-     *
-     * @param string $formatValid
-     */
-    public function filter($formatValid)
-    {
-        self::$formatValid = $formatValid;
-    }
-
-
-    /**
      * Set value default timezone if empty
      */
     public static function __init()
@@ -96,7 +85,6 @@ class Date
 
         return $result;
     }
-
 
     /**
      * Get gregorian Date or convert jalali (datetime) to gregorian (datetime)
@@ -247,13 +235,16 @@ class Date
      * Gregorian to Jalali Conversion
      * Copyright (C) 2000  Roozbeh Pournader and Mohammad Toossi
      *
-     * @param int $g_y year
-     * @param int $g_m month
-     * @param int $g_d day
+     * @param string|int $g_y year
+     * @param string|int $g_m month
+     * @param string|int $g_d day
      * @return array
      */
     private static function g2j($g_y, $g_m, $g_d)
     {
+        $g_y = intval($g_y);
+        $g_m = intval($g_m);
+        $g_d = intval($g_d);
 
         $g_days_in_month = self::$gMonth;
         $j_days_in_month = self::$jalaliMonth;
@@ -309,7 +300,7 @@ class Date
      * Convert format to jalali format
      *
      * @param string $type split format
-     * @param  DateTime $ndate
+     * @param DateTime $ndate
      * @param string &$format
      */
     private static function jalaliFormat($type, $ndate, &$format)
@@ -406,8 +397,6 @@ class Date
         return ($lenght != null) ? substr($month, 0, $lenght) : $month;
     }
 
-    // get farsi day name
-
     /**
      * Get farsi days name
      *
@@ -433,12 +422,14 @@ class Date
         if ($is_num) {
             return $day[0];
         }
-        if (function_exists('mb_substr') && $lenght != null) {
+        if (function_exists('mb_substr') && !is_null($lenght)) {
             return mb_substr($day[1], 0, $lenght, 'UTF-8');
         }
 
-        return ($lenght != null) ? substr($day[1], 0, $lenght) : $day[1];
+        return (!is_null($lenght)) ? substr($day[1], 0, $lenght) : $day[1];
     }
+
+    // get farsi day name
 
     /**
      * Set date for jalali date
@@ -471,13 +462,17 @@ class Date
      * Jalali to Gregorian Conversion
      * Copyright (C) 2000  Roozbeh Pournader and Mohammad Toossi
      *
-     * @param int $j_y year
-     * @param int $j_m month
-     * @param int $j_d day
+     * @param string|int $j_y year
+     * @param string|int $j_m month
+     * @param string|int $j_d day
      * @return array
      */
     private static function j2g($j_y, $j_m, $j_d)
     {
+        $j_y = intval($j_y);
+        $j_m = intval($j_m);
+        $j_d = intval($j_d);
+
         $g_days_in_month = self::$gMonth;
         $j_days_in_month = self::$jalaliMonth;
 
@@ -569,25 +564,18 @@ class Date
         switch ($operator) {
             case '==':
                 return $d1 == $d2;
-                break;
             case '!=':
                 return $d1 != $d2;
-                break;
             case '>':
                 return $d1 > $d2;
-                break;
             case '<':
                 return $d1 < $d2;
-                break;
             case '<=':
                 return $d1 <= $d2;
-                break;
             case '>=':
                 return $d1 >= $d2;
-                break;
         }
     }
-
 
     /**
      * Get an array of gregorian dates in between one interval
@@ -700,5 +688,15 @@ class Date
             }
         }
 
+    }
+
+    /**
+     * Filter by format valid for the date
+     *
+     * @param string $formatValid
+     */
+    public function filter($formatValid)
+    {
+        self::$formatValid = $formatValid;
     }
 }
