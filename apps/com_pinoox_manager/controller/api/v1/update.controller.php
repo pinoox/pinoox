@@ -76,8 +76,8 @@ class UpdateController extends LoginConfiguration
 
     private function notificationInstall($version)
     {
-        $title = Lang::get('notification.install_new_version.title');
-        $message = Lang::replace('notification.install_new_version.message', ['version' => $version['version_name']]);
+        $title = Lang::get('notification.update_new_version.title');
+        $message = Lang::replace('notification.update_new_version.message', ['version' => $version['version_name']]);
 
         Notification::action('update_new_version_' . $version['version_code'], $version);
         Notification::push($title, $message, 0, true);
