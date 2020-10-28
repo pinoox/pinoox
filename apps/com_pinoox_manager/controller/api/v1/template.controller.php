@@ -32,8 +32,8 @@ class TemplateController extends MasterConfiguration
 
             $meta = json_decode(file_get_contents($metaJson), true);
             $coverDefault = Url::file('resources/theme.jpg');
-
-            $meta['cover'] = (!empty($meta['cover'])) ? Url::check(Url::file('~apps/' . $packageName . '/theme/' . $meta['name'] . '/' . $meta['cover']), $coverDefault) : $meta['cover'];
+            $folderName = basename($folder);
+            $meta['cover'] = (!empty($meta['cover'])) ? Url::check(Url::file('~apps/' . $packageName . '/theme/' . $folderName. '/' . $meta['cover']), $coverDefault) : $meta['cover'];
 
             if (empty($meta['title'][Lang::current()])) {
                 $first = reset($meta['title']);
