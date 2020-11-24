@@ -53,7 +53,7 @@ class Url
 
     public static function protocol()
     {
-        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == "on") ? 'https' : 'http';
+        return self::isHttps()? 'https' : 'http';
     }
 
     public static function domain()
@@ -77,6 +77,13 @@ class Url
     public static function appKey()
     {
         return Router::getAppUrl();
+    }
+
+    public static function isHttps()
+    {
+        return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+            || (isset($_SERVER['REQUEST_SCHEME']) && $_SERVER['REQUEST_SCHEME'] === 'https')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https');
     }
 
     public static function file($path, $app = null)
