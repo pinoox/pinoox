@@ -968,6 +968,19 @@ class Template
         self::phpToAssets($file);
     }
 
+    public function getMeta($key = null)
+    {
+        if (!file_exists(self::$path . 'meta.json'))
+            return null;
+
+        $meta = json_decode(file_get_contents(self::$path . 'meta.json'), true);
+
+        if (!empty($key) && isset($meta[$key]))
+            return $meta[$key];
+
+        return null;
+    }
+
     public function minify($status = true)
     {
         $this->isMinify = $status;
