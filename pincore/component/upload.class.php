@@ -640,8 +640,7 @@ class Upload
     {
         if ($nested === 'first') {
             return !empty($this->err['no_nested']) ? $this->err['no_nested'][0] : null;
-        }
-        else if ($nested === 'filename') {
+        } else if ($nested === 'filename') {
             return isset($this->err['by_filename']) ? $this->err['by_filename'] : null;
         } else if (!$nested) {
             return isset($this->err['nested']) ? $this->err['nested'] : null;
@@ -811,7 +810,7 @@ class Upload
         }
         $filename = $name;
         $convert = strtolower($this->convert);
-        $filename = HelperString::get_unique_string($filename, $convert, $this->prefix, $this->postfix,null,$dir,$type);
+        $filename = HelperString::get_unique_string($filename, $convert, $this->prefix, $this->postfix, null, $dir, $type);
         $filename .= "." . $type;
         return $filename;
     }
@@ -884,7 +883,7 @@ class Upload
         $return = false;
 
         if ($this->isCopy) {
-            if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file,true)) {
+            if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file, true)) {
                 $return = true;
             }
         } else if ($this->isMove) {
@@ -948,14 +947,10 @@ class Upload
 
             $name = File::name($filename);
             $ext = File::extension($filename);
+            $sizes = is_array($this->thumbImg["size"]) ? $this->thumbImg["size"] : explode(',', $this->thumbImg["size"]);
 
-            if (is_array($this->thumbImg["size"])) {
-                foreach ($this->thumbImg["size"] as $size) {
-                    $result[] = $this->saveThumb($filename, $name, $ext, $size, $path);
-                }
-            } else {
-                $size = $this->thumbImg["size"];
-                $result = $this->saveThumb($filename, $name, $ext, $size, $path);
+            foreach ($sizes as $size) {
+                $result[] = $this->saveThumb($filename, $name, $ext, $size, $path);
             }
         }
         return $result;

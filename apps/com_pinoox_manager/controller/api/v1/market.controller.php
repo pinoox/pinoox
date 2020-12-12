@@ -132,7 +132,7 @@ class MarketController extends MasterConfiguration
         $res = Request::sendPost('https://www.pinoox.com/api/manager/v1/market/downloadRequestTemplate/' . $uid, $params);
         if (!empty($res)) {
             $response = json_decode($res, true);
-            if (!$response['status']) {
+            if (!isset($response['status']) || !$response['status']) {
                 exit($res);
             } else {
                 $path = path("downloads>templates>$uid.pin");

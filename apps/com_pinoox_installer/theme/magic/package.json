@@ -1,7 +1,7 @@
 {
-  "name": "spark",
+  "name": "magic",
   "version": "1.0.0",
-  "description": "spark is theme manager app pinoox",
+  "description": "pinoox installer",
   "main": "index.js",
   "scripts": {
     "start": "webpack-dev-server",
