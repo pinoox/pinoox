@@ -38,6 +38,7 @@ class Template
     private $offViewsList = array();
     private $linkBaseMapAssets = '';
     private $isMinify = false;
+    const DS = DIRECTORY_SEPARATOR;
 
     /*
      * Class Template
@@ -81,9 +82,9 @@ class Template
             self::$pathTheme = $path;
         }
 
-        $path = HelperString::lastDelete(self::$pathTheme,DIRECTORY_SEPARATOR);
-        Dir::setTheme(self::$folder,$path);
-        Url::setTheme(self::$folder,$path);
+        $path = HelperString::lastDelete(self::$pathTheme, DIRECTORY_SEPARATOR);
+        Dir::setTheme(self::$folder, $path);
+        Url::setTheme(self::$folder, $path);
 
         self::$path = self::$pathTheme . self::$folder . DIRECTORY_SEPARATOR;
         self::$data['_url'] = Url::link('~' . self::$path);
@@ -99,6 +100,7 @@ class Template
         }
         return false;
     }
+
     /**
      * this method return information of template from info.json in template folder
      * @link https://pinoox.com/documnet/pintemplate/methods/loadInfoInTheme
@@ -600,7 +602,7 @@ class Template
         if ($this->isShowViews && !empty($this->viewsList)) {
             foreach ($this->viewsList as $section) {
                 if (in_array($section, $this->offViewsList)) continue;
-                if ($file = self::getPathView($section )) {
+                if ($file = self::getPathView($section)) {
                     include_once $file;
                 }
             }
@@ -986,9 +988,37 @@ class Template
         $this->isMinify = $status;
     }
 
+    public function getTemplateNames($excludes = [])
+    {
+        $templates = File::get_folder_names(self::$pathTheme);
+        $templates = array_diff($templates, $excludes);
+        return $templates;
+    }
+
+    public function getTemplates($excludes = [])
+    {
+        $names = self::getTemplateNames($excludes);
+        if (empty($names)) return null;
+
+        $templates = [];
+        foreach ($names as $name) {
+            $path = self::$pathTheme . $name . self::DS;
+            $metaJson = file_get_contents($path . 'meta.json');
+            $meta = json_decode($metaJson, true);
+            $meta['cover'] = Url::file($path . $meta['cover']);
+            $meta['title'] = $meta['title'][Lang::current()];
+            $meta['description'] = $meta['description'][Lang::current()];
+            $meta['is_enable'] = $name === self::$folder;
+
+            $templates[] = $meta;
+        }
+
+        return $templates;
+    }
+
     private function minifyOutput($buffer)
     {
-        if(!$this->isMinify)
+        if (!$this->isMinify)
             return $buffer;
         $search = array(
             '/\>[^\S ]+/s',
