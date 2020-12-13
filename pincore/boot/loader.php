@@ -19,10 +19,11 @@ define('PINOOX_COMPONENT_PATH', PINOOX_CORE_PATH . 'component' . DIRECTORY_SEPAR
 define('PINOOX_SERVICE_PATH', PINOOX_CORE_PATH . 'service' . DIRECTORY_SEPARATOR);
 define('PINOOX_CONFIG_PATH', PINOOX_CORE_PATH . 'config' . DIRECTORY_SEPARATOR);
 define('PINOOX_LANG_PATH', PINOOX_CORE_PATH . 'lang' . DIRECTORY_SEPARATOR);
-define('PINOOX_PATH_THUMB','thumbs/{name}_{size}.{ext}');
+define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 
 use pinoox\component\Config;
 use pinoox\component\Dir;
+use pinoox\component\Router;
 use pinoox\component\Service;
 
 class Loader
@@ -47,10 +48,25 @@ class Loader
     private static function loadServices()
     {
         $services = Config::get('~service');
-        foreach ($services as $service)
-        {
+        foreach ($services as $service) {
             Service::run($service);
         }
+    }
+
+    public static function loadPath($key, $path)
+    {
+        $path = Dir::path($path);
+        if (!is_file($path))
+            return false;
+
+        $app = Router::getApp();
+        $key = $key.'['.$app.']';
+        if (!in_array($key, self::$listAllClass)) {
+            self::$listAllClass[] = $key;
+            include_once $path;
+            return true;
+        }
+        return false;
     }
 
     public static function getListClasses()
@@ -184,7 +200,7 @@ class Loader
             self::traitLoader($app);
         } else if (self::checkTypeClass($className, "Abstract")) {
             self::abstractLoader($app);
-        }  else {
+        } else {
             self::classLoader($app);
         }
     }
@@ -196,18 +212,18 @@ class Loader
         self::includeClass($path, $className, 'interface');
     }
 
-    private static function abstractLoader($app = '~')
-    {
-        $path = ($app === '~') ? PINOOX_COMPONENT_PATH : Dir::path('component/', $app);
-        $className = lcfirst(str_replace('Abstract', '', self::$className));
-        self::includeClass($path, $className, 'abstract');
-    }
-
     private static function traitLoader($app = '~')
     {
         $path = ($app === '~') ? PINOOX_COMPONENT_PATH : Dir::path('component/', $app);
         $className = lcfirst(str_replace('Trait', '', self::$className));
         self::includeClass($path, $className, 'trait');
+    }
+
+    private static function abstractLoader($app = '~')
+    {
+        $path = ($app === '~') ? PINOOX_COMPONENT_PATH : Dir::path('component/', $app);
+        $className = lcfirst(str_replace('Abstract', '', self::$className));
+        self::includeClass($path, $className, 'abstract');
     }
 
     private static function classLoader($app = '~')

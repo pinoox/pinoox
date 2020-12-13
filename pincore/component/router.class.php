@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use pinoox\boot\Loader;
 use pinoox\component\app\AppProvider;
 use ReflectionClass;
 use ReflectionMethod;
@@ -702,6 +703,11 @@ class Router
         $loaders = AppProvider::get('loader');
         foreach ($loaders as $classname=>$path)
         {
+            if(HelperString::firstHas($classname,'@'))
+            {
+                Loader::loadPath($classname,$path);
+                continue;
+            }
             Config::setLinear('~loader',$classname,$path);
         }
     }
