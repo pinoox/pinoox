@@ -579,10 +579,14 @@ class Router
     private static function isPublicMethod($class, $method)
     {
         $class = (is_object($class)) ? $class : self::generateControllerClass($class);
-        if (method_exists($class, $method) && is_callable(array($class, $method))) {
-            return true;
+        $status = false;
+        if(method_exists($class, $method))
+        {
+            $reflection = new ReflectionMethod($class, $method);
+            $status = $reflection->isPublic();
         }
-        return false;
+
+        return $status;
     }
 
     private static function isValidCountParams($class, $method, $params)
