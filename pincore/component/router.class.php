@@ -37,6 +37,19 @@ class Router
     private static $folderController = null;
     private static $folderName = null;
 
+    public static function getFolder()
+    {
+        return self::$folderName;
+    }
+
+    public static function build($key, $app)
+    {
+        Config::setLinear('~app', $key, $app);
+        AppProvider::app($app);
+        self::start();
+        self::call();
+    }
+
     public static function start()
     {
         self::$url = self::getCurrentUrl();
@@ -72,7 +85,7 @@ class Router
     private static function checkDomain($url = null)
     {
         $new_url = empty($url) ? self::$url : $url;;
-        $app_domain = Config::getLinear('~domain',Url::domain());
+        $app_domain = Config::getLinear('~domain', Url::domain());
         if (empty($app_domain)) {
             $info = self::getByPatternDomain();
             if (!empty($info)) {
@@ -100,7 +113,7 @@ class Router
 
     private static function getByPatternDomain()
     {
-        $domain = Config::getLinear('~domain',Url::domain());
+        $domain = Config::getLinear('~domain', Url::domain());
         if (is_null($domain)) {
             $domains = Config::get('~domain');
 
@@ -157,7 +170,7 @@ class Router
         $parts = HelperString::explodeDropping('/', $new_url);
         foreach ($parts as $part) {
             $packageName = self::getPackageNameApp($part);
-            if (self::existApp($packageName,true) && AppProvider::get('enable') && ((!self::$isDomain) || (self::$isDomain && AppProvider::get('domain')))) {
+            if (self::existApp($packageName, true) && AppProvider::get('enable') && ((!self::$isDomain) || (self::$isDomain && AppProvider::get('domain')))) {
                 self::$appUrl = $part;
                 if (empty($url)) {
                     self::setApp($packageName);
@@ -173,7 +186,7 @@ class Router
         }
 
         $default_app = Config::get('~app.*');
-        if (self::existApp($default_app,true)) {
+        if (self::existApp($default_app, true)) {
             if (empty($url)) {
                 self::setApp($default_app);
                 self::$isDefaultApp = true;
@@ -191,14 +204,14 @@ class Router
     private static function getPackageNameApp($part)
     {
         if ($part === '*') return null;
-        return Config::getLinear('~app',$part);
+        return Config::getLinear('~app', $part);
     }
 
     public static function existApp($packageName, $isBake = false)
     {
         $app_file = Dir::path('~' . self::app_folder . '/' . $packageName . "/app.php");
         if (file_exists($app_file)) {
-            if ($isBake){
+            if ($isBake) {
                 $app = self::$app;
                 self::$app = $packageName;
                 self::setAppProvider($packageName);
@@ -249,7 +262,7 @@ class Router
      */
     private static function getAsArray($url, $get = '/')
     {
-        return array_values(array_filter(explode($get, $url),function ($value){
+        return array_values(array_filter(explode($get, $url), function ($value) {
             return $value == 0 || !empty($value);
         }));
     }
@@ -471,8 +484,7 @@ class Router
             return;
         }
         self::$folderController = self::$folderName = $folder;
-        if (!empty($controller) && self::checkAccessToController($controller))
-        {
+        if (!empty($controller) && self::checkAccessToController($controller)) {
             self::setInParts();
             return;
         }
@@ -526,11 +538,6 @@ class Router
         return $namespace . $controllerName;
     }
 
-    public static function getFolder()
-    {
-        return self::$folderName;
-    }
-
     private static function checkCommentNoAccess($controller, $method = null)
     {
         $controllerClass = self::generateControllerClass($controller);
@@ -580,8 +587,7 @@ class Router
     {
         $class = (is_object($class)) ? $class : self::generateControllerClass($class);
         $status = false;
-        if(method_exists($class, $method))
-        {
+        if (method_exists($class, $method)) {
             $reflection = new ReflectionMethod($class, $method);
             $status = $reflection->isPublic();
         }
@@ -656,14 +662,6 @@ class Router
         }
     }
 
-    public static function build($key,$app)
-    {
-        Config::setLinear('~app',$key,$app);
-        AppProvider::app($app);
-        self::start();
-        self::call();
-    }
-
     public static function call($parts = null, $app = null)
     {
         $parts = (empty($parts)) ? self::getParts() : $parts;
@@ -705,14 +703,12 @@ class Router
     private static function loadLoader()
     {
         $loaders = AppProvider::get('loader');
-        foreach ($loaders as $classname=>$path)
-        {
-            if(HelperString::firstHas($classname,'@'))
-            {
-                Loader::loadPath($classname,$path);
+        foreach ($loaders as $classname => $path) {
+            if (HelperString::firstHas($classname, '@')) {
+                Loader::loadPath($classname, $path);
                 continue;
             }
-            Config::setLinear('~loader',$classname,$path);
+            Config::setLinear('~loader', $classname, $path);
         }
     }
 
