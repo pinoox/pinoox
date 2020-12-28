@@ -1,6 +1,42 @@
 # Release Notes
 ## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
 
+## [v1.6.0 (2020-12-28)](https://github.com/pinoox/pinoox/compare/1.6.0...master)  
+
+ ## Added
+ 
+ - Optimized with PHP 8
+ 
+ ## Changed
+ 
+ - Optimize template installation
+ 
+ ## Fixed
+ 
+ - Fixed move to the welcome page after installation
+ - Fixed show active template after activation
+ - Fixed implode problem in DB component
+ - Fixed the problem of checking the Public method on the router
+ 
+ 
+## [v1.5.8 (2020-12-20)](https://github.com/pinoox/pinoox/compare/1.5.8...master)   
+
+## Added
+
+- Load PHP file when running an application
+- Get a list of templates in the template component
+- Insert template information in the template component
+
+## Changed
+
+- Improved thumbnail creation in the upload component
+
+## Fixed
+
+- Problem recognizing the HTTPS protocol
+- Fixed the problem of displaying the cover image of the templates
+
+
 ## [v1.5.5 (2020-09-13)](https://github.com/pinoox/pinoox/compare/1.5.5...master)   
 
 ## Added
