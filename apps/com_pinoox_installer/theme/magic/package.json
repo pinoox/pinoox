@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "animate.css": "^3.7.2",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "axios-method-override": "^1.1.2",
     "bootstrap": "^4.3.1",
     "bootstrap-less": "^3.3.8",
