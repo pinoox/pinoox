@@ -1003,8 +1003,17 @@ class Template
         $templates = [];
         foreach ($names as $name) {
             $path = self::$pathTheme . $name . self::DS;
-            $metaJson = file_get_contents($path . 'meta.json');
+            $metaFile = $path . 'meta.json';
+
+            if (!is_file($metaFile))
+                continue;
+
+            $metaJson = file_get_contents($metaFile);
             $meta = json_decode($metaJson, true);
+
+            if (empty($meta))
+                continue;
+
             $meta['cover'] = Url::file($path . $meta['cover']);
             $meta['title'] = $meta['title'][Lang::current()];
             $meta['description'] = $meta['description'][Lang::current()];
