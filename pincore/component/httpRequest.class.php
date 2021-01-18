@@ -258,10 +258,10 @@ class HttpRequest
         if (empty($user_agent))
             $this->setHeader('User-Agent', HelperHeader::getUserAgent() . ' pinoox');
 
-        if ($this->checkEnableLib('file_content')) {
-            $result = $this->sendContents();
-        } else if ($this->checkEnableLib('curl')) {
+        if ($this->checkEnableLib('curl')) {
             $result = $this->sendCurl();
+        } else if ($this->checkEnableLib('file_content')) {
+            $result = $this->sendContents();
         }
 
         $result = ($result && $raw === self::json) ? HelperString::decodeJson($result) : $result;
@@ -389,6 +389,7 @@ class HttpRequest
 
             // options
             $headers = $this->getHeaders();
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, Url::isHttps());
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
