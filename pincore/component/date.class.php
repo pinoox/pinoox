@@ -124,7 +124,7 @@ class Date
         if (!empty(self::$formatValid)) {
             $formatValid = self::$formatValid;
             self::$formatValid = null;
-            if (!self::validate($formatValid, $date)) return null;
+            if (!self::validate($date,$formatValid)) return null;
         }
 
         $old_timezone = (!empty($old_timezone)) ? $old_timezone : date_default_timezone_get();
@@ -162,7 +162,7 @@ class Date
      * @param string $date String representing the time.
      * @return bool
      */
-    public static function validate($format = 'Y-m-d H:i:s', $date)
+    public static function validate($date,$format = 'Y-m-d H:i:s')
     {
         if (empty($date)) {
             return false;
@@ -208,7 +208,7 @@ class Date
         if (!empty(self::$formatValid)) {
             $formatValid = self::$formatValid;
             self::$formatValid = null;
-            if (!self::validate($formatValid, $date)) return null;
+            if (!self::validate($date,$formatValid)) return null;
         }
         if (empty($date)) $date = time();
         if (is_int($date)) $date = '@' . $date;

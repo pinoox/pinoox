@@ -893,7 +893,7 @@ class Validation
     private static function _date($format = 'Y/m/d')
     {
         $isResult = false;
-        if (Date::validate($format, self::getFirstData()))
+        if (Date::validate(self::getFirstData(),$format))
             $isResult = true;
 
         $fields = (is_array(self::$field_title)) ? self::$field_title : [self::$field_title, $format];
