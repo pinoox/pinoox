@@ -207,12 +207,12 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                $this->offHeaderViewsList[] = self::fixPathSeprator($arg);
+                $this->offHeaderViewsList[] = self::fixPathSeparator($arg);
             }
         }
     }
 
-    private static function fixPathSeprator($section)
+    private static function fixPathSeparator($section)
     {
         $view = str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $section);
         return $view;
@@ -229,7 +229,7 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                $this->headerViewsList[] = self::fixPathSeprator($arg);
+                $this->headerViewsList[] = self::fixPathSeparator($arg);
             }
         }
     }
@@ -250,7 +250,7 @@ class Template
         if (func_num_args() > 0) {
             $args = func_get_args();
             foreach ($args as $arg) {
-                $arg = self::fixPathSeprator($arg);
+                $arg = self::fixPathSeparator($arg);
                 foreach ($this->headerViewsList as $key => $headerView) {
                     if ($headerView == $arg) {
                         unset($this->headerViewsList[$key]);
@@ -281,7 +281,7 @@ class Template
 
     public function view($section)
     {
-        $this->viewsList[] = self::fixPathSeprator($section);
+        $this->viewsList[] = self::fixPathSeparator($section);
     }
 
     public function footer()
@@ -300,7 +300,7 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                $this->offViewsList[] = self::fixPathSeprator($arg);
+                $this->offViewsList[] = self::fixPathSeparator($arg);
             }
         }
     }
@@ -332,7 +332,7 @@ class Template
         if (func_num_args() > 0) {
             $args = func_get_args();
             foreach ($args as $arg) {
-                $arg = self::fixPathSeprator($arg);
+                $arg = self::fixPathSeparator($arg);
                 foreach ($this->viewsList as $key => $view) {
                     if ($view == $arg) {
                         unset($this->viewsList[$key]);
@@ -354,7 +354,7 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                $this->offFooterViewsList[] = self::fixPathSeprator($arg);
+                $this->offFooterViewsList[] = self::fixPathSeparator($arg);
             }
         }
     }
@@ -372,7 +372,7 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                $this->footerViewsList[] = self::fixPathSeprator($arg);
+                $this->footerViewsList[] = self::fixPathSeparator($arg);
             }
         }
     }
@@ -383,7 +383,7 @@ class Template
             $args = func_get_args();
 
             foreach ($args as $arg) {
-                array_unshift($this->footerViewsList, self::fixPathSeprator($arg));
+                array_unshift($this->footerViewsList, self::fixPathSeparator($arg));
             }
         }
     }
@@ -393,7 +393,7 @@ class Template
         if (func_num_args() > 0) {
             $args = func_get_args();
             foreach ($args as $arg) {
-                $arg = self::fixPathSeprator($arg);
+                $arg = self::fixPathSeparator($arg);
                 foreach ($this->footerViewsList as $key => $footerView) {
                     if ($footerView == $arg) {
                         unset($this->footerViewsList[$key]);
@@ -830,7 +830,7 @@ class Template
 
     private static function getPathView($path)
     {
-        $path = self::fixPathSeprator($path);
+        $path = self::fixPathSeparator($path);
         $_file = self::$path . $path;
         if (!self::existsExt($_file)) $_file .= '.php';
         if (is_file($_file)) {
@@ -878,7 +878,7 @@ class Template
         if ($_file = self::getPathView('functions.php')) {
             include_once $_file;
         }
-        $locationSave = self::fixPathSeprator($locationSave);
+        $locationSave = self::fixPathSeparator($locationSave);
         $locationSave = self::$path . $locationSave;
         if (is_file($locationSave)) {
             $time = File::file_time($locationSave);
