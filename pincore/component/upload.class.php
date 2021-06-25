@@ -14,12 +14,18 @@ namespace pinoox\component;
 
 class Upload
 {
+    const form_type = 'form';
+    const copy_type = 'copy';
+    const move_type = 'move';
+    const base64_type = 'base64';
+
     protected static $object = null;
     private static $isStopUpload = false;
     private static $errStopUpload = false;
     public $dirSeparator = DIRECTORY_SEPARATOR;
     public $isAllType = false;
     public $result = null;
+    private $fileInit = null;
     protected $isSave = false;
     protected $isTransaction = false;
     protected $thumbImg = array();
@@ -27,8 +33,7 @@ class Upload
     private $notAllowedTypes = array();
     private $isAllowedTypes = false;
     private $isName = false;
-    private $isMove = false;
-    private $isCopy = false;
+    private $typeFile = 'form';
     private $defaultAllSize = "*";
     private $typeSize = "MB";
     private $dirFolder;
@@ -253,31 +258,20 @@ class Upload
     public function file($file)
     {
         $this->reset();
-
-        if (!is_array($file) && isset($_FILES[$file])) {
-            $this->getFile = $this->reArrayFiles($_FILES[$file]);
-        } else {
-            $this->isMove = true;
-            $this->createListFile($file);
-        }
-
-
-        if (empty($this->getFile)) {
-            $this->setError('FILE_EMPTY', Lang::get('~upload.err.file_empty'));
-        }
+        $this->fileInit = $file;
 
         return self::$object;
     }
 
     private function reset()
     {
-        $this->isMove = false;
         $this->isAllType = false;
         $this->allowedTypes = array();
         $this->notAllowedTypes = array();
         $this->isName = false;
         $this->defaultAllSize = "*";
         $this->typeSize = "MB";
+        $this->typeFile = "form";
         $this->numLimit = 0;
         $this->convert = "";
         $this->postfix = "";
@@ -330,6 +324,26 @@ class Upload
         }
     }
 
+    // set File by new class
+
+    private function createListForBase64($files)
+    {
+        $is_array = isset($files[0]) && is_array($files[0]);
+        if ($is_array) {
+            foreach ($files as $file) {
+                $file = $this->getInfoFileBase64($file);
+                if ($file) {
+                    $this->getFile[] = $file;
+                }
+            }
+        } else {
+            $file = $this->getInfoFileBase64($files);
+            if ($file) {
+                $this->getFile = $file;
+            }
+        }
+    }
+
     // set dir upload
 
     private function getInfoFile($file)
@@ -338,6 +352,35 @@ class Upload
         $result['name'] = File::fullname($file);
         $result['size'] = File::size($file);
         $result['type'] = File::mime_type($file);
+        $result['error'] = 0;
+        return $result;
+    }
+
+    private function getInfoFileBase64($file)
+    {
+        $base64Data = is_array($file) ? @$file['data'] : $file;
+
+        if (empty($base64Data))
+            return false;
+
+        if (!preg_match('/^data:(?\'type\'.*);base64,(?\'file\'.*)/m', $base64Data, $data))
+            return false;
+
+        $type = $data['type'];
+        $sliceType = explode('/', $type);
+
+        if (empty($sliceType[1]))
+            return false;
+
+        $ext = strtolower($sliceType[1]);
+        $dataFile = base64_decode($data['file']);
+        $size = is_array($file) && !empty($file['size']) ? $file['size'] : strlen($dataFile);
+        $name = is_array($file) && !empty($file['name']) ? $file['name'] : 'file.' . $ext;
+
+        $result['tmp_name'] = $dataFile;
+        $result['name'] = $name;
+        $result['size'] = $size;
+        $result['type'] = $type;
         $result['error'] = 0;
         return $result;
     }
@@ -457,11 +500,30 @@ class Upload
         return self::$object;
     }
 
-    // set default size for all type files
+    public function type($type = 'form')
+    {
+        $this->typeFile = $type;
+
+        return self::$object;
+    }
 
     public function copy()
     {
-        $this->isCopy = true;
+        $this->type('copy');
+
+        return self::$object;
+    }
+
+    public function move()
+    {
+        $this->type(self::move_type);
+
+        return self::$object;
+    }
+
+    public function base64()
+    {
+        $this->type('base64');
 
         return self::$object;
     }
@@ -672,6 +734,8 @@ class Upload
 
     public function process($single = false, $isObj = false)
     {
+        $this->buildFile();
+
         if (!empty($this->err)) {
             if ($isObj)
                 return self::$object;
@@ -699,6 +763,26 @@ class Upload
             return self::$object;
         else
             return $result;
+    }
+
+    private function buildFile()
+    {
+        $file = $this->fileInit;
+
+        if ($this->typeFile === self::form_type) {
+            if (!is_array($file) && isset($_FILES[$file])) {
+                $this->getFile = $this->reArrayFiles($_FILES[$file]);
+            }
+        } else if ($this->typeFile === self::copy_type || $this->typeFile === self::move_type) {
+            $this->createListFile($file);
+
+        } else if ($this->typeFile === self::base64_type) {
+            $this->createListForBase64($file);
+        }
+
+        if (empty($this->getFile)) {
+            $this->setError('FILE_EMPTY', Lang::get('~upload.err.file_empty'));
+        }
     }
 
     // for extends
@@ -882,15 +966,19 @@ class Upload
     {
         $return = false;
 
-        if ($this->isCopy) {
+        if ($this->typeFile === self::copy_type) {
             if (File::copy($tmp, $this->dirFolder . $this->dirSeparator . $file, true)) {
                 $return = true;
             }
-        } else if ($this->isMove) {
+        } else if ($this->typeFile === self::move_type) {
             if (File::move($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
                 $return = true;
             }
-        } else {
+        } else if ($this->typeFile === self::base64_type) {
+            if (File::generate($this->dirFolder . $this->dirSeparator . $file,$tmp)) {
+                $return = true;
+            }
+        } else if ($this->typeFile === self::form_type) {
             if (move_uploaded_file($tmp, $this->dirFolder . $this->dirSeparator . $file)) {
                 $return = true;
             }
@@ -901,7 +989,7 @@ class Upload
 
     // get file name if convert active
 
-    protected function isImg($type, $img_types = ["png", "jpg", "gif"])
+    protected function isImg($type, $img_types = ["png", "jpg", "jpeg", "gif"])
     {
         if (in_array($type, $img_types)) return true;
         return false;

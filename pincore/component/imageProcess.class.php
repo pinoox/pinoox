@@ -9,6 +9,7 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\component;
 
 class ImageProcess
@@ -85,7 +86,7 @@ class ImageProcess
         $newImg = imagecreatetruecolor($nWidth, $nHeight);
 
         /* Check if this image is PNG or GIF, then set if Transparent*/
-        if (($imgInfo[2] == 1) OR ($imgInfo[2] == 3) OR ($imgInfo[2] == 18)) {
+        if (($imgInfo[2] == 1) or ($imgInfo[2] == 3) or ($imgInfo[2] == 18)) {
             imagealphablending($newImg, false);
             imagesavealpha($newImg, true);
             $transparent = imagecolorallocatealpha($newImg, 255, 255, 255, 127);
@@ -251,7 +252,7 @@ class ImageProcess
                 $src_logo = imagecreatefrompng($logo_path);
             else if ($ext_logo == 'gif')
                 $src_logo = imagecreatefromgif($logo_path);
-            else if ($ext_logo == 'jpg')
+            else if ($ext_logo == 'jpg' || $ext_logo == 'jpeg')
                 $src_logo = imagecreatefromjpeg($logo_path);
         }
 
@@ -268,7 +269,7 @@ class ImageProcess
         }
 
         #now, lets work and detect our image extension
-        if (strpos($ext, 'jpg') !== false) {
+        if (strpos($ext, 'jpg') !== false || strpos($ext, 'jpeg') !== false) {
             $src_img = @imagecreatefromjpeg($img);
         } elseif (strpos($ext, 'png') !== false) {
             $src_img = @imagecreatefrompng($img);
@@ -297,7 +298,7 @@ class ImageProcess
             @ImageAlphaBlending($src_img, true);
             @ImageCopy($src_img, $src_logo, $src_x, $src_y, 0, 0, $lwidth, $lheight);
 
-            if (strpos($ext, 'jpg') !== false) {
+            if (strpos($ext, 'jpg') !== false || strpos($ext, 'jpeg') !== false) {
                 @imagejpeg($src_img, $img);
             } elseif (strpos($ext, 'png') !== false) {
                 @imagepng($src_img, $img);
@@ -405,6 +406,9 @@ class ImageProcess
             case 'jpg':
                 $return = @imagejpeg($getImage, $img_save);
                 break;
+            case 'jpeg':
+                $return = @imagejpeg($getImage, $img_save);
+                break;
             case 'gif':
                 $return = @imagegif($getImage, $img_save);
                 break;
@@ -418,6 +422,6 @@ class ImageProcess
 
         if ($is_old_delete) File::remove($image);
 
-            return $return;
+        return $return;
     }
 }
