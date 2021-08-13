@@ -484,6 +484,10 @@ class Router
             return;
         }
         self::$folderController = self::$folderName = $folder;
+        if (!empty(self::$folderController)) {
+            $folders = HelperString::multiExplode(['/', '\\'], self::$folderController);
+            self::$folderController = implode('\\', array_filter($folders));
+        }
         if (!empty($controller) && self::checkAccessToController($controller)) {
             self::setInParts();
             return;

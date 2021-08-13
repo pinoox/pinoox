@@ -175,6 +175,9 @@ class Loader
 
     private static function loadMagicsMethodsTrait($className)
     {
+        if (!class_exists($className))
+            return;
+
         $uses = class_uses($className);
         $uses = !empty($uses) ? $uses : [];
         if (in_array("pinoox\\component\\MagicTrait", $uses)) {
