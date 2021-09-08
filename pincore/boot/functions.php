@@ -1,5 +1,4 @@
 <?php
-
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -41,7 +40,7 @@ function lang($var)
 
     $result = Lang::replace($first, $args);
 
-    echo !is_array($result) ? $result : HelperString::encodeJson($result);
+    echo !is_array($result)? $result : HelperString::encodeJson($result);
 }
 
 function rlang($var)
@@ -55,8 +54,8 @@ function rlang($var)
 function config($key)
 {
     $args = func_get_args();
-    if (isset($args[1]))
-        Config::set($key, $args[1]);
+    if(isset($args[1]))
+        Config::set($key,$args[1]);
     else
         return Config::get($key);
 
