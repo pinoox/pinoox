@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -40,7 +41,7 @@ function lang($var)
 
     $result = Lang::replace($first, $args);
 
-    echo !is_array($result)? $result : HelperString::encodeJson($result);
+    echo !is_array($result) ? $result : HelperString::encodeJson($result);
 }
 
 function rlang($var)
@@ -54,8 +55,8 @@ function rlang($var)
 function config($key)
 {
     $args = func_get_args();
-    if(isset($args[1]))
-        Config::set($key,$args[1]);
+    if (isset($args[1]))
+        Config::set($key, $args[1]);
     else
         return Config::get($key);
 
@@ -70,4 +71,17 @@ function service($service)
 function app($key)
 {
     return AppProvider::get($key);
+}
+
+/**
+ * check if array is associative
+ * 
+ * @param array $arr
+ */
+function isAssoc(array $arr)
+{
+    if (count($arr) < 1) {
+        return false;
+    }
+    return array_keys($arr) !== range(0, count($arr) - 1);
 }
