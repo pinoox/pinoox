@@ -67,6 +67,29 @@ function service($service)
     return Service::run($service);
 }
 
+/**
+ * Dumps information about a variable and exit
+ * 
+ * @param $data
+ * @param string $label 
+ */
+function dd($data = null, $label = null)
+{
+    echo Dump::r($data, $label);
+    exit;
+}
+
+/**
+ * Dumps information about a variable
+ * 
+ * @param $data
+ * @param string $label 
+ */
+function dump($data = null, string $label = null)
+{
+    echo Dump::r($data, $label);
+}
+
 function app($key)
 {
     return AppProvider::get($key);
