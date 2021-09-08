@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -13,6 +14,7 @@
 use pinoox\component\app\AppProvider;
 use pinoox\component\Config;
 use pinoox\component\Dir;
+use pinoox\component\Dump;
 use pinoox\component\Lang;
 use pinoox\component\Service;
 use pinoox\component\Url;
@@ -40,7 +42,7 @@ function lang($var)
 
     $result = Lang::replace($first, $args);
 
-    echo !is_array($result)? $result : HelperString::encodeJson($result);
+    echo !is_array($result) ? $result : HelperString::encodeJson($result);
 }
 
 function rlang($var)
@@ -54,8 +56,8 @@ function rlang($var)
 function config($key)
 {
     $args = func_get_args();
-    if(isset($args[1]))
-        Config::set($key,$args[1]);
+    if (isset($args[1]))
+        Config::set($key, $args[1]);
     else
         return Config::get($key);
 
@@ -65,6 +67,29 @@ function config($key)
 function service($service)
 {
     return Service::run($service);
+}
+
+/**
+ * Dumps information about a variable and exit
+ * 
+ * @param $data
+ * @param string $label 
+ */
+function dd($data = null, $label = null)
+{
+    echo Dump::r($data, $label);
+    exit;
+}
+
+/**
+ * Dumps information about a variable
+ * 
+ * @param $data
+ * @param string $label 
+ */
+function dump($data = null, string $label = null)
+{
+    echo Dump::r($data, $label);
 }
 
 function app($key)
