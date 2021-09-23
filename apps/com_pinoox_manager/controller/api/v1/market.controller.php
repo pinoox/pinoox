@@ -43,7 +43,7 @@ class MarketController extends MasterConfiguration
             Response::json(Lang::get('manager.error_happened'), false);
 
         Wizard::deletePackageFile($pinFile);
-        Config::remove('market.'.$package_name);
+        Config::remove('market.' . $package_name);
         Config::save('market');
         Response::json(Lang::get('manager.delete_successfully'), true);
     }
@@ -71,7 +71,7 @@ class MarketController extends MasterConfiguration
         $data = Request::sendGet("https://www.pinoox.com/api/manager/v1/market/getApp/" . $package_name);
         HelperHeader::contentType('application/json', 'UTF-8');
         $arr = json_decode($data, true);
-        $arr['state'] =  Wizard::app_state($package_name);
+        $arr['state'] = Wizard::app_state($package_name);
         Response::json($arr);
     }
 
@@ -92,7 +92,7 @@ class MarketController extends MasterConfiguration
             } else {
                 $path = path("downloads>apps>" . $package_name . ".pin");
                 Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result']['hash'], $path)->process();
-                Config::set('market.'.$package_name, $response['result']);
+                Config::set('market.' . $package_name, $response['result']);
                 Config::save('market');
                 Response::json(rlang('manager.download_completed'), true);
             }
@@ -113,6 +113,7 @@ class MarketController extends MasterConfiguration
             foreach ($result as $t) {
                 //check template state
                 $t['state'] = Wizard::template_state($package_name, $t['uid']);
+                $t['type'] = 'theme';
                 $templates[] = $t;
             }
         }

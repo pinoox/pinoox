@@ -20,6 +20,8 @@ use pinoox\component\Router;
 class MasterConfiguration extends ApiConfiguration
 {
 
+    const manualPath = 'downloads/packages/manual/';
+
     public function __construct()
     {
         parent::__construct();
