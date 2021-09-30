@@ -12,8 +12,8 @@ CREATE TABLE `com_pinoox_manager_notification`  (
                                                     `message` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
                                                     `action_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
                                                     `action_data` varchar(2000) CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NULL DEFAULT NULL,
-                                                    `insert_date` datetime(0) NULL DEFAULT NULL,
-                                                    `push_date` datetime(0) NULL DEFAULT NULL,
+                                                    `insert_date` datetime NULL DEFAULT NULL,
+                                                    `push_date` datetime NULL DEFAULT NULL,
                                                     `status` varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
                                                     PRIMARY KEY (`ntf_id`) USING BTREE
 ) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Compact;
@@ -34,7 +34,7 @@ CREATE TABLE `pincore_file`
     `file_ext`      varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `file_path`     varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `file_size`     double                                           NULL DEFAULT NULL,
-    `file_date`     datetime(0)                                      NULL DEFAULT NULL,
+    `file_date`     datetime                                      NULL DEFAULT NULL,
     `file_access`   varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     PRIMARY KEY (`file_id`) USING BTREE,
     INDEX `pincore_file_user_id` (`user_id`) USING BTREE
@@ -53,11 +53,11 @@ CREATE TABLE `pincore_session`
     `session_id`     varchar(100) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
     `app`            varchar(80) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
     `session_data`   text CHARACTER SET utf8 COLLATE utf8_bin         NULL,
-    `insert_date`    datetime(0)                                      NULL DEFAULT NULL,
-    `update_date`    datetime(0)                                      NULL DEFAULT NULL,
+    `insert_date`    datetime                                      NULL DEFAULT NULL,
+    `update_date`    datetime                                      NULL DEFAULT NULL,
     `ip`             varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `security_token` varchar(32) CHARACTER SET utf8 COLLATE utf8_bin  NULL DEFAULT NULL,
-    `end_date`       datetime(0)                                      NULL DEFAULT NULL,
+    `end_date`       datetime                                      NULL DEFAULT NULL,
     PRIMARY KEY (`session_id`, `app`) USING BTREE,
     INDEX `pincore_session_session_id` (`session_id`) USING BTREE
 ) ENGINE = InnoDB
@@ -78,8 +78,8 @@ CREATE TABLE `pincore_token`
     `user_id`         int(10) UNSIGNED                                 NULL DEFAULT NULL,
     `ip`              varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `user_agent`      varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-    `insert_date`     datetime(0)                                      NULL DEFAULT NULL,
-    `expiration_date` datetime(0)                                      NULL DEFAULT NULL,
+    `insert_date`     datetime                                      NULL DEFAULT NULL,
+    `expiration_date` datetime                                      NULL DEFAULT NULL,
     PRIMARY KEY (`token_key`, `app`) USING BTREE,
     INDEX `pincore_token_user_id` (`user_id`) USING BTREE
 ) ENGINE = InnoDB
@@ -102,7 +102,7 @@ CREATE TABLE `pincore_user`
     `username`      varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `password`      varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     `email`         varchar(50) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
-    `register_date` datetime(0)                                      NULL DEFAULT NULL,
+    `register_date` datetime                                      NULL DEFAULT NULL,
     `status`        varchar(20) CHARACTER SET utf8 COLLATE utf8_bin NULL DEFAULT NULL,
     PRIMARY KEY (`user_id`) USING BTREE,
     INDEX `pincore_user_avatar_id` (`avatar_id`) USING BTREE

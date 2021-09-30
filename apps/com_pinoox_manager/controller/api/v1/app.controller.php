@@ -24,8 +24,6 @@ use pinoox\component\Uploader;
 
 class AppController extends MasterConfiguration
 {
-    const manualPath = 'downloads/packages/manual/';
-
     public function get($filter = null)
     {
         switch ($filter) {
@@ -166,8 +164,18 @@ class AppController extends MasterConfiguration
         $path = Dir::path(self::manualPath);
         $files = File::get_files_by_pattern($path, '*.pin');
         $files = array_map(function ($file) {
-            return Wizard::pullDataPackage($file);
+            $data = Wizard::pullDataPackage($file);
+            if (!Wizard::isValidNamePackage($data['package_name'])) {
+                $data = Wizard::pullTemplateMeta($file);
+                if (!Wizard::isValidNamePackage($data['app'])) {
+                    Wizard::deletePackageFile($file);
+                    return false;
+                }
+            }
+
+            return $data;
         }, $files);
+        $files = array_filter($files);
         Response::json($files);
     }
 
