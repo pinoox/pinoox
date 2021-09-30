@@ -15,6 +15,7 @@ namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
 use pinoox\component\app\AppProvider;
+use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\Lang;
 use pinoox\component\Response;
@@ -66,6 +67,31 @@ class TemplateController extends MasterConfiguration
 
         Wizard::installTemplate($file, $packageName, $meta);
         Response::json(rlang('manager.done_successfully'), true);
+    }
+
+    public function installPackage($filename)
+    {
+        if (empty($filename))
+            Response::json(rlang('manager.request_install_template_not_valid'), false);
+
+        $pinFile = Dir::path(self::manualPath . $filename);
+        if (!is_file($pinFile))
+            Response::json(rlang('manager.request_install_template_not_valid'), false);
+
+        $meta = Wizard::pullTemplateMeta($pinFile);
+
+        if (!Wizard::is_installed($meta['app']))
+            Response::json(rlang('manager.there_is_no_app'), false);
+
+        if (Wizard::installTemplate($pinFile, $meta['app'], $meta)) {
+            Response::json(rlang('manager.done_successfully'), true);
+        } else {
+            $message = Wizard::getMessage();
+            if (empty($message))
+                Response::json(rlang('manager.request_install_template_not_valid'), false);
+            else
+                Response::json($message, false);
+        }
     }
 
     public function set($packageName, $folderName)

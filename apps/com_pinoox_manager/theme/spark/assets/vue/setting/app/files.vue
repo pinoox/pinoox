@@ -13,19 +13,22 @@
                     <div>{{LANG.manager.empty_files_package}}</div>
                 </div>
                 <div class="apps" v-else>
-                    <div class="app-item" v-for="(file,index) in files">
+                    <div v-for="(file,index) in files">
+                      <div class="app-item">
                         <div class="icon">
-                            <img :src="file.icon" :alt="file.name">
-                            <div class="text">
-                                <h2 class="name">{{file.filename}}</h2>
-                                <h3 class="info">{{file.name}} (v{{file.version}})</h3>
-                                <h3 class="info">{{LANG.manager.file_size}}: {{file.size}}</h3>
-                            </div>
+                          <img :src="file.type === 'app'? file.icon : file.cover" :alt="file.name">
+                          <div class="text">
+                            <h2 class="name">{{file.filename}} ({{LANG.manager[file.type]}})</h2>
+                            <h3 class="info">{{file.name}} (v{{file.version}})</h3>
+                            <h3 class="info">{{LANG.manager.file_size}}: {{file.size}}</h3>
+                            <h3 class="info">{{file.app}}</h3>
+                          </div>
                         </div>
                         <div class="action">
-                            <span class="btn-pin" @click="setup(index)">{{LANG.manager.install}}</span>
-                            <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
+                          <span class="btn-pin" @click="setup(index)">{{LANG.manager.install}}</span>
+                          <span class="btn-pin" @click="deleteFile(index)">{{LANG.manager.delete}}</span>
                         </div>
+                      </div>
                     </div>
                 </div>
 
@@ -49,7 +52,8 @@
             setup(index)
             {
                 let file = this.files[index];
-                this._openFloatInstaller(file,'manual',() => {
+                let state = file.type === 'app'? 'manual' : 'manual-theme';
+                this._openFloatInstaller(file,state,() => {
                     this.$delete(this.files, index);
                 });
             },

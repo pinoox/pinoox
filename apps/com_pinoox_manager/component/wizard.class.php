@@ -52,7 +52,7 @@ class Wizard
         //check database
         $appDB = path('~apps/' . $data['package_name'] . '/app.db');
 
-        self::runQuery($appDB,$data['package_name']);
+        self::runQuery($appDB, $data['package_name']);
         self::changeLang($data['package_name']);
         self::runService($data['package_name'], 'install');
         self::setApp('com_pinoox_manager', true);
@@ -90,8 +90,10 @@ class Wizard
         }
 
         return [
+            'type' => 'app',
             'filename' => $filename,
             'package_name' => $app->packageName,
+            'app' => $app->packageName,
             'name' => $app->name,
             'description' => $app->description,
             'version' => $app->versionName,
@@ -365,8 +367,12 @@ class Wizard
 
     public static function installTemplate($file, $packageName, $meta)
     {
-        Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']));
-        File::remove_file($file);
+        if (Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']))) {
+            File::remove_file($file);
+            return true;
+        }
+
+        return false;
     }
 
     public static function deleteTemplate($packageName, $folderName)
@@ -409,9 +415,19 @@ class Wizard
                 $cover = Url::file($dir . '>' . $coverPath);
         }
 
+        if (empty($meta['title'])) {
+            $title = null;
+        } else if (empty($meta['title'][Lang::current()])) {
+            $title = array_values($meta['title'])[0];
+        } else {
+            $title = $meta['title'][Lang::current()];
+        }
+
         return [
+            'type' => 'theme',
             'filename' => $filename,
-            'app' => @$meta['com_pinoox_paper'],
+            'template_name' => $title,
+            'app' => @$meta['app'],
             'name' => @$meta['name'],
             'title' => @$meta['title'],
             'description' => @$meta['description'],
