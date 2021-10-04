@@ -168,6 +168,7 @@ class Validation
         self::$inputs = $inputs;
         self::$rules = $rules;
         self::$customMessages = $messages;
+        self::$errors = [];
 
         self::init();
         self::validateInputsByRules();
@@ -321,6 +322,7 @@ class Validation
         ];
         $options = self::$params;
         $status = $status($info, $options);
+
         if (!empty($dataIntoMessage))
             $dataIntoMessage = $dataIntoMessage($info, $options);
         if (is_array($err)) {
@@ -328,7 +330,8 @@ class Validation
             $not_message_err = $err[1];
             self::setMultiResult($status, $message_err, $not_message_err, $dataIntoMessage);
         } else {
-            self::setError($err, $dataIntoMessage);
+            if (!$status)
+                self::setError($err, $dataIntoMessage);
         }
     }
 
@@ -893,7 +896,7 @@ class Validation
     private static function _date($format = 'Y/m/d')
     {
         $isResult = false;
-        if (Date::validate($format, self::getFirstData()))
+        if (Date::validate(self::getFirstData(), $format))
             $isResult = true;
 
         $fields = (is_array(self::$field_title)) ? self::$field_title : [self::$field_title, $format];

@@ -52,7 +52,7 @@ class Wizard
         //check database
         $appDB = path('~apps/' . $data['package_name'] . '/app.db');
 
-        self::runQuery($appDB,$data['package_name']);
+        self::runQuery($appDB, $data['package_name']);
         self::changeLang($data['package_name']);
         self::runService($data['package_name'], 'install');
         self::setApp('com_pinoox_manager', true);
@@ -90,8 +90,10 @@ class Wizard
         }
 
         return [
+            'type' => 'app',
             'filename' => $filename,
             'package_name' => $app->packageName,
+            'app' => $app->packageName,
             'name' => $app->name,
             'description' => $app->description,
             'version' => $app->versionName,
@@ -365,8 +367,12 @@ class Wizard
 
     public static function installTemplate($file, $packageName, $meta)
     {
-        Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']));
-        File::remove_file($file);
+        if (Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']))) {
+            File::remove_file($file);
+            return true;
+        }
+
+        return false;
     }
 
     public static function deleteTemplate($packageName, $folderName)
@@ -381,16 +387,56 @@ class Wizard
         return file_exists($file);
     }
 
-    public static function pullTemplateMeta($file)
+    public static function pullTemplateMeta($pinFile)
     {
-        $name = File::name($file);
-        $dir = File::dir($file) . DIRECTORY_SEPARATOR . $name;
-        if (Zip::extract($file, $dir)) {
-            $meta = file_get_contents(Dir::path($dir . '>meta.json'));
-            $meta = json_decode($meta, true);
-            File::remove($dir);
-            return $meta;
+        $filename = File::fullname($pinFile);
+        $size = File::size($pinFile);
+        $name = File::name($pinFile);
+        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        $metaFile = $dir . DIRECTORY_SEPARATOR . 'meta.json';
+
+        if (!is_file($metaFile)) {
+            Zip::addEntries('meta.json');
+            Zip::extract($pinFile, $dir);
         }
-        return null;
+
+        $meta = json_decode(file_get_contents($metaFile), true);
+        $coverPath = @$meta['cover'];
+
+        $cover = Url::file('resources/theme.jpg');
+        if (!empty($coverPath)) {
+            $coverFile = Dir::path($dir . '>' . $coverPath);
+            if (!is_file($coverFile)) {
+                Zip::addEntries($coverPath);
+                Zip::extract($pinFile, $dir);
+            }
+
+            if (is_file($coverFile))
+                $cover = Url::file($dir . '>' . $coverPath);
+        }
+
+        if (empty($meta['title'])) {
+            $title = null;
+        } else if (empty($meta['title'][Lang::current()])) {
+            $title = array_values($meta['title'])[0];
+        } else {
+            $title = $meta['title'][Lang::current()];
+        }
+
+        return [
+            'type' => 'theme',
+            'filename' => $filename,
+            'template_name' => $title,
+            'app' => @$meta['app'],
+            'name' => @$meta['name'],
+            'title' => @$meta['title'],
+            'description' => @$meta['description'],
+            'version' => @$meta['version'],
+            'version_code' => @$meta['app_version'],
+            'developer' => @$meta['developer'],
+            'path_cover' => @$meta['cover'],
+            'cover' => $cover,
+            'size' => File::print_size($size, 1),
+        ];
     }
 }

@@ -104,7 +104,8 @@
                     db: this.db,
                     user: this.user,
                 }).then((json) => {
-                    if (json.data.status) {
+                    let isInstall = !json.data || typeof json.data !== "object" || json.data.status;
+                    if (isInstall) {
                         setTimeout(()=>{
                             this.isLoading = false;
                             this._redirect(this.URL.SITE);

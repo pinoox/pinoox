@@ -133,6 +133,7 @@ class User
         if (is_null($token)) {
             $header = apache_request_headers();
             $token = @$header['Authorization'];
+            $token = empty($token)? @$header['authorization'] : $token;
             if (empty($token))
                 return false;
         }

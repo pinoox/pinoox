@@ -75,7 +75,10 @@
             },
             setTemplate(t) {
                 this.$http.get(this.URL.API + 'template/set/' + this.app.package_name + '/' + t.folder).then((json) => {
-                    this.getTemplates();
+                    this.templates = this.templates.map((item)=>{
+                        item.activate = item.folder === t.folder;
+                        return item;
+                    });
                 });
             }
         },
