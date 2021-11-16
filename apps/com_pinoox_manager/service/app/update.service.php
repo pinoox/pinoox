@@ -28,6 +28,9 @@ class UpdateService implements ServiceInterface
 
     public function _run()
     {
+        Config::remove('options.pinoox_auth');
+        Config::save('options');
+
         $dir = Dir::path('pinupdate/','com_pinoox_manager');
         if(!is_dir($dir))
             return;

@@ -1,6 +1,31 @@
 # Release Notes
 ## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
 
+## [v1.6.8 (2021-11-16)](https://github.com/pinoox/pinoox/compare/1.6.8...master)  
+
+## Added
+
+- Add a quick connection to a Pinoox account
+- Add beautiful dumb component
+- Add template installation in the manual installer
+- Add the ability to upload base64 files
+
+## Changed
+
+- Improved performance of the controllers under the folder
+- Upgrade Uploader Component
+- Improving HTTP Request component in curl method
+
+## Fixed
+
+- Fix a problem with installing Pinoox on version older MySQL
+- Fix result validation generate
+- Fix date problem in the validation component
+- Fix an issue with receiving meta information in the templates list
+- Fix an authorization recognition problem on some web servers
+- Minor bug fixes
+ 
+ 
 ## [v1.6.0 (2020-12-28)](https://github.com/pinoox/pinoox/compare/1.6.0...master)  
 
  ## Added

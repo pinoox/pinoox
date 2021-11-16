@@ -78,7 +78,7 @@ return [
     'download' => 'دانلود',
     're_download' => 'دانلود مجدد',
     'create_pinoox_account' => 'ایجاد حساب کاربری پینوکس',
-    'required_login_for_download_app' => 'برای دانلود و نصب اپلیکیشن های مارکت باید به حساب کاربری پینوکس خود متصل شوید',
+    'required_login_for_download_app' => 'برای دانلود و نصب اپلیکیشن های مارکت به حساب کاربری پینوکس خود متصل شوید',
     'app_manager'=>'اپلیکیشن ها',
     'app_manager_title'=>'مدیریت اپلیکیشن ها',
     'installed_apps'=>'نصب شده ها',
