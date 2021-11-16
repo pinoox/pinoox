@@ -113,6 +113,11 @@ module.exports = {
         }),
         new VueLoaderPlugin(),
         new Notification(),
+        new webpack.ProvidePlugin({
+            $: 'jquery',
+            jQuery: 'jquery',
+            'window.jQuery': 'jquery',
+        }),
     ],
     optimization: {
         minimize: isRelease,

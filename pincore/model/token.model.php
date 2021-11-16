@@ -27,6 +27,15 @@ class TokenModel extends PinooxDatabase
         return self::$db->getOne(self::token);
     }
 
+    public static function update_user_id($token_key,$user_id)
+    {
+        self::$db->where('app', Token::getApp());
+        self::$db->where('token_key', $token_key);
+        return self::$db->update(self::token,[
+            'user_id' => $user_id,
+        ]);
+    }
+
     public static function fetch_by_key_without_app($token_key)
     {
         self::$db->where('token_key', $token_key);

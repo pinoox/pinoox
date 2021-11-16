@@ -21,4 +21,5 @@ return [
     'logout_account' => 'logout account',
     'login_account' => 'login to account',
     'account' => 'account',
+    'connect_to_pinoox' => 'Connect to Pinoox',
 ];

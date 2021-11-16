@@ -17,15 +17,8 @@ use pinoox\component\Config;
 use pinoox\component\Dir;
 use pinoox\component\Response;
 
-class OptionsController extends MasterConfiguration
+class OptionsController extends LoginConfiguration
 {
-    public function get()
-    {
-        $options = Config::get('options');
-        $options['lang'] = AppProvider::get('lang');
-        Response::json($options);
-    }
-
     public function changeBackground($name)
     {
         $path = Dir::theme('dist/images/backgrounds/' . $name . '.jpg');

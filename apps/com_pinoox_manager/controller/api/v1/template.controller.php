@@ -21,7 +21,7 @@ use pinoox\component\Lang;
 use pinoox\component\Response;
 use pinoox\component\Url;
 
-class TemplateController extends MasterConfiguration
+class TemplateController extends LoginConfiguration
 {
     public function get($packageName)
     {

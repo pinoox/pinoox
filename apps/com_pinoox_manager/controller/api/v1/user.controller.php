@@ -12,8 +12,10 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
+use pinoox\component\Config;
 use pinoox\component\Date;
 use pinoox\component\Lang;
+use pinoox\component\app\AppProvider;
 use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Uploader;
@@ -234,4 +236,10 @@ class UserController extends MasterConfiguration
         Response::json($users);
     }
 
+    public function getOptions()
+    {
+        $options = Config::get('options');
+        $options['lang'] = AppProvider::get('lang');
+        Response::json($options);
+    }
 }

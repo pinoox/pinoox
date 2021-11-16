@@ -23,7 +23,7 @@ use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Url;
 
-class MarketController extends MasterConfiguration
+class MarketController extends LoginConfiguration
 {
     public function getDownloads()
     {

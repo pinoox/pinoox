@@ -112,11 +112,6 @@
             }
         },
         computed: {
-            pinooxAuth: {
-                get() {
-                    return this.$store.state.pinooxAuth;
-                }
-            },
             installedApps: {
                 get() {
                     return this.$store.state.apps;
@@ -124,7 +119,7 @@
             },
         },
         methods: {
-            ...mapMutations(['getApps', 'logoutPinooxAuth']),
+            ...mapMutations(['getApps']),
             getApp() {
                 this.isLoading = true;
                 this.$http.get(this.URL.API + 'market/getOneApp/' + this.package_name).then((json) => {

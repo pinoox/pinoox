@@ -37,6 +37,10 @@ export default new Vuex.Store({
             lock_time: 0,
             lang: 'fa'
         },
+        connectData:{
+            connect_key:null,
+            token_key:null,
+        },
         apps: {},
         isOpenNotification: false,
         notifications: {
@@ -164,17 +168,6 @@ export default new Vuex.Store({
         updateDirections: (state, direction) => {
             document.body.className = direction;
             state.animDirection = direction === 'rtl' ? 'Right' : 'Left';
-        },
-        logoutPinooxAuth: (state) => {
-            $http.get(PINOOX.URL.API + 'account/logout').then((json) => {
-                state.pinooxAuth = {isLogin: false};
-            });
-
-        },
-        getPinooxAuth: (state) => {
-            $http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
-                state.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
-            });
         },
         pushToTabs: (state, info) => {
             state.tabCurrent = {

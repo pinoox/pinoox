@@ -21,4 +21,5 @@ return [
     'logout_account' => 'خروج از حساب کاربری',
     'login_account' => 'ورود به حساب کابری',
     'account' => 'حساب کاربری',
+    'connect_to_pinoox' => 'اتصال به پینوکس',
 ];

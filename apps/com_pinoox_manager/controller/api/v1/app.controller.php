@@ -22,7 +22,7 @@ use pinoox\component\Request;
 use pinoox\component\Response;
 use pinoox\component\Uploader;
 
-class AppController extends MasterConfiguration
+class AppController extends LoginConfiguration
 {
     public function get($filter = null)
     {

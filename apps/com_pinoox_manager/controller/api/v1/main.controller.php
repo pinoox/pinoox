@@ -18,7 +18,7 @@ use pinoox\component\Config;
 use pinoox\component\Lang;
 use pinoox\component\Response;
 
-class MainController extends MasterConfiguration
+class MainController extends LoginConfiguration
 {
     public function changeLang($lang)
     {

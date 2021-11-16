@@ -109,10 +109,15 @@
         },
         methods: {
             ...mapActions(['run']),
-            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'getPinooxAuth', 'closeFromTabs']),
+            ...mapMutations(['logout', 'lock', 'getApps', 'toggleNotification', 'closeFromTabs']),
             getOptions() {
-                this.$http.get(this.URL.API + 'options/get').then((json) => {
+                this.$http.get(this.URL.API + 'user/getOptions').then((json) => {
                     this.options = json.data;
+                });
+            },
+          getConnectData() {
+                this.$http.get(this.URL.API + 'account/getConnectData').then((json) => {
+                    this._connect = json.data;
                 });
             },
             getUser() {
@@ -156,6 +161,8 @@
                 if (this.isLogin && !this.isLock) {
                     this.locker();
                     this.getApps();
+                  this.getPinooxAuth();
+                  this.getConnectData();
                     this.getNotifications();
                     this.checkVersion();
                 } else {
@@ -215,7 +222,6 @@
             this.$router.replace({name: 'loading'});
             this.getUser();
             this.getOptions();
-            this.getPinooxAuth();
 
         },
         mounted() {

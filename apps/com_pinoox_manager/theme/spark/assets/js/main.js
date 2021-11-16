@@ -2,7 +2,6 @@
 
 import 'bootstrap';
 import 'simplebar';
-import $ from 'jquery';
 import Vue from 'vue';
 import "./mixins/global";
 import axios from 'axios';

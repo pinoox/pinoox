@@ -1,5 +1,6 @@
 import Vue from "vue";
 import {mapMutations} from 'vuex';
+import $http from "axios";
 
 Vue.mixin({
     created() {
@@ -15,6 +16,14 @@ Vue.mixin({
             },
             get() {
                 return this.$store.state.LANG;
+            }
+        },
+        _connect: {
+            get() {
+                return this.$store.state.connectData;
+            },
+            set(val) {
+                this.$store.state.connectData = val;
             }
         },
         _sidebar: {
@@ -68,6 +77,14 @@ Vue.mixin({
                 this.$store.state.isLoading = val;
             }
         },
+        pinooxAuth: {
+            get() {
+                return this.$store.state.pinooxAuth;
+            },
+            set(val) {
+                this.$store.state.pinooxAuth = val;
+            }
+        },
         isLock: {
             get() {
                 return this.$store.state.isLock;
@@ -89,6 +106,17 @@ Vue.mixin({
         ...mapMutations(['notify', 'pushToTabs', 'closeFromTabs','pushToNotifications','closeFromNotifications']),
         _isEmptyObj(obj) {
             return Object.keys(obj).length === 0
+        },
+        logoutPinooxAuth() {
+            return this.$http.get(PINOOX.URL.API + 'account/logout').then((json) => {
+                this.pinooxAuth = {isLogin: false};
+            });
+
+        },
+        getPinooxAuth() {
+            return this.$http.get(PINOOX.URL.API + 'account/getPinooxAuth').then((json) => {
+                this.pinooxAuth = (json.data === null || !json.data) ? {isLogin: false} : json.data;
+            });
         },
         _redirect(path, seconds) {
             let s = seconds * 1000;

@@ -57,11 +57,6 @@
                     this.$store.state.apps = val;
                 }
             },
-            pinooxAuth: {
-                get() {
-                    return this.$store.state.pinooxAuth;
-                }
-            },
         },
     }
 </script>

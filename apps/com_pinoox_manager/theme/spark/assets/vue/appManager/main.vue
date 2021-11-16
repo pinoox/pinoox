@@ -67,11 +67,6 @@
                     ],
                 };
             },
-            pinooxAuth: {
-                get() {
-                    return this.$store.state.pinooxAuth;
-                }
-            },
             apps: {
                 get() {
                     return this.$store.state.apps;
