@@ -13,6 +13,7 @@ namespace pinoox\service;
 
 use pinoox\component\interfaces\ServiceInterface;
 use pinoox\component\Router;
+use pinoox\component\Url;
 
 class RouterService implements ServiceInterface
 {
