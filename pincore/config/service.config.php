@@ -2,4 +2,5 @@
 
 return [
     '~router',
+    '~console',
 ];
