@@ -343,4 +343,14 @@ class HelperString
     {
         return (preg_match('/\\.[^.\\s]{' . $start . ',' . $end . '}$/', $string));
     }
+
+    public static function width($string)
+    {
+        $string ?? $string = '';
+        if (false === $encoding = mb_detect_encoding($string, null, true)) {
+            return \strlen($string);
+        }
+
+        return mb_strwidth($string, $encoding);
+    }
 }
