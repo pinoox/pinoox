@@ -50,7 +50,7 @@ class AppModel extends PinooxDatabase
                 continue;
 
             $isHidden = AppProvider::get('hidden');
-            if ($isHidden)
+            if ( ! $isCheckHidden && $isHidden)
                 continue;
 
             $isRouter = AppProvider::get('router');
