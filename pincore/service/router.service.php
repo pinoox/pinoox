@@ -19,8 +19,10 @@ class RouterService implements ServiceInterface
 
     public function _run()
     {
-        Router::start();
-        Router::call();
+        if ( ! is_null(Url::request())){
+            Router::start();
+            Router::call();
+        }
     }
 
     public function _stop()
