@@ -82,8 +82,8 @@ class version extends console implements CommandInterface
         $server_version_code = (isset($server_version['version_code'])) ? $server_version['version_code'] : 0;
         $isNewVersion = ($server_version_code > $client_version['version_code']);
 
-        if ($isNewVersion)
-            self::notificationCheckVersion($server_version);
+//        if ($isNewVersion)
+//            self::notificationCheckVersion($server_version);
 
         return ['server' => $server_version, 'client' => $client_version, 'isNewVersion' => $isNewVersion];
     }
