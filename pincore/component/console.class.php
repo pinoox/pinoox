@@ -25,6 +25,7 @@ class console
     private static $CommandArguments = [] ;
     private static $CommandEnter = null ;
     private static $CommandClass = null ;
+    private static $ProgressBar = [] ;
 
     private static $foreground_colors = array(
         'black'        => '0;30', 'dark_gray'    => '1;30',
@@ -193,6 +194,133 @@ class console
         }
     }
 
+    protected function startProgressBar($totalJob , $description = null){
+        self::$ProgressBar['totalJobs']  = $totalJob;
+        self::$ProgressBar['completed']  = 0;
+        self::$ProgressBar['description']  = $description;
+        self::$ProgressBar['percent']  = floor(self::$ProgressBar['completed'] * 100 / $totalJob );
+        self::$ProgressBar['pixel']  = floor(self::$ProgressBar['percent'] / 4);
+        self::$ProgressBar['emptyPixel']  = 25 - self::$ProgressBar['pixel'] > 0 ? 25 - self::$ProgressBar['pixel'] : 0 ;
+        self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+    }
+
+    protected function nextStepProgressBar($jobs = 1 ){
+        self::$ProgressBar['completed'] = self::$ProgressBar['completed'] + $jobs;
+        if (self::$ProgressBar['completed'] > self::$ProgressBar['totalJobs'] ){
+            self::$ProgressBar['totalJobs'] = self::$ProgressBar['completed'];
+        }
+        self::$ProgressBar['percent']  = floor(self::$ProgressBar['completed'] * 100 / self::$ProgressBar['totalJobs'] );
+        self::$ProgressBar['pixel']  = floor(self::$ProgressBar['percent'] / 4);
+        self::$ProgressBar['emptyPixel']  = 25 - self::$ProgressBar['pixel'] > 0 ? 25 - self::$ProgressBar['pixel'] : 0 ;
+        self::moveUp();
+        self::clearLine();
+        self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) ,str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+    }
+
+    protected function finishProgressBar(){
+        self::$ProgressBar['completed'] = self::$ProgressBar['totalJobs'];
+        self::$ProgressBar['percent']  = 100;
+        self::$ProgressBar['pixel']  = 25;
+        self::$ProgressBar['emptyPixel']  =  0 ;
+        self::moveUp();
+        self::clearLine();
+        self::success(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+        self::$ProgressBar = [];
+    }
+
+
+    protected function moveUp($lines = 1)
+    {
+        echo (sprintf("\x1b[%dA", $lines));
+    }
+
+    protected function moveDown($lines = 1)
+    {
+        echo (sprintf("\x1b[%dB", $lines));
+    }
+
+    protected function moveRight($columns = 1)
+    {
+        echo (sprintf("\x1b[%dC", $columns));
+    }
+
+    protected function moveLeft($columns = 1)
+    {
+        echo (sprintf("\x1b[%dD", $columns));
+    }
+
+    protected function moveToColumn($column)
+    {
+        echo (sprintf("\x1b[%dG", $column));
+    }
+
+    protected function moveToPosition($column, $row)
+    {
+        echo (sprintf("\x1b[%d;%dH", $row + 1, $column));
+    }
+
+
+    /**
+     * Clears all the output from the current line.
+     */
+    protected function clearLine()
+    {
+        echo ("\x1b[2K");
+    }
+
+    /**
+     * Clears all the output from the current line after the current position.
+     */
+    protected function clearLineAfter()
+    {
+        echo ("\x1b[K");
+    }
+
+    /**
+     * Clears all the output from the cursors' current position to the end of the screen.
+     */
+    protected function clearOutput()
+    {
+        echo ("\x1b[0J");
+    }
+
+    /**
+     * Clears the entire screen.
+     */
+    protected function clearScreen()
+    {
+        echo ("\x1b[2J");
+    }
+
+    /**
+     * Returns the current cursor position as x,y coordinates.
+     */
+    protected function getCurrentPosition()
+    {
+        static $isTtySupported;
+
+        if (null === $isTtySupported && \function_exists('proc_open')) {
+            $isTtySupported = (bool) @proc_open('echo 1 >/dev/null', [['file', '/dev/tty', 'r'], ['file', '/dev/tty', 'w'], ['file', '/dev/tty', 'w']], $pipes);
+        }
+
+        if (!$isTtySupported) {
+            return [1, 1];
+        }
+
+        $sttyMode = shell_exec('stty -g');
+        shell_exec('stty -icanon -echo');
+
+        @fwrite($this->input, "\033[6n");
+
+        $code = trim(fread($this->input, 1024));
+
+        shell_exec(sprintf('stty %s', $sttyMode));
+
+        sscanf($code, "\033[%d;%dR", $row, $col);
+
+        return [$col, $row];
+    }
+    
     protected function getColumnWidth($commands)
     {
         $widths = [];
