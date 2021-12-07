@@ -49,7 +49,7 @@ class console
         self::findCommand();
     }
 
-    public static function option($key = null ){
+    protected function option($key = null ){
         if ( is_null($key) )
             return self::$CommandOptions;
 
@@ -58,7 +58,7 @@ class console
 
         return false;
     }
-    public static function argument($key = null ){
+    protected function argument($key = null ){
         if ( is_null($key) )
             return self::$CommandArguments;
 
@@ -70,7 +70,7 @@ class console
     public static function command(){
         return self::$CommandEnter;
     }
-    public static function hasOption($optionNeed,$Options){
+    protected function hasOption($optionNeed,$Options){
         $OptionName = false;
         $OptionNameMin = false;
         foreach ($Options as $option ){
@@ -92,22 +92,25 @@ class console
     }
 
 
-    public static function success($text){
+    protected function success($text){
         echo self::getColoredString($text , 'green');
     }
-    public static function danger($text){
+    protected function danger($text){
         echo self::getColoredString($text , 'red');
     }
-    public static function warning($text){
+    protected function warning($text){
         echo self::getColoredString($text , 'yellow');
     }
-    public static function info($text){
+    protected function info($text){
         echo self::getColoredString($text , 'white');
     }
-    public static function newLine(){
+    protected function gray($text){
+        echo self::getColoredString($text , 'dark_gray');
+    }
+    protected function newLine(){
         echo "\n";
     }
-    public static function error($text){
+    protected function error($text){
         $text = "     ".$text."     ";
         self::newLine();
         echo self::getColoredString(str_repeat(" ",strlen($text)) , 'white', 'red');
@@ -119,6 +122,84 @@ class console
         exit;
     }
 
+    protected function table($headers , $rows)
+    {
+        try {
+
+            $widths = [];
+            foreach ($headers as $index => $header) {
+                $array = array_column($rows, $index);
+                $array[]= $header;
+                $widths[$index] = self::getColumnWidth($array) + 4;
+            }
+            $border = '┌';
+            foreach ($widths as $width){
+                $border .= str_repeat('─' , $width);
+                if (next($widths)==true){
+                    $border .= '┬';
+                }
+            }
+            $border .= '┐';
+            self::gray($border);
+            self::newLine();
+            self::gray('│');
+            $border = '├';
+            foreach ($headers as $index => $header) {
+                self::success(' '.$header . str_repeat(' ',$widths[$index] - HelperString::width($header) - 1) );
+                self::gray('│');
+                $border .= str_repeat('─' , $widths[$index]);
+                if (next($headers)==true){
+                    $border .= '┼';
+                }
+            }
+            $border .= '┤';
+            self::newLine();
+            self::gray($border);
+
+            foreach ($rows  as $row){
+                $hasNextRow = next($rows) == true;
+                self::newLine();
+                self::gray('│');
+                $border = $hasNextRow ? '├' : '└';
+                foreach ($row as $index => $column){
+                    self::info(' '.$column . str_repeat(' ',($widths[$index] ?? HelperString::width($column) + 1) - HelperString::width($column) - 1) );
+                    self::gray('│');
+                    $border .= str_repeat('─' , $widths[$index] ?? HelperString::width($column) + 1 );
+                    if (next($row)==true){
+                        $border .= $hasNextRow ? '┼' : '┴';
+                    }
+                }
+                $border .= $hasNextRow  ? '┤' :'┘';
+                self::newLine();
+                self::gray($border);
+            }
+
+            if ( count($rows) == 0 ){
+                $border = '└';
+                foreach ($widths as $width){
+                    $border .= str_repeat('─' , $width);
+                    if (next($widths)==true){
+                        $border .= '┴';
+                    }
+                }
+                $border .= '┘';
+                self::newLine();
+                self::gray($border);
+            }
+
+        } catch (\Exception $e){
+            self::error('Table columns or rows is not match with each other!');
+        }
+    }
+
+    protected function getColumnWidth($commands)
+    {
+        $widths = [];
+        foreach ($commands as $command) {
+            $widths[] = HelperString::width($command);
+        }
+        return $widths ? max($widths) + 2 : 0;
+    }
     private static function findCommand(){
         $arguments = self::$argument;
         if ( isset($arguments[1]) and HelperString::has($arguments[1], '--')){
@@ -268,7 +349,7 @@ class console
 
 
     // Returns colored string
-    public static function getColoredString($string, $foreground_color = null, $background_color = null) {
+    protected function getColoredString($string, $foreground_color = null, $background_color = null) {
         $colored_string = "";
 
         // Check if given foreground color found
