@@ -20,16 +20,16 @@ use pinoox\component\interfaces\CommandInterface;
 class makeCommand extends console implements CommandInterface
 {
 
-    protected string $signature = 'make:command';
+    protected $signature = 'make:command';
 
-    protected string $description = 'Create new command.';
+    protected $description = 'Create new command.';
 
-    protected array $arguments = [
+    protected $arguments = [
         [ 'name' , true , 'Name of Command.' ],
         [ 'app_name' , true , 'Name of your application.' ],
     ];
 
-    protected array $options = [
+    protected $options = [
         [ "sign" , "s" , "Signature of call command." , 'new:command' ],
         [ "description" , "d" , "Set Description of this command." , "Description of this command" ],
     ];
@@ -42,31 +42,31 @@ class makeCommand extends console implements CommandInterface
     {
         $this->checkData();
         if ( $this->writeCode() ) {
-            self::success(sprintf('Command "%s" successfully generated in "%s"' , $this->name , $this->path));
+            $this->success(sprintf('Command "%s" successfully generated in "%s"' , $this->name , $this->path));
         }
     }
 
     private function checkData(){
-        if ( self::argument('app_name') != '~'){
-            if ( is_dir(Dir::path('~apps/'.self::argument('app_name') )) ){
-                $this->path = Dir::path('~apps/'.self::argument('app_name').'/command/'.self::argument('name').'.php' ) ;
+        if ( $this->argument('app_name') != '~'){
+            if ( is_dir(Dir::path('~apps/'.$this->argument('app_name') )) ){
+                $this->path = Dir::path('~apps/'.$this->argument('app_name').'/command/'.$this->argument('name').'.php' ) ;
                 if ( ! is_file($this->path)){
-                    $this->app = self::argument('app_name') ;
-                    $this->nameSpace = 'pinoox\app\\'.self::argument('app_name') .'\command' ;
-                    $this->name = self::argument('name') ;
+                    $this->app = $this->argument('app_name') ;
+                    $this->nameSpace = 'pinoox\app\\'.$this->argument('app_name') .'\command' ;
+                    $this->name = $this->argument('name') ;
                 } else {
-                    self::error(sprintf('Same command as name "%s" exist in "%s" application!' ,self::argument('name') , self::argument('app_name') ));
+                    $this->error(sprintf('Same command as name "%s" exist in "%s" application!' ,$this->argument('name') , $this->argument('app_name') ));
                 }
             } else {
-                self::error(sprintf('Can not find "%s" application!' , self::argument('app_name') ));
+                $this->error(sprintf('Can not find "%s" application!' , $this->argument('app_name') ));
             }
         } else {
-            $this->path = Dir::path('~pincore/command/'.self::argument('name').'.php' ) ;
+            $this->path = Dir::path('~pincore/command/'.$this->argument('name').'.php' ) ;
             if ( ! is_file($this->path)){
                 $this->nameSpace = 'pinoox\command' ;
-                $this->name = self::argument('name') ;
+                $this->name = $this->argument('name') ;
             } else {
-                self::error(sprintf('Same command as name "%s" exist in Pincore!' ,self::argument('name') ));
+                $this->error(sprintf('Same command as name "%s" exist in Pincore!' ,$this->argument('name') ));
             }
         }
     }
@@ -77,14 +77,14 @@ class makeCommand extends console implements CommandInterface
         $code .= "use pinoox\component\interfaces\CommandInterface;\n\n\n" ;
         $code .= sprintf("class %s extends console implements CommandInterface\n{\n\n", $this->name) ;
         $code .= "\t/**\n\t* The console command name.\n\t*\n\t* @var string\n\t*/\n" ;
-        $code .= sprintf("\t".'protected string $signature = "%s";'."\n\n", self::option('sign')) ;
+        $code .= sprintf("\t".'protected $signature = "%s";'."\n\n", $this->option('sign')) ;
         $code .= "\t/**\n\t* The console command description.\n\t*\n\t* @var string\n\t*/\n" ;
-        $code .= sprintf("\t".'protected string $description = "%s";'."\n\n", self::option('description')) ;
+        $code .= sprintf("\t".'protected $description = "%s";'."\n\n", $this->option('description')) ;
         $code .= "\t/**\n\t* The console command Arguments.\n\t*\n\t* @var array\n\t*/\n" ;
-        $code .= "\t".'protected array $arguments = ['."\n" ;
+        $code .= "\t".'protected $arguments = ['."\n" ;
         $code .= "\t\t".'//[ name , is_required , description , default ],'."\n\t];\n\n" ;
         $code .= "\t/**\n\t* The console command Options.\n\t*\n\t* @var array\n\t*/\n" ;
-        $code .= "\t".'protected array $options = ['."\n" ;
+        $code .= "\t".'protected $options = ['."\n" ;
         $code .= "\t\t".'//[ name , short_name , description , default ],'."\n\t];\n\n" ;
         $code .= "\t/**\n\t* Execute the console command.\n\t*\n\t*/\n" ;
         $code .= "\t".'public function handle()'."\n\t{\n\t\t// TODO: Implement handle() method.\n\t}\n" ;

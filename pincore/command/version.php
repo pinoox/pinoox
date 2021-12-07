@@ -21,21 +21,21 @@ class version extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected string $signature = "version";
+	protected $signature = "version";
 
 	/**
 	* The console command description.
 	*
 	* @var string
 	*/
-	protected string $description = "Check version of pinoox.";
+	protected $description = "Check version of pinoox.";
 
 	/**
 	* The console command Arguments.
 	*
 	* @var array
 	*/
-	protected array $arguments = [
+	protected $arguments = [
 		//[ name , is_required , description , default ],
 	];
 
@@ -44,7 +44,7 @@ class version extends console implements CommandInterface
 	*
 	* @var array
 	*/
-	protected array $options = [
+	protected $options = [
 		//[ name , short_name , description , default ],
 	];
 
@@ -65,7 +65,7 @@ class version extends console implements CommandInterface
 	        self::info(sprintf("Last version release: %s", $data['server']['version_name']));
 	        self::error('You need to update pinoox!');
         } else {
-            self::success(sprintf("You use the last version of pnoox. (%s)", $data['server']['version_name']));
+            self::success(sprintf("You use the last version of pinoox. (%s)", $data['server']['version_name']));
             self::newLine();
             self::newLine();
         }
