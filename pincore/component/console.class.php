@@ -76,8 +76,8 @@ class console
         $OptionNameMin = false;
         foreach ($Options as $option ){
             if ( ( isset($option[0]) and $option[0] == $optionNeed ) or ( isset($option[1]) and $option[1] == $optionNeed ) ){
-                $OptionName = '--'.$option[0] ?? false;
-                $OptionNameMin = '--'.$option[1] ?? false;
+                $OptionName = isset($option[0]) ? '--'.$option[0] : false;
+                $OptionNameMin = isset($option[1]) ? '--'.$option[1] : false;
             }
         }
         return
@@ -163,9 +163,9 @@ class console
                 self::gray('│');
                 $border = $hasNextRow ? '├' : '└';
                 foreach ($row as $index => $column){
-                    self::info(' '.$column . str_repeat(' ',($widths[$index] ?? HelperString::width($column) + 1) - HelperString::width($column) - 1) );
+                    self::info(' '.$column . str_repeat(' ',(isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1) - HelperString::width($column) - 1) );
                     self::gray('│');
-                    $border .= str_repeat('─' , $widths[$index] ?? HelperString::width($column) + 1 );
+                    $border .= str_repeat('─' , isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1 );
                     if (next($row)==true){
                         $border .= $hasNextRow ? '┼' : '┴';
                     }
@@ -338,7 +338,7 @@ class console
             self::$argument[] = '--c='.$arguments[1];
             array_splice( $arguments, 1, 1, ['help'] );
         }
-        self::$CommandSignature = $arguments[1] ?? "help";
+        self::$CommandSignature = isset($arguments[1]) ? $arguments[1] : "help";
         $command = self::getListCommand( self::$CommandSignature );
         if ( $command == false ){
             self::error(sprintf('Command "%s" is not defined.', self::$CommandSignature) );
@@ -376,9 +376,9 @@ class console
                     }
                     $result[$signature] = [
                         'signature' => $signature,
-                        'description' => $description ?? "",
-                        'arguments' => $arguments ?? [],
-                        'Options' => $Options ?? [],
+                        'description' => isset($description) ? $description : "",
+                        'arguments' => isset($arguments) ? $arguments : [],
+                        'Options' => isset($Options) ? $Options : [],
                         'class' => $class
                     ];
                     if ( ! is_null($needCommand) and $signature == $needCommand)
@@ -387,7 +387,7 @@ class console
                 }
             }
         }
-        return is_null($needCommand) ? $result : ($result[$needCommand] ?? false);
+        return is_null($needCommand) ? $result : ( isset($result[$needCommand]) ? $result[$needCommand] : false);
     }
 
     private static function parseCommand($command){
@@ -416,7 +416,9 @@ class console
             if ( isset( $argument[1] ) and $argument[1] and ! isset($TempCommandArguments[$index]) )
                 $errors[] = sprintf('"%s"' , $argument[0] );
             else
-                $CommandArguments[$argument[0]] = $TempCommandArguments[$index] ?? $argument[3] ?? null;
+                $CommandArguments[$argument[0]] = isset($TempCommandArguments[$index]) ?
+                                                    $TempCommandArguments[$index] :
+                                                    ( isset($argument[3]) ? $argument[3] : null );
         }
         if ( count($errors)  > 0 ){
             self::error(sprintf("Not enough arguments (missing: %s)." , implode(", " , $errors)) );
@@ -424,10 +426,10 @@ class console
         foreach ( $command['Options'] as $index => $Option){
             if ( ! is_array($Option) )
                 $Option[0] = $Option;
-            $CommandOptions[$Option[0]] = $TempCommandOptions[$Option[0]] ?? $Option[3] ?? null;
+            $CommandOptions[$Option[0]] = isset($TempCommandOptions[$Option[0]]) ? $TempCommandOptions[$Option[0]] : ( isset($Option[3]) ? $Option[3] : null );
             if ( isset($Option[1])){
-                $CommandOptions[$Option[0]] = $TempCommandOptions[$Option[1]] ?? $Option[3] ?? null;
-                $CommandOptions[$Option[1]] = $TempCommandOptions[$Option[1]] ?? $Option[3] ?? null;
+                $CommandOptions[$Option[0]] = isset($TempCommandOptions[$Option[1]]) ? $TempCommandOptions[$Option[1]] : ( isset($Option[3]) ? $Option[3] : null );
+                $CommandOptions[$Option[1]] = isset($TempCommandOptions[$Option[1]]) ? $TempCommandOptions[$Option[1]] : ( isset($Option[3]) ? $Option[3] : null );
             }
         }
         call_user_func_array([$command['class'], "setCommandData"],[$CommandArguments , $CommandOptions , implode(' ' ,self::$argument)]);

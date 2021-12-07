@@ -58,12 +58,12 @@ class Url
 
     public static function domain()
     {
-        return $_SERVER['HTTP_HOST'] ?? null;
+        return isset($_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
     }
 
     public static function request()
     {
-        return $_SERVER['REQUEST_URI'] ?? null;
+        return isset($_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
     }
 
     public static function app()
