@@ -125,7 +125,7 @@ class console
     protected function table($headers , $rows)
     {
         try {
-
+            self::newLine();
             $widths = [];
             foreach ($headers as $index => $header) {
                 $array = array_column($rows, $index);
@@ -186,6 +186,7 @@ class console
                 self::newLine();
                 self::gray($border);
             }
+            self::newLine();
 
         } catch (\Exception $e){
             self::error('Table columns or rows is not match with each other!');
