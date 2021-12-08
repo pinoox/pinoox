@@ -92,15 +92,15 @@ class help extends console implements CommandInterface
             $this->newLine();
             $this->warning('Options:');
             $this->newLine();
-            $width = $this->getColumnWidth(array_column($commands['Options'] , 1));
-            $width2 = $this->getColumnWidth(array_column($commands['Options'] , 0));
+            $width = $this->getColumnWidth(array_column($commands['Options'] , '1'));
+            $width2 = $this->getColumnWidth(array_column($commands['Options'] , '0'));
             foreach ($commands['Options'] as $arg ) {
                 $arg[0] = isset($arg[0]) ? $arg[0] : $arg;
                 if ( isset($arg[1]) and $arg[1] != "" )
-                    $this->success('   --' . $arg[1].',  ');
+                    $this->success(str_repeat(" ", $width  - HelperString::width($arg[1]) ) .'--' . $arg[1].', ' );
                 else
-                    $this->success(str_repeat(" ", $width  + 6));
-                $this->success('--'.$arg[0]);
+                    $this->success(str_repeat(" ", $width  + 4));
+                $this->success( '--'.$arg[0]);
                 $this->info(str_repeat(" ", $width2 - HelperString::width($arg[0]) + 2) . (isset($arg[2]) ? $arg[2] : ""));
                 if ( isset($arg[3]) and $arg[3] )
                     $this->warning('  [ default: "'.$arg[3].'"]');
