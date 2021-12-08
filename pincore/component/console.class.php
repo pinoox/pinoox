@@ -204,8 +204,9 @@ class console
         self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
     }
 
-    protected function nextStepProgressBar($jobs = 1 ){
+    protected function nextStepProgressBar($jobs = 1 , $totalJobs = 0){
         self::$ProgressBar['completed'] = self::$ProgressBar['completed'] + $jobs;
+        self::$ProgressBar['totalJobs'] = self::$ProgressBar['totalJobs'] + $totalJobs;
         if (self::$ProgressBar['completed'] > self::$ProgressBar['totalJobs'] ){
             self::$ProgressBar['totalJobs'] = self::$ProgressBar['completed'];
         }
@@ -217,14 +218,14 @@ class console
         self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) ,str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
     }
 
-    protected function finishProgressBar(){
+    protected function finishProgressBar($description = ""){
         self::$ProgressBar['completed'] = self::$ProgressBar['totalJobs'];
         self::$ProgressBar['percent']  = 100;
         self::$ProgressBar['pixel']  = 25;
         self::$ProgressBar['emptyPixel']  =  0 ;
         self::moveUp();
         self::clearLine();
-        self::success(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+        self::success(sprintf("{%s%s} %s (%d/%d) \t%s \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] , $description ));
         self::$ProgressBar = [];
     }
 
