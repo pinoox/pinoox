@@ -21,6 +21,7 @@ class console
 {
     private static $argument = [] ;
     private static $CommandSignature = null ;
+    private static $isHtml = false ;
     private static $CommandOptions = [] ;
     private static $CommandArguments = [] ;
     private static $CommandEnter = null ;
@@ -45,8 +46,52 @@ class console
     );
 
 
-    public static function run($argv){
+    /**
+     * Run command from controller
+     *
+     * examples :
+     * console::execute('make:build com_pinoox_welcome' , [],[] ,true) => return html output
+     * console::execute('make:build com_pinoox_welcome' , [],[] ,false) => return console output
+     * console::execute('make:app' , [],['h'] ,true)  => use empty option in option's array
+     * console::execute('help' , [],['c'=>'make:app'] ,true) => use option with value in option's array
+     * console::execute('make:app --h' , [],[] ,true)  => insert all data inside command parameter like shell
+     * console::execute('help --c=make:app' , [],[] ,true)  => insert all data inside command parameter like shell
+     * console::execute('help' , [],[] ,true , 'darkblue')  => change background color to dark blue.
+     *
+     * @param string $command Command signature or full command like in shell
+     * @param array $arguments List of arguments in order of priority
+     * @param array $options Array(key=>value) of options
+     * @param bool $html Return text as html or console output
+     * @param string $backGroundColor Color of background, if return as Html
+     * @return false|string
+     */
+    public static function execute($command = 'help' , $arguments = [] , $options = [] , $html = true , $backGroundColor = "black" ){
+        ob_start();
+        $argv = ['pinoox' ] ;
+        $argv = array_merge( $argv,  explode(' ',$command));
+        if ( count($arguments ) > 0 )
+            $argv = array_merge( $argv,  $arguments);
+        if ( count($options ) > 0 )
+            foreach ( $options as $key => $value )
+                if ( is_int($key))
+                    $argv[] = '--'.$value;
+                else
+                    $argv[] = '--'.$key.'='.$value;
+        self::run($argv , true);
+        $output = ob_get_contents();
+        ob_end_clean();
+        if ( $html ) {
+            $output = '<div class="console"><pre>' . nl2br($output) . '</pre></div>';
+            if ( ! is_null($backGroundColor) ){
+                $output = '<div class="console" style="background-color:'.$backGroundColor.'; padding:5px">'.$output.'</div>';
+            }
+        }
+        return $output;
+    }
+
+    public static function run($argv,$isHtml = false){
         self::$argument = $argv;
+        self::$isHtml = $isHtml;
         self::findCommand();
     }
 
@@ -68,7 +113,7 @@ class console
 
         return false;
     }
-    public static function command(){
+    protected static function command(){
         return self::$CommandEnter;
     }
     protected function hasOption($optionNeed,$Options){
@@ -109,9 +154,12 @@ class console
         echo self::getColoredString($text , 'dark_gray');
     }
     protected function newLine(){
-        echo "\n";
+        echo self::$isHtml ? "<br>":"\n";
     }
     protected function error($text){
+
+        if ( self::$isHtml )
+            echo '<div class="console"><pre>' ;
         $text = "     ".$text."     ";
         self::newLine();
         echo self::getColoredString(str_repeat(" ",strlen($text)) , 'white', 'red');
@@ -120,88 +168,101 @@ class console
         self::newLine();
         echo self::getColoredString(str_repeat(" ",strlen($text)  ) , 'white', 'red');
         self::newLine();
+        if ( self::$isHtml )
+            echo '</pre></div>';
         exit;
     }
 
     protected function table($headers , $rows)
     {
-        try {
-            self::newLine();
-            $widths = [];
-            foreach ($headers as $index => $header) {
-                $array = array_column($rows, $index);
-                $array[]= $header;
-                $widths[$index] = self::getColumnWidth($array) + 4;
-            }
-            $border = '┌';
-            foreach ($widths as $width){
-                $border .= str_repeat('─' , $width);
-                if (next($widths)==true){
-                    $border .= '┬';
+        if ( ! self::$isHtml ) {
+            try {
+                self::newLine();
+                $widths = [];
+                foreach ($headers as $index => $header) {
+                    $array = array_column($rows, $index);
+                    $array[] = $header;
+                    $widths[$index] = self::getColumnWidth($array) + 4;
                 }
-            }
-            $border .= '┐';
-            self::gray($border);
-            self::newLine();
-            self::gray('│');
-            $border = '├';
-            foreach ($headers as $index => $header) {
-                self::success(' '.$header . str_repeat(' ',$widths[$index] - HelperString::width($header) - 1) );
-                self::gray('│');
-                $border .= str_repeat('─' , $widths[$index]);
-                if (next($headers)==true){
-                    $border .= '┼';
+                $border = '┌';
+                foreach ($widths as $width) {
+                    $border .= str_repeat('─', $width);
+                    if (next($widths) == true) {
+                        $border .= '┬';
+                    }
                 }
-            }
-            $border .= '┤';
-            self::newLine();
-            self::gray($border);
-
-            foreach ($rows  as $row){
-                $hasNextRow = next($rows) == true;
+                $border .= '┐';
+                self::gray($border);
                 self::newLine();
                 self::gray('│');
-                $border = $hasNextRow ? '├' : '└';
-                foreach ($row as $index => $column){
-                    self::info(' '.$column . str_repeat(' ',(isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1) - HelperString::width($column) - 1) );
+                $border = '├';
+                foreach ($headers as $index => $header) {
+                    self::success(' ' . $header . str_repeat(' ', $widths[$index] - HelperString::width($header) - 1));
                     self::gray('│');
-                    $border .= str_repeat('─' , isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1 );
-                    if (next($row)==true){
-                        $border .= $hasNextRow ? '┼' : '┴';
+                    $border .= str_repeat('─', $widths[$index]);
+                    if (next($headers) == true) {
+                        $border .= '┼';
                     }
                 }
-                $border .= $hasNextRow  ? '┤' :'┘';
+                $border .= '┤';
                 self::newLine();
                 self::gray($border);
-            }
 
-            if ( count($rows) == 0 ){
-                $border = '└';
-                foreach ($widths as $width){
-                    $border .= str_repeat('─' , $width);
-                    if (next($widths)==true){
-                        $border .= '┴';
+                foreach ($rows as $row) {
+                    $hasNextRow = next($rows) == true;
+                    self::newLine();
+                    self::gray('│');
+                    $border = $hasNextRow ? '├' : '└';
+                    foreach ($row as $index => $column) {
+                        self::info(' ' . $column . str_repeat(' ', (isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1) - HelperString::width($column) - 1));
+                        self::gray('│');
+                        $border .= str_repeat('─', isset($widths[$index]) ? $widths[$index] : HelperString::width($column) + 1);
+                        if (next($row) == true) {
+                            $border .= $hasNextRow ? '┼' : '┴';
+                        }
                     }
+                    $border .= $hasNextRow ? '┤' : '┘';
+                    self::newLine();
+                    self::gray($border);
                 }
-                $border .= '┘';
-                self::newLine();
-                self::gray($border);
-            }
-            self::newLine();
 
-        } catch (\Exception $e){
-            self::error('Table columns or rows is not match with each other!');
+                if (count($rows) == 0) {
+                    $border = '└';
+                    foreach ($widths as $width) {
+                        $border .= str_repeat('─', $width);
+                        if (next($widths) == true) {
+                            $border .= '┴';
+                        }
+                    }
+                    $border .= '┘';
+                    self::newLine();
+                    self::gray($border);
+                }
+                self::newLine();
+
+            } catch (\Exception $e) {
+                self::error('Table columns or rows is not match with each other!');
+            }
+        } else {
+            echo '<table><tr><th>'.implode('</th><th>' ,$headers ).'</th></tr>';
+            foreach ($rows as $row) {
+                echo '<tr><td>'.implode('</td><td>' ,$row ).'</td></tr>';
+            }
+            echo '</table>';
         }
     }
 
-    protected function startProgressBar($totalJob , $description = null){
-        self::$ProgressBar['totalJobs']  = $totalJob;
-        self::$ProgressBar['completed']  = 0;
-        self::$ProgressBar['description']  = $description;
-        self::$ProgressBar['percent']  = floor(self::$ProgressBar['completed'] * 100 / $totalJob );
-        self::$ProgressBar['pixel']  = floor(self::$ProgressBar['percent'] / 4);
-        self::$ProgressBar['emptyPixel']  = 25 - self::$ProgressBar['pixel'] > 0 ? 25 - self::$ProgressBar['pixel'] : 0 ;
-        self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+    protected function startProgressBar($totalJob , $description = null)
+    {
+        self::$ProgressBar['totalJobs'] = $totalJob;
+        self::$ProgressBar['completed'] = 0;
+        self::$ProgressBar['description'] = $description;
+        self::$ProgressBar['percent'] = floor(self::$ProgressBar['completed'] * 100 / $totalJob);
+        self::$ProgressBar['pixel'] = floor(self::$ProgressBar['percent'] / 4);
+        self::$ProgressBar['emptyPixel'] = 25 - self::$ProgressBar['pixel'] > 0 ? 25 - self::$ProgressBar['pixel'] : 0;
+        if (!self::$isHtml) {
+            self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n", str_repeat('▓', self::$ProgressBar['pixel']), str_repeat('░', self::$ProgressBar['emptyPixel']), self::$ProgressBar['percent'] . '%', self::$ProgressBar['completed'], self::$ProgressBar['totalJobs'], self::$ProgressBar['description']));
+        }
     }
 
     protected function nextStepProgressBar($jobs = 1 , $totalJobs = 0){
@@ -213,9 +274,11 @@ class console
         self::$ProgressBar['percent']  = floor(self::$ProgressBar['completed'] * 100 / self::$ProgressBar['totalJobs'] );
         self::$ProgressBar['pixel']  = floor(self::$ProgressBar['percent'] / 4);
         self::$ProgressBar['emptyPixel']  = 25 - self::$ProgressBar['pixel'] > 0 ? 25 - self::$ProgressBar['pixel'] : 0 ;
-        self::moveUp();
-        self::clearLine();
-        self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) ,str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] ));
+        if (!self::$isHtml) {
+            self::moveUp();
+            self::clearLine();
+            self::info(sprintf("{%s%s} %s (%d/%d) \t%s\n", str_repeat('▓', self::$ProgressBar['pixel']), str_repeat('░', self::$ProgressBar['emptyPixel']), self::$ProgressBar['percent'] . '%', self::$ProgressBar['completed'], self::$ProgressBar['totalJobs'], self::$ProgressBar['description']));
+        }
     }
 
     protected function finishProgressBar($description = ""){
@@ -223,41 +286,43 @@ class console
         self::$ProgressBar['percent']  = 100;
         self::$ProgressBar['pixel']  = 25;
         self::$ProgressBar['emptyPixel']  =  0 ;
-        self::moveUp();
-        self::clearLine();
-        self::success(sprintf("{%s%s} %s (%d/%d) \t%s \t%s\n" , str_repeat('▓' , self::$ProgressBar['pixel'] ) , str_repeat('░' , self::$ProgressBar['emptyPixel'] ) , self::$ProgressBar['percent'].'%' , self::$ProgressBar['completed'] , self::$ProgressBar['totalJobs'] , self::$ProgressBar['description'] , $description ));
+        if (!self::$isHtml) {
+            self::moveUp();
+            self::clearLine();
+        }
+        self::success(sprintf("{%s%s} %s (%d/%d) \t%s \t%s\n", str_repeat(self::$isHtml ? "■" : '▓', self::$ProgressBar['pixel']), str_repeat('░', self::$ProgressBar['emptyPixel']), self::$ProgressBar['percent'] . '%', self::$ProgressBar['completed'], self::$ProgressBar['totalJobs'], self::$ProgressBar['description'], $description));
         self::$ProgressBar = [];
     }
 
 
     protected function moveUp($lines = 1)
     {
-        echo (sprintf("\x1b[%dA", $lines));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%dA", $lines));
     }
 
     protected function moveDown($lines = 1)
     {
-        echo (sprintf("\x1b[%dB", $lines));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%dB", $lines));
     }
 
     protected function moveRight($columns = 1)
     {
-        echo (sprintf("\x1b[%dC", $columns));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%dC", $columns));
     }
 
     protected function moveLeft($columns = 1)
     {
-        echo (sprintf("\x1b[%dD", $columns));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%dD", $columns));
     }
 
     protected function moveToColumn($column)
     {
-        echo (sprintf("\x1b[%dG", $column));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%dG", $column));
     }
 
     protected function moveToPosition($column, $row)
     {
-        echo (sprintf("\x1b[%d;%dH", $row + 1, $column));
+        echo self::$isHtml ? "" : (sprintf("\x1b[%d;%dH", $row + 1, $column));
     }
 
 
@@ -266,7 +331,7 @@ class console
      */
     protected function clearLine()
     {
-        echo ("\x1b[2K");
+        echo self::$isHtml ? "" : ("\x1b[2K");
     }
 
     /**
@@ -274,7 +339,7 @@ class console
      */
     protected function clearLineAfter()
     {
-        echo ("\x1b[K");
+        echo self::$isHtml ? "" : ("\x1b[K");
     }
 
     /**
@@ -282,7 +347,7 @@ class console
      */
     protected function clearOutput()
     {
-        echo ("\x1b[0J");
+        echo self::$isHtml ? "" : ("\x1b[0J");
     }
 
     /**
@@ -290,7 +355,7 @@ class console
      */
     protected function clearScreen()
     {
-        echo ("\x1b[2J");
+        echo self::$isHtml ? "" : ("\x1b[2J");
     }
 
     /**
@@ -484,18 +549,28 @@ class console
     protected function getColoredString($string, $foreground_color = null, $background_color = null) {
         $colored_string = "";
 
-        // Check if given foreground color found
-        if ( isset(self::$foreground_colors[$foreground_color]) ) {
-            $colored_string .= "\033[" . self::$foreground_colors[$foreground_color] . "m";
-        }
-        // Check if given background color found
-        if ( isset(self::$background_colors[$background_color]) ) {
-            $colored_string .= "\033[" . self::$background_colors[$background_color] . "m";
-        }
+        if ( self::$isHtml ){
+            $colored_string .= "<span style=\"";
 
-        // Add string and end coloring
-        $colored_string .=  $string . "\033[0m";
+            if (! is_null($foreground_color) )
+                $colored_string .= "color:".$foreground_color.";";
+            if (! is_null($background_color) )
+                $colored_string .= "background-color:".$background_color.";" ;
+            $colored_string .= "\">".$string."</span>";
 
+        } else {
+            // Check if given foreground color found
+            if ( isset(self::$foreground_colors[$foreground_color]) ) {
+                $colored_string .= "\033["  . self::$foreground_colors[$foreground_color] . "m" ;
+            }
+            // Check if given background color found
+            if ( isset(self::$background_colors[$background_color]) ) {
+                $colored_string .=  "\033[" . self::$background_colors[$background_color] . "m" ;
+            }
+
+            // Add string and end coloring
+            $colored_string .=  $string . "\033[0m";
+        }
         return $colored_string;
     }
 }
