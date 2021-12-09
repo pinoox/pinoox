@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+/**
+ *      ****  *  *     *  ****  ****  *    *
+ *      *  *  *  * *   *  *  *  *  *   *  *
+ *      ****  *  *  *  *  *  *  *  *    *
+ *      *     *  *   * *  *  *  *  *   *  *
+ *      *     *  *    **  ****  ****  *    *
+ *
+ * This file doesn't do anything but load essential files.
+ * @author   Erfan Ebrahimi
+ * @link http://www.erfanebrahimi.ir/
+ * @license  https://opensource.org/licenses/MIT MIT License
+ */
+#boot pinoox
+include_once  dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . "boot" . DIRECTORY_SEPARATOR . 'boot.php';
