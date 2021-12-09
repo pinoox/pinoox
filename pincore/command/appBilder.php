@@ -17,7 +17,7 @@ class appBilder extends console implements CommandInterface
      *
      * @var string
      */
-    protected $signature = "make:build";
+    protected $signature = "app:build";
 
     /**
      * The console command description.

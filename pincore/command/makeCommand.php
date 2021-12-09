@@ -20,7 +20,7 @@ use pinoox\component\interfaces\CommandInterface;
 class makeCommand extends console implements CommandInterface
 {
 
-    protected $signature = 'make:command';
+    protected $signature = 'command:make';
 
     protected $description = 'Create new command.';
 

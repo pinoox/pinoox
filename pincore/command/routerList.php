@@ -17,7 +17,7 @@ class routerList extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "list:router";
+	protected $signature = "route:list";
 
 	/**
 	* The console command description.

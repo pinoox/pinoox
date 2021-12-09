@@ -16,7 +16,7 @@ class appMake extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "make:app";
+	protected $signature = "app:make";
 
 	/**
 	* The console command description.

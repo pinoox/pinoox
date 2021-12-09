@@ -19,7 +19,7 @@ class routerMake extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "make:router";
+	protected $signature = "route:make";
 
 	/**
 	* The console command description.

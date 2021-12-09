@@ -15,7 +15,7 @@ class applist extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "list:app";
+	protected $signature = "app:list";
 
 	/**
 	* The console command description.
