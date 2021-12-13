@@ -10,7 +10,7 @@ use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Zip;
 
 
-class appBilder extends console implements CommandInterface
+class appBuilder extends console implements CommandInterface
 {
 
     /**
