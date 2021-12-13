@@ -42,7 +42,7 @@ class appBilder extends console implements CommandInterface
      * @var array
      */
     protected $options = [
-        //[ name , short_name , description , default ],
+        [ 'rewrite' , 'r' , 'Mod if setup file exist: [rewrite(r),version(v),index(i)] for example:[--r=rewrite | --r=r | --rewrite=index | --rewrite=v]' , 'index' ],
     ];
 
     protected $appPath = null;
@@ -212,16 +212,43 @@ class appBilder extends console implements CommandInterface
         }
         $this->finishProgressBar();
         $this->startProgressBar(count($folders) + count($files) + 3, 'Creating Build file.');
-        if ( file_exists(Dir::path('~') . $DS . $packageName . '.pin'))
-            unlink(Dir::path('~') . $DS . $packageName . '.pin');
+        $setupFileName = $packageName;
+        $setupFileIndex = 2;
+        while (true) {
+            if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                if ( $this->option('rewrite') == 'rewrite' or $this->option('rewrite') == 'r' )
+                    unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                elseif ( $this->option('rewrite') == 'version' or $this->option('rewrite') == 'v'  ){
+                    $app = AppModel::fetch_by_package_name($packageName);
+                    if ( isset($app['version_code']) ){
+                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version_code']);
+                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        }
+                    }elseif ( isset($app['version']) ){
+                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version']);
+                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        }
+                    } else {
+                        $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                        $setupFileIndex++;
+                    }
+                } else {
+                    $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                    $setupFileIndex++;
+                }
+            } else
+                break;
+        }
         $this->nextStepProgressBar();
-        $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') . $packageName . '.pin');
+        $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') .$DS. $setupFileName . '.pin');
         $this->nextStepProgressBar();
         File::remove(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ));
         $this->nextStepProgressBar();
-        if ( file_exists(Dir::path('~') . $DS . $packageName . '.pin') and $zip ){
+        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin') and $zip ){
             $this->finishProgressBar();
-            $this->success(sprintf('Setup file maked in `%s`.' , Dir::path('~') . $packageName . '.pin'));
+            $this->success(sprintf('Setup file maked in `%s`.' , Dir::path('~') . $setupFileName . '.pin'));
         } else {
             $this->danger('Something got error during make build file. please do it manually!');
             $this->error('Some error happened!');
