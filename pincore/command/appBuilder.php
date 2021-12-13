@@ -33,7 +33,7 @@ class appBuilder extends console implements CommandInterface
      * @var array
      */
     protected $arguments = [
-        ['package', true, 'name of package that you want to build setup file.'],
+        ['package', false, 'name of package that you want to build setup file.' , null ],
     ];
 
     /**
@@ -45,8 +45,9 @@ class appBuilder extends console implements CommandInterface
         [ 'rewrite' , 'r' , 'Mod if setup file exist: [rewrite(r),version(v),index(i)] for example:[--r=rewrite | --r=r | --rewrite=index | --rewrite=v]' , 'index' ],
     ];
 
-    protected $appPath = null;
-    protected $tempPackageName = 'com_pinoox_package_builder_';
+    private $appPath = null;
+    private $package = null ;
+    private $tempPackageName = 'com_pinoox_package_builder_';
 
     /**
      * Execute the console command.
@@ -55,22 +56,32 @@ class appBuilder extends console implements CommandInterface
     public function handle()
     {
         try {
-            $app = AppModel::fetch_by_package_name($this->argument('package'));
+            $this->package = $this->argument('package');
+            if ( $this->package == null ){
+                $apps = AppModel::fetch_all(null , true);
+                $apps = array_keys($apps);
+                $appId = $this->choice('Please select package you want to build setup file.',  $apps );
+                $this->package = isset($apps[$appId]) ? $apps[$appId] : null ;
+                if ( $this->package == null ){
+                    $this->error('Can not find selected package!');
+                }
+            }
+            $app = AppModel::fetch_by_package_name($this->package);
             if ( is_null($app) )
-                $this->error(sprintf('Can not find app with name `%s`!' , $this->argument('package')));
-            $this->appPath = Dir::path('~apps/' . $this->argument('package'));
+                $this->error(sprintf('Can not find app with name `%s`!' , $this->package));
+            $this->appPath = Dir::path('~apps/' . $this->package);
             $ignoreFiles = $this->find_gitignore_files();
             $rules = $this->parse_git_ignore_files($ignoreFiles);
             list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR, $rules);
             list($acceptedFolders, $acceptedFiles) = $this->checkingFilesAcceptGitIgnore($allFolders, $allFiles, $rules);
             unset($allFolders, $allFiles, $rules, $ignoreFiles);
-            $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->argument('package'));
+            $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->package);
         } catch (\Exception $exception){
             $this->danger('Something got error during make build file. please do it manually!');
             $this->newLine();
             $this->danger($exception->getMessage());
             $this->newLine();
-            File::remove(str_replace(DIRECTORY_SEPARATOR.$this->argument('package') , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->argument('package') ,$this->appPath ));
+            File::remove(str_replace(DIRECTORY_SEPARATOR.$this->package , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->package ,$this->appPath ));
             $this->error('Some error happened!');
         }
     }
