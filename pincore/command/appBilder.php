@@ -2,6 +2,7 @@
 namespace pinoox\command;
 
 
+use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\console;
 use pinoox\component\Dir;
 use pinoox\component\File;
@@ -54,6 +55,9 @@ class appBilder extends console implements CommandInterface
     public function handle()
     {
         try {
+            $app = AppModel::fetch_by_package_name($this->argument('package'));
+            if ( is_null($app) )
+                $this->error(sprintf('Can not find app with name `%s`!' , $this->argument('package')));
             $this->appPath = Dir::path('~apps/' . $this->argument('package'));
             $ignoreFiles = $this->find_gitignore_files();
             $rules = $this->parse_git_ignore_files($ignoreFiles);
