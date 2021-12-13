@@ -156,7 +156,7 @@ class console
     protected static function newLine(){
         echo self::$isHtml ? "<br>":"\n";
     }
-    protected static function error($text){
+    protected static function error($text , $exit = true){
 
         if ( self::$isHtml )
             echo '<div class="console"><pre>' ;
@@ -170,7 +170,8 @@ class console
         self::newLine();
         if ( self::$isHtml )
             echo '</pre></div>';
-        exit;
+        if ( $exit )
+            exit;
     }
 
     /**
@@ -247,6 +248,33 @@ class console
             }
         }
         return $default;
+    }
+
+
+    /**
+     * confirm operation
+     * @param string $operation
+     * @return boolean
+     */
+    protected static function confirm($operation)
+    {
+        self::error(sprintf('%s (y|n)' , $operation) , false);
+        while ( true ){
+            $resSTDIN = fopen("php://stdin", "r");
+            $enterStr = trim(stream_get_contents($resSTDIN, 1));
+            fclose($resSTDIN);
+            if ($enterStr == "Y" or $enterStr == "1" or $enterStr == "y" or $enterStr == "t" or $enterStr == "T") {
+                return true;
+            } elseif ($enterStr == "N" or $enterStr == "0" or $enterStr == "n" or $enterStr == "f" or $enterStr == "F") {
+                return false;
+            }
+            self::info('Please just enter `');
+            self::warning('y');
+            self::info('` or `');
+            self::warning('n');
+            self::info('`');
+            self::newLine();
+        }
     }
 
     protected static function table($headers , $rows)
