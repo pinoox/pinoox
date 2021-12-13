@@ -95,7 +95,7 @@ class console
         self::findCommand();
     }
 
-    protected function option($key = null ){
+    protected static function option($key = null ){
         if ( is_null($key) )
             return self::$CommandOptions;
 
@@ -104,7 +104,7 @@ class console
 
         return false;
     }
-    protected function argument($key = null ){
+    protected static function argument($key = null ){
         if ( is_null($key) )
             return self::$CommandArguments;
 
@@ -116,7 +116,7 @@ class console
     protected static function command(){
         return self::$CommandEnter;
     }
-    protected function hasOption($optionNeed,$Options){
+    protected static function hasOption($optionNeed,$Options){
         $OptionName = false;
         $OptionNameMin = false;
         foreach ($Options as $option ){
@@ -138,25 +138,25 @@ class console
     }
 
 
-    protected function success($text){
+    protected static function success($text){
         echo self::getColoredString($text , 'green');
     }
-    protected function danger($text){
+    protected static function danger($text){
         echo self::getColoredString($text , 'red');
     }
-    protected function warning($text){
+    protected static function warning($text){
         echo self::getColoredString($text , 'yellow');
     }
-    protected function info($text){
+    protected static function info($text){
         echo self::getColoredString($text , 'white');
     }
-    protected function gray($text){
+    protected static function gray($text){
         echo self::getColoredString($text , 'dark_gray');
     }
-    protected function newLine(){
+    protected static function newLine(){
         echo self::$isHtml ? "<br>":"\n";
     }
-    protected function error($text){
+    protected static function error($text , $exit = true){
 
         if ( self::$isHtml )
             echo '<div class="console"><pre>' ;
@@ -170,10 +170,122 @@ class console
         self::newLine();
         if ( self::$isHtml )
             echo '</pre></div>';
-        exit;
+        if ( $exit )
+            exit;
     }
 
-    protected function table($headers , $rows)
+    /**
+     * choice from selected option
+     * @param string $question
+     * @param array $choices
+     * @param null $default
+     * @param int $attempts
+     * @param false $multiple
+     * @return string|int|array
+     */
+    protected static function choice($question, $choices , $default = null, $multiple = false , $attempts = 2)
+    {
+        self::success($question);
+        self::newLine();
+        $choiceIndex = 1;
+        if (is_array($choices)) {
+            foreach ($choices as $choice) {
+                self::gray("  [");
+                self::warning($choiceIndex);
+                self::gray("] : ");
+                self::info($choice);
+                self::newLine();
+                $choiceIndex++;
+            }
+            $choiceIndex--;
+        }
+        if ( self::$isHtml )
+            return $default;
+        $numberOfTry = 0;
+        $keys = array_keys($choices) ;
+        $resultMultiChoice = [];
+        while ( ( $numberOfTry < $attempts and ! $multiple ) or ( $multiple )){
+            $hasError = false;
+            $selectChoiceStr = trim(self::input(strlen(strval($choiceIndex))+1));
+            $selectChoice = intval($selectChoiceStr);
+            if ($selectChoice >= 1 and $selectChoice <= $choiceIndex and isset($keys[ $selectChoice-1 ]) ){
+                if ( ! $multiple ) {
+                    self::success(sprintf('You select `%s`' , $choices[$keys[$selectChoice - 1]] ));
+                    self::newLine();
+                    return $keys[$selectChoice - 1];
+                } else {
+                    $resultMultiChoice[] = $keys[$selectChoice - 1] ;
+                    $resultMultiChoice = array_unique($resultMultiChoice);
+                    foreach ( $resultMultiChoice as $oneOfThem ){
+                        self::success(sprintf('-You select `%s`' , $choices[$oneOfThem] ));
+                        self::newLine();
+                    }
+                    self::info('Peals enter next option.( if you want to finish selection, press [');
+                    self::warning('0');
+                    self::info('] )');
+                    self::newLine();
+                }
+            } elseif ( $multiple and trim($selectChoiceStr) == "0" ) {
+                self::newLine();
+                if ( count($resultMultiChoice) == 0 )
+                    return $default ;
+                return $resultMultiChoice;
+            } else
+                $hasError = true;
+            if ( ! $multiple )
+                $numberOfTry++;
+            if ( $numberOfTry < $attempts and ( ! $multiple or $hasError )) {
+                self::info('Please just enter `');
+                self::warning('Yellow number');
+                self::info('` of row you want to select! (');
+                self::warning('1');
+                self::info('-');
+                self::warning($choiceIndex);
+                self::info(')');
+                self::newLine();
+            }
+        }
+        return $default;
+    }
+
+
+    /**
+     * confirm operation
+     * @param string $operation
+     * @return boolean
+     */
+    protected static function confirm($operation)
+    {
+        self::error(sprintf('%s (y|n)' , $operation) , false);
+        while ( true ){
+            $enterStr = trim(self::input(1));
+            if ($enterStr == "Y" or $enterStr == "1" or $enterStr == "y" or $enterStr == "t" or $enterStr == "T") {
+                return true;
+            } elseif ($enterStr == "N" or $enterStr == "0" or $enterStr == "n" or $enterStr == "f" or $enterStr == "F") {
+                return false;
+            }
+            self::info('Please just enter `');
+            self::warning('y');
+            self::info('` or `');
+            self::warning('n');
+            self::info('`');
+            self::newLine();
+        }
+    }
+    /**
+     * get string from user
+     * @param string $operation
+     * @return boolean
+     */
+    protected static function input($len = 1 )
+    {
+        $resSTDIN = fopen("php://stdin", "r");
+        $enterStr = stream_get_contents($resSTDIN, $len);
+        fclose($resSTDIN);
+        return $enterStr;
+    }
+
+    protected static function table($headers , $rows)
     {
         if ( ! self::$isHtml ) {
             try {
@@ -252,7 +364,7 @@ class console
         }
     }
 
-    protected function startProgressBar($totalJob , $description = null)
+    protected static function startProgressBar($totalJob , $description = null)
     {
         self::$ProgressBar['totalJobs'] = $totalJob;
         self::$ProgressBar['completed'] = 0;
@@ -265,7 +377,7 @@ class console
         }
     }
 
-    protected function nextStepProgressBar($jobs = 1 , $totalJobs = 0){
+    protected static function nextStepProgressBar($jobs = 1 , $totalJobs = 0){
         self::$ProgressBar['completed'] = self::$ProgressBar['completed'] + $jobs;
         self::$ProgressBar['totalJobs'] = self::$ProgressBar['totalJobs'] + $totalJobs;
         if (self::$ProgressBar['completed'] > self::$ProgressBar['totalJobs'] ){
@@ -281,7 +393,7 @@ class console
         }
     }
 
-    protected function finishProgressBar($description = ""){
+    protected static function finishProgressBar($description = ""){
         self::$ProgressBar['completed'] = self::$ProgressBar['totalJobs'];
         self::$ProgressBar['percent']  = 100;
         self::$ProgressBar['pixel']  = 25;
@@ -295,32 +407,32 @@ class console
     }
 
 
-    protected function moveUp($lines = 1)
+    protected static function moveUp($lines = 1)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%dA", $lines));
     }
 
-    protected function moveDown($lines = 1)
+    protected static function moveDown($lines = 1)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%dB", $lines));
     }
 
-    protected function moveRight($columns = 1)
+    protected static function moveRight($columns = 1)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%dC", $columns));
     }
 
-    protected function moveLeft($columns = 1)
+    protected static function moveLeft($columns = 1)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%dD", $columns));
     }
 
-    protected function moveToColumn($column)
+    protected static function moveToColumn($column)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%dG", $column));
     }
 
-    protected function moveToPosition($column, $row)
+    protected static function moveToPosition($column, $row)
     {
         echo self::$isHtml ? "" : (sprintf("\x1b[%d;%dH", $row + 1, $column));
     }
@@ -329,7 +441,7 @@ class console
     /**
      * Clears all the output from the current line.
      */
-    protected function clearLine()
+    protected static function clearLine()
     {
         echo self::$isHtml ? "" : ("\x1b[2K");
     }
@@ -337,7 +449,7 @@ class console
     /**
      * Clears all the output from the current line after the current position.
      */
-    protected function clearLineAfter()
+    protected static function clearLineAfter()
     {
         echo self::$isHtml ? "" : ("\x1b[K");
     }
@@ -345,7 +457,7 @@ class console
     /**
      * Clears all the output from the cursors' current position to the end of the screen.
      */
-    protected function clearOutput()
+    protected static function clearOutput()
     {
         echo self::$isHtml ? "" : ("\x1b[0J");
     }
@@ -353,41 +465,13 @@ class console
     /**
      * Clears the entire screen.
      */
-    protected function clearScreen()
+    protected static function clearScreen()
     {
         echo self::$isHtml ? "" : ("\x1b[2J");
     }
 
-    /**
-     * Returns the current cursor position as x,y coordinates.
-     */
-    protected function getCurrentPosition()
-    {
-        static $isTtySupported;
-
-        if (null === $isTtySupported && \function_exists('proc_open')) {
-            $isTtySupported = (bool) @proc_open('echo 1 >/dev/null', [['file', '/dev/tty', 'r'], ['file', '/dev/tty', 'w'], ['file', '/dev/tty', 'w']], $pipes);
-        }
-
-        if (!$isTtySupported) {
-            return [1, 1];
-        }
-
-        $sttyMode = shell_exec('stty -g');
-        shell_exec('stty -icanon -echo');
-
-        @fwrite($this->input, "\033[6n");
-
-        $code = trim(fread($this->input, 1024));
-
-        shell_exec(sprintf('stty %s', $sttyMode));
-
-        sscanf($code, "\033[%d;%dR", $row, $col);
-
-        return [$col, $row];
-    }
     
-    protected function getColumnWidth($commands)
+    protected static function getColumnWidth($commands)
     {
         $widths = [];
         foreach ($commands as $command) {
@@ -546,7 +630,7 @@ class console
 
 
     // Returns colored string
-    protected function getColoredString($string, $foreground_color = null, $background_color = null) {
+    protected static function getColoredString($string, $foreground_color = null, $background_color = null) {
         $colored_string = "";
 
         if ( self::$isHtml ){

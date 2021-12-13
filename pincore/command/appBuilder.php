@@ -2,6 +2,7 @@
 namespace pinoox\command;
 
 
+use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\console;
 use pinoox\component\Dir;
 use pinoox\component\File;
@@ -9,7 +10,7 @@ use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Zip;
 
 
-class appBilder extends console implements CommandInterface
+class appBuilder extends console implements CommandInterface
 {
 
     /**
@@ -32,7 +33,7 @@ class appBilder extends console implements CommandInterface
      * @var array
      */
     protected $arguments = [
-        ['package', true, 'name of package that you want to build setup file.'],
+        ['package', false, 'name of package that you want to build setup file.' , null ],
     ];
 
     /**
@@ -41,11 +42,12 @@ class appBilder extends console implements CommandInterface
      * @var array
      */
     protected $options = [
-        //[ name , short_name , description , default ],
+        [ 'rewrite' , 'r' , 'Mod if setup file exist: [rewrite(r),version(v),index(i)] for example:[--r=rewrite | --r=r | --rewrite=index | --rewrite=v]' , 'index' ],
     ];
 
-    protected $appPath = null;
-    protected $tempPackageName = 'com_pinoox_package_builder_';
+    private $appPath = null;
+    private $package = null ;
+    private $tempPackageName = 'com_pinoox_package_builder_';
 
     /**
      * Execute the console command.
@@ -54,19 +56,32 @@ class appBilder extends console implements CommandInterface
     public function handle()
     {
         try {
-            $this->appPath = Dir::path('~apps/' . $this->argument('package'));
+            $this->package = $this->argument('package');
+            if ( $this->package == null ){
+                $apps = AppModel::fetch_all(null , true);
+                $apps = array_keys($apps);
+                $appId = $this->choice('Please select package you want to build setup file.',  $apps );
+                $this->package = isset($apps[$appId]) ? $apps[$appId] : null ;
+                if ( $this->package == null ){
+                    $this->error('Can not find selected package!');
+                }
+            }
+            $app = AppModel::fetch_by_package_name($this->package);
+            if ( is_null($app) )
+                $this->error(sprintf('Can not find app with name `%s`!' , $this->package));
+            $this->appPath = Dir::path('~apps/' . $this->package);
             $ignoreFiles = $this->find_gitignore_files();
             $rules = $this->parse_git_ignore_files($ignoreFiles);
-            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR, $rules);
+            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR);
             list($acceptedFolders, $acceptedFiles) = $this->checkingFilesAcceptGitIgnore($allFolders, $allFiles, $rules);
             unset($allFolders, $allFiles, $rules, $ignoreFiles);
-            $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->argument('package'));
+            $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->package);
         } catch (\Exception $exception){
             $this->danger('Something got error during make build file. please do it manually!');
             $this->newLine();
             $this->danger($exception->getMessage());
             $this->newLine();
-            File::remove(str_replace(DIRECTORY_SEPARATOR.$this->argument('package') , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->argument('package') ,$this->appPath ));
+            File::remove(str_replace(DIRECTORY_SEPARATOR.$this->package , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->package ,$this->appPath ));
             $this->error('Some error happened!');
         }
     }
@@ -103,7 +118,7 @@ class appBilder extends console implements CommandInterface
 
     private function parse_git_ignore_files($ignoreFiles)
     { # $file = '/absolute/path/to/.gitignore'
-        $this->startProgressBar(count($ignoreFiles), 'Parse `.gitignore` files.');
+        $this->startProgressBar(count($ignoreFiles) + 1 , 'Parse `.gitignore` files.');
         $matches = array();
         foreach ($ignoreFiles as $file) {
             $lines = file($file);
@@ -116,11 +131,19 @@ class appBilder extends console implements CommandInterface
             $matches = array_unique($matches, SORT_REGULAR);
             $this->nextStepProgressBar();
         }
+        $this->nextStepProgressBar();
+        $app = AppModel::fetch_by_package_name($this->package);
+        if ( isset($app['explode']) and ! is_null($app['explode']))
+            if ( is_array($app['explode']))
+                $matches = array_merge($matches , $app['explode']) ;
+            elseif ( is_string($app['explode']) )
+                $matches[] = $app['explode'];
+        $matches = array_unique($matches, SORT_REGULAR);
         $this->finishProgressBar(sprintf('%d Rules founded.', count($matches)));
         return $matches;
     }
 
-    private function getAllFilesAndFoldersOfApp($dir, $ignoreRules, $isFirstCall = true)
+    private function getAllFilesAndFoldersOfApp($dir, $isFirstCall = true)
     {
         if ($isFirstCall) {
             $this->startProgressBar(1, 'Finding all files and sub folders.');
@@ -133,7 +156,7 @@ class appBilder extends console implements CommandInterface
         $folders = array_merge($folders, $dirs);
         $this->nextStepProgressBar(1, count($dirs));
         foreach ($dirs as $dir) {
-            list($foldersInDirectory, $FilesInDirectory) = $this->getAllFilesAndFoldersOfApp($dir, $ignoreRules, false);
+            list($foldersInDirectory, $FilesInDirectory) = $this->getAllFilesAndFoldersOfApp($dir, false);
             $files = array_merge($files, $FilesInDirectory);
             $folders = array_merge($folders, $foldersInDirectory);
         }
@@ -145,7 +168,14 @@ class appBilder extends console implements CommandInterface
 
     private function checkingFilesAcceptGitIgnore($folders, $files, $ignoreRules)
     {
-        $numIgnoreRules = count($ignoreRules);
+        $app = AppModel::fetch_by_package_name($this->package);
+        $implodeDirs = array();
+        if ( isset($app['implode']) and ! is_null($app['implode']))
+            if ( is_array($app['implode']))
+                $implodeDirs =  $app['implode'];
+            elseif ( is_string($app['implode']) )
+                $implodeDirs = array($app['implode']);
+        $numIgnoreRules = count($ignoreRules) + count($implodeDirs);
         $this->startProgressBar((count($folders) + count($files)) * $numIgnoreRules, 'Checking files and sub folders.');
         $acceptedFiles = [];
         $acceptedFolder = [];
@@ -163,6 +193,20 @@ class appBilder extends console implements CommandInterface
                     unset($acceptedFolder[$index],$tempAcceptedFolder[$index]);
                     break;
                 }
+            }
+            foreach ( $implodeDirs as $implodeDir ){
+                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
+                $implodeDirsIn = explode(DIRECTORY_SEPARATOR, $implodeDir);
+                $lastImplodeDirIn = "";
+                foreach ( $implodeDirsIn as $implodeDirIn ) {
+                    if ( $lastImplodeDirIn == "")
+                        $lastImplodeDirIn = $implodeDirIn;
+                    if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $lastImplodeDirIn . DIRECTORY_SEPARATOR . '**')) {
+                        $acceptedFolder[$index] = $folder;
+                    }
+                    $lastImplodeDirIn = DIRECTORY_SEPARATOR.$implodeDirIn;
+                }
+                $this->nextStepProgressBar();
             }
         }
         foreach ($files as $index => $file) {
@@ -186,6 +230,13 @@ class appBilder extends console implements CommandInterface
                     break;
                 }
             }
+            foreach ( $implodeDirs as $implodeDir ){
+                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
+                if ($this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir . DIRECTORY_SEPARATOR . '**') or $this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir)) {
+                    $acceptedFiles[$index] = $file;
+                }
+                $this->nextStepProgressBar();
+            }
         }
         $this->finishProgressBar(sprintf('Accepted %d file and %d folder.', count($acceptedFiles), count($acceptedFolder)));
         return [$acceptedFolder, $acceptedFiles];
@@ -208,16 +259,43 @@ class appBilder extends console implements CommandInterface
         }
         $this->finishProgressBar();
         $this->startProgressBar(count($folders) + count($files) + 3, 'Creating Build file.');
-        if ( file_exists(Dir::path('~') . $DS . $packageName . '.pin'))
-            unlink(Dir::path('~') . $DS . $packageName . '.pin');
+        $setupFileName = $packageName;
+        $setupFileIndex = 2;
+        while (true) {
+            if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                if ( $this->option('rewrite') == 'rewrite' or $this->option('rewrite') == 'r' )
+                    unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                elseif ( $this->option('rewrite') == 'version' or $this->option('rewrite') == 'v'  ){
+                    $app = AppModel::fetch_by_package_name($packageName);
+                    if ( isset($app['version_code']) ){
+                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version_code']);
+                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        }
+                    }elseif ( isset($app['version']) ){
+                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version']);
+                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        }
+                    } else {
+                        $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                        $setupFileIndex++;
+                    }
+                } else {
+                    $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                    $setupFileIndex++;
+                }
+            } else
+                break;
+        }
         $this->nextStepProgressBar();
-        $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') . $packageName . '.pin');
+        $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') .$DS. $setupFileName . '.pin');
         $this->nextStepProgressBar();
         File::remove(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ));
         $this->nextStepProgressBar();
-        if ( file_exists(Dir::path('~') . $DS . $packageName . '.pin') and $zip ){
+        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin') and $zip ){
             $this->finishProgressBar();
-            $this->success(sprintf('Setup file maked in `%s`.' , Dir::path('~') . $packageName . '.pin'));
+            $this->success(sprintf('Setup file maked in `%s`.' , Dir::path('~') . $setupFileName . '.pin'));
         } else {
             $this->danger('Something got error during make build file. please do it manually!');
             $this->error('Some error happened!');
