@@ -173,6 +173,82 @@ class console
         exit;
     }
 
+    /**
+     * choice from selected option
+     * @param string $question
+     * @param array $choices
+     * @param null $default
+     * @param int $attempts
+     * @param false $multiple
+     * @return string|int|array
+     */
+    protected static function choice($question, $choices , $default = null, $multiple = false , $attempts = 2)
+    {
+        self::success($question);
+        self::newLine();
+        $choiceIndex = 1;
+        if (is_array($choices)) {
+            foreach ($choices as $choice) {
+                self::gray("  [");
+                self::warning($choiceIndex);
+                self::gray("] : ");
+                self::info($choice);
+                self::newLine();
+                $choiceIndex++;
+            }
+            $choiceIndex--;
+        }
+        if ( self::$isHtml )
+            return $default;
+        $numberOfTry = 0;
+        $keys = array_keys($choices) ;
+        $resultMultiChoice = [];
+        while ( ( $numberOfTry < $attempts and ! $multiple ) or ( $multiple )){
+            $hasError = false;
+            $resSTDIN = fopen("php://stdin", "r");
+            $selectChoiceStr = stream_get_contents($resSTDIN, strlen(strval($choiceIndex))+1);
+            $selectChoice = intval($selectChoiceStr);
+            fclose($resSTDIN);
+            if ($selectChoice >= 1 and $selectChoice <= $choiceIndex and isset($keys[ $selectChoice-1 ]) ){
+                if ( ! $multiple ) {
+                    self::success(sprintf('You select `%s`' , $choices[$keys[$selectChoice - 1]] ));
+                    self::newLine();
+                    return $keys[$selectChoice - 1];
+                } else {
+                    $resultMultiChoice[] = $keys[$selectChoice - 1] ;
+                    $resultMultiChoice = array_unique($resultMultiChoice);
+                    foreach ( $resultMultiChoice as $oneOfThem ){
+                        self::success(sprintf('-You select `%s`' , $choices[$oneOfThem] ));
+                        self::newLine();
+                    }
+                    self::info('Peals enter next option.( if you want to finish selection, press [');
+                    self::warning('0');
+                    self::info('] )');
+                    self::newLine();
+                }
+            } elseif ( $multiple and trim($selectChoiceStr) == "0" ) {
+                self::newLine();
+                if ( count($resultMultiChoice) == 0 )
+                    return $default ;
+                return $resultMultiChoice;
+            } else
+                $hasError = true;
+            if ( ! $multiple )
+                $numberOfTry++;
+            if ( $numberOfTry < $attempts and ( ! $multiple or $hasError )) {
+                self::info('Please just enter `');
+                self::warning('Yellow number');
+                self::info('` of row you want to select! (');
+                self::warning('1');
+                self::info('-');
+                self::warning($choiceIndex);
+                self::info(')');
+                self::newLine();
+            }
+        }
+        return $default;
+    }
+
     protected static function table($headers , $rows)
     {
         if ( ! self::$isHtml ) {
