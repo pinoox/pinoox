@@ -206,10 +206,8 @@ class console
         $resultMultiChoice = [];
         while ( ( $numberOfTry < $attempts and ! $multiple ) or ( $multiple )){
             $hasError = false;
-            $resSTDIN = fopen("php://stdin", "r");
-            $selectChoiceStr = stream_get_contents($resSTDIN, strlen(strval($choiceIndex))+1);
+            $selectChoiceStr = trim(self::input(strlen(strval($choiceIndex))+1));
             $selectChoice = intval($selectChoiceStr);
-            fclose($resSTDIN);
             if ($selectChoice >= 1 and $selectChoice <= $choiceIndex and isset($keys[ $selectChoice-1 ]) ){
                 if ( ! $multiple ) {
                     self::success(sprintf('You select `%s`' , $choices[$keys[$selectChoice - 1]] ));
@@ -260,9 +258,7 @@ class console
     {
         self::error(sprintf('%s (y|n)' , $operation) , false);
         while ( true ){
-            $resSTDIN = fopen("php://stdin", "r");
-            $enterStr = trim(stream_get_contents($resSTDIN, 1));
-            fclose($resSTDIN);
+            $enterStr = trim(self::input(1));
             if ($enterStr == "Y" or $enterStr == "1" or $enterStr == "y" or $enterStr == "t" or $enterStr == "T") {
                 return true;
             } elseif ($enterStr == "N" or $enterStr == "0" or $enterStr == "n" or $enterStr == "f" or $enterStr == "F") {
@@ -275,6 +271,18 @@ class console
             self::info('`');
             self::newLine();
         }
+    }
+    /**
+     * get string from user
+     * @param string $operation
+     * @return boolean
+     */
+    protected static function input($len = 1 )
+    {
+        $resSTDIN = fopen("php://stdin", "r");
+        $enterStr = stream_get_contents($resSTDIN, $len);
+        fclose($resSTDIN);
+        return $enterStr;
     }
 
     protected static function table($headers , $rows)
