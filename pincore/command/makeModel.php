@@ -10,7 +10,7 @@ use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class makeController extends console implements CommandInterface
+class makeModel extends console implements CommandInterface
 {
 
 	/**
@@ -18,14 +18,14 @@ class makeController extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "app:make-controller";
+	protected $signature = "app:make-model";
 
 	/**
 	* The console command description.
 	*
 	* @var string
 	*/
-	protected $description = "Make controller in any application.";
+	protected $description = "Make model in any application.";
 
 	/**
 	* The console command Arguments.
@@ -33,7 +33,7 @@ class makeController extends console implements CommandInterface
 	* @var array
 	*/
 	protected $arguments = [
-		[ 'controller' , true , 'path and name of controller.'  ],
+		[ 'model' , true , 'path and name of model.'  ],
 		[ 'package_name' , true , 'name of application.'  ],
 	];
 
@@ -43,7 +43,7 @@ class makeController extends console implements CommandInterface
 	* @var array
 	*/
 	protected $options = [
-		[ 'extends' , 'e' , 'namespace of extends class' , 'MainController' ],
+		[ 'extends' , 'e' , 'namespace of extends class' , 'PinooxDatabase' ],
         [ "author" , "a" , "Code author, for copyright in source code." , 'Pinoox' ],
         [ "link" , "l" , "Author Connect Link, for copyright in source code." , 'https://www.pinoox.com/' ],
         [ "license" , null , "Put your license in source code (for example:`MIT`)." , null ],
@@ -51,8 +51,8 @@ class makeController extends console implements CommandInterface
         [ "ignoreCopyright" , 'i' , "Don't show any copyright in source." , null ],
 	];
 
-	protected $nameSpaceOfControllerFolder = null;
-	protected $nameSpaceOfController = null;
+	protected $nameSpaceOfModelFolder = null;
+	protected $nameSpaceOfModel = null;
 	protected $conteroller = null;
 	protected $conterollerPath = null;
 	protected $extend = null;
@@ -69,62 +69,59 @@ class makeController extends console implements CommandInterface
         if ( is_null($app) )
             $this->error(sprintf('Can not find app with name `%s`!' , $this->package));
 
-        $this->conterollerPath = Dir::path('~apps/' . $this->package.'/controller');
+        $this->conterollerPath = Dir::path('~apps/' . $this->package.'/model');
 
-        $this->nameSpaceOfControllerFolder =  'pinoox\app\\'.$this->package.'\\controller';
+        $this->nameSpaceOfModelFolder =  'pinoox\app\\'.$this->package.'\\model';
 
-        $controller = explode('\\' , str_replace('/' , '\\' , $this->argument('controller') ));
-        $this->conteroller = array_pop($controller);
-        $controllerScope = implode('\\' , $controller);
-        $this->nameSpaceOfController = $this->nameSpaceOfControllerFolder . (( count($controller) > 0 ) ? '\\'.$controllerScope : "");
+        $Model = explode('\\' , str_replace('/' , '\\' , $this->argument('model') ));
+        $this->conteroller = array_pop($Model);
+        $ModelScope = implode('\\' , $Model);
+        $this->nameSpaceOfModel = $this->nameSpaceOfModelFolder . (( count($Model) > 0 ) ? '\\'.$ModelScope : "");
 
-        $this->conterollerPath = $this->conterollerPath . ( ( count($controller) > 0 ) ? '/'.implode('/' , $controller) : "" ) . '/'.strtolower($this->conteroller) .'.controller.php';
+        $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.strtolower($this->conteroller) .'.model.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
         if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
             $this->use = implode('\\' , $extend);
-        } elseif ( $extend == 'MainController' ){
-            if ( $this->nameSpaceOfControllerFolder != $this->nameSpaceOfController ){
-                $this->use = $this->nameSpaceOfControllerFolder.'\\MainController';
-            }
-            $this->extend = 'MainController';
+        } elseif ( $extend == 'PinooxDatabase' ){
+            $this->use = 'pinoox\model\PinooxDatabase';
+            $this->extend = 'PinooxDatabase';
         } elseif ( $this->option('extends') == null ){
             $this->use = null;
             $this->extend = null;
         } else {
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
-            $controllerScope = implode('\\' , $controller);
-            if ( $this->nameSpaceOfControllerFolder . ( ( count($extend) > 1 ) ? '\\'.$controllerScope : "" ) != $this->nameSpaceOfController )
-                $this->use = $this->nameSpaceOfControllerFolder . ( ( count($extend) > 1 ) ? '\\'.$controllerScope : '\\'.$this->extend );
+            $ModelScope = implode('\\' , $Model);
+            if ( $this->nameSpaceOfModelFolder . ( ( count($extend) > 1 ) ? '\\'.$ModelScope : "" ) != $this->nameSpaceOfModel )
+                $this->use = $this->nameSpaceOfModelFolder . ( ( count($extend) > 1 ) ? '\\'.$ModelScope : '\\'.$this->extend );
         }
 
-        $this->makeController();
+        $this->makeModel();
 
-        $this->error(sprintf('Can not Create controller in "%s"!' , $this->conterollerPath ));
+        $this->error(sprintf('Can not Create model in "%s"!' , $this->conterollerPath ));
         $this->newLine();
         exit;
 	}
 
-    private function makeController()
+    private function makeModel()
     {
         $code = "<?php \n";
         $code .= $this->makeCopyWriteCode();
         $code .= $this->makeNameSpace();
         if ( $this->use != null )
             $code .= sprintf("use %s;\n\n", $this->use);
-        $code .= sprintf("class %sController " , $this->conteroller );
+        $code .= sprintf("class %sModel " , $this->conteroller );
         if ( $this->extend != null )
             $code .= sprintf("extends %s\n" , $this->extend );
         else
             $code .= "\n" ;
         $code .= "{\n\n";
-        $code .= "\tpublic function change_me()\n";
+        $code .= "\tpublic static function fetch_all()\n";
         $code .= "\t{\n";
-        $code .= "\t\t\n";
-        $code .= "\t\t\n";
+        $code .= "\t\treturn [];\n";
         $code .= "\t}\n\n";
         $code .= "}\n";
         $this->makeFile($code);
@@ -152,14 +149,14 @@ class makeController extends console implements CommandInterface
     }
 
     private function makeNameSpace(){
-        return sprintf("namespace %s;\n\n",$this->nameSpaceOfController);
+        return sprintf("namespace %s;\n\n",$this->nameSpaceOfModel);
     }
 
     private function makeFile($content){
 	    if ( file_exists($this->conterollerPath))
             $this->error(sprintf('Same file exist in "%s"!' , $this->conterollerPath ));
         if ( File::generate($this->conterollerPath, $content) ) {
-            $this->success(sprintf('Controller created in "%s".' , $this->conterollerPath ));
+            $this->success(sprintf('model created in "%s".' , $this->conterollerPath ));
             $this->newLine();
             exit;
         }

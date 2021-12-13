@@ -275,7 +275,7 @@ class console
     /**
      * get string from user
      * @param string $operation
-     * @return boolean
+     * @return string
      */
     protected static function input($len = 1 )
     {
