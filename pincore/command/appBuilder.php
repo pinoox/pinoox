@@ -72,7 +72,7 @@ class appBuilder extends console implements CommandInterface
             $this->appPath = Dir::path('~apps/' . $this->package);
             $ignoreFiles = $this->find_gitignore_files();
             $rules = $this->parse_git_ignore_files($ignoreFiles);
-            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR, $rules);
+            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR);
             list($acceptedFolders, $acceptedFiles) = $this->checkingFilesAcceptGitIgnore($allFolders, $allFiles, $rules);
             unset($allFolders, $allFiles, $rules, $ignoreFiles);
             $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->package);
@@ -118,7 +118,7 @@ class appBuilder extends console implements CommandInterface
 
     private function parse_git_ignore_files($ignoreFiles)
     { # $file = '/absolute/path/to/.gitignore'
-        $this->startProgressBar(count($ignoreFiles), 'Parse `.gitignore` files.');
+        $this->startProgressBar(count($ignoreFiles) + 1 , 'Parse `.gitignore` files.');
         $matches = array();
         foreach ($ignoreFiles as $file) {
             $lines = file($file);
@@ -131,11 +131,19 @@ class appBuilder extends console implements CommandInterface
             $matches = array_unique($matches, SORT_REGULAR);
             $this->nextStepProgressBar();
         }
+        $this->nextStepProgressBar();
+        $app = AppModel::fetch_by_package_name($this->package);
+        if ( isset($app['explode']) and ! is_null($app['explode']))
+            if ( is_array($app['explode']))
+                $matches = array_merge($matches , $app['explode']) ;
+            elseif ( is_string($app['explode']) )
+                $matches[] = $app['explode'];
+        $matches = array_unique($matches, SORT_REGULAR);
         $this->finishProgressBar(sprintf('%d Rules founded.', count($matches)));
         return $matches;
     }
 
-    private function getAllFilesAndFoldersOfApp($dir, $ignoreRules, $isFirstCall = true)
+    private function getAllFilesAndFoldersOfApp($dir, $isFirstCall = true)
     {
         if ($isFirstCall) {
             $this->startProgressBar(1, 'Finding all files and sub folders.');
@@ -148,7 +156,7 @@ class appBuilder extends console implements CommandInterface
         $folders = array_merge($folders, $dirs);
         $this->nextStepProgressBar(1, count($dirs));
         foreach ($dirs as $dir) {
-            list($foldersInDirectory, $FilesInDirectory) = $this->getAllFilesAndFoldersOfApp($dir, $ignoreRules, false);
+            list($foldersInDirectory, $FilesInDirectory) = $this->getAllFilesAndFoldersOfApp($dir, false);
             $files = array_merge($files, $FilesInDirectory);
             $folders = array_merge($folders, $foldersInDirectory);
         }
@@ -160,7 +168,14 @@ class appBuilder extends console implements CommandInterface
 
     private function checkingFilesAcceptGitIgnore($folders, $files, $ignoreRules)
     {
-        $numIgnoreRules = count($ignoreRules);
+        $app = AppModel::fetch_by_package_name($this->package);
+        $implodeDirs = array();
+        if ( isset($app['implode']) and ! is_null($app['implode']))
+            if ( is_array($app['implode']))
+                $implodeDirs =  $app['implode'];
+            elseif ( is_string($app['implode']) )
+                $implodeDirs = array($app['implode']);
+        $numIgnoreRules = count($ignoreRules) + count($implodeDirs);
         $this->startProgressBar((count($folders) + count($files)) * $numIgnoreRules, 'Checking files and sub folders.');
         $acceptedFiles = [];
         $acceptedFolder = [];
@@ -178,6 +193,20 @@ class appBuilder extends console implements CommandInterface
                     unset($acceptedFolder[$index],$tempAcceptedFolder[$index]);
                     break;
                 }
+            }
+            foreach ( $implodeDirs as $implodeDir ){
+                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
+                $implodeDirsIn = explode(DIRECTORY_SEPARATOR, $implodeDir);
+                $lastImplodeDirIn = "";
+                foreach ( $implodeDirsIn as $implodeDirIn ) {
+                    if ( $lastImplodeDirIn == "")
+                        $lastImplodeDirIn = $implodeDirIn;
+                    if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $lastImplodeDirIn . DIRECTORY_SEPARATOR . '**')) {
+                        $acceptedFolder[$index] = $folder;
+                    }
+                    $lastImplodeDirIn = DIRECTORY_SEPARATOR.$implodeDirIn;
+                }
+                $this->nextStepProgressBar();
             }
         }
         foreach ($files as $index => $file) {
@@ -200,6 +229,13 @@ class appBuilder extends console implements CommandInterface
                     unset($acceptedFiles[$index]);
                     break;
                 }
+            }
+            foreach ( $implodeDirs as $implodeDir ){
+                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
+                if ($this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir . DIRECTORY_SEPARATOR . '**') or $this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir)) {
+                    $acceptedFiles[$index] = $file;
+                }
+                $this->nextStepProgressBar();
             }
         }
         $this->finishProgressBar(sprintf('Accepted %d file and %d folder.', count($acceptedFiles), count($acceptedFolder)));
