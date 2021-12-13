@@ -103,6 +103,9 @@ class makeController extends console implements CommandInterface
 
         $this->makeController();
 
+        $this->error(sprintf('Can not Create controller in "%s"!' , $this->conterollerPath ));
+        $this->newLine();
+        exit;
 	}
 
     private function makeController()
@@ -124,7 +127,7 @@ class makeController extends console implements CommandInterface
         $code .= "\t\t\n";
         $code .= "\t}\n\n";
         $code .= "}\n";
-        return $this->makeFile($code);
+        $this->makeFile($code);
     }
 
     private function makeCopyWriteCode(){
@@ -153,6 +156,12 @@ class makeController extends console implements CommandInterface
     }
 
     private function makeFile($content){
-        return File::generate($this->conterollerPath, $content);
+	    if ( file_exists($this->conterollerPath))
+            $this->error(sprintf('Same file exist in "%s"!' , $this->conterollerPath ));
+        if ( File::generate($this->conterollerPath, $content) ) {
+            $this->success(sprintf('Controller created in "%s".' , $this->conterollerPath ));
+            $this->newLine();
+            exit;
+        }
     }
 }
