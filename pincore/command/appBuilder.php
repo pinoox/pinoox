@@ -88,17 +88,21 @@ class appBuilder extends console implements CommandInterface
 
     private function find_gitignore_files()
     {
-        $this->startProgressBar(4, 'Find `.gitignore` files.');
-        $baseFile = $this->find_gitignore_files_in_dir(Dir::path('~'));
-        $this->nextStepProgressBar();
-        $appsFile = $this->find_gitignore_files_in_dir(Dir::path('~apps/'));
-        $this->nextStepProgressBar();
-        $appFile = $this->find_gitignore_files_in_dir($this->appPath, true);
-        $this->nextStepProgressBar();
-        $result = array_unique(array_merge($appFile, $baseFile, $appsFile));
-        $this->nextStepProgressBar();
-        $this->finishProgressBar(sprintf('%d file founded.', count($result)));
-        return $result;
+        $app = AppModel::fetch_by_package_name($this->package);
+        if ( ! isset($app['build']['gitignore']) or ( isset($app['build']['gitignore']) and $app['build']['gitignore'] )) {
+            $this->startProgressBar(4, 'Find `.gitignore` files.');
+            $baseFile = $this->find_gitignore_files_in_dir(Dir::path('~'));
+            $this->nextStepProgressBar();
+            $appsFile = $this->find_gitignore_files_in_dir(Dir::path('~apps/'));
+            $this->nextStepProgressBar();
+            $appFile = $this->find_gitignore_files_in_dir($this->appPath, true);
+            $this->nextStepProgressBar();
+            $result = array_unique(array_merge($appFile, $baseFile, $appsFile));
+            $this->nextStepProgressBar();
+            $this->finishProgressBar(sprintf('%d file founded.', count($result)));
+            return $result;
+        }
+            return [];
     }
 
     private function find_gitignore_files_in_dir($dir, $checkSubDire = false)
@@ -133,11 +137,11 @@ class appBuilder extends console implements CommandInterface
         }
         $this->nextStepProgressBar();
         $app = AppModel::fetch_by_package_name($this->package);
-        if ( isset($app['explode']) and ! is_null($app['explode']))
-            if ( is_array($app['explode']))
-                $matches = array_merge($matches , $app['explode']) ;
-            elseif ( is_string($app['explode']) )
-                $matches[] = $app['explode'];
+        if ( isset($app['build']['explode']) and ! is_null($app['build']['explode']))
+            if ( is_array($app['build']['explode']))
+                $matches = array_merge($matches , $app['build']['explode']) ;
+            elseif ( is_string($app['build']['explode']) )
+                $matches[] = $app['build']['explode'];
         $matches = array_unique($matches, SORT_REGULAR);
         $this->finishProgressBar(sprintf('%d Rules founded.', count($matches)));
         return $matches;
@@ -170,11 +174,11 @@ class appBuilder extends console implements CommandInterface
     {
         $app = AppModel::fetch_by_package_name($this->package);
         $implodeDirs = array();
-        if ( isset($app['implode']) and ! is_null($app['implode']))
-            if ( is_array($app['implode']))
-                $implodeDirs =  $app['implode'];
-            elseif ( is_string($app['implode']) )
-                $implodeDirs = array($app['implode']);
+        if ( isset($app['build']['implode']) and ! is_null($app['build']['implode']))
+            if ( is_array($app['build']['implode']))
+                $implodeDirs =  $app['build']['implode'];
+            elseif ( is_string($app['build']['implode']) )
+                $implodeDirs = array($app['build']['implode']);
         $numIgnoreRules = count($ignoreRules) + count($implodeDirs);
         $this->startProgressBar((count($folders) + count($files)) * $numIgnoreRules, 'Checking files and sub folders.');
         $acceptedFiles = [];
@@ -195,16 +199,22 @@ class appBuilder extends console implements CommandInterface
                 }
             }
             foreach ( $implodeDirs as $implodeDir ){
+                $lastStatus = isset($acceptedFolder[$index]);
                 $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
                 $implodeDirsIn = explode(DIRECTORY_SEPARATOR, $implodeDir);
                 $lastImplodeDirIn = "";
-                foreach ( $implodeDirsIn as $implodeDirIn ) {
-                    if ( $lastImplodeDirIn == "")
+                foreach ( $implodeDirsIn as $ti => $implodeDirIn ) {
+                    if ( $ti == 0)
                         $lastImplodeDirIn = $implodeDirIn;
+                    if ( $ti > 0 )
+                        $lastImplodeDirIn .= DIRECTORY_SEPARATOR.$implodeDirIn;
                     if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $lastImplodeDirIn . DIRECTORY_SEPARATOR . '**')) {
                         $acceptedFolder[$index] = $folder;
+                    } elseif ( ! $lastStatus ) {
+                            unset($acceptedFolder[$index]);
+                            break;
                     }
-                    $lastImplodeDirIn = DIRECTORY_SEPARATOR.$implodeDirIn;
+
                 }
                 $this->nextStepProgressBar();
             }
@@ -250,7 +260,8 @@ class appBuilder extends console implements CommandInterface
         File::make_folder(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ), false,0777 , false);
         $this->nextStepProgressBar();
         foreach ($folders as $folder){
-            File::make_folder(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) , false,0777 , false);
+            File::generate(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin' , 'test');
+            unlink(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin');
             $this->nextStepProgressBar();
         }
         foreach ($files as $file){
@@ -259,30 +270,33 @@ class appBuilder extends console implements CommandInterface
         }
         $this->finishProgressBar();
         $this->startProgressBar(count($folders) + count($files) + 3, 'Creating Build file.');
-        $setupFileName = $packageName;
+        $setupFileNameShouldBe = $packageName;
+        $app = AppModel::fetch_by_package_name($packageName);
+        if ( isset($app['build']['filename']))
+            $setupFileNameShouldBe = $app['build']['filename'];
+        $setupFileName = $setupFileNameShouldBe;
         $setupFileIndex = 2;
         while (true) {
             if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
                 if ( $this->option('rewrite') == 'rewrite' or $this->option('rewrite') == 'r' )
                     unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
                 elseif ( $this->option('rewrite') == 'version' or $this->option('rewrite') == 'v'  ){
-                    $app = AppModel::fetch_by_package_name($packageName);
                     if ( isset($app['version_code']) ){
-                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version_code']);
+                        $setupFileName = sprintf('%s (v_%d)', $setupFileNameShouldBe, $app['version_code']);
                         if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
                             unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
                         }
                     }elseif ( isset($app['version']) ){
-                        $setupFileName = sprintf('%s (v_%d)', $packageName, $app['version']);
+                        $setupFileName = sprintf('%s (v_%d)', $setupFileNameShouldBe, $app['version']);
                         if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
                             unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
                         }
                     } else {
-                        $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                        $setupFileName = sprintf('%s (%d)', $setupFileNameShouldBe, $setupFileIndex);
                         $setupFileIndex++;
                     }
                 } else {
-                    $setupFileName = sprintf('%s (%d)', $packageName, $setupFileIndex);
+                    $setupFileName = sprintf('%s (%d)', $setupFileNameShouldBe, $setupFileIndex);
                     $setupFileIndex++;
                 }
             } else
