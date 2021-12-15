@@ -195,16 +195,22 @@ class appBuilder extends console implements CommandInterface
                 }
             }
             foreach ( $implodeDirs as $implodeDir ){
+                $lastStatus = isset($acceptedFolder[$index]);
                 $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
                 $implodeDirsIn = explode(DIRECTORY_SEPARATOR, $implodeDir);
                 $lastImplodeDirIn = "";
-                foreach ( $implodeDirsIn as $implodeDirIn ) {
-                    if ( $lastImplodeDirIn == "")
+                foreach ( $implodeDirsIn as $ti => $implodeDirIn ) {
+                    if ( $ti == 0)
                         $lastImplodeDirIn = $implodeDirIn;
+                    if ( $ti > 0 )
+                        $lastImplodeDirIn .= DIRECTORY_SEPARATOR.$implodeDirIn;
                     if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $lastImplodeDirIn . DIRECTORY_SEPARATOR . '**')) {
                         $acceptedFolder[$index] = $folder;
+                    } elseif ( ! $lastStatus ) {
+                            unset($acceptedFolder[$index]);
+                            break;
                     }
-                    $lastImplodeDirIn = DIRECTORY_SEPARATOR.$implodeDirIn;
+
                 }
                 $this->nextStepProgressBar();
             }
@@ -250,7 +256,8 @@ class appBuilder extends console implements CommandInterface
         File::make_folder(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ), false,0777 , false);
         $this->nextStepProgressBar();
         foreach ($folders as $folder){
-            File::make_folder(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) , false,0777 , false);
+            File::generate(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin' , 'test');
+            unlink(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin');
             $this->nextStepProgressBar();
         }
         foreach ($files as $file){
