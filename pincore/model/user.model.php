@@ -60,9 +60,9 @@ class UserModel extends PinooxDatabase
         return self::$db->getOne(self::user);
     }
 
-    public static function fetch_user_by_email_or_username($username, $notUser = null)
+    public static function fetch_user_by_email_or_username($username, $notUser = null , $app = null)
     {
-        self::checkApp();
+        self::checkApp($app);
         if (!empty($notUser))
             self::$db->where('user_id', $notUser, '!=');
 
@@ -175,9 +175,9 @@ class UserModel extends PinooxDatabase
         return self::$db->update(self::user, $formData);
     }
 
-    public static function update_password($user_id, $newPassword, $oldPassword = null)
+    public static function update_password($user_id, $newPassword, $oldPassword = null , $app = null )
     {
-        self::checkApp();
+        self::checkApp($app);
 
         if (!is_null($oldPassword))
             self::$db->where('password', Security::passHash($oldPassword));
