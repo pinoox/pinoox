@@ -113,7 +113,7 @@ class makeModel extends console implements CommandInterface
         $code .= $this->makeNameSpace();
         if ( $this->use != null )
             $code .= sprintf("use %s;\n\n", $this->use);
-        $code .= sprintf("class %sModel " , $this->conteroller );
+        $code .= sprintf("class %sModel " , ucfirst(strtolower($this->conteroller)) );
         if ( $this->extend != null )
             $code .= sprintf("extends %s\n" , $this->extend );
         else
