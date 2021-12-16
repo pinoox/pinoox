@@ -193,7 +193,7 @@ class appMake extends console implements CommandInterface
         $code .= $this->makeCopyWriteCode();
         $code .= $this->makeNameSpace('model');
         $code .= "use pinoox\model\PinooxDatabase;\n\n";
-        $code .= "class testModel extends PinooxDatabase\n";
+        $code .= "class TestModel extends PinooxDatabase\n";
         $code .= "{\n\n";
         $code .= "\tpublic static function fetch_all()\n";
         $code .= "\t{\n";
