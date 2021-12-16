@@ -6,6 +6,7 @@ use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\console;
 use pinoox\component\Dir;
 use pinoox\component\File;
+use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Zip;
 
@@ -81,6 +82,8 @@ class appBuilder extends console implements CommandInterface
             $this->newLine();
             $this->danger($exception->getMessage());
             $this->newLine();
+            sleep(1);
+            gc_collect_cycles();
             File::remove(str_replace(DIRECTORY_SEPARATOR.$this->package , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->package ,$this->appPath ));
             $this->error('Some error happened!');
         }
@@ -305,6 +308,8 @@ class appBuilder extends console implements CommandInterface
         $this->nextStepProgressBar();
         $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') .$DS. $setupFileName . '.pin');
         $this->nextStepProgressBar();
+        sleep(1);
+        gc_collect_cycles();
         File::remove(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ));
         $this->nextStepProgressBar();
         if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin') and $zip ){
@@ -333,7 +338,9 @@ class appBuilder extends console implements CommandInterface
         // (tj. wildcard na konci matchuje i '/')
 
         $currentPath = ltrim($currentPath, '/');
-        $mask = ltrim(trim($mask), '/');
+        $mask = str_replace(['\\','/'] , DIRECTORY_SEPARATOR , trim($mask) );
+        $mask = HelperString::lastDelete($mask , DIRECTORY_SEPARATOR);
+        $mask = ltrim( $mask, '/');
 
         if ($mask === '*') {
             return TRUE;
