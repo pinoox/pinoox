@@ -153,7 +153,7 @@ class MainController extends MasterConfiguration
         $query = str_replace('{dbprefix}', $c['prefix'], $query);
         $queryArr = explode(';', $query);
 
-        PinooxDatabase::__init();
+        PinooxDatabase::__constructStatic();
         PinooxDatabase::startTransaction();
         foreach ($queryArr as $q) {
             if (empty($q)) continue;
