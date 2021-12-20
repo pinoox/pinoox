@@ -50,7 +50,7 @@ class AppModel extends PinooxDatabase
                 continue;
 
             $isHidden = AppProvider::get('hidden');
-            if ($isHidden)
+            if ( ! $isCheckHidden && $isHidden)
                 continue;
 
             $isRouter = AppProvider::get('router');
@@ -79,7 +79,8 @@ class AppModel extends PinooxDatabase
                 'open' => AppProvider::get('open'),
                 'sys_app' => AppProvider::get('sys-app'),
                 'icon' => Url::check(Url::file(AppProvider::get('icon'), $package_key), $icon_default),
-                'routes' => self::fetch_all_aliases_by_package_name($package_key)
+                'routes' => self::fetch_all_aliases_by_package_name($package_key),
+                'build' => AppProvider::get('build')
             ];
         }
 
@@ -122,6 +123,7 @@ class AppModel extends PinooxDatabase
                 'version_code' => AppProvider::get('version-code'),
                 'developer' => AppProvider::get('developer'),
                 'icon' => Url::check(Url::file(AppProvider::get('icon'), $packageName), $icon_default),
+                'build' => AppProvider::get('build')
             ];
         }
         AppProvider::app('~');
