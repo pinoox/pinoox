@@ -206,7 +206,7 @@ class console
         $resultMultiChoice = [];
         while ( ( $numberOfTry < $attempts and ! $multiple ) or ( $multiple )){
             $hasError = false;
-            $selectChoiceStr = trim(self::input(strlen(strval($choiceIndex))+1));
+            $selectChoiceStr = trim(self::input());
             $selectChoice = intval($selectChoiceStr);
             if ($selectChoice >= 1 and $selectChoice <= $choiceIndex and isset($keys[ $selectChoice-1 ]) ){
                 if ( ! $multiple ) {
@@ -272,17 +272,51 @@ class console
             self::newLine();
         }
     }
+
     /**
      * get string from user
-     * @param string $operation
+     * @param int $len
      * @return string
      */
-    protected static function input($len = 1 )
+    protected static function input($len = -1 )
     {
-        $resSTDIN = fopen("php://stdin", "r");
-        $enterStr = stream_get_contents($resSTDIN, $len);
-        fclose($resSTDIN);
+        if ( intval($len) >= 0 ) {
+            $resSTDIN = fopen("php://stdin", "r");
+            $enterStr = stream_get_contents($resSTDIN, intval($len));
+            fclose($resSTDIN);
+        } else
+            $enterStr = readline();
         return $enterStr;
+    }
+
+    /**
+     * @param string $prompt
+     * @return string|void
+     */
+    protected static function input_dialog($prompt = "Enter Password:") {
+        if (preg_match('/^win/i', PHP_OS)) {
+            $vbscript = sys_get_temp_dir() . 'prompt_password.vbs';
+            file_put_contents(
+                $vbscript, 'wscript.echo(InputBox("'
+                . addslashes($prompt)
+                . '", "", "password here"))');
+            $command = "cscript //nologo " . escapeshellarg($vbscript);
+            $password = rtrim(shell_exec($command));
+            unlink($vbscript);
+            return $password;
+        } else {
+            $command = "/usr/bin/env bash -c 'echo OK'";
+            if (rtrim(shell_exec($command)) !== 'OK') {
+                trigger_error("Can't invoke bash");
+                return;
+            }
+            $command = "/usr/bin/env bash -c 'read -s -p \""
+                . addslashes($prompt)
+                . "\" mypassword && echo \$mypassword'";
+            $password = rtrim(shell_exec($command));
+            echo "\n";
+            return $password;
+        }
     }
 
     protected static function table($headers , $rows)
