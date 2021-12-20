@@ -12,5 +12,22 @@
  * @link http://www.erfanebrahimi.ir/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
+
+/*
+|--------------------------------------------------------------------------
+| Register The Auto Loader
+|--------------------------------------------------------------------------
+|
+| Composer provides a convenient, automatically generated class loader for
+| this application. We just need to utilize it! We'll simply require it
+| into the script here so we don't need to manually load our classes.
+|
+*/
+
+$composer = require __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
+$loader = new ConstructStatic\Loader($composer);
+
+
 #boot pinoox
 include_once  dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . "boot" . DIRECTORY_SEPARATOR . 'boot.php';
