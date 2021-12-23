@@ -16,7 +16,7 @@ class unitTest extends console implements CommandInterface
 	*
 	* @var string
 	*/
-	protected $signature = "test";
+	protected $signature = "test:run";
 
 	/**
 	* The console command description.
