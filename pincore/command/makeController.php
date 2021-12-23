@@ -78,7 +78,7 @@ class makeController extends console implements CommandInterface
         $controllerScope = implode('\\' , $controller);
         $this->nameSpaceOfController = $this->nameSpaceOfControllerFolder . (( count($controller) > 0 ) ? '\\'.$controllerScope : "");
 
-        $this->conterollerPath = $this->conterollerPath . ( ( count($controller) > 0 ) ? '/'.implode('/' , $controller) : "" ) . '/'.strtolower($this->conteroller) .'.controller.php';
+        $this->conterollerPath = $this->conterollerPath . ( ( count($controller) > 0 ) ? '/'.implode('/' , $controller) : "" ) . '/'.$this->conteroller .'Controller.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
         if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){

@@ -1,0 +1,39 @@
+{
+    "name": "yeganehha/pinooxv2",
+    "description": "pinoox is a simple environment for web management and development. You can do whatever you want on the web and add your desire features to your website in a simple way",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Pinoox",
+            "email": "info@pinoox.com"
+        }, 
+        {
+            "name": "Erfan Ebrahimi",
+            "email": "me@erfanebrahimi.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+		"php": "^7.3|^8.0",
+        "vladimmi/construct-static": "dev-master@dev"
+	},
+    "autoload": {
+        "files" : [
+            "pincore/boot/functions.php"
+        ],
+        "psr-4": {
+            "pinoox\\": "pincore/",
+            "pinoox\\app\\": "apps/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9",
+        "nunomaduro/collision": "dev-stable"
+    }
+}
