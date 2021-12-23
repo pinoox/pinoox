@@ -46,6 +46,7 @@ class unitTest extends console implements CommandInterface
 	protected $options = [
 		[ 'testdox' , null , 'Report test execution progress in TestDox format' , null ],
 		[ 'printer' , null , 'How to show result.[\'default\' , \'collision\' , <name_of_class>]' , 'collision' ],
+		[ 'prepend' , null , 'A PHP script that is included as early as possible.' , null ],
 		[ 'more_help' , 'mh' , 'Get PHPUnit helps options!' , null ],
 	];
 
@@ -99,14 +100,21 @@ class unitTest extends console implements CommandInterface
 
         }
         unset($file);
-        $options = getopt('', array('prepend:'));
 
-        if (isset($options['prepend'])) {
-            require $options['prepend'];
-        }
-        unset($options);
         $_SERVER['argv']  = array_slice($_SERVER['argv'] , 1);
         $_SERVER['argv'][1] = 'tests/' . $this->argument('path_file');
+
+        if ( $this->option('prepend') != null ) {
+            if (file_exists($this->option('prepend'))) {
+                require_once $this->option('prepend');
+            }
+            foreach ( $_SERVER['argv'] as $index => $argv ) {
+                if ( HelperString::firstHas($argv , '--prepend=') ){
+                    unset($_SERVER['argv'] [$index]);
+                    break;
+                }
+            }
+        }
         if ( $this->option('printer') == "collision")
             $_SERVER['argv'][] = '--printer=NunoMaduro\\Collision\\Adapters\\Phpunit\\Printer';
         elseif ( $this->option('printer') == "default")
