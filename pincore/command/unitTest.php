@@ -3,6 +3,7 @@ namespace pinoox\command;
 
 
 use PHPUnit\TextUI\Command;
+use pinoox\app\com_pinoox_manager\model\AppModel;
 use pinoox\component\console;
 use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
@@ -74,6 +75,18 @@ class unitTest extends console implements CommandInterface
 	*/
 	public function handle()
 	{
+        $apps = AppModel::fetch_all(null , true);
+        $apps = array_merge(['root'], array_keys($apps) ) ;
+        $appId = $this->choice('Please select application you want to run test there.',  $apps );
+        $path = isset($apps[$appId]) ? $apps[$appId] : null ;
+        if ( $path == null ){
+            $this->error('Can not find selected application!');
+        }
+        if ( $path != 'root' )
+            $path = 'apps/'.$path.'/tests/';
+        else
+            $path = 'tests/';
+
         if ((int) \PHPUnit\Runner\Version::id()[0] < 9) {
             $this->error('Running Collision ^5.0 artisan test command requires at least PHPUnit ^9.0.');
         }
@@ -97,12 +110,11 @@ class unitTest extends console implements CommandInterface
             $this->newLine();
             $this->warning('You can learn all about Composer on https://getcomposer.org/.');
             $this->error('Please install composer');
-
         }
         unset($file);
 
         $_SERVER['argv']  = array_slice($_SERVER['argv'] , 1);
-        $_SERVER['argv'][1] = 'tests/' . $this->argument('path_file');
+        $_SERVER['argv'][1] = $path . $this->argument('path_file');
 
         if ( $this->option('prepend') != null ) {
             if (file_exists($this->option('prepend'))) {
