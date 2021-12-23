@@ -200,7 +200,7 @@ class appMake extends console implements CommandInterface
         $code .= "\t\treturn [];\n";
         $code .= "\t}\n\n";
         $code .= "}\n";
-        return $this->makeFile('model/test.model.php',$code);
+        return $this->makeFile('model/TestModel.php',$code);
     }
 
     private function makeController()
@@ -240,8 +240,8 @@ class appMake extends console implements CommandInterface
         $code2 .= "\t}\n";
         $code2 .= "}\n";
         return
-            $this->makeFile('controller/master.controller.php',$code)
-            and $this->makeFile('controller/main.controller.php',$code2);
+            $this->makeFile('controller/MasterController.php',$code)
+            and $this->makeFile('controller/MainController.php',$code2);
     }
 
     private function makeFolder($directory){
