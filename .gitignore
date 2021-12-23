@@ -14,7 +14,15 @@ pinker
 
 # IntelliJ IDEA
 .idea
+.vscode
 
 # Node Js
 node_modules
 package-lock.json
+
+# composer 
+/vendor
+/composer.lock
+
+# PHPUnit
+.phpunit.result.cache

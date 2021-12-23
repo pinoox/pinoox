@@ -13,6 +13,6 @@ use pinoox\boot\Loader;
 
 define('PINOOX_DEFAULT_LANG', 'en');
 define('PINOOX_PATH',realpath(dirname(__FILE__) . '/../..').DIRECTORY_SEPARATOR);
-require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "loader.php");
+require_once(dirname(__FILE__) . DIRECTORY_SEPARATOR . "Loader.php");
 
 Loader::boot();
