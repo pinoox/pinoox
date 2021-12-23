@@ -105,7 +105,7 @@ class makeCommand extends console implements CommandInterface
         $code .= "\t*".'   $this->warning(string $text) : void'."\n" ;
         $code .= "\t*".'   $this->info(string $text) : void'."\n" ;
         $code .= "\t*".'   $this->gray(string $text) : void'."\n" ;
-        $code .= "\t*".'   $this->newLine(string $text) : void'."\n" ;
+        $code .= "\t*".'   $this->newLine() : void'."\n" ;
         $code .= "\t*".'   $this->error(string $text, bool $exit = true) : void'."\n" ;
         $code .= "\t*".'   $this->choice(string $question, array $choices, mix $default = null, bool $multiple = false, int $attempts = 2 ) : string|int|array'."\n" ;
         $code .= "\t*".'   $this->confirm(string $operation) : bool'."\n" ;

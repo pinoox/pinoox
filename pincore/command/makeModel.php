@@ -78,7 +78,7 @@ class makeModel extends console implements CommandInterface
         $ModelScope = implode('\\' , $Model);
         $this->nameSpaceOfModel = $this->nameSpaceOfModelFolder . (( count($Model) > 0 ) ? '\\'.$ModelScope : "");
 
-        $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.strtolower($this->conteroller) .'.model.php';
+        $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.ucfirst(strtolower($this->conteroller)) .'Model.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
         if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){
