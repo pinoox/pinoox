@@ -70,7 +70,7 @@ class pinkerClear extends console implements CommandInterface
                     $folders = $this->removePinkerFromPath(Dir::path('~apps/' . $this->argument('app_name')), true);
             }
             foreach ($folders as $folder) {
-                $this->success(sprintf('pinker deleted in `%s`.', $folder));
+                $this->success(sprintf('pinker deleted in `%s`.', str_replace(['\\','/'],DIRECTORY_SEPARATOR, $folder)));
                 $this->newLine();
             }
             $this->success('all pinker folder deleted.');
