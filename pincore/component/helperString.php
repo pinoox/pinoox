@@ -369,7 +369,7 @@ class HelperString
             $lev = levenshtein($input, $word);
             similar_text($input, $word, $percent1);
             similar_text($word, $input, $percent2);
-            $percent0 = ( 1 - levenshtein($input, $closest) / max(strlen($input), strlen($closest)) ) * 100;
+            $percent0 = ( 1 - $lev / max(strlen($input), strlen($closest)) ) * 100;
             $avg = ($percent1  + $percent2  + $percent0 ) / 3 ;
             if ($lev == 0 or $percent1 >= 95 or $percent2 >= 95 ) {
                 $closest = $word;
