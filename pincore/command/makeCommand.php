@@ -42,7 +42,7 @@ class makeCommand extends console implements CommandInterface
     {
         $this->checkData();
         if ( $this->writeCode() ) {
-            $this->success(sprintf('Command "%s" successfully generated in "%s"' , $this->name , $this->path));
+            $this->success(sprintf('Command "%s" successfully generated in "%s"' , $this->name , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->path)));
         }
     }
 

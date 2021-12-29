@@ -101,7 +101,7 @@ class makeModel extends console implements CommandInterface
 
         $this->makeModel();
 
-        $this->error(sprintf('Can not Create model in "%s"!' , $this->conterollerPath ));
+        $this->error(sprintf('Can not Create model in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath )));
         $this->newLine();
         exit;
 	}
@@ -154,9 +154,9 @@ class makeModel extends console implements CommandInterface
 
     private function makeFile($content){
 	    if ( file_exists($this->conterollerPath))
-            $this->error(sprintf('Same file exist in "%s"!' , $this->conterollerPath ));
+            $this->error(sprintf('Same file exist in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
         if ( File::generate($this->conterollerPath, $content) ) {
-            $this->success(sprintf('model created in "%s".' , $this->conterollerPath ));
+            $this->success(sprintf('model created in "%s".' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
             $this->newLine();
             exit;
         }
