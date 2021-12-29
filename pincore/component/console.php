@@ -14,7 +14,6 @@
 namespace pinoox\component;
 
 
-use phpDocumentor\Reflection\Types\This;
 use pinoox\component\app\AppProvider;
 use ReflectionClass;
 
