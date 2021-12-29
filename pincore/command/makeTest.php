@@ -101,7 +101,7 @@ class makeTest extends console implements CommandInterface
         
         $this->nameSpaceOfTestFolder =  'pinoox\app\\'.$this->package.'\\tests';
         if ( $this->package == '~' )
-            $this->nameSpaceOfTestFolder = 'Tests';
+            $this->nameSpaceOfTestFolder = 'pinoox\tests';
 
         $Test = explode('\\' , str_replace('/' , '\\' , $this->argument('test_case') ));
         $this->test = array_pop($Test);
