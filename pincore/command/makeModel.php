@@ -78,7 +78,7 @@ class makeModel extends console implements CommandInterface
         $ModelScope = implode('\\' , $Model);
         $this->nameSpaceOfModel = $this->nameSpaceOfModelFolder . (( count($Model) > 0 ) ? '\\'.$ModelScope : "");
 
-        $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.strtolower($this->conteroller) .'.model.php';
+        $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.ucfirst(strtolower($this->conteroller)) .'Model.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
         if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){
@@ -101,7 +101,7 @@ class makeModel extends console implements CommandInterface
 
         $this->makeModel();
 
-        $this->error(sprintf('Can not Create model in "%s"!' , $this->conterollerPath ));
+        $this->error(sprintf('Can not Create model in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath )));
         $this->newLine();
         exit;
 	}
@@ -154,9 +154,9 @@ class makeModel extends console implements CommandInterface
 
     private function makeFile($content){
 	    if ( file_exists($this->conterollerPath))
-            $this->error(sprintf('Same file exist in "%s"!' , $this->conterollerPath ));
+            $this->error(sprintf('Same file exist in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
         if ( File::generate($this->conterollerPath, $content) ) {
-            $this->success(sprintf('model created in "%s".' , $this->conterollerPath ));
+            $this->success(sprintf('model created in "%s".' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
             $this->newLine();
             exit;
         }

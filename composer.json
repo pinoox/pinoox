@@ -26,5 +26,14 @@
             "pinoox\\": "pincore/",
             "pinoox\\app\\": "apps/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "pinoox\\tests\\": "tests/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "9",
+        "nunomaduro/collision": "dev-stable"
     }
 }
