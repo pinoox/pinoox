@@ -103,7 +103,7 @@ class makeController extends console implements CommandInterface
 
         $this->makeController();
 
-        $this->error(sprintf('Can not Create controller in "%s"!' , $this->conterollerPath ));
+        $this->error(sprintf('Can not Create controller in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
         $this->newLine();
         exit;
 	}
@@ -157,9 +157,9 @@ class makeController extends console implements CommandInterface
 
     private function makeFile($content){
 	    if ( file_exists($this->conterollerPath))
-            $this->error(sprintf('Same file exist in "%s"!' , $this->conterollerPath ));
+            $this->error(sprintf('Same file exist in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
         if ( File::generate($this->conterollerPath, $content) ) {
-            $this->success(sprintf('Controller created in "%s".' , $this->conterollerPath ));
+            $this->success(sprintf('Controller created in "%s".' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->conterollerPath) ));
             $this->newLine();
             exit;
         }

@@ -314,7 +314,7 @@ class appBuilder extends console implements CommandInterface
         $this->nextStepProgressBar();
         if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin') and $zip ){
             $this->finishProgressBar();
-            $this->success(sprintf('Setup file maked in `%s`.' , Dir::path('~') . $setupFileName . '.pin'));
+            $this->success(sprintf('Setup file maked in `%s`.' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, Dir::path('~') . $setupFileName . '.pin')));
         } else {
             $this->danger('Something got error during make build file. please do it manually!');
             $this->error('Some error happened!');
