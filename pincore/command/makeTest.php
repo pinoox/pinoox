@@ -101,7 +101,7 @@ class makeTest extends console implements CommandInterface
         
         $this->nameSpaceOfTestFolder =  'pinoox\app\\'.$this->package.'\\tests';
         if ( $this->package == '~' )
-            $this->nameSpaceOfTestFolder = 'Tests';
+            $this->nameSpaceOfTestFolder = 'pinoox\tests';
 
         $Test = explode('\\' , str_replace('/' , '\\' , $this->argument('test_case') ));
         $this->test = array_pop($Test);
@@ -111,7 +111,7 @@ class makeTest extends console implements CommandInterface
         $this->testPath = $this->testPath . ( ( count($Test) > 0 ) ? '/'.implode('/' , $Test) : "" ) . '/'.ucfirst(strtolower($this->test)) .'Test.php';
         $this->makeTest();
 
-        $this->error(sprintf('Can not Create Test in "%s"!' , $this->testPath ));
+        $this->error(sprintf('Can not Create Test in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->testPath )));
         $this->newLine();
         exit;
     }
@@ -159,9 +159,9 @@ class makeTest extends console implements CommandInterface
 
     private function makeFile($content){
         if ( file_exists($this->testPath))
-            $this->error(sprintf('Same file exist in "%s"!' , $this->testPath ));
+            $this->error(sprintf('Same file exist in "%s"!' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->testPath ) ));
         if ( File::generate($this->testPath, $content) ) {
-            $this->success(sprintf('Test created in "%s".' , $this->testPath ));
+            $this->success(sprintf('Test created in "%s".' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $this->testPath ) ));
             $this->newLine();
             exit;
         }

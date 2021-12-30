@@ -523,15 +523,57 @@ class console
             array_splice( $arguments, 1, 1, ['help'] );
         }
         self::$CommandSignature = isset($arguments[1]) ? $arguments[1] : "help";
-        $command = self::getListCommand( self::$CommandSignature );
+        $commandSignatures =[];
+        $command = self::getListCommand( self::$CommandSignature  , $commandSignatures);
         if ( $command == false ){
-            self::error(sprintf('Command "%s" is not defined.', self::$CommandSignature) );
+            self::error(sprintf('Command "%s" is not defined.', self::$CommandSignature) , false );
+            self::findSimilarCommand(self::$CommandSignature  , $commandSignatures);
+        } else {
+            self::parseCommand($command);
+            call_user_func_array([$command['class'], "handle"], []);
         }
-        self::parseCommand($command);
-        call_user_func_array([$command['class'], "handle"],[]);
     }
 
-    protected static function getListCommand( $needCommand = null){
+    protected static function findSimilarCommand($CommandSignature  , $commandSignatures , $percentSimilarity = 40){
+        $closetCommand = [] ;
+        $i = 0 ;
+        do {
+            list($tempClosetCommand, $percent) = HelperString::closest_word($CommandSignature, $commandSignatures, true);
+            if ( $percent >= $percentSimilarity ) {
+                $closetCommand[] = $tempClosetCommand;
+                $i++;
+                if (($key = array_search($tempClosetCommand, $commandSignatures)) !== false) {
+                    unset($commandSignatures[$key]);
+                }
+            }
+        } while($percent >= $percentSimilarity  and $i <= 4);
+        switch (count($closetCommand)) {
+            case 0:
+                exit;
+            case 1:
+                self::moveUp();
+                self::moveUp();
+                if ( self::confirm(sprintf(" Did you mean `%s`?" , $closetCommand[0])) ){
+                    self::$argument[1] = $closetCommand[0];
+                    self::warning(sprintf("> php %s" , implode(" " , self::$argument)));
+                    self::newLine();
+                    self::findCommand();
+                } else
+                    exit;
+                break;
+            default:
+                $choice = self::choice('Did you mean one of these?' , $closetCommand, null ,false ,1);
+                if ( $choice == null or ! isset($closetCommand[$choice]))
+                    exit;
+                self::$argument[1] = $closetCommand[$choice];
+                self::warning(sprintf("> php %s" , implode(" " , self::$argument)));
+                self::newLine();
+                self::findCommand();
+        }
+    }
+
+
+    protected static function getListCommand( $needCommand = null , &$commandSignatures = null){
         $commands = self::getListCommandFile();
         $result = [];
         foreach ( $commands as $command ){
@@ -565,6 +607,7 @@ class console
                         'Options' => isset($Options) ? $Options : [],
                         'class' => $class
                     ];
+                    $commandSignatures[]= $signature;
                     if ( ! is_null($needCommand) and $signature == $needCommand)
                         break;
                 } catch (\ReflectionException $e) {
