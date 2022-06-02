@@ -34,6 +34,6 @@
     },
     "require-dev": {
         "phpunit/phpunit": "9",
-        "nunomaduro/collision": "dev-stable"
+        "nunomaduro/collision": "v5.x-dev"
     }
 }
