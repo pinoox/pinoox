@@ -4,12 +4,12 @@ namespace pinoox\command;
 
 use PHPUnit\TextUI\Command;
 use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class unitTest extends console implements CommandInterface
+class unitTest extends Console implements CommandInterface
 {
 
 	/**

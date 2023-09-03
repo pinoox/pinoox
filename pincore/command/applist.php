@@ -2,12 +2,11 @@
 namespace pinoox\command;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class applist extends console implements CommandInterface
+class applist extends Console implements CommandInterface
 {
 
 	/**

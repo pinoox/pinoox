@@ -18,8 +18,6 @@ interface CommandInterface
      * Main method
      *
      * this method call when command run
-     *
-     * @return mixed
      */
     public function handle();
 

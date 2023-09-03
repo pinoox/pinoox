@@ -3,14 +3,14 @@ namespace pinoox\command;
 
 
 use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
-use pinoox\component\HelperString;
+use pinoox\component\helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class makeModel extends console implements CommandInterface
+class makeModel extends Console implements CommandInterface
 {
 
 	/**

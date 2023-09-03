@@ -14,6 +14,8 @@ namespace pinoox\component;
 
 use pinoox\boot\Loader;
 use pinoox\component\app\AppProvider;
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\Config;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -44,8 +46,8 @@ class Router
 
     public static function build($key, $app)
     {
-        Config::setLinear('~app', $key, $app);
-        AppProvider::app($app);
+        Config::name('~app')->set($key, $app);
+        App::app($app);
         self::start();
         self::call();
     }
@@ -85,7 +87,7 @@ class Router
     private static function checkDomain($url = null)
     {
         $new_url = empty($url) ? self::$url : $url;;
-        $app_domain = Config::getLinear('~domain', Url::domain());
+        $app_domain = Config::name('~domain')->get( Url::domain());
         if (empty($app_domain)) {
             $info = self::getByPatternDomain();
             if (!empty($info)) {
@@ -113,9 +115,9 @@ class Router
 
     private static function getByPatternDomain()
     {
-        $domain = Config::getLinear('~domain', Url::domain());
+        $domain = Config::name('~domain')->get( Url::domain());
         if (is_null($domain)) {
-            $domains = Config::get('~domain');
+            $domains = Config::name('~domain')->get();
 
             foreach ($domains as $pattern => $area) {
                 if (HelperString::has($pattern, '*')) {
@@ -134,9 +136,7 @@ class Router
                         if (self::checkPatternDomain($arrSub, $arrMain)) {
                             return ['sub' => $currentDomain, 'app' => $area];
                         }
-
                     }
-
                 }
             }
         }
@@ -170,7 +170,7 @@ class Router
         $parts = HelperString::explodeDropping('/', $new_url);
         foreach ($parts as $part) {
             $packageName = self::getPackageNameApp($part);
-            if (self::existApp($packageName, true) && AppProvider::get('enable') && ((!self::$isDomain) || (self::$isDomain && AppProvider::get('domain')))) {
+            if (self::existApp($packageName, true) && App::get('enable') && ((!self::$isDomain) || (self::$isDomain && App::get('domain')))) {
                 self::$appUrl = $part;
                 if (empty($url)) {
                     self::setApp($packageName);
@@ -185,7 +185,7 @@ class Router
             }
         }
 
-        $default_app = Config::get('~app.*');
+        $default_app = Config::name('~app')->get('*');
         if (self::existApp($default_app, true)) {
             if (empty($url)) {
                 self::setApp($default_app);
@@ -204,7 +204,7 @@ class Router
     private static function getPackageNameApp($part)
     {
         if ($part === '*') return null;
-        return Config::getLinear('~app', $part);
+        return Config::name('~app')->getLinear(null,$part);
     }
 
     public static function existApp($packageName, $isBake = false)
@@ -225,7 +225,7 @@ class Router
 
     private static function setAppProvider($packageName = null)
     {
-        AppProvider::bake($packageName);
+        App::bake($packageName);
     }
 
     public static function getApp()
@@ -235,7 +235,7 @@ class Router
 
     public static function setApp($app)
     {
-        $area = AppProvider::get('area');
+        $area = App::get('area');
         if (!empty($app)) {
             self::$app = $app;
         } else {
@@ -277,11 +277,11 @@ class Router
         $Parts = self::$inParts;
 
         if (!$isUrl) self::$url = implode('/', $Parts);
-        $mainController = AppProvider::get('main-controller');
+        $mainController = App::get('main-controller');
         $controller = self::generateControllerName($mainController);
 
-        $mainMethod = AppProvider::get('main-method');
-        $exceptionMethod = AppProvider::get('exception-method');
+        $mainMethod = App::get('main-method');
+        $exceptionMethod = App::get('exception-method');
         $method = $mainMethod;
         $params = array();
 
@@ -338,7 +338,7 @@ class Router
 
     private static function replaceConfigRouter()
     {
-        $patterns = AppProvider::get('rewrite');
+        $patterns = App::get('rewrite');
         $config_router = !empty($patterns) ? $patterns : array();
 
         if (empty(self::$inParts)) {
@@ -353,7 +353,7 @@ class Router
         uksort($config_router, function ($a, $b) {
             return strlen($b) - strlen($a);
         });
-        if (AppProvider::get('auto-null')) {
+        if (App::get('auto-null')) {
             $keys = array_values(array_filter($config_router));
             $newPatterns = array_fill_keys($keys, null);
             $config_router = array_merge($config_router, $newPatterns);
@@ -436,7 +436,7 @@ class Router
                 $key = $keys[0];
                 $default = isset($keys[1]) ? $keys[1] : null;
                 $value = !empty($main[$i]) ? $main[$i] : $default;
-                $filters = AppProvider::get('rewrite-filter');
+                $filters = App::get('rewrite-filter');
                 if (isset($filters[$key])) {
                     $filter = $filters[$key];
                     if (is_array($filter)) {
@@ -510,7 +510,7 @@ class Router
 
     private static function checkAccessToController($controller = null)
     {
-        $controller = !empty($controller) ? $controller : AppProvider::get('main-controller');
+        $controller = !empty($controller) ? $controller : App::get('main-controller');
         $controller = self::generateControllerName($controller);
         return self::isValidController($controller) && !self::checkCommentNoAccess($controller);
     }
@@ -550,7 +550,7 @@ class Router
             $rc = new ReflectionClass($controllerClass);
             $string = $rc->getDocComment();
             if (self::checkNoAccessComment($string)) {
-                $mainController = AppProvider::get('main-controller');
+                $mainController = App::get('main-controller');
                 if ($controller == self::generateControllerName($mainController)) exit("No Access!");
                 return true;
             }
@@ -558,7 +558,7 @@ class Router
             $rc = new ReflectionClass($controllerClass);
             $string = $rc->getMethod($method)->getDocComment();
             if (self::checkNoAccessComment($string)) {
-                $exceptionMethod = AppProvider::get('exception-method');
+                $exceptionMethod = App::get('exception-method');
                 if ($method == $exceptionMethod) exit("No Access!");
                 return true;
             }
@@ -688,7 +688,7 @@ class Router
         }
 
         if (!empty($app)) {
-            self::setApp(AppProvider::get('area'));
+            self::setApp(App::get('area'));
         }
     }
 
@@ -701,49 +701,49 @@ class Router
         self::loadLang();
         self::loadInputDataInGlobal();
         self::loadServices();
-        AppProvider::call('startup');
+        App::call('startup');
     }
 
     private static function loadLoader()
     {
-        $loaders = AppProvider::get('loader');
+        $loaders = App::get('loader');
         foreach ($loaders as $classname => $path) {
             if (HelperString::firstHas($classname, '@')) {
                 Loader::loadPath($classname, $path);
                 continue;
             }
-            Config::setLinear('~loader', $classname, $path);
+            Config::name('~loader')->set($classname, $path);
         }
     }
 
     private static function loadSession()
     {
-        $app = AppProvider::get('session');
+        $app = App::get('session');
         if (!empty($app))
             Session::app($app);
     }
 
     private static function loadToken()
     {
-        $app = AppProvider::get('token');
+        $app = App::get('token');
         if (!empty($app))
             Token::app($app);
     }
 
     private static function loadUser()
     {
-        $app = AppProvider::get('user');
+        $app = App::get('user');
         if (!empty($app))
             User::app($app);
 
-        $type = AppProvider::get('user-type');
+        $type = App::get('user-type');
         if (!empty($type))
             User::type($type);
     }
 
     private static function loadLang()
     {
-        $lang = AppProvider::get('lang');
+        $lang = App::get('lang');
         $lang = !empty($lang) ? $lang : PINOOX_DEFAULT_LANG;
         Lang::change($lang);
     }
@@ -751,8 +751,8 @@ class Router
     private static function loadInputDataInGlobal()
     {
         $inputData = self::getInputData();
-        if (!AppProvider::get('global-data')) return;
-        $prefix = AppProvider::get('prefix-data');
+        if (!App::get('global-data')) return;
+        $prefix = App::get('prefix-data');
         foreach ($inputData as $key => $value) {
             $GLOBALS[$prefix . $key] = $value;
         }
@@ -769,7 +769,7 @@ class Router
 
     private static function loadServices()
     {
-        $services = AppProvider::get('service');
+        $services = App::get('service');
         if (!is_array($services)) return;
         foreach ($services as $service) {
             Service::run($service);
@@ -795,7 +795,7 @@ class Router
         $url = implode('/', self::getAsArray($url));
         $method = self::method();
         $deleteUrl = '/';
-        if (!$isMethod && $method != AppProvider::get('main-method') && $method != AppProvider::get('exception-method'))
+        if (!$isMethod && $method != App::get('main-method') && $method != App::get('exception-method'))
             $deleteUrl .= $method;
 
 

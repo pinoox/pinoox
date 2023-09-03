@@ -12,6 +12,8 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperString;
+
 class File
 {
     /**
@@ -139,11 +141,11 @@ class File
      * @param bool $safe
      * @return bool
      */
-    public static function copy($file, $newFile,$safe = false)
+    public static function copy($file, $newFile, $safe = false)
     {
         if (!file_exists($file)) return false;
         $folder = dirname($newFile);
-        self::make_folder($folder, true,0777,$safe);
+        self::make_folder($folder, true, 0777, $safe);
 
         $c = @copy($file, $newFile);
 
@@ -317,7 +319,7 @@ class File
         foreach ($arBytes as $arItem) {
             if ($size >= $arItem["VALUE"]) {
                 $result = $size / $arItem["VALUE"];
-                $result = Lang::replace('~file.units.'.$arItem["UNIT"],str_replace(".", ",", strval(round($result, $round))));
+                $result = Lang::replace('~file.units.' . $arItem["UNIT"], str_replace(".", ",", strval(round($result, $round))));
                 break;
             }
         }
@@ -357,7 +359,7 @@ class File
      * @param string $delimiter
      * @return string
      */
-    public static function getNameBySlice($path, $slice = 0, $delimiter = DIRECTORY_SEPARATOR)
+    public static function get_name_by_slice($path, $slice = 0, $delimiter = DIRECTORY_SEPARATOR)
     {
 
         $arrPath = explode($delimiter, $path);
@@ -418,10 +420,10 @@ class File
 
             while (!feof($fp)) {
                 $h = fgets($fp);
-                if ($h == "\r\n" OR $h == "\n") break;
+                if ($h == "\r\n" or $h == "\n") break;
                 list($key, $value) = explode(":", $h, 2);
                 $headers[$key] = trim($value);
-                if ($code >= 300 AND $code < 400 AND strtolower($key) == "location" AND $redirect > 0) {
+                if ($code >= 300 and $code < 400 and strtolower($key) == "location" and $redirect > 0) {
                     return self::get_remote_file_size($headers[$key], $method, $data, --$redirect);
                 }
             }
@@ -630,7 +632,7 @@ class File
         $dirs = array_map(function ($item) use ($directory_seperator) {
             return $item . $directory_seperator;
         }, array_filter(glob($directory . "*"), 'is_dir'));
-        foreach ($dirs AS $dir) {
+        foreach ($dirs as $dir) {
             $dirs = array_merge($dirs, self::get_all_folders($dir, $directory_seperator));
         }
 
@@ -684,7 +686,6 @@ class File
                     if (!self::in_extension($file, $exts)) $check_ext = false;
                 }
             }
-
             if (empty($no_file) || !in_array($file, $no_file)) {
                 if ($check_ext) {
                     if (is_file($file)) {
@@ -765,5 +766,36 @@ class File
     {
         if (!is_file($file)) return false;
         return mime_content_type($file);
+    }
+
+    public static function extract_namespace($file)
+    {
+        $ns = NULL;
+        $handle = fopen($file, "r");
+        if ($handle) {
+            while (($line = fgets($handle)) !== false) {
+                if (strpos($line, 'namespace') === 0) {
+                    $parts = explode(' ', $line);
+                    $ns = rtrim(trim($parts[1]), ';');
+                    break;
+                }
+            }
+            fclose($handle);
+        }
+        return $ns;
+    }
+
+    public static function getBetweenLine($path, $start, $end): string
+    {
+        $result = '';
+        if (!is_file($path))
+            return $result;
+
+        $lines = file($path);
+        for ($i = $start; $i <= $end; $i++) {
+            $result .= $lines[$i];
+        }
+
+        return $result;
     }
 }

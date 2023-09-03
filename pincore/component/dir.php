@@ -12,8 +12,8 @@
 
 namespace pinoox\component;
 
-use pinoox\component\app\AppProvider;
-use pinoox\model\FileModel;
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\app\App       ;
 
 class Dir
 {
@@ -54,9 +54,9 @@ class Dir
     public static function theme($url = null, $theme = null, $path = null)
     {
         if (empty($theme))
-            $theme = (empty(self::$theme)) ? AppProvider::get('theme') : self::$theme;
+            $theme = (empty(self::$theme)) ? App::get('theme') : self::$theme;
         if (empty($path))
-            $path = (empty(self::$pathTheme)) ? self::path(AppProvider::get('path-theme')) : self::$pathTheme;
+            $path = (empty(self::$pathTheme)) ? self::path(App::get('path-theme')) : self::$pathTheme;
         return self::path($path . '/' . $theme . '/' . $url);
     }
 
@@ -74,7 +74,7 @@ class Dir
         $isBase = false;
 
         if ($app !== '~' && !HelperString::firstHas($path, '~')) {
-            $packageName = is_null($app) ? Router::getApp() : $app;
+            $packageName = is_null($app) ? App::package() : $app;
             $result .= Router::app_folder . DIRECTORY_SEPARATOR . $packageName . DIRECTORY_SEPARATOR;
         } else {
             $isBase = true;
@@ -103,7 +103,7 @@ class Dir
      */
     private static function app()
     {
-        return PINOOX_PATH . Router::app_folder . DIRECTORY_SEPARATOR . Router::getApp() . DIRECTORY_SEPARATOR;
+        return PINOOX_PATH . Router::app_folder . DIRECTORY_SEPARATOR . App::package() . DIRECTORY_SEPARATOR;
     }
 
     /**

@@ -11,13 +11,13 @@
  */
 namespace pinoox\command;
 
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
-use pinoox\component\HelperString;
+use pinoox\component\helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
-class makeCommand extends console implements CommandInterface
+class makeCommand extends Console implements CommandInterface
 {
 
     protected $signature = 'app:make-command';

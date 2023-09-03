@@ -2,13 +2,13 @@
 namespace pinoox\command;
 
 
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class appMake extends console implements CommandInterface
+class appMake extends Console implements CommandInterface
 {
 
 	/**
@@ -230,12 +230,12 @@ class appMake extends console implements CommandInterface
         $code2 = "<?php \n";
         $code2 .= $this->makeCopyWriteCode();
         $code2 .= $this->makeNameSpace('controller');
-        $code2 .= "use pinoox\component\Config;\n\n";
+        $code2 .= "use pinoox\portal\Config;\n\n";
         $code2 .= "class MainController extends MasterController\n";
         $code2 .= "{\n\n";
         $code2 .= "\tpublic function _main()\n";
         $code2 .= "\t{\n";
-        $code2 .= "\t\t\$template_name = Config::get('test.main_page');\n";
+        $code2 .= "\t\t\$template_name = Config::name('test')->get('main_page');\n";
         $code2 .= "\t\tself::\$template->show(\$template_name);\n";
         $code2 .= "\t}\n";
         $code2 .= "}\n";

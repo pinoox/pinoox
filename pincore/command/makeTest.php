@@ -4,14 +4,14 @@ namespace pinoox\command;
 
 use PHPUnit\Framework\TestCase;
 use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 
-class makeTest extends console implements CommandInterface
+class makeTest extends Console implements CommandInterface
 {
 
 	/**

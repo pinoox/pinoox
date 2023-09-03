@@ -12,6 +12,9 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\app\App;
+
 class Service
 {
     /**
@@ -134,7 +137,7 @@ class Service
             $service = HelperString::firstDelete($service, '~');
             $namespace = "pinoox\\service\\";
         } else {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
             $namespace = "pinoox\\app\\" . $app . "\\service\\";
         }
 

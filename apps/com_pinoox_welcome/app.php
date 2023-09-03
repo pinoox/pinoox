@@ -2,12 +2,12 @@
 //pinoox app file, generated at "2019-12-25 19:03"
 
 return array (
-  'package-name' => 'com_pinoox_welcome',
+  'package' => 'com_pinoox_welcome',
   'name' => 'welcome',
   'developer' => 'pinoox',
   'description' => 'pinoox sample',
-  'version-name' => '1.2.1',
-  'version-code' => 4,
+  'version-name' => '2.0',
+  'version-code' => 5,
   'icon' => 'icon.png',
   'enable' => true,
   'theme' => 'welcome',

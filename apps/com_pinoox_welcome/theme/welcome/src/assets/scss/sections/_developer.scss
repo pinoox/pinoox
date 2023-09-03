@@ -1,0 +1,117 @@
+.section__developer {
+  position: relative;
+  padding: 80px 0;
+  border-top-left-radius: 3rem;
+  border-top-right-radius: 3rem;
+  background: linear-gradient(0deg, #241c34 0%, #282b4e 100%);
+
+  &-title {
+    text-align: center;
+
+    h2 {
+      margin: 0;
+      padding: 0;
+      background: -webkit-linear-gradient(rgb(217, 217, 217), #ffffff);
+      opacity: 0.1;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2rem;
+      font-size: 4em;
+      position: relative;
+      z-index: 2;
+      text-align: center;
+
+      &:before {
+        content: '';
+        display: inline-block;
+        height: 120%;
+        width: 100%;
+        background: linear-gradient(0deg, rgba(32, 22, 79, 0.62), rgba(255, 255, 255, 0));
+        position: absolute;
+        left: 0;
+        top: -10px;
+      }
+    }
+
+
+  }
+
+  &-code {
+    margin-top: 100px;
+    position: relative;
+
+    &--highlighter {
+
+    }
+
+    &--image {
+      position: absolute;
+      top: 20%;
+      right: 5%;
+    }
+  }
+
+  &-content {
+    margin-right: 60px;
+    margin-top: 160px;
+
+    .gradient-text {
+      padding: 20px 0;
+      margin-bottom: 20px;
+    }
+
+    .text {
+      position: relative;
+      color: $text-gray-color;
+      font-weight: 300;
+      line-height: 1.7;
+      font-size: 1.1em;
+      max-width: 700px;
+      padding: 10px 0;
+      margin: 0 auto 40px auto;
+      z-index: 2;
+    }
+  }
+
+}
+
+
+/* Mobile */
+@media (max-width: 480px) {
+  .section__developer-code--image{
+    display: none;
+  }
+}
+
+/* Small tablets */
+@media (max-width: 768px) {
+  .section__developer-title h2 {
+    font-size: 2em;
+  }
+  .section__developer-content {
+    text-align: center;
+    margin-right: 10px;
+    padding: 20px;
+
+    .gradient-text {
+      font-size: 3em;
+    }
+  }
+  .codeBlock{
+    font-size: 1em!important;
+  }
+}
+
+/* Large tablets/laptops */
+@media (max-width: 992px) {
+  .section__developer-code--image{
+    width: 150px;
+    opacity: 0.2;
+  }
+}
+@media (max-width: 1400px) {
+  .section__developer-code--image{
+    width: 190px;
+    opacity: 0.2;
+  }
+}

@@ -3,12 +3,12 @@ namespace pinoox\command;
 
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Router;
 
 
-class appDelete extends console implements CommandInterface
+class appDelete extends Console implements CommandInterface
 {
 
 	/**

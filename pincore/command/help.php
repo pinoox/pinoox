@@ -11,11 +11,11 @@
  */
 namespace pinoox\command;
 
-use pinoox\component\console;
-use pinoox\component\HelperString;
+use pinoox\component\Console;
+use pinoox\component\helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
-class help extends console implements CommandInterface
+class help extends Console implements CommandInterface
 {
 
     protected $signature = 'help';

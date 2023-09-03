@@ -1,0 +1,21 @@
+const PINOOX = {
+
+// urls
+URL: {
+CURRENT: window.location.href,
+BASE: '{{ url("^") }}',
+API: '{{ url("^api/v1/") }}',
+SITE: '{{ url("~") }}',
+THEME: '{{ assets('') }}',
+AVATAR: '{{ furl("resources/avatar.png") }}',
+APP_ICON: '{{ furl("resources/default.png") }}',
+},
+
+OPTIONS:{
+lang:'{{ currentLang }}',
+version:'{{ config("~pinoox.version_name") }}',
+},
+
+// list lang
+LANG: {{ _lang|raw }},
+};

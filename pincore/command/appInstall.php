@@ -3,13 +3,13 @@ namespace pinoox\command;
 
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\console;
+use pinoox\component\Console;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Response;
 use pinoox\component\Router;
 
 
-class appInstall extends console implements CommandInterface
+class appInstall extends Console implements CommandInterface
 {
 
 	/**

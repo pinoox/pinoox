@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use pinoox\portal\app\App;
 use pinoox\model\TokenModel;
 use pinoox\model\UserModel;
 
@@ -32,9 +33,9 @@ class User
     private static $updateTokenKey = false;
     private static $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
-    public static function app($package_name)
+    public static function app($packageName)
     {
-        self::$app = $package_name;
+        self::$app = $packageName;
     }
 
     public static function updateLifetime($status)
@@ -61,7 +62,7 @@ class User
 
     public static function getApp()
     {
-        return (!empty(self::$app)) ? self::$app : Router::getApp();
+        return (!empty(self::$app)) ? self::$app : App::package();
     }
 
     public static function login($username, $password, $isActive = true)

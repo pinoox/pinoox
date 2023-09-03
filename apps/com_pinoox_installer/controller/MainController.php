@@ -10,64 +10,47 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace pinoox\app\com_pinoox_installer\controller;
 
-use pinoox\component\HelperHeader;
-use pinoox\component\Response;
-use pinoox\component\Router;
+use pinoox\component\helpers\HelperHeader;
+use pinoox\component\helpers\Str;
+use pinoox\component\kernel\controller\Controller;
+use pinoox\portal\app\App;
+use pinoox\portal\View;
 
-class MainController extends MasterConfiguration
+class MainController extends Controller
 {
-    public function _main()
+    public function __construct()
     {
-        self::$template->view('index');
+        parent::__construct();
+        $this->setLang();
     }
 
-    public function _exception()
+    public function home()
     {
-        Response::redirect(url('lang'));
+        return View::render('index');
     }
 
-
-    public function lang()
+    public function pinooxjs()
     {
-        $this->_main();
+        HelperHeader::contentType('application/javascript', 'UTF-8');
+        return View::render('pinoox');
     }
 
-    public function setup()
+    private function setLang()
     {
-        $this->_main();
-    }
+        $lang = App::get('lang');
+        $direction = in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr';
+        $data = Str::encodeJson([
+            'install' => rlang('install'),
+            'user' => rlang('user'),
+            'language' => rlang('language'),
+        ], true);
 
-    public function rules()
-    {
-        $this->_main();
-    }
-
-    public function prerequisites()
-    {
-        $this->_main();
-    }
-
-    public function db()
-    {
-        $this->_main();
-    }
-
-    public function user()
-    {
-        Response::redirect(url('db'));
-    }
-
-    public function dist()
-    {
-        $url = implode('/', Router::params());
-        if ($url === 'pinoox.js') {
-            HelperHeader::contentType('application/javascript', 'UTF-8');
-            self::$template->view('dist/pinoox.js');
-        } else {
-            $this->_main();
-        }
+        View::set('_lang', $data);
+        View::set('_direction', $direction);
+        View::set('currentLang', $lang);
     }
 }
     

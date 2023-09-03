@@ -12,6 +12,9 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperHeader;
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\app\App;
 use pinoox\model\TokenModel;
 
 class Token
@@ -24,11 +27,11 @@ class Token
     /**
      * Set token of specific app
      *
-     * @param $package_name
+     * @param $packageName
      */
-    public static function app($package_name)
+    public static function app($packageName)
     {
-        self::$app = $package_name;
+        self::$app = $packageName;
     }
 
     public static function __constructStatic()
@@ -132,6 +135,6 @@ class Token
      */
     public static function getApp()
     {
-        return (!empty(self::$app)) ? self::$app : Router::getApp();
+        return (!empty(self::$app)) ? self::$app : App::package();
     }
 }

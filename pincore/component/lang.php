@@ -12,6 +12,9 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\app\App;
+
 class Lang
 {
     private static $data = [];
@@ -22,7 +25,7 @@ class Lang
     public static function exists($lang,$app = null)
     {
         if(is_null($app))
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         if ($app !== '~')
             $path = Dir::path('lang/' . $lang . '/', $app);
         else
@@ -60,7 +63,7 @@ class Lang
         $filename = str_replace(['/', '\\'], '>', $filename);
 
         if ($isApp) {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         } else {
             $app = '~';
         }
@@ -154,7 +157,7 @@ class Lang
             $filename = HelperString::firstDelete($filename, '~');
             $app = '~';
         } else {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         }
 
         if (!isset(self::$data[self::$lang][$app][$filename])) {

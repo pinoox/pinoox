@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperString;
 use pinoox\model\FileModel;
 
 class Uploader extends Upload

@@ -12,6 +12,9 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperArray;
+use pinoox\component\helpers\HelperHeader;
+use pinoox\portal\app\App;
 use pinoox\model\SessionModel;
 
 class Session
@@ -67,7 +70,7 @@ class Session
     private static $encryption = false;
 
     /**
-     * Store session in file or database.
+     * Data session in file or database.
      *
      * default state is false means store in file, For store in database use true state.
      *
@@ -190,15 +193,15 @@ class Session
     /**
      * Get Session of specific app
      *
-     * @param $package_name
+     * @param $packageName
      */
-    public static function app($package_name)
+    public static function app($packageName)
     {
         if (!empty(self::$app)) {
             session_write_close();
             session_start();
         }
-        self::$app = $package_name;
+        self::$app = $packageName;
         if (function_exists('session_reset'))
             session_reset();
 
@@ -211,7 +214,7 @@ class Session
      */
     public static function getApp()
     {
-        return (!empty(self::$app)) ? self::$app : Router::getApp();
+        return (!empty(self::$app)) ? self::$app : App::package();
     }
 
     /**

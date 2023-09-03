@@ -1,23 +1,12 @@
 <?php
 
+error_reporting(-1); // reports all errors
+ini_set("display_errors", "1"); // shows all errors
+ini_set("log_errors", 1);
+
 /**
  * This file doesn't do anything but load essential files.
  */
-
-
-/*
-|--------------------------------------------------------------------------
-| Register The Auto Loader
-|--------------------------------------------------------------------------
-|
-| Composer provides a convenient, automatically generated class loader for
-| this application. We just need to utilize it! We'll simply require it
-| into the script here so we don't need to manually load our classes.
-|
-*/
-
-$composer = require __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
-$loader = new ConstructStatic\Loader($composer);
-
 #boot pinoox
-include_once  dirname(__FILE__) . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . "boot" . DIRECTORY_SEPARATOR . 'boot.php';
+include_once __DIR__ . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+

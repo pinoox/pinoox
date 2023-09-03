@@ -12,7 +12,11 @@
 
 namespace pinoox\component;
 
-use pinoox\component\app\AppProvider;
+use pinoox\component\package\App;
+use pinoox\component\helpers\HelperArray;
+use pinoox\component\helpers\HelperHeader;
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\Config;
 
 class Template
 {
@@ -68,8 +72,8 @@ class Template
         self::$data['_user'] = array();
         $this->headerViewsList[] = 'header';
         $this->footerViewsList[] = 'footer';
-        self::$folder = AppProvider::get('theme');
-        self::$pathTheme = AppProvider::get('path-theme');
+        self::$folder = App::get('theme');
+        self::$pathTheme = App::get('path-theme');
         self::$pathTheme = Dir::path(self::$pathTheme);
         self::$pathTheme = HelperString::lastDelete(self::$pathTheme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if ($folder != null)
@@ -552,8 +556,8 @@ class Template
 
     public function __destruct()
     {
-        $this->renderJs();
-        $this->render();
+       // $this->renderJs();
+       // $this->render();
     }
 
     private function renderJs()
@@ -571,7 +575,7 @@ class Template
         echo 'const cPINOOX = ' . $data;
     }
 
-    private function render()
+    public function render()
     {
         // Map Load
         $this->_mapAssets();
@@ -965,7 +969,8 @@ class Template
     {
         $file = implode('/', $params);
         $ext = File::extension($file);
-        $mime = Config::get('~loader' . $ext);
+        $ext = HelperString::firstDelete($ext,'.');
+        $mime = Config::name('~loader')->get($ext);
         HelperHeader::contentType($mime, 'UTF-8');
         self::phpToAssets($file);
     }

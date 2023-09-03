@@ -3,7 +3,6 @@
 
 return array(
     'enable' => true,
-    'router' => false,
     'theme' => 'spark',
     'name' => 'setting',
     'description' => 'Applications Management System (AMS)',

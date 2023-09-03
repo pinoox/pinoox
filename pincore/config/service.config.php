@@ -1,6 +1,8 @@
 <?php
 
 return [
-    '~router',
+    '~debugger',
     '~console',
+    '~database',
+    '~boot',
 ];

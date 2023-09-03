@@ -12,6 +12,8 @@
 
 namespace pinoox\component;
 
+use pinoox\component\helpers\HelperHeader;
+
 /**
  * Download & fetch file
  *

@@ -13,6 +13,8 @@
 namespace pinoox\component;
 
 use Closure;
+use pinoox\component\helpers\HelperArray;
+use pinoox\component\helpers\HelperString;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -82,14 +84,14 @@ class Validation
     private static $data;
 
     /**
-     * Store key index of an array
+     * Data key index of an array
      *
      * @var string
      */
     private static $field_title;
 
     /**
-     * Store current key of data
+     * Data current key of data
      *
      * @var string
      */

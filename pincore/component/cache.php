@@ -13,6 +13,8 @@
 namespace pinoox\component;
 
 use Closure;
+use pinoox\component\helpers\HelperString;
+use pinoox\portal\app\App;
 
 class Cache
 {
@@ -31,7 +33,7 @@ class Cache
     private static $app = null;
 
     /**
-     * Store data from cache init
+     * Data data from cache init
      *
      * @var array|null
      */
@@ -67,7 +69,7 @@ class Cache
         $cache_name = HelperString::firstDelete($cache_name, '~');
 
         if ($isApp) {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         } else {
             $app = '~';
         }
@@ -110,7 +112,7 @@ class Cache
             $file = Dir::path('~pincore/pinker/cache/' . $filename . '.cache.php');
             $app = '~';
         } else {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
             $file = Dir::path('pinker/cache/' . $filename . '.cache.php', $app);
         }
 
@@ -166,7 +168,7 @@ class Cache
             $filename = HelperString::firstDelete($filename, '~');
             $app = '~';
         } else {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         }
 
 
@@ -250,7 +252,7 @@ class Cache
         $isApp = (HelperString::firstHas($name, '~')) ? false : true;
 
         if ($isApp) {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         } else {
             $app = '~';
         }
@@ -385,7 +387,7 @@ class Cache
         $filename = str_replace(['/', '\\'], '>', $filename);
 
         if ($isApp) {
-            $app = (empty(self::$app)) ? Router::getApp() : self::$app;
+            $app = (empty(self::$app)) ? App::package() : self::$app;
         } else {
             $app = '~';
         }

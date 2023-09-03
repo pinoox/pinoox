@@ -1,0 +1,39 @@
+// Define the mixin for the gradient background
+@mixin btn-gradient($start-color, $middle-color, $end-color) {
+  background: linear-gradient(270deg, $start-color, $middle-color, $end-color);
+  background-size: 200% 200%;
+}
+
+.btn {
+  display: inline-block;
+  padding: 20px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 400;
+  min-width: 300px;
+  text-align: center;
+  border-radius: 2rem;
+}
+
+.btn-primary {
+  border: 4px solid rgba(255, 255, 255, 0.28);
+  color: #fff;
+  transition: background 0.3s ease-in-out;
+  @include btn-gradient(#FF9C32, #F54086, #FF9C32);
+
+  &:hover {
+    background-position: 100% 50%;
+  }
+}
+
+.btn-primary-outline {
+  color: #F54086;
+  border: 2px solid #F54086;
+  transition: 0.2s;
+
+  &:hover {
+    background: #F54086;
+    color: #fff;
+    transition: 0.2s;
+  }
+}

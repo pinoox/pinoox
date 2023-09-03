@@ -1,0 +1,34 @@
+//1. Core variables and mixins
+@import "scss-utils/variables";
+@import "scss-utils/helpers";
+@import "scss-utils/animations";
+
+//------------------------------------
+//2. Vendors  CSS
+@import "vendors/normalize";
+@import "vendors/grid";
+
+//------------------------------------
+//3. Base Stuffs
+@import "base/fonts";
+@import "base/typography";
+
+//------------------------------------
+//4. Components
+@import "components/buttons";
+@import "components/solar";
+@import "components/highlighter";
+
+//------------------------------------
+// 5. Sections
+@import "sections/hero";
+@import "sections/market";
+@import "sections/developer";
+
+//------------------------------------
+//6. pages
+
+//------------------------------------
+//7. Layouts
+@import 'layouts/main';
+@import 'layouts/footer';

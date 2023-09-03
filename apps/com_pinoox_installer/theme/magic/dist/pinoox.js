@@ -12,10 +12,10 @@ const PINOOX = {
         APP_ICON: '<?php echo furl("resources/default.png"); ?>',
     },
 
-    OPTIONS:{
-        lang:'<?php echo @$currentLang; ?>',
-        version:'<?php echo config("~pinoox.version_name"); ?>',
-    },
+    // OPTIONS:{
+    //     lang:'<?php echo @$currentLang; ?>',
+    //     version:'<?php echo config("~pinoox.version_name"); ?>',
+    // },
 
     // list lang
     LANG: <?php echo @$_lang; ?>,

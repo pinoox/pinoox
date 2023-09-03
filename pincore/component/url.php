@@ -12,7 +12,8 @@
 
 namespace pinoox\component;
 
-use pinoox\component\app\AppProvider;
+use pinoox\component\helpers\Str;
+use pinoox\portal\app\App;
 
 class Url
 {
@@ -27,11 +28,11 @@ class Url
         return $q;
     }
 
-    public static function parts($index = null)
+    public static function parts($index = null,$isActiveApp = false)
     {
-        $parts = substr(self::current(), strripos(self::app() . '/', '/'));
-        if (!is_null($index)) {
+        $parts = substr(self::current(), strripos(self::app($isActiveApp) . '/', '/'));
 
+        if (!is_null($index)) {
             $partsArr = explode('/', $parts);
             if ($index == 'first') return reset($partsArr);
             if ($index == 'last') return end($partsArr);
@@ -53,30 +54,31 @@ class Url
 
     public static function protocol()
     {
-        return self::isHttps()? 'https' : 'http';
+        return self::isHttps() ? 'https' : 'http';
     }
 
     public static function domain()
     {
-        return isset($_SERVER['HTTP_HOST'] ) ? $_SERVER['HTTP_HOST'] : null;
+        return isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : null;
     }
 
     public static function request()
     {
-        return isset($_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
+        return isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : null;
     }
 
-    public static function app()
+    public static function app($isActiveApp = true)
     {
         $appUrl = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)) . '/';
-        if (!Router::isAppDefault()) $appUrl .= self::appKey() . '/';
+
+        if ($isActiveApp && !Router::isAppDefault() && !empty(self::appKey())) $appUrl .= self::appKey() . '/';
 
         return self::fullDomain() . $appUrl;
     }
 
     public static function appKey()
     {
-        return Router::getAppUrl();
+        return str::firstDelete(App::path(),'/');
     }
 
     public static function isHttps()
@@ -96,28 +98,28 @@ class Url
     {
         $result = self::site();
 
-        if (HelperString::firstHas($link, '^')) {
-            $link = HelperString::firstDelete($link, '^');
-            $result = HelperString::firstDelete($result, self::fullDomain());
+        if (Str::firstHas($link, '^')) {
+            $link = Str::firstDelete($link, '^');
+            $result = Str::firstDelete($result, self::fullDomain());
         }
 
         $isBase = false;
-        if (!HelperString::firstHas($link, '~')) {
+        if (!Str::firstHas($link, '~')) {
             $result .= !empty(self::appKey()) ? self::appKey() . '/' : '';
         } else {
-            $link = HelperString::firstDelete($link, '~');
+            $link = Str::firstDelete($link, '~');
             $isBase = true;
         }
         if (!is_null($link)) {
             if (!$isBase) {
-                $link = HelperString::firstDelete($link, Dir::path());
-                $link = HelperString::firstDelete($link, self::app());
+                $link = Str::firstDelete($link, Dir::path());
+                $link = Str::firstDelete($link, self::app());
             } else {
-                $link = HelperString::firstDelete($link, PINOOX_PATH);
-                $link = HelperString::firstDelete($link, self::site());
+                $link = Str::firstDelete($link, PINOOX_PATH);
+                $link = Str::firstDelete($link, self::site());
             }
             $link = str_replace(['\\', '>'], '/', $link);
-            $link = HelperString::firstDelete($link, '/');
+            $link = Str::firstDelete($link, '/');
             $result = $result . $link;
         }
         return $result;
@@ -158,9 +160,9 @@ class Url
     public static function theme($url = null, $theme = null, $path = null)
     {
         if (empty($theme))
-            $theme = (empty(self::$theme)) ? AppProvider::get('theme') : self::$theme;
+            $theme = (empty(self::$theme)) ? App::get('theme') : self::$theme;
         if (empty($path))
-            $path = (empty(self::$pathTheme)) ? Dir::path(AppProvider::get('path-theme')) : self::$pathTheme;
+            $path = (empty(self::$pathTheme)) ? Dir::path(App::get('path-theme')) : self::$pathTheme;
 
         $dir = Dir::theme($url, $theme, $path);
         return self::link('~' . $dir);
@@ -175,9 +177,19 @@ class Url
     public static function thumb($img, $thumbSize = 128, $defaultImage = null, $path = PINOOX_PATH_THUMB, $isCreateThumb = false, $isCheck = true)
     {
         if (!is_array($img) && !is_numeric($img))
-            $img = HelperString::firstDelete($img, self::link('~'));
+            $img = Str::firstDelete($img, self::link('~'));
         $path = Dir::thumb($img, $thumbSize, null, $path, $isCreateThumb, $isCheck);
         return (!empty($path)) ? self::link('~' . $path) : $defaultImage;
+    }
+
+    public static function urlParams()
+    {
+        $url = Url::site();
+        $url = substr(Url::current(), strlen($url));
+
+        if (strstr($url, '?')) $url = substr($url, 0, strpos($url, '?'));
+        $url = trim($url, '/');
+        return $url;
     }
 
 }
