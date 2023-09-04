@@ -1,11 +1,11 @@
 [![Pinoox banner](./.github/banner.jpg)](https://pinoox.com)
 
-# Pinoox Web Development Framework
+# Pinoox Web Development Platform
 
 [![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
 
 
-Welcome to Pinoox, an advanced web development framework that takes the power of the Hierarchical Model-View-Controller (HMVC) architectural pattern to the next level. With our innovative "App" architecture, which is built upon HMVC, we've simplified, enhanced, and made the process of utilizing HMVC remarkably straightforward, enjoyable, and efficient.
+Welcome to Pinoox, an advanced web development platform that takes the power of the Hierarchical Model-View-Controller (HMVC) architectural pattern to the next level. With our innovative "App" architecture, which is built upon HMVC, we've simplified, enhanced, and made the process of utilizing HMVC remarkably straightforward, enjoyable, and efficient.
 
 ## Getting Started
 
@@ -14,8 +14,6 @@ To get started with Pinoox, follow these steps:
 1. Clone the Pinoox repository from GitHub: `git clone https://github.com/pinoox/pinoox.git`
 
 2. Install the required PHP dependencies using Composer: `composer install`
-
-3. Install the required Node.js dependencies: `npm install`
 
 
 ## Key Features
