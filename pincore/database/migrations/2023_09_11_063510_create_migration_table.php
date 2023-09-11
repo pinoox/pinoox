@@ -18,22 +18,20 @@ use pinoox\component\migration\MigrationBase;
 
 return new class extends MigrationBase
 {
-	/**
-	 * Run the migrations.
-	 */
     public function up()
     {
-        $this->schema->create('pincore_user', function (Blueprint $table) {
+        $this->schema->disableForeignKeyConstraints();
+        $this->schema->create('pincore_migration', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('migration');
+            $table->integer('batch');
+            $table->string('app');
         });
+
     }
 
-	/**
-	 * Reverse the migrations.
-	 */
-	public function down(): void
-	{
-		$this->schema->dropIfExists('2023_09_03_221410_create_user_table.php');
-	}
+    public function down()
+    {
+        $this->schema->dropIfExists('pincore_migration');
+    }
 };
