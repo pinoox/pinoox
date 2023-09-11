@@ -15,7 +15,8 @@ namespace pinoox\component\package;
 use Exception;
 use pinoox\component\helpers\Str;
 use pinoox\component\package\engine\AppEngine;
-use pinoox\component\store\Config;
+use pinoox\component\package\engine\EngineInterface;
+use pinoox\component\store\config\ConfigInterface;
 use pinoox\component\Url;
 
 
@@ -23,8 +24,8 @@ class AppRouter
 {
 
     public function __construct(
-        private Config    $appRouteConfig,
-        private AppEngine $appEngine
+        private ConfigInterface    $appRouteConfig,
+        private EngineInterface $appEngine
     )
     {
     }

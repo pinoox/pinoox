@@ -21,8 +21,9 @@ use pinoox\component\package\loader\LoaderInterface;
 use pinoox\component\package\loader\PackageLoader;
 use pinoox\component\package\reference\ReferenceInterface;
 use pinoox\component\router\Router;
-use pinoox\component\store\Config;
-use pinoox\component\store\Pinker;
+use pinoox\component\store\config\Config;
+use pinoox\component\store\config\strategy\FileConfigStrategy;
+use pinoox\component\store\baker\Pinker;
 use Exception;
 
 class AppEngine implements EngineInterface
@@ -88,7 +89,9 @@ class AppEngine implements EngineInterface
         $pinker = new Pinker($mainFile, $bakedFile);
         $pinker
             ->dumping(true);
-        $appConfig = new Config($pinker, $this->defaultData);
+        $fileStrategy = new FileConfigStrategy($pinker);
+        $appConfig = new Config($fileStrategy);
+        $appConfig->merge($this->defaultData);
         $appConfig->set('package', $packageName);
         return $appConfig;
     }

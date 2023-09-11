@@ -21,9 +21,9 @@ class DataArray implements DataInterface
     private mixed $data;
     private array $merge;
 
-    public function __construct(array $data = [])
+    public function __construct(mixed $data = [])
     {
-        $this->data = $data;
+        $this->setData($data);
     }
 
     public function merge(array $data): void
@@ -41,6 +41,11 @@ class DataArray implements DataInterface
     public function getData(): array
     {
         return $this->data;
+    }
+
+    public function setData(mixed $data = []): void
+    {
+        $this->data = $data;
     }
 
     private function fetchData(?string $key = null, bool $isMerge = false)
@@ -96,14 +101,13 @@ class DataArray implements DataInterface
         }
     }
 
-    public function fromArray(array $arr): mixed
+    public function fromArray(array $arr): static
     {
-        $data = new DataArray();
         foreach ($arr as $key => $value) {
-            $data->set($key, $value);
+            $this->data->set($key, $value);
         }
 
-        return $data;
+        return $this;
     }
 
     private function setNestedValue(array &$array, string $key, $value): void
@@ -133,8 +137,10 @@ class DataArray implements DataInterface
         }
     }
 
-    private function getNestedValue(array $array, string $key)
+    private function getNestedValue(mixed $array, string $key)
     {
+        if(!is_array($array))
+            return null;
         $keys = explode('.', $key);
         $value = $array;
 

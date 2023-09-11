@@ -16,19 +16,27 @@ namespace pinoox\component\store\config;
 use pinoox\component\store\config\strategy\ConfigStrategyInterface;
 use pinoox\component\store\baker;
 
-class Config
+class Config implements ConfigInterface
 {
     private ConfigStrategyInterface $strategy;
 
     public function __construct(ConfigStrategyInterface $strategy)
     {
-        $this->strategy = $strategy;
-        $this->strategy->load();
+        $this->create($strategy);
     }
 
-    public function save(): void
+    public function create(ConfigStrategyInterface $strategy): static
+    {
+        $this->strategy = $strategy;
+
+        return $this;
+    }
+
+    public function save(): static
     {
         $this->strategy->save();
+
+        return $this;
     }
 
     public function get(string $key = null, $default = null): mixed
@@ -36,38 +44,38 @@ class Config
         return $this->strategy->get($key, $default);
     }
 
-    public function add(string $key, mixed $value): Config
+    public function add(string $key, mixed $value): static
     {
         $this->strategy->add($key, $value);
         return $this;
     }
 
-    public function set(string $key, mixed $value): Config
+    public function set(string $key, mixed $value): static
     {
         $this->strategy->set($key, $value);
         return $this;
     }
 
 
-    public function remove(string $key): Config
+    public function remove(string $key): static
     {
         $this->strategy->remove($key);
         return $this;
     }
 
-    public function merge(array $array): Config
+    public function merge(array $array): static
     {
         $this->strategy->merge($array);
         return $this;
     }
 
-    public function reset(): Config
+    public function reset(): static
     {
         $this->strategy->reset();
         return $this;
     }
 
-    public function restore(): Config
+    public function restore(): static
     {
         $this->strategy->restore();
         return $this;

@@ -16,11 +16,6 @@ namespace pinoox\component\store\config\strategy;
 interface ConfigStrategyInterface
 {
     /**
-     * Loads the configuration from a data source.
-     */
-    public function load(): void;
-
-    /**
      * Saves the configuration to a data source.
      *
      */

@@ -12,15 +12,13 @@
 
 namespace pinoox\component\package;
 
-use Closure;
 use Exception;
-use pinoox\component\kernel\Boot;
-use pinoox\component\store\Config;
+use pinoox\component\store\config\ConfigInterface;
 use pinoox\component\package\engine\AppEngine;
 
 class App
 {
-    private Config $config;
+    private ConfigInterface $config;
 
     public function __construct(
         private AppLayer  $appLayer,
@@ -153,7 +151,7 @@ class App
      * @param mixed $value
      * @return Config|null
      */
-    public function set(string $key, mixed $value): ?Config
+    public function set(string $key, mixed $value): ?ConfigInterface
     {
         $packageName = $this->appLayer?->getPackageName();
         if (empty($packageName))

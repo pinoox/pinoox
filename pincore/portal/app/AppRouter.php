@@ -16,6 +16,7 @@ namespace pinoox\portal\app;
 
 use pinoox\component\package\AppLayer as ObjectPortal1;
 use pinoox\component\source\Portal;
+use pinoox\component\store\config\strategy\FileConfigStrategy;
 use pinoox\portal\Config;
 use pinoox\portal\Pinker;
 
@@ -41,7 +42,8 @@ class AppRouter extends Portal
 	{
 		$path = PINOOX_PATH.'pincore';
 		$file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
-		$config = Config::create(Pinker::folder($path,$file));
+        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
+		$config = Config::create($fileStrategy);
 
 		self::__bind(\pinoox\component\package\AppRouter::class)->setArguments([
 		    $config,

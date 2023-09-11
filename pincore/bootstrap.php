@@ -11,6 +11,7 @@
  */
 
 use pinoox\component\kernel\Loader;
+use Symfony\Component\ErrorHandler\Debug;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('PINOOX_START', microtime(true));
@@ -40,5 +41,5 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 */
 $composer = require PINOOX_VENDOR_PATH . 'autoload.php';
 $loader = new \pinoox\component\kernel\LoaderManager($composer);
-
+Debug::enable();
 Loader::boot($composer);

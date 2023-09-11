@@ -14,8 +14,8 @@
 namespace pinoox\component\package\engine;
 
 
+use pinoox\component\store\config\ConfigInterface;
 use pinoox\component\package\reference\ReferenceInterface;
-use pinoox\component\store\Config;
 use RuntimeException;
 
 interface EngineInterface
@@ -24,10 +24,10 @@ interface EngineInterface
      * Renders an App.
      *
      * @param string|ReferenceInterface $packageName
-     * @return Config
+     * @return ConfigInterface
      * @throws RuntimeException if the template cannot be rendered
      */
-    public function config(string|ReferenceInterface $packageName): Config;
+    public function config(string|ReferenceInterface $packageName): ConfigInterface;
 
     /**
      * Returns true if the App exists.

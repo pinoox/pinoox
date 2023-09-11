@@ -34,9 +34,16 @@ class Pinker
 
     public function __construct(string $mainFile = '', string $bakedFile = '', FileHandlerInterface $fileHandler = null)
     {
+        $this->create($mainFile,$bakedFile);
+        $this->fileHandler = $fileHandler ?? new FileHandler();
+    }
+
+    public function create(string $mainFile = '', string $bakedFile = ''): static
+    {
         $this->mainFile = $mainFile;
         $this->bakedFile = $bakedFile;
-        $this->fileHandler = $fileHandler ?? new FileHandler();
+
+        return $this;
     }
 
     public function data($data): self

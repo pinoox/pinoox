@@ -21,66 +21,75 @@ use pinoox\component\store\config\data\DataArray;
 use pinoox\component\store\config\strategy\FileConfigStrategy;
 
 /**
- * @method static Config save()
- * @method static mixed get(?string $key = NULL)
- * @method static ObjectPortal1 add(string $key, mixed $value)
- * @method static ObjectPortal1 set(string $key, mixed $value)
- * @method static ObjectPortal1 remove(string $key)
- * @method static ObjectPortal1 merge(array $array)
- * @method static ObjectPortal1 reset()
- * @method static ObjectPortal1 restore()
- * @method static setLinear(string $key, string $target, mixed $value)
- * @method static getLinear(string $key, string $target)
- * @method static \pinoox\component\store\config\Config  object()
+ * @method static \pinoox\component\store\config\Config create(\pinoox\component\store\config\strategy\ConfigStrategyInterface $strategy)
+ * @method static \pinoox\component\store\config\strategy\FileConfigStrategy ___strategy()
+ * @method static \pinoox\component\store\config\Config ___()
  *
  * @see \pinoox\component\store\config\Config
  */
 class Config extends Portal
 {
-    const folder = 'config';
+	const folder = 'config';
 
-    public static function __register(): void
-    {
-        self::__bind(ObjectPortal1::class)->setArguments([]);
-    }
+	public static function __register(): void
+	{
+		self::__bind(FileConfigStrategy::class,'strategy')->setArguments([
+		    Pinker::__ref(),
+		]);
 
-    /**
-     * Get the registered name of the component.
-     * @return string
-     */
-    public static function __name(): string
-    {
-        return 'config';
-    }
+		self::__bind(ObjectPortal1::class)->setArguments([
+		    self::__ref('strategy')
+		]);
+	}
 
-    /**
-     * Set file for pinoox baker
-     *
-     * @param string|ReferenceInterface $fileName
-     * @return ObjectPortal1
-     */
-    public static function name(string|ReferenceInterface $fileName): ObjectPortal1
-    {
-        return self::initFileConfig($fileName);
-    }
 
-    private static function initFileConfig(string $fileName): ObjectPortal1
-    {
-        $fileName = $fileName . '.config.php';
-        $ref = Path::prefixReference($fileName, self::folder);
-        $pinker = Pinker::file($ref);
-        $array = new DataArray($pinker->pickup());
-        return new ObjectPortal1(new FileConfigStrategy($pinker, $array));
-    }
+	/**
+	 * Set file for pinoox baker
+	 *
+	 * @param string|ReferenceInterface $fileName
+	 * @return ObjectPortal1
+	 */
+	public static function name(string|ReferenceInterface $fileName): ObjectPortal1
+	{
+		return self::initFileConfig($fileName);
+	}
 
-    /**
-     * Get method names for callback object.
-     * @return string[]
-     */
-    public static function __callback(): array
-    {
-        return [
-            'save'
-        ];
-    }
+
+	private static function initFileConfig(string $fileName): ObjectPortal1
+	{
+		$fileName = $fileName . '.config.php';
+		$ref = Path::prefixReference($fileName, self::folder);
+		$pinker = Pinker::file($ref);
+		return new ObjectPortal1(new FileConfigStrategy($pinker));
+	}
+
+
+	/**
+	 * Get the registered name of the component.
+	 * @return string
+	 */
+	public static function __name(): string
+	{
+		return 'config';
+	}
+
+
+	/**
+	 * Get include method names .
+	 * @return string[]
+	 */
+	public static function __include(): array
+	{
+		return ['name','create'];
+	}
+
+
+	/**
+	 * Get method names for callback object.
+	 * @return string[]
+	 */
+	public static function __callback(): array
+	{
+		return [];
+	}
 }

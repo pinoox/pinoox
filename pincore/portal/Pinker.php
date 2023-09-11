@@ -20,10 +20,10 @@ use pinoox\component\source\Portal;
 use pinoox\component\store\baker\Pinker as ObjectPortal1;
 
 /**
- * @method static Pinker create(?string $mainFile = NULL, ?string $bakedFile = NULL)
+ * @method static ObjectPortal1 create(?string $mainFile = NULL, ?string $bakedFile = NULL)
  * @method static Pinker ___()
  *
- * @see Pinker
+ * @see pinoox\component\store\baker\Pinker
  */
 class Pinker extends Portal
 {
@@ -34,24 +34,23 @@ class Pinker extends Portal
         self::__bind(ObjectPortal1::class);
     }
 
-    public static function folder(string $path, string $file): Pinker
+    public static function folder(string $path, string $file): ObjectPortal1
     {
         $mainFile = $path . DIRECTORY_SEPARATOR . $file;
         $mainFile = is_file($mainFile) ? $mainFile : '';
 
         $bakedFile = $path . DIRECTORY_SEPARATOR . self::folder . DIRECTORY_SEPARATOR . $file;
-        $bakedFile = is_file($bakedFile) ? $bakedFile : '';
 
-        return static::create($mainFile, $bakedFile);
+        return self::create($mainFile, $bakedFile);
     }
 
     /**
      * get pinker by file
      *
      * @param string|ReferenceInterface $fileName
-     * @return Pinker
+     * @return ObjectPortal1
      */
-    public static function file(string|ReferenceInterface $fileName): Pinker
+    public static function file(string|ReferenceInterface $fileName): ObjectPortal1
     {
         $reference = Path::reference($fileName);
         $pathMain = $reference->getPackageName() === '~' ? 'pincore/' . $reference->getPath() : $reference->getPath();
@@ -72,7 +71,7 @@ class Pinker extends Portal
 
         $bakedFile = Path::get($reference);
 
-        return static::create($mainFile, $bakedFile);
+        return self::create($mainFile, $bakedFile);
     }
 
     /**
@@ -80,12 +79,12 @@ class Pinker extends Portal
      *
      * @param string $file
      * @param string|null $basePath
-     * @return Pinker
+     * @return ObjectPortal1
      */
-    public static function path(string $file, ?string $basePath = null): Pinker
+    public static function path(string $file, ?string $basePath = null): ObjectPortal1
     {
         $basePath = !empty($basePath) ? $basePath . '/' : '';
-        return static::create(
+        return self::create(
             self::ds($basePath . $file),
             self::ds($basePath . Pinker::folder . '/' . $file),
         );
