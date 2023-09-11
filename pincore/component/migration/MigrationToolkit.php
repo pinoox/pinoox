@@ -169,13 +169,27 @@ class MigrationToolkit
         $files = [];
         $finder = new Finder();
         $finder->in($this->migrationPath)->files();
+
+
         foreach ($finder as $f) {
+            $filename = $f->getBasename('.php');
+            preg_match('/(\d{4}_\d{2}_\d{2}_\d{6})/', $filename, $matches);
+            $timestamp = $matches[1] ?? null;
+            if (!$timestamp) continue;
+
             $files[] = [
                 'sync' => false,
                 'path' => $f->getRealPath(),
-                'migration' => $f->getBasename('.php'),
+                'migration' => $filename,
+                'timestamp' => $timestamp,
             ];
         }
+
+        // Sort files based on the timestamp in ascending order
+        usort($files, function ($a, $b) {
+            return strcmp($a['timestamp'], $b['timestamp']);
+        });
+
         return $files;
     }
 

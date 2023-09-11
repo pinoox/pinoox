@@ -28,34 +28,34 @@ use pinoox\component\source\Portal;
  * @method static string generateMigrationFileName($modelName)
  * @method static getErrors($end = true)
  * @method static bool isSuccess()
- * @method static \pinoox\component\migration\MigrationToolkit ___()
+ * @method static \pinoox\component\migration\MigrationToolkit object()
  *
  * @see \pinoox\component\migration\MigrationToolkit
  */
 class MigrationToolkit extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(ObjectPortal1::class);
-	}
+    public static function __register(): void
+    {
+        self::__bind(ObjectPortal1::class);
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'migration.toolkit';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'migration.toolkit';
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [];
+    }
 }

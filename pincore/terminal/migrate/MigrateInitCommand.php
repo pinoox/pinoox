@@ -13,6 +13,7 @@
 
 namespace pinoox\terminal\migrate;
 
+use pinoox\component\migration\Migrator;
 use pinoox\component\Terminal;
 use pinoox\portal\AppManager;
 use pinoox\portal\MigrationToolkit;
@@ -28,60 +29,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateInitCommand extends Terminal
 {
 
-    /**
-     * @var MigrationToolkit
-     */
-    private $toolkit = null;
-
     private $pincore = null;
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $this->init();
-        $this->migrate();
+        $this->pincore = AppManager::getApp('pincore');
+
+        $migrator = new Migrator($this->pincore['package'], 'init');
+
+        try {
+            $result = $migrator->run();
+            $this->success($result);
+        } catch (\Exception $e) {
+            $this->error($e->getMessage());
+        }
 
         return Command::SUCCESS;
     }
 
-    private function init()
-    {
-        $this->pincore = AppManager::getApp('pincore');
-        $this->toolkit = MigrationToolkit::appPath($this->pincore['path'])
-            ->migrationPath($this->pincore['migration'])
-            ->package($this->pincore['package'])
-            ->namespace($this->pincore['namespace'])
-            ->action('init')
-            ->load();
-        
-        if (!$this->toolkit->isSuccess()) {
-            $this->error($this->toolkit->getErrors());
-        }
-    }
-
-    private function migrate()
-    {
-        $migrations = $this->toolkit->getMigrations();
-
-        if (empty($migrations)) {
-            $this->success('Nothing to migrate.');
-        }
-
-        foreach ($migrations as $m) {
-            $start_time = microtime(true);
-            $this->success('Migrating: ');
-            $this->success($m['fileName']);
-            $this->newline();
-            $obj = new $m['classObject']();
-            $obj->up();
-
-            $end_time = microtime(true);
-            $exec_time = $end_time - $start_time;
-
-            //end migrating
-            $this->success('Migrated: ' . $m['fileName']);
-            $this->info(' (' . substr($exec_time, 0, 5) . 'ms)');
-        }
-    }
 }

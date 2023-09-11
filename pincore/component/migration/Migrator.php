@@ -29,6 +29,7 @@ class Migrator
      * @var string The package name for migration.
      */
     private string $package;
+    private string $action; //create, rollback, init
 
     /**
      * @var array The app information.
@@ -44,9 +45,10 @@ class Migrator
      * Migrator constructor.
      * @param string $package The package name for migration.
      */
-    public function __construct(string $package)
+    public function __construct(string $package, $action = null)
     {
         $this->package = $package;
+        $this->action = $action;
     }
 
     /**
@@ -65,6 +67,7 @@ class Migrator
             ->migrationPath($this->app['migration'])
             ->package($this->app['package'])
             ->namespace($this->app['namespace'])
+            ->action($this->action)
             ->load();
 
         if (!$this->toolkit->isSuccess()) {
@@ -85,8 +88,10 @@ class Migrator
             return 'Nothing to migrate.';
         }
 
-        $batch = MigrationQuery::fetchLatestBatch($this->app['package']) ?? 0;
-
+        $batch = 0;
+        if ($this->action != 'init'){
+            $batch = MigrationQuery::fetchLatestBatch($this->app['package']) ?? 0;
+        }
 
         foreach ($migrations as $m) {
             $class = require_once $m['migrationFile'];
