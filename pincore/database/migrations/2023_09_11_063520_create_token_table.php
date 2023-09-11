@@ -47,6 +47,9 @@ return new class extends MigrationBase
      */
     public function down()
     {
+        $this->schema->table('pincore_token', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+        });
         $this->schema->dropIfExists('pincore_token');
     }
 };

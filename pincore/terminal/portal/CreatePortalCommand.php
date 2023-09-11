@@ -14,19 +14,19 @@
 namespace pinoox\terminal\portal;
 
 use pinoox\component\helpers\PhpFile\PortalFile;
-use pinoox\component\source\PortalManager;
 use pinoox\component\Terminal;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'portal:create',
+    description: 'Create a new Portal class.',
+)]
 class CreatePortalCommand extends Terminal
 {
-
-    protected static $defaultName = 'portal:create';
-
-    protected static $defaultDescription = 'Create a new Portal class';
 
     protected function configure(): void
     {

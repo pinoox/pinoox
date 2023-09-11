@@ -129,7 +129,7 @@ class MigrationToolkit
     {
         if (!$this->checkPaths()) return $this;
 
-        $migrations = $this->readyFromPath();
+        $migrations = $this->loadFromPath();
         if (empty($migrations)) return $this;
 
         if ($this->action != 'create' && $this->action != 'init' && $this->isExistsMigrationTable()) {
@@ -160,7 +160,7 @@ class MigrationToolkit
         return $this;
     }
 
-    private function readyFromPath(): array
+    private function loadFromPath(): array
     {
         if (!file_exists($this->migrationPath)) {
             mkdir($this->migrationPath, 0755, true);
@@ -170,9 +170,12 @@ class MigrationToolkit
         $finder = new Finder();
         $finder->in($this->migrationPath)->files();
 
-
         foreach ($finder as $f) {
             $filename = $f->getBasename('.php');
+
+            if ($this->action == 'init' && !str_contains($filename, 'migration'))
+                continue;
+
             preg_match('/(\d{4}_\d{2}_\d{2}_\d{6})/', $filename, $matches);
             $timestamp = $matches[1] ?? null;
             if (!$timestamp) continue;

@@ -15,9 +15,9 @@ namespace pinoox\database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use pinoox\component\migration\MigrationBase;
+use pinoox\portal\DB;
 
-return new class extends MigrationBase
-{
+return new class extends MigrationBase {
     /**
      * Run the migrations.
      */
@@ -48,6 +48,8 @@ return new class extends MigrationBase
      */
     public function down()
     {
+        DB::run()->statement('SET FOREIGN_KEY_CHECKS = 0');
         $this->schema->dropIfExists('pincore_user');
+        DB::run()->statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 };

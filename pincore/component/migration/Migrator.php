@@ -45,7 +45,7 @@ class Migrator
      * Migrator constructor.
      * @param string $package The package name for migration.
      */
-    public function __construct(string $package, $action = null)
+    public function __construct(string $package, string $action = 'run')
     {
         $this->package = $package;
         $this->action = $action;
@@ -89,7 +89,7 @@ class Migrator
         }
 
         $batch = 0;
-        if ($this->action != 'init'){
+        if ($this->action != 'init') {
             $batch = MigrationQuery::fetchLatestBatch($this->app['package']) ?? 0;
         }
 

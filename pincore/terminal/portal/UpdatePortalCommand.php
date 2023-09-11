@@ -17,18 +17,18 @@ use pinoox\component\helpers\PhpFile\PortalFile;
 use pinoox\component\source\PortalManager;
 use pinoox\component\Terminal;
 use pinoox\portal\AppManager;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+#[AsCommand(
+    name: 'portal:update',
+    description: 'Update an exists portal class.',
+)]
 class UpdatePortalCommand extends Terminal
 {
-
-    protected static $defaultName = 'portal:update';
-
-    protected static $defaultDescription = 'Update an exists portal class';
-
     protected function configure(): void
     {
         $this
