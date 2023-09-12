@@ -30,6 +30,7 @@ use pinoox\component\store\config\strategy\FileConfigStrategy;
 class Config extends Portal
 {
 	const folder = 'config';
+    const ext = 'config.php';
 
 	public static function __register(): void
 	{
@@ -57,10 +58,10 @@ class Config extends Portal
 
 	private static function initFileConfig(string $fileName): ObjectPortal1
 	{
-		$fileName = $fileName . '.config.php';
+		$fileName = $fileName . '.'.self::ext;
 		$ref = Path::prefixReference($fileName, self::folder);
 		$pinker = Pinker::file($ref);
-		return new ObjectPortal1(new FileConfigStrategy($pinker));
+		return self::create(new FileConfigStrategy($pinker));
 	}
 
 

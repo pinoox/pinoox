@@ -18,7 +18,7 @@ class FileLangSource extends LangSource
 {
     private string $ext;
 
-    public function __construct(string $path, string $locale, string $ext = '.lang.php')
+    public function __construct(string $path = '', string $locale = 'en', string $ext = '.lang.php')
     {
         $this->ext = $ext;
         $this->setLocale($locale);

@@ -153,7 +153,7 @@ class Path
             $path);
     }
 
-    public function reference(string|ReferenceInterface $path)
+    public function reference(string|ReferenceInterface $path) : ReferenceInterface
     {
         if (!($path instanceof ReferenceInterface))
             $path = $this->parser->parse($path);

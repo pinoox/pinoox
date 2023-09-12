@@ -16,22 +16,23 @@ namespace pinoox\portal;
 
 use pinoox\component\helpers\Path as ObjectPortal1;
 use pinoox\component\package\parser\PathParser;
+use pinoox\component\package\reference\PathReference;
+use pinoox\component\package\reference\ReferenceInterface;
 use pinoox\component\package\reference\ReferenceInterface as ObjectPortal2;
 use pinoox\component\source\Portal;
 use pinoox\portal\app\App;
 use pinoox\portal\app\AppEngine;
-use pinoox\portal\app\AppRouter;
 
 /**
+ * @method static string|null app(?string $packageName = NULL)
  * @method static string get(\pinoox\component\package\reference\ReferenceInterface|string $path = '')
  * @method static ObjectPortal1 set($key, $value)
- * @method static string|null app(?string $packageName = NULL)
  * @method static string ds(string $path)
- * @method static ObjectPortal2 parse(string $name)
- * @method static string prefix(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
+ * @method static ReferenceInterface parse(string $name)
  * @method static string prefixName(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
- * @method static reference(\pinoox\component\package\reference\ReferenceInterface|string $path)
- * @method static ObjectPortal2 prefixReference(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
+ * @method static string prefix(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
+ * @method static ReferenceInterface prefixReference(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
+ * @method static ReferenceInterface reference(\pinoox\component\package\reference\ReferenceInterface|string $path)
  * @method static \pinoox\component\package\parser\PathParser ___parser()
  * @method static \pinoox\component\helpers\Path ___()
  *
@@ -48,6 +49,20 @@ class Path extends Portal
 		    ->setArgument('parser', self::__ref('parser'))
 		    ->setArgument('appEngine', AppEngine::__instance())
 		    ->setArgument('basePath', PINOOX_PATH);
+	}
+
+
+	public static function createPath(string|ObjectPortal2 $fileName, string $default = 'pincore'): string
+	{
+		$reference = self::reference($fileName);
+		$pathMain = $reference->getPackageName() === '~' ? $default . '/' . $reference->getPath() : $reference->getPath();
+
+		$reference = PathReference::create(
+		    $reference->getPackageName(),
+		    $pathMain,
+		);
+
+		return self::get($reference);
 	}
 
 

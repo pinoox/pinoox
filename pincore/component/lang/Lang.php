@@ -22,10 +22,20 @@ class Lang
 {
 
     private ?array $langArray;
+    private LangSource $source;
 
-    public function __construct(private LangSource $source)
+    public function __construct(?LangSource $source = null)
     {
+        if(!empty($source))
+            $this->create($source);
+    }
+
+    public function create(LangSource $source): static
+    {
+        $this->source = $source;
         $this->load();
+
+        return $this;
     }
 
     public function load(): void
@@ -101,7 +111,7 @@ class Lang
     }
 
 
-    function pluralize($key, $count)
+    public function pluralize($key, $count)
     {
         if (isset($translations[$key])) {
             $translation = $translations[$key];
