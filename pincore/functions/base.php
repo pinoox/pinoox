@@ -108,14 +108,14 @@ if (!function_exists('config')) {
     function config(string $key)
     {
         $parts = explode('.', $key);
-        $name = array_unshift($parts);
+        $name = array_shift($parts);
         $key = implode('.', $parts);
         $config = Config::name($name);
         $args = func_get_args();
         if (isset($args[1]))
             $config->set($key, $args[1]);
         else
-            $config->get($key);
+            return $config->get($key);
 
         return null;
     }
