@@ -17,6 +17,7 @@ use pinoox\component\helpers\HelperHeader;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\controller\Controller;
 use pinoox\portal\app\App;
+use pinoox\portal\Config;
 use pinoox\portal\View;
 
 class MainController extends Controller
