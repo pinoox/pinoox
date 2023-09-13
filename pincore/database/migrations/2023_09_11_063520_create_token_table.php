@@ -25,10 +25,10 @@ return new class extends MigrationBase
     {
         $this->schema->disableForeignKeyConstraints();
         $this->schema->create('pincore_token', function (Blueprint $table) {
-            $table->string('token_key', 255);
+            $table->string('token_key', 100);
             $table->string('token_name', 255)->nullable();
             $table->text('token_data')->nullable();
-            $table->string('app', 255);
+            $table->string('app', 50);
             $table->unsignedInteger('user_id')->nullable();
             $table->string('ip', 255)->nullable();
             $table->string('user_agent', 255)->nullable();

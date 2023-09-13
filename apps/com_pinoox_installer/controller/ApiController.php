@@ -114,7 +114,6 @@ class ApiController extends Controller
 
     public function setup(Request $request)
     {
-        dd($request->attributes);
         $inputs = RequestData::input('user,db', [], '!empty');
         $user = HelperArray::parseParams($inputs['user'], 'fname,lname,username,password,email', null, '!empty');
         $db = HelperArray::parseParams($inputs['db'], 'host,database,username,password,prefix', null, '!empty');

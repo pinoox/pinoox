@@ -16,8 +16,10 @@ namespace pinoox\portal\kernel;
 
 use pinoox\component\kernel\Container;
 use pinoox\component\kernel\resolver\ContainerControllerResolver;
+use pinoox\component\kernel\resolver\ModelValueResolver;
 use pinoox\component\kernel\resolver\RouteValueResolver;
 use pinoox\component\source\Portal;
+use pinoox\portal\DB;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestAttributeValueResolver;
@@ -38,6 +40,7 @@ class Resolver extends Portal
             new RequestValueResolver(),
             new RouteValueResolver(),
             new SessionValueResolver(),
+            new ModelValueResolver(),
             new DefaultValueResolver(),
             new VariadicValueResolver(),
         ];

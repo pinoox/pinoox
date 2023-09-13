@@ -52,6 +52,17 @@ class DB extends Portal
         return $config[$key] ?? $config;
     }
 
+    public static function hasConnection(): bool
+    {
+        try {
+            self::getCapsule()->connection()->getPdo();
+            return true;
+        } catch (\Exception $e) {
+        }
+
+        return false;
+    }
+
     /**
      * Get the registered name of the component.
      * @return string

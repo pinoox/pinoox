@@ -16,6 +16,7 @@ namespace pinoox\app\com_pinoox_installer\controller;
 use pinoox\component\helpers\HelperHeader;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\controller\Controller;
+use pinoox\model\UserModel;
 use pinoox\portal\app\App;
 use pinoox\portal\Config;
 use pinoox\portal\View;
@@ -28,7 +29,7 @@ class MainController extends Controller
         $this->setLang();
     }
 
-    public function home()
+    public function home(UserModel $userModel)
     {
         return View::render('index');
     }
