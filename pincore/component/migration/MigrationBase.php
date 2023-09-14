@@ -22,7 +22,7 @@ class MigrationBase extends Migration
 
     public function __construct()
     {
-        $this->schema = DB::getSchema();
+        $this->schema = DB::schema();
     }
 
 }

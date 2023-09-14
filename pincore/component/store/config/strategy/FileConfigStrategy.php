@@ -28,9 +28,19 @@ class FileConfigStrategy implements ConfigStrategyInterface
         $this->initData($pinker);
     }
 
-    public function initData(Pinker $pinker): void
+    private function initData(Pinker $pinker): void
     {
         $this->data = $this->dataFirstState = new DataArray($pinker->pickup());
+    }
+
+    public function setData(mixed $data)
+    {
+        $this->data = new DataArray($data);
+    }
+
+    public function getData(): DataArray
+    {
+        return $this->data;
     }
 
     public function save(): void
@@ -77,5 +87,10 @@ class FileConfigStrategy implements ConfigStrategyInterface
     public function merge(array $array): void
     {
         $this->data->merge($array);
+    }
+
+    public function getInfo(?string $key = null): array|string|null
+    {
+        return $this->getPinker()->getInfo($key);
     }
 }

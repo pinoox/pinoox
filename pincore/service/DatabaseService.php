@@ -20,7 +20,6 @@ class DatabaseService implements ServiceInterface
 
     public function _run()
     {
-        DB::run();
     }
 
     public function _stop()

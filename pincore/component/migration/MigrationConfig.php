@@ -55,8 +55,7 @@ class MigrationConfig
 
     public function isPrepareDB(): bool
     {
-        $db = DB::getCapsule();
-        if (empty($db->getConnection())) {
+        if (empty(DB::getConnection())) {
             $this->setError('Database not connected');
             return false;
         }

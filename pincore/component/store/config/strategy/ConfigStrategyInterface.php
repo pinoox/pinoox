@@ -49,6 +49,15 @@ interface ConfigStrategyInterface
     public function get(string $key = null): mixed;
 
     /**
+     * Gets the info of a configuration key.
+     *
+     * @param string|null $key
+     *
+     * @return array
+     */
+    public function getInfo(?string $key = null): array|string|null;
+
+    /**
      * Removes a configuration key.
      *
      * @param string $key

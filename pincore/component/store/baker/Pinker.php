@@ -169,7 +169,7 @@ class Pinker
         $this->fileHandler->remove($this->bakedFile);
     }
 
-    public function getInfo(?string $key = null): ?array
+    public function getInfo(?string $key = null): array|string|null
     {
         $info = HelperAnnotations::getTagsCurrentBlock($this->bakedFile);
         return !is_null($key) ? @$info[$key] : $info;

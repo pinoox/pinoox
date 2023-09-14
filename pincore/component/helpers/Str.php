@@ -221,7 +221,7 @@ class Str
         return ltrim(strtolower(preg_replace('/[A-Z]([A-Z](?![a-z]))*/', '_$0', $str)), '_');
     }
 
-    public static function multiExplode(array $delimiters, string $string): array|bool
+    public static function multiExplode(string|array $delimiters, string $string): array|bool
     {
         $ready = str_replace($delimiters, $delimiters[0], $string);
         return explode($delimiters[0], $ready);

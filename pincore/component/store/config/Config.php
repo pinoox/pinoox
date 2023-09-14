@@ -13,6 +13,7 @@
 
 namespace pinoox\component\store\config;
 
+use pinoox\component\store\config\data\DataArray;
 use pinoox\component\store\config\strategy\ConfigStrategyInterface;
 use pinoox\component\store\baker;
 
@@ -56,10 +57,59 @@ class Config implements ConfigInterface
         return $this;
     }
 
+    /**
+     * Set target data in config
+     *
+     * @param string $pointer
+     * @param string|null $key
+     * @param mixed $value
+     * @return static
+     */
+    public function setLinear(?string $pointer, ?string $key, mixed $value): static
+    {
+        $data = $this->get($pointer);
+        $data = is_array($data) ? $data : [];
+        $data[$key] = $value;
+
+        if(!empty($pointer)) {
+            $this->set($pointer, $data);
+        }
+        else
+        {
+            $this->setData($pointer, $data);
+
+        }
+
+        return $this;
+    }
+
+    public function setData(mixed $data): static
+    {
+        $this->strategy->setData($data);
+        return $this;
+    }
+
 
     public function remove(string $key): static
     {
         $this->strategy->remove($key);
+        return $this;
+    }
+
+    /**
+     * Remove target data in config
+     *
+     * @param string $pointer
+     * @param string|null $key
+     * @return static
+     */
+    public function removeLinear(string $pointer, ?string $key): static
+    {
+        $data = $this->get($pointer);
+        $data = is_array($data) ? $data : [];
+        unset($data[$key]);
+        $this->set($pointer, $data);
+
         return $this;
     }
 
@@ -81,22 +131,32 @@ class Config implements ConfigInterface
         return $this;
     }
 
-    public function setLinear(string $key, string $target, mixed $value)
+    /**
+     * Get info from config
+     *
+     * @param string|null $key
+     * @return array
+     */
+    public function getInfo(?string $key = null): array
     {
-        $this->strategy->set($key . '.' . $target, $value);
-        return $this;
+        return $this->getStrategy()->getInfo($key);
     }
 
-    public function getLinear(string $key, string $target)
+    /**
+     * Get target data from config
+     *
+     * @param string|null $pointer
+     * @param string|null $key
+     * @return mixed
+     */
+    public function getLinear(?string $pointer, ?string $key): mixed
     {
-        $this->strategy->get($key . '.' . $target);
-        return $this;
+        $data = $this->get($pointer);
+        return $data[$key] ?? null;
     }
 
-    public function getPinker(): baker\Pinker
+    public function getStrategy(): ConfigStrategyInterface
     {
-        return $this->strategy->getPinker();
+        return $this->strategy;
     }
-
-
 }

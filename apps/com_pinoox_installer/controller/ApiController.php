@@ -21,6 +21,7 @@ use pinoox\component\http\Request;
 use pinoox\component\System;
 use pinoox\component\Validation;
 use pinoox\component\Request as RequestData;
+use pinoox\model\UserModel;
 use pinoox\portal\app\App;
 use pinoox\portal\app\AppEngine;
 use pinoox\portal\app\AppRouter;
@@ -160,7 +161,24 @@ class ApiController extends Controller
 
         if (!$this->checkConnect($c)) return false;
 
-        Config::name('~database')->data($c)->save();
+        $data = [
+            'driver' => 'mysql',
+            'host' => $c['host'],
+            'port' => '3306',
+            'database' => $c['database'],
+            'username' => $c['username'],
+            'password' => $c['password'],
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_bin',
+            'prefix' => $c['prefix'],
+            'strict' => true,
+            'engine' => null,
+        ];
+
+        Config::name('~database')
+            ->set('production',$data)
+            ->set('development',$data)
+            ->save();
         return true;
     }
 

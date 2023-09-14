@@ -22,7 +22,8 @@ route(
         '/setup',
         '/rules',
         '/prerequisites',
-        '/db'
+        '/db',
+        '/user'
     ],
     action: '@home',
     methods: 'GET'

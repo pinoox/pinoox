@@ -69,8 +69,8 @@ class MigrationToolkit
 
     public function __construct()
     {
-        $this->schema = DB::getSchema();
-        $this->cp = DB::getCapsule();
+        $this->schema = DB::schema();
+        $this->cp = DB::__instance();
     }
 
     public function appPath($val): self

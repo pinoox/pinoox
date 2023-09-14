@@ -48,8 +48,8 @@ return new class extends MigrationBase {
      */
     public function down()
     {
-        DB::run()->statement('SET FOREIGN_KEY_CHECKS = 0');
+        $this->connection->statement('SET FOREIGN_KEY_CHECKS = 0');
         $this->schema->dropIfExists('pincore_user');
-        DB::run()->statement('SET FOREIGN_KEY_CHECKS = 1');
+        $this->connection->statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 };

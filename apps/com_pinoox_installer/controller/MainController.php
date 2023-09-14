@@ -19,6 +19,7 @@ use pinoox\component\kernel\controller\Controller;
 use pinoox\model\UserModel;
 use pinoox\portal\app\App;
 use pinoox\portal\Config;
+use pinoox\portal\DB;
 use pinoox\portal\View;
 
 class MainController extends Controller
