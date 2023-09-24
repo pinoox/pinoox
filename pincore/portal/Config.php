@@ -17,7 +17,7 @@ namespace pinoox\portal;
 use pinoox\component\package\reference\ReferenceInterface;
 use pinoox\component\source\Portal;
 use pinoox\component\store\config\Config as ObjectPortal1;
-use pinoox\component\store\config\data\DataArray;
+use pinoox\component\store\config\data\DataManager;
 use pinoox\component\store\config\strategy\FileConfigStrategy;
 
 /**
@@ -29,68 +29,69 @@ use pinoox\component\store\config\strategy\FileConfigStrategy;
  */
 class Config extends Portal
 {
-	const folder = 'config';
+    const folder = 'config';
     const ext = 'config.php';
 
-	public static function __register(): void
-	{
-		self::__bind(FileConfigStrategy::class,'strategy')->setArguments([
-		    Pinker::__ref(),
-		]);
+    public static function __register(): void
+    {
+        self::__bind(FileConfigStrategy::class, 'strategy')->setArguments([
+            Pinker::__ref(),
+        ]);
 
-		self::__bind(ObjectPortal1::class)->setArguments([
-		    self::__ref('strategy')
-		]);
-	}
-
-
-	/**
-	 * Set file for pinoox baker
-	 *
-	 * @param string|ReferenceInterface $fileName
-	 * @return ObjectPortal1
-	 */
-	public static function name(string|ReferenceInterface $fileName): ObjectPortal1
-	{
-		return self::initFileConfig($fileName);
-	}
+        self::__bind(ObjectPortal1::class)->setArguments([
+            self::__ref('strategy')
+        ]);
+    }
 
 
-	private static function initFileConfig(string $fileName): ObjectPortal1
-	{
-		$fileName = $fileName . '.'.self::ext;
-		$ref = Path::prefixReference($fileName, self::folder);
-		$pinker = Pinker::file($ref);
-		return self::create(new FileConfigStrategy($pinker));
-	}
+    /**
+     * Set file for pinoox baker
+     *
+     * @param string|ReferenceInterface $fileName
+     * @return ObjectPortal1
+     */
+    public static function name(string|ReferenceInterface $fileName): ObjectPortal1
+    {
+        return self::initFileConfig($fileName);
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'config';
-	}
+    private static function initFileConfig(string $fileName): ObjectPortal1
+    {
+        $name = $fileName;
+        $fileName = $fileName . '.' . self::ext;
+        $ref = Path::prefixReference($fileName, self::folder);
+        $pinker = Pinker::file($ref);
+        return self::create(new FileConfigStrategy($pinker));
+    }
 
 
-	/**
-	 * Get include method names .
-	 * @return string[]
-	 */
-	public static function __include(): array
-	{
-		return ['name','create'];
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'config';
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [];
-	}
+    /**
+     * Get include method names .
+     * @return string[]
+     */
+    public static function __include(): array
+    {
+        return ['name', 'create'];
+    }
+
+
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [];
+    }
 }

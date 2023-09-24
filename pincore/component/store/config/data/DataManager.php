@@ -16,7 +16,7 @@ namespace pinoox\component\store\config\data;
 /**
  * Represents a data structure that allows nested key-value pairs and provides various operations for manipulation.
  */
-class DataArray implements DataInterface
+class DataManager implements DataInterface
 {
     private mixed $data;
     private array $merge;
@@ -110,7 +110,7 @@ class DataArray implements DataInterface
         return $this;
     }
 
-    private function setNestedValue(array &$array, string $key, $value): void
+    private function setNestedValue(mixed &$array, string $key, $value): void
     {
         $keys = explode('.', $key);
         $temp = &$array;
@@ -125,15 +125,15 @@ class DataArray implements DataInterface
         $temp = $value;
     }
 
-    private function addNestedValue(array &$array, string $key, $value): void
+    private function addNestedValue(mixed &$data, string $key, $value): void
     {
-        $existingValue = $this->getNestedValue($array, $key);
+        $existingValue = $this->getNestedValue($data, $key);
 
         if (is_array($existingValue)) {
             $existingValue[] = $value;
-            $this->setNestedValue($array, $key, $existingValue);
+            $this->setNestedValue($data, $key, $existingValue);
         } else {
-            $this->setNestedValue($array, $key, $value);
+            $this->setNestedValue($data, $key, $value);
         }
     }
 

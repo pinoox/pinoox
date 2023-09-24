@@ -13,15 +13,15 @@
 
 namespace pinoox\component\store\config\strategy;
 
-use pinoox\component\store\config\data\DataArray;
+use pinoox\component\store\config\data\DataManager;
 use pinoox\component\store\config\data\DataInterface;
 use pinoox\component\store\baker\Pinker;
 
 class FileConfigStrategy implements ConfigStrategyInterface
 {
 
-    private DataArray $dataFirstState;
-    private DataArray $data;
+    private DataManager $dataFirstState;
+    private DataManager $data;
 
     public function __construct(private readonly Pinker $pinker)
     {
@@ -30,15 +30,15 @@ class FileConfigStrategy implements ConfigStrategyInterface
 
     private function initData(Pinker $pinker): void
     {
-        $this->data = $this->dataFirstState = new DataArray($pinker->pickup());
+        $this->data = $this->dataFirstState = new DataManager($pinker->pickup());
     }
 
     public function setData(mixed $data)
     {
-        $this->data = new DataArray($data);
+        $this->data = new DataManager($data);
     }
 
-    public function getData(): DataArray
+    public function getData(): DataManager
     {
         return $this->data;
     }
@@ -92,5 +92,10 @@ class FileConfigStrategy implements ConfigStrategyInterface
     public function getInfo(?string $key = null): array|string|null
     {
         return $this->getPinker()->getInfo($key);
+    }
+
+    public function name(): string
+    {
+        return $this->pinker->getBakedFile();
     }
 }

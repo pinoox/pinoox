@@ -31,19 +31,21 @@ class Pinker
     private string $bakedFile = '';
     private string $mainFile = '';
     private FileHandlerInterface $fileHandler;
+    /**
+     * @var Pinker[]
+     */
+    private array $objs = [];
 
     public function __construct(string $mainFile = '', string $bakedFile = '', FileHandlerInterface $fileHandler = null)
     {
-        $this->create($mainFile,$bakedFile);
+        $this->mainFile = $mainFile;
+        $this->bakedFile = $bakedFile;
         $this->fileHandler = $fileHandler ?? new FileHandler();
     }
 
-    public function create(string $mainFile = '', string $bakedFile = ''): static
+    public static function create(string $mainFile = '', string $bakedFile = '', FileHandlerInterface $fileHandler = null): static
     {
-        $this->mainFile = $mainFile;
-        $this->bakedFile = $bakedFile;
-
-        return $this;
+        return new static($mainFile, $bakedFile);
     }
 
     public function data($data): self
@@ -83,7 +85,7 @@ class Pinker
     {
         $tags = $this->generateInformation();
         $docBlock = HelperAnnotations::generateDocBlock('Pinoox Baker', $tags);
- 
+
         return '<?' . 'php' . "\n" .
             $docBlock . "\n\n" .
             'return ' . var_export($data, true) . ';';
@@ -184,7 +186,7 @@ class Pinker
 
     private function getData()
     {
-        if (!is_file($this->bakedFile)) {
+        if (!is_file($this->bakedFile) && is_file($this->mainFile)) {
             $this->data = is_file($this->mainFile) ? $this->fileHandler->retrieve($this->mainFile) : null;
             $this->bake();
         }
@@ -213,5 +215,21 @@ class Pinker
             'info' => $info,
             '__pinker__' => true,
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getBakedFile(): string
+    {
+        return $this->bakedFile;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMainFile(): string
+    {
+        return $this->mainFile;
     }
 }

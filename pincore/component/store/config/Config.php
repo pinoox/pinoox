@@ -21,16 +21,21 @@ class Config implements ConfigInterface
 {
     private ConfigStrategyInterface $strategy;
 
+    /**
+     * @var ConfigInterface[]
+     */
+    private static array $configs = [];
+
     public function __construct(ConfigStrategyInterface $strategy)
     {
-        $this->create($strategy);
+        $this->strategy = $strategy;
     }
 
-    public function create(ConfigStrategyInterface $strategy): static
+    public static function create(ConfigStrategyInterface $strategy): static
     {
-        $this->strategy = $strategy;
-
-        return $this;
+        if (empty(self::$configs[$strategy->name()]))
+            self::$configs[$strategy->name()] = new static($strategy);
+        return self::$configs[$strategy->name()];
     }
 
     public function save(): static
@@ -71,11 +76,9 @@ class Config implements ConfigInterface
         $data = is_array($data) ? $data : [];
         $data[$key] = $value;
 
-        if(!empty($pointer)) {
+        if (!empty($pointer)) {
             $this->set($pointer, $data);
-        }
-        else
-        {
+        } else {
             $this->setData($pointer, $data);
 
         }

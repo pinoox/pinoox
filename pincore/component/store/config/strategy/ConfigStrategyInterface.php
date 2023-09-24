@@ -78,4 +78,11 @@ interface ConfigStrategyInterface
      */
     public function merge(array $array): void;
 
+    /**
+     * Merges the provided array with the existing data.
+     *
+     * @param array $array The array to merge with the existing data.
+     */
+    public function name(): string;
+
 }
