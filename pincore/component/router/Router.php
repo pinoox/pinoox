@@ -14,10 +14,12 @@
 namespace pinoox\component\router;
 
 use pinoox\component\helpers\Str;
+use pinoox\component\http\RedirectResponse;
 use pinoox\component\kernel\Container;
 use pinoox\component\package\App;
 use Closure;
 use Exception;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class Router
 {
@@ -321,8 +323,8 @@ class Router
      */
     public function path($name, $params = []): string
     {
-        $name = $this->getPrefixName($name);
-        return Container::pincore()->get('url_generator')->generate($name, $params);
+//        $name = $this->getPrefixName($name);
+        return 'sdf';//$this->urlGenerator->generate($name, $params);
     }
 
     /**

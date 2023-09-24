@@ -51,9 +51,6 @@ class Boot
     private static function setRoute()
     {
         $router = Router::getMainCollection();
-
-        Container::pincore()->removeDefinition('routes');
-        Container::pincore()->set('routes', $router->routes);
     }
 
     public static function handle(?Request $request = null)

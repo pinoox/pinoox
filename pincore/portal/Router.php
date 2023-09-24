@@ -19,6 +19,7 @@ use pinoox\component\http\RedirectResponse;
 use pinoox\portal\app\App;
 use pinoox\component\router\Collection as ObjectPortal1;
 use pinoox\component\source\Portal;
+use pinoox\portal\kernel\HttpKernel;
 
 /**
  * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [])
@@ -54,7 +55,8 @@ class Router extends Portal
         self::__bind(\pinoox\component\router\Router::class)
             ->setArguments([
                 App::package(),
-                Path::app()
+                Path::app(),
+              //  HttpKernel::__ref('url_generator')
             ])
             ->addMethodCall('collection', [
                 $path,

@@ -11,9 +11,9 @@
  */
 
 use pinoox\component\http\RedirectResponse;
+use pinoox\portal\Router;
 use function pinoox\router\{route, collection, get};
 use pinoox\app\com_pinoox_installer\controller\ApiController;
-use pinoox\component\helpers\Str;
 
 route(
     path: [
@@ -22,13 +22,19 @@ route(
         '/setup',
         '/rules',
         '/prerequisites',
-        '/db',
-        '/user'
+        'db'=>'/db'
     ],
     action: '@home',
+    name:'aa',
     methods: 'GET'
 );
 
+route(
+    path:'/user',
+    action: function (){
+        return new RedirectResponse(Router::path('db'));
+    }
+);
 route(
     path: '/dist/pinoox.js',
     action: '@pinooxjs',

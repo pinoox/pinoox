@@ -18,6 +18,7 @@ use pinoox\component\helpers\HelperArray;
 use pinoox\component\kernel\controller\Controller;
 use pinoox\component\Lang;
 use pinoox\component\http\Request;
+use pinoox\component\migration\Migrator;
 use pinoox\component\System;
 use pinoox\component\Validation;
 use pinoox\component\Request as RequestData;
@@ -154,9 +155,9 @@ class ApiController extends Controller
         // Response::json(null, true);
     }
 
-    private function insertTables($c, $user)
+    private function insertTables($c, $u)
     {
-        if (empty($c))
+        if (empty($c) || empty($u))
             return false;
 
         if (!$this->checkConnect($c)) return false;
@@ -176,10 +177,28 @@ class ApiController extends Controller
         ];
 
         Config::name('~database')
-            ->set('production',$data)
-            ->set('development',$data)
+            ->set('production', $data)
+            ->set('development', $data)
             ->save();
-        return true;
+
+        $migrator = new Migrator('pincore');
+        try {
+            $migrator->run();
+        } catch (\Exception $e) {
+        }
+
+
+        $user = new UserModel();
+        $user->app = 'pincore';
+        $user->fname = $u['fname'];
+        $user->lname = $u['lname'];
+        $user->username = $u['username'];
+        $user->password = $u['password'];
+        $user->email = $u['email'];
+        $user->status = UserModel::active;
+        dd($user->save());
+
+        return false;
     }
 
     private function message($result, $status)

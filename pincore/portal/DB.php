@@ -60,13 +60,21 @@ class DB extends Portal
     public static function getConfig($key = null)
     {
         //get configs
-        $mode = Config::name('~pinoox')->get('mode');
+        $mode = self::mode();
+       if( empty($mode))
+            {
+                dd('p',Config::name('~pinoox')->get());
+            }
         if (!($config = Config::name('~database')->getLinear(null, $mode)))
             throw new Exception('Database config "' . $mode . '" not defined');
 
         return $config[$key] ?? $config;
     }
 
+    public static function mode()
+    {
+        return Config::name('~pinoox')->get('mode');
+    }
 
     /**
      * Get the registered name of the component.

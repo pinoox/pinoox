@@ -18,6 +18,12 @@ use pinoox\component\database\Model;
 
 class UserModel extends Model
 {
+
+    const active = 'active';
+    const suspend = 'suspend';
+    const CREATED_AT = 'register_date';
+    public $timestamps = false;
+
     /**
      * The table associated with the model.
      *

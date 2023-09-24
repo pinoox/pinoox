@@ -75,4 +75,9 @@ class DelegatingEngine implements EngineInterface
     {
         $this->engines[] = $engine;
     }
+
+    public function path(ReferenceInterface|string $packageName): string
+    {
+        $this->getEngine($packageName)->path($packageName);
+    }
 }

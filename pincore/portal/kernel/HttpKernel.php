@@ -14,6 +14,7 @@
 
 namespace pinoox\portal\kernel;
 
+use pinoox\portal\Router;
 use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
@@ -45,6 +46,7 @@ class HttpKernel extends Portal
 {
 	public static function __register(): void
 	{
+        $routes = Router::getMainCollection()->routes;
 		self::setParams();
 		self::addEvents();
 		self::__bind(RequestStack::class, 'request_stack');
@@ -52,10 +54,10 @@ class HttpKernel extends Portal
 		self::__bind(RequestContext::class, 'context');
 
 		self::__bind(UrlMatcher::class, 'matcher')
-		    ->setArguments([Container::ref('routes'), self::__ref('context')]);
+		    ->setArguments([$routes, self::__ref('context')]);
 
 		self::__bind(UrlGenerator::class, 'url_generator')
-		    ->setArguments([Container::ref('routes'), self::__ref('context')]);
+		    ->setArguments([$routes, self::__ref('context')]);
 
 		self::__bind(Kernel::class)
 		    ->setArguments([

@@ -16,7 +16,9 @@ namespace pinoox\portal\app;
 
 use pinoox\component\router\Router as ObjectPortal2;
 use pinoox\component\source\Portal;
-use pinoox\component\store\Config as ObjectPortal1;
+use pinoox\component\store\config\Config as ObjectPortal1;
+use pinoox\component\store\config\strategy\FileConfigStrategy;
+use pinoox\portal\Config;
 use pinoox\portal\Pinker;
 
 /**
@@ -36,6 +38,11 @@ class AppEngine extends Portal
 
 	public static function __register(): void
 	{
+//        $path = PINOOX_PATH.'pincore';
+//        $file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
+//        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
+//        $config = Config::create($fileStrategy);
+//
 		$pathApps = PINOOX_PATH . 'apps';
 		$pathConfig = 'config' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'source.config.php';
 		$appConfig = Pinker::path($pathConfig,PINOOX_PATH . 'pincore');

@@ -26,7 +26,7 @@ abstract class Model extends EloquentModel
         if (isset($this->table)) {
             return $this->table;
         }
-        $package =  app('package') . '_' ;
-        return $package. strtolower(str_replace('\\', '', class_basename($this)));
+        $package = app('package') . '_';
+        return $package . strtolower(str_replace('\\', '', class_basename($this)));
     }
 }
