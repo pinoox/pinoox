@@ -22,17 +22,16 @@ route(
         '/setup',
         '/rules',
         '/prerequisites',
-        'db'=>'/db'
+        '/db'
     ],
     action: '@home',
-    name:'aa',
     methods: 'GET'
 );
 
 route(
     path:'/user',
     action: function (){
-        return new RedirectResponse(Router::path('db'));
+        return new RedirectResponse('db');
     }
 );
 route(

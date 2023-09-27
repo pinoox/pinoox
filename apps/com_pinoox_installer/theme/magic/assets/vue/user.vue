@@ -109,7 +109,7 @@
                         setTimeout(()=>{
                             this.isLoading = false;
                             this._redirect(this.URL.SITE);
-                        },1000);
+                        },3000);
                     } else {
                         this.isLoading = false;
                         this.err = json.data.result;

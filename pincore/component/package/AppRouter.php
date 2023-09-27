@@ -131,7 +131,7 @@ class AppRouter
         }
 
         $this->appRouteConfig
-            ->data($routes)
+            ->setData($routes)
             ->save();
     }
 
@@ -156,7 +156,7 @@ class AppRouter
     public function setData(mixed $data = null)
     {
         $this->appRouteConfig
-            ->data($data)
+            ->setData($data)
             ->save();
     }
 

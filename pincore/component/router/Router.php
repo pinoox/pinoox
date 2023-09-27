@@ -314,20 +314,6 @@ class Router
     }
 
     /**
-     * get path
-     *
-     * @param $name
-     * @param array $params
-     * @return string
-     * @throws Exception
-     */
-    public function path($name, $params = []): string
-    {
-//        $name = $this->getPrefixName($name);
-        return 'sdf';//$this->urlGenerator->generate($name, $params);
-    }
-
-    /**
      * generate Name
      *
      * @param Collection|null $collection

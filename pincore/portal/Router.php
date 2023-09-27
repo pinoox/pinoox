@@ -30,7 +30,6 @@ use pinoox\portal\kernel\HttpKernel;
  * @method static ObjectPortal1 currentCollection()
  * @method static ?pinoox\component\router\Collection getCollection($index = 0)
  * @method static ObjectPortal1 getMainCollection()
- * @method static string path($name, $params = [])
  * @method static Router get(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
  * @method static Router post(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
  * @method static Router put(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
@@ -56,7 +55,6 @@ class Router extends Portal
             ->setArguments([
                 App::package(),
                 Path::app(),
-              //  HttpKernel::__ref('url_generator')
             ])
             ->addMethodCall('collection', [
                 $path,
@@ -75,6 +73,20 @@ class Router extends Portal
         return 'router';
     }
 
+    /**
+     * get path
+     *
+     * @param $name
+     * @param array $params
+     * @param null $app
+     * @return string
+     */
+    public static function path($name, array $params = [], $app = null): string
+    {
+        $app = empty($app) ? App::package() : $app;
+        $name = $app . ':' . $name;
+        return HttpKernel::___urlGenerator()->generate($name, $params);
+    }
 
     public static function __replace(): array
     {
@@ -121,7 +133,7 @@ class Router extends Portal
             path: '/{slug}/',
             action: function ($slug) {
                 $slug = '/' . $slug;
-                $slug = Str::firstDelete($slug, App::path().'/');
+                $slug = Str::firstDelete($slug, App::path() . '/');
                 $slug = Str::lastDelete($slug, '/');
                 return new RedirectResponse('/' . $slug, 301);
             },
