@@ -20,13 +20,6 @@ use Closure;
 
 abstract class Controller
 {
-    protected ViewInterface $view;
-
-    public function __construct()
-    {
-       // $this->setView(\pinoox\portal\View::__instance());
-    }
-
     /**
      * @var ContainerInterface|null
      */
@@ -128,14 +121,5 @@ abstract class Controller
     protected function response(?string $content = '', int $status = 200, array $headers = []): Response
     {
         return new Response($content, $status, $headers);
-    }
-
-    private function initView()
-    {
-    }
-
-    private function setView(ViewInterface $view)
-    {
-        $this->view = $view;
     }
 }

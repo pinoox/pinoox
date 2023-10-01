@@ -18,10 +18,8 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use pinoox\component\File;
-use pinoox\component\helpers\HelperString;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\Container;
-use pinoox\component\package\App;
 use pinoox\component\source\Portal;
 use pinoox\portal\AppManager;
 use Symfony\Component\Console\Input\InputInterface;
@@ -314,11 +312,12 @@ class PortalFile extends PhpFile
         } else if ($return === 'static') {
             $returnType = '\\' . $serviceName;
         } else if (!empty($return) && (class_exists($return) || interface_exists($return) || trait_exists($return))) {
-            if ($use = self::getUse($namespace, $return)) {
+            $returnType = Str::firstDelete($return,'\\');
+            if ($use = self::getUse($namespace, $returnType)) {
                 $returnType = $use;
             } else {
-                $returnType = $this->buildAliasClassName($namespace,$num);
-                $namespace->addUse($return,$returnType);
+                $returnType = $this->buildAliasClassName($namespace, $num);
+                $namespace->addUse($return, $returnType);
             }
 
         } else {
@@ -345,7 +344,7 @@ class PortalFile extends PhpFile
 
 
         $returnType = !empty($returnType) ? $returnType . ' ' : '';
-        return HelperString::replaceData('@method static {return}{name}({args})', [
+        return Str::replaceData('@method static {return}{name}({args})', [
             'name' => $methodName,
             'return' => $returnType,
             'args' => $args,
@@ -384,7 +383,7 @@ class PortalFile extends PhpFile
             $reflection = $container->getReflectionClass($className);
             $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
             foreach ($methods as $method) {
-                if (isset($replace[$method->getName()]) || HelperString::firstHas($method->getName(), '__') || in_array($method->getName(), $exclude) || (!empty($include) && !in_array($method->getName(), $include)) || method_exists($this->getPortalName(), $method->getName()))
+                if (isset($replace[$method->getName()]) || Str::firstHas($method->getName(), '__') || in_array($method->getName(), $exclude) || (!empty($include) && !in_array($method->getName(), $include)) || method_exists($this->getPortalName(), $method->getName()))
                     continue;
                 if ($method instanceof ReflectionMethod) {
                     $returnType = self::getReturnTypeMethod($method);

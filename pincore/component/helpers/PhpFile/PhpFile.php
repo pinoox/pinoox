@@ -13,11 +13,13 @@
 
 namespace pinoox\component\helpers\PhpFile;
 
+use Illuminate\Database\Eloquent\Builder;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use PHPUnit\Framework\MockObject\ReflectionException;
 use pinoox\component\File;
 use pinoox\component\helpers\HelperAnnotations;
+use pinoox\component\helpers\Str;
 use ReflectionFunction;
 use ReflectionMethod;
 use SebastianBergmann\Type\ReflectionMapper;
@@ -56,34 +58,46 @@ class PhpFile
         $source->setComment($copyright);
     }
 
+    /**
+     * @throws \ReflectionException
+     */
     public static function getReturnTypeMethod(ReflectionMethod $method): string
     {
-        if(!$method->hasReturnType())
-        {
+        $return = null;
+        if (!$method->hasReturnType()) {
             $text = $method->getDocComment();
             $tags = [];
             if ($text) {
                 $tags = HelperAnnotations::getTagsIntoComment($text);
             }
-        }
-        $return = (new ReflectionMapper)->fromReturnType($method);
-        $return = !empty($return->asString()) ? $return->asString() : '';
-        if (empty($return)) {
-
             if (!empty($tags['return'])) {
                 $items = explode('|', $tags['return']);
+                $uses = HelperAnnotations::getUsesInPHPFile($method->class);
                 $returns = [];
                 foreach ($items as $item) {
                     if ($item === 'void')
                         continue;
 
-                    if ($item === 'static' || $item === '$this')
-                        $returns[] = $method->class;
-                    else
-
+                    $basename = basename(str_replace('\\', '/', $method->class));
+                    $className = '\\'.$method->class;
+                    if (Str::firstHas($item,'static'))
+                        $returns[] = str_replace('static',$className,$item);
+                    else if (Str::firstHas($item,'$this'))
+                        $returns[] = str_replace('$this',$className,$item);
+                    else if (Str::firstHas($item,$basename))
+                        $returns[] = str_replace($basename,$className,$item);
+                    else {
+                        $returns[] = !empty($uses[$item]) ? '\\'.$uses[$item] : $item;
+                    }
                 }
+                $return = implode('|', $returns);
             }
+        } else {
+            $return = (new ReflectionMapper)->fromReturnType($method);
+            $return = !empty($return->asString()) ? $return->asString() : '';
         }
+
+        return $return ?? '';
     }
 
     private static function hasUse(PhpNamespace $namespace, $class): bool

@@ -14,6 +14,7 @@
 namespace pinoox\app\com_pinoox_welcome\controller;
 
 use pinoox\component\kernel\controller\Controller;
+use pinoox\model\UserModel;
 use pinoox\portal\View;
 
 class MainController extends Controller

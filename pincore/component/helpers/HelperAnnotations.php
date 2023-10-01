@@ -14,7 +14,9 @@
 namespace pinoox\component\helpers;
 
 
+use Illuminate\Database\Eloquent\Builder;
 use pinoox\component\File;
+use ReflectionClass;
 
 class HelperAnnotations
 {
@@ -39,6 +41,27 @@ class HelperAnnotations
         }
 
         return $tags;
+    }
+
+    /**
+     * @throws \ReflectionException
+     */
+    public static function getUsesInPHPFile(ReflectionClass|string $class): array
+    {
+        if (is_string($class)) {
+            $class = new ReflectionClass($class);
+        }
+        $regex = '/^use\s+(?P<class>[\w\\\\]+)(?:\s+as\s+(?P<alias>\w+))?;/m';
+        $source = file_get_contents($class->getFileName());
+        preg_match_all($regex, $source, $matches, PREG_SET_ORDER, 0);
+        $result = [];
+        foreach ($matches as $match) {
+            $usedClass = $match['class'];
+            $className = $match['alias'] ?? basename(str_replace('\\', '/', $match['class']));
+            $result[$className] = $usedClass;
+        }
+
+        return $result;
     }
 
     public static function getTagsIntoComment(string $text): array

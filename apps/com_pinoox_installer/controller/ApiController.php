@@ -182,6 +182,8 @@ class ApiController extends Controller
             ->set('development', $data)
             ->save();
 
+        //TODO migrate init & run
+
         $migrator = new Migrator('pincore');
         try {
             $migrator->run();
