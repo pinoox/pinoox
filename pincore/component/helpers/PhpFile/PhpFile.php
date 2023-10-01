@@ -17,6 +17,7 @@ use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use PHPUnit\Framework\MockObject\ReflectionException;
 use pinoox\component\File;
+use pinoox\component\helpers\HelperAnnotations;
 use ReflectionFunction;
 use ReflectionMethod;
 use SebastianBergmann\Type\ReflectionMapper;
@@ -55,10 +56,34 @@ class PhpFile
         $source->setComment($copyright);
     }
 
-    public static function getReturnTypeMethod($method): string
+    public static function getReturnTypeMethod(ReflectionMethod $method): string
     {
+        if(!$method->hasReturnType())
+        {
+            $text = $method->getDocComment();
+            $tags = [];
+            if ($text) {
+                $tags = HelperAnnotations::getTagsIntoComment($text);
+            }
+        }
         $return = (new ReflectionMapper)->fromReturnType($method);
-        return !empty($return->asString()) ? $return->asString() : '';
+        $return = !empty($return->asString()) ? $return->asString() : '';
+        if (empty($return)) {
+
+            if (!empty($tags['return'])) {
+                $items = explode('|', $tags['return']);
+                $returns = [];
+                foreach ($items as $item) {
+                    if ($item === 'void')
+                        continue;
+
+                    if ($item === 'static' || $item === '$this')
+                        $returns[] = $method->class;
+                    else
+
+                }
+            }
+        }
     }
 
     private static function hasUse(PhpNamespace $namespace, $class): bool

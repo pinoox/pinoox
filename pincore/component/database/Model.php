@@ -1,9 +1,5 @@
 <?php
 
-namespace pinoox\component\database;
-
-use \Illuminate\Database\Eloquent\Model as EloquentModel;
-
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -14,6 +10,13 @@ use \Illuminate\Database\Eloquent\Model as EloquentModel;
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
+namespace pinoox\component\database;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+
+
 abstract class Model extends EloquentModel
 {
     /**

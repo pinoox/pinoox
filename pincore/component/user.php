@@ -75,7 +75,9 @@ class User
         }
 
         if ($isActive)
+        {
             UserModel::where_status(UserModel::active);
+        }
         $user = UserModel::fetch_user_by_email_or_username($username);
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');

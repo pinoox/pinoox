@@ -24,7 +24,7 @@ class HelperAnnotations
      * @param string $file
      * @return array
      */
-    public static function getTagsCurrentBlock(string $file): array
+    public static function getTagsCurrentBlockInFile(string $file): array
     {
         $tags = [];
         if (is_file($file)) {
@@ -40,6 +40,21 @@ class HelperAnnotations
 
         return $tags;
     }
+
+    public static function getTagsIntoComment(string $text): array
+    {
+        $tags = [];
+        $_to_string = trim($text, "\**/");
+        if (\preg_match_all('/@(?P<name>[A-Za-z_-]+)(?:[ \t]+(?P<value>.*?))?[ \t]*\r?$/m', $_to_string, $matches)) {
+            $numMatches = \count($matches[0]);
+            for ($i = 0; $i < $numMatches; ++$i) {
+                $tags[$matches['name'][$i]] = (string)$matches['value'][$i];
+            }
+        }
+
+        return $tags;
+    }
+
 
     /**
      * Get comments in a file

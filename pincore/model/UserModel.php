@@ -23,12 +23,8 @@ class UserModel extends Model
     const suspend = 'suspend';
     const CREATED_AT = 'register_date';
     const UPDATED_AT = null;
-
-    /**
-     * The table associated with the model.
-     *
-     * @var string
-     */
     protected $table = 'pincore_user';
+    public $incrementing = false;
+    public $primaryKey = 'user_id';
 
 }

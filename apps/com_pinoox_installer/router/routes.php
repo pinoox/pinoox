@@ -11,7 +11,6 @@
  */
 
 use pinoox\component\http\RedirectResponse;
-use pinoox\portal\Router;
 use function pinoox\router\{route, collection, get};
 use pinoox\app\com_pinoox_installer\controller\ApiController;
 
@@ -30,10 +29,9 @@ route(
 
 route(
     path:'/user',
-    action: function (){
-        return new RedirectResponse('db');
-    }
+    action: fn() => new RedirectResponse('db'),
 );
+
 route(
     path: '/dist/pinoox.js',
     action: '@pinooxjs',

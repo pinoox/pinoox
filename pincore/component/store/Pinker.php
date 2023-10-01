@@ -99,7 +99,7 @@ class Pinker
      */
     public function getInfo(?string $key = null): ?array
     {
-        $info = HelperAnnotations::getTagsCurrentBlock($this->bakedFile);
+        $info = HelperAnnotations::getTagsCurrentBlockInFile($this->bakedFile);
         return !is_null($key) ? @$info[$key] : $info;
     }
 

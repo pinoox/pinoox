@@ -22,6 +22,16 @@ body {
   background: rgb(245 236 248);
   background: linear-gradient(90deg, rgba(225, 231, 244, 1) 0%, rgba(225, 231, 244, 0.27) 100%);
   overflow-x: hidden;
+
+  .rtl {
+    direction: rtl;
+    text-align: right;
+  }
+
+  .ltr {
+    direction: ltr;
+    text-align: left;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {

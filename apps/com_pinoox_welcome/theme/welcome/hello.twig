@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fa">
+<html lang="{{app('lang')}}" dir="{{lang('welcome.direction')}}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -11,7 +11,7 @@
     {{ vite('src/main.js') }}
     {{ vite('src/main.css') }}
 </head>
-<body>
+<body class="{{ lang('welcome.direction') }}">
 <div id="app"></div>
 
 </body>
