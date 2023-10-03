@@ -13,7 +13,7 @@
 namespace pinoox\component;
 
 use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\helpers\Str;
 use pinoox\portal\app\App;
 use pinoox\model\TokenModel;
 
@@ -93,38 +93,64 @@ class Token
 
     public static function getData($token_key)
     {
-        $token = TokenModel::fetch_by_key($token_key);
-        return !empty($token) ? HelperString::decodeJson($token['token_data']) : null;
+        $token = TokenModel::where('token_key',$token_key)
+            ->where('app',self::getApp())
+            ->first();
+
+        return !empty($token) ? Str::decodeJson($token->token_data) : null;
     }
 
     public static function delete($token_key)
     {
-        return TokenModel::delete_by_key($token_key);
+        return TokenModel::where('token_key',$token_key)
+            ->where('app',self::getApp())
+            ->delete();
     }
 
     public static function get($token_key)
     {
-        $token = TokenModel::fetch_by_key($token_key);
+        $token = TokenModel::where('token_key',$token_key)
+            ->where('app',self::getApp())
+            ->first();
         if ($token)
-            $token['token_data'] = HelperString::decodeJson($token['token_data']);
+            $token->token_data = Str::decodeJson($token->token_data);
 
         return $token;
     }
 
     public static function setData($token_key, $token_data, $UpdateLifetime = false)
     {
-        return TokenModel::update_data($token_key, $token_data, $UpdateLifetime);
+        $values = [
+            'token_data' => Str::encodeJson($token_data),
+        ];
+        if ($UpdateLifetime)
+            $values['expiration_date'] = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
+
+        return TokenModel::where('token_key',$token_key)
+            ->where('app',self::getApp())
+            ->update($values);
     }
 
     public static function updateLifetime($token_key)
     {
-        return TokenModel::update_lifetime($token_key);
+        return  TokenModel::where('token_key',$token_key)
+            ->where('app',self::getApp())
+            ->update([
+                'expiration_date' => Date::g('Y-m-d H:i:s', time() + Token::$lifeTime),
+            ]);
     }
 
     public static function changeKey($old_token_key, $UpdateLifetime = false, $app = true)
     {
         self::$token_key = self::generateUniqueKey();
-        TokenModel::update_key($old_token_key, self::$token_key, $UpdateLifetime, $app);
+
+        $token = TokenModel::where('token_key',$old_token_key);
+        if ($app)
+            $token->where('app', Token::getApp());
+        $token->update([
+                'token_key' =>self::$token_key,
+            ]);
+
         return self::$token_key;
     }
 

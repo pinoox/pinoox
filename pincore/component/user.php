@@ -257,7 +257,7 @@ class User
         $token_key = self::getTokenKey();
         if (empty($token_key)) return;
         Token::delete($token_key);
-        if (!TokenModel::fetch_by_key_without_app($token_key)) {
+        if (!TokenModel::where('token_key', $token_key)->first()) {
             switch (self::$type) {
                 case self::COOKIE:
                     Cookie::destroy('pinoox_user');
