@@ -13,6 +13,7 @@
 
 namespace pinoox\app\com_pinoox_installer\controller;
 
+use Illuminate\Database\Eloquent\Builder;
 use pinoox\component\helpers\HelperHeader;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\controller\Controller;
@@ -29,6 +30,14 @@ class MainController extends Controller
 
     public function home()
     {
+        $username = 'yoosef';
+        $user = UserModel::where(function (Builder $builder) use($username){
+            $builder->where('email',$username)->orWhere('username',$username);
+        });
+        $user = $user->first();
+        $user->makeHidden('password');
+
+        dd($user->toArray());
         return View::render('index');
     }
 
