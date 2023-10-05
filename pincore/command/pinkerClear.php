@@ -2,7 +2,7 @@
 namespace pinoox\command;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
@@ -65,7 +65,7 @@ class pinkerClear extends Console implements CommandInterface
             } elseif ($this->argument('app_name') == '~') {
                 $folders = $this->clearCoreCache();
             } else {
-                $app = AppModel::fetch_by_package_name($this->argument('app_name'));
+                $app = AppHelper::fetch_by_package_name($this->argument('app_name'));
                 if (!is_null($app))
                     $folders = $this->removePinkerFromPath(Dir::path('~apps/' . $this->argument('app_name')), true);
             }

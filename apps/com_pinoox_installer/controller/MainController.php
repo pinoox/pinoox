@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use pinoox\component\helpers\HelperHeader;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\controller\Controller;
+use pinoox\component\User;
 use pinoox\model\UserModel;
 use pinoox\portal\app\App;
 use pinoox\portal\View;

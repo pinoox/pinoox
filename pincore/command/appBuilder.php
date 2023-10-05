@@ -57,7 +57,7 @@ class appBuilder extends Console implements CommandInterface
         try {
             $this->package = $this->argument('package');
             if ( $this->package == null ){
-                $apps = AppModel::fetch_all(null , true);
+                $apps = AppHelper::fetch_all(null , true);
                 $apps = array_keys($apps);
                 $appId = $this->choice('Please select package you want to build setup file.',  $apps );
                 $this->package = isset($apps[$appId]) ? $apps[$appId] : null ;
@@ -65,7 +65,7 @@ class appBuilder extends Console implements CommandInterface
                     $this->error('Can not find selected package!');
                 }
             }
-            $app = AppModel::fetch_by_package_name($this->package);
+            $app = AppHelper::fetch_by_package_name($this->package);
             if ( is_null($app) )
                 $this->error(sprintf('Can not find app with name `%s`!' , $this->package));
             $this->appPath = Dir::path('~apps/' . $this->package);
@@ -89,7 +89,7 @@ class appBuilder extends Console implements CommandInterface
 
     private function find_gitignore_files()
     {
-        $app = AppModel::fetch_by_package_name($this->package);
+        $app = AppHelper::fetch_by_package_name($this->package);
         if ( ! isset($app['build']['gitignore']) or ( isset($app['build']['gitignore']) and $app['build']['gitignore'] )) {
             $this->startProgressBar(4, 'Find `.gitignore` files.');
             $baseFile = $this->find_gitignore_files_in_dir(Dir::path('~'));
@@ -137,7 +137,7 @@ class appBuilder extends Console implements CommandInterface
             $this->nextStepProgressBar();
         }
         $this->nextStepProgressBar();
-        $app = AppModel::fetch_by_package_name($this->package);
+        $app = AppHelper::fetch_by_package_name($this->package);
         if ( isset($app['build']['explode']) and ! is_null($app['build']['explode']))
             if ( is_array($app['build']['explode']))
                 $matches = array_merge($matches , $app['build']['explode']) ;
@@ -173,7 +173,7 @@ class appBuilder extends Console implements CommandInterface
 
     private function checkingFilesAcceptGitIgnore($folders, $files, $ignoreRules)
     {
-        $app = AppModel::fetch_by_package_name($this->package);
+        $app = AppHelper::fetch_by_package_name($this->package);
         $implodeDirs = array();
         if ( isset($app['build']['implode']) and ! is_null($app['build']['implode']))
             if ( is_array($app['build']['implode']))
@@ -272,7 +272,7 @@ class appBuilder extends Console implements CommandInterface
         $this->finishProgressBar();
         $this->startProgressBar(count($folders) + count($files) + 3, 'Creating Build file.');
         $setupFileNameShouldBe = $packageName;
-        $app = AppModel::fetch_by_package_name($packageName);
+        $app = AppHelper::fetch_by_package_name($packageName);
         if ( isset($app['build']['filename']))
             $setupFileNameShouldBe = $app['build']['filename'];
         $setupFileName = $setupFileNameShouldBe;

@@ -3,13 +3,13 @@
 namespace pinoox\command;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\portal\Config;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Lang;
 use pinoox\component\Validation;
+use pinoox\portal\Config;
 
 
 class routerMake extends Console implements CommandInterface
@@ -103,7 +103,7 @@ class routerMake extends Console implements CommandInterface
         if ($alias == 'manager')
             return [rlang('manager.request_not_valid'), false];
 
-        $package = AppModel::fetch_by_package_name($packageName);
+        $package = AppHelper::fetch_by_package_name($packageName);
         if (empty($package) || !$package['router'])
             return [rlang('manager.request_not_valid'), false];
 

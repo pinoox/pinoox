@@ -47,7 +47,7 @@ class applist extends Console implements CommandInterface
 	*/
 	public function handle()
 	{
-		$apps = AppModel::fetch_all(null , true);
+		$apps = AppHelper::fetch_all(null , true);
 		$result = [];
 		foreach ($apps as $app){
             $result[] = [

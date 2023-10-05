@@ -2,11 +2,10 @@
 namespace pinoox\command;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Lang;
 use pinoox\model\UserModel;
 
 
@@ -77,7 +76,7 @@ class repassword extends Console implements CommandInterface
 
         $packageSelected = $this->argument('package');
         if ( $packageSelected == null ){
-            $apps = AppModel::fetch_all(null , true);
+            $apps = AppHelper::fetch_all(null , true);
             $packages = array_keys($apps);
             $choice = array_column($apps , 'name' );
             $appId = $this->choice('Please select package of user register on that.',  $choice );

@@ -63,7 +63,7 @@ class cacheClear extends Console implements CommandInterface
         } elseif ( $this->argument('app_name') == '~' ){
             $folders = $this->removePinkerFromPath(Dir::path('~pincore'));
         } else {
-            $app = AppModel::fetch_by_package_name($this->argument('app_name') );
+            $app = AppHelper::fetch_by_package_name($this->argument('app_name') );
             if ( ! is_null($app) )
                 $folders = $this->removePinkerFromPath(Dir::path('~apps/'.$this->argument('app_name') ) , true);
         }

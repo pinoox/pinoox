@@ -12,20 +12,27 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\controller\api\ApiConfiguration;
-use pinoox\app\com_pinoox_manager\model\LangModel;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Router;
+use pinoox\component\kernel\controller\Controller;
+use pinoox\component\User;
 
-class MasterConfiguration extends ApiConfiguration
+class MasterConfiguration extends Controller
 {
-
     const manualPath = 'downloads/packages/manual/';
 
     public function __construct()
     {
-        parent::__construct();
+        User::lifeTime(100, 'day');
     }
 
+    protected function message($result, $status)
+    {
+        return ["status" => $status, "result" => $result];
+    }
+
+
+    public function error()
+    {
+        return $this->message('not found', 404);
+    }
 }
-    
+
