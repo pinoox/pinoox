@@ -39,6 +39,11 @@ class Route
         private string               $prefixName = ''
     )
     {
+        if ($this->path === '*') {
+            $this->path = '{parameters}';
+            $filters['parameters'] = '.*';
+        }
+
         $this->name = $this->buildName($name);
         $this->defaults = array_merge($this->collection->defaults, $defaults);
         $this->filters = array_merge($this->collection->filters, $filters);
@@ -77,7 +82,7 @@ class Route
     private function buildName(string $name = ''): string
     {
         $prefix = $this->collection->name;
-        $prefix =  $this->prefixName. $prefix;
+        $prefix = $this->prefixName . $prefix;
         $name = !empty($name) ? $name : self::generateRandomName($prefix);
         $name = $prefix . $name;
         self::$names[$prefix . $name] = $this;
