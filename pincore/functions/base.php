@@ -109,7 +109,7 @@ if (!function_exists('config')) {
     {
         $parts = explode('.', $key);
         $name = array_shift($parts);
-        $key = implode('.', $parts);
+        $key = !empty($parts)? implode('.', $parts) : null;
         $config = Config::name($name);
         $args = func_get_args();
         if (isset($args[1]))
