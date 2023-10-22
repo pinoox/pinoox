@@ -29,6 +29,20 @@ abstract class Portal
     protected static array $__args = [];
     protected static array $__subNameClasses = [];
 
+    /*
+    public function __get(string $name)
+    {
+        $instance = self::__instance();
+        return $instance->$name;
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $instance = self::__instance();
+        $instance->$name = $value;
+    }
+    */
+
     /**
      * Check the builder method call
      *
@@ -156,7 +170,7 @@ abstract class Portal
     private static function callMethod(string $method, array $args): mixed
     {
         $instance = static::__instance();
-        
+
         if (empty($instance) || self::checkMethodHasExclude($method) || !self::checkMethodHasInclude($method)) {
             throw new \RuntimeException('' . static::__id() . ' Portal root has not been set.');
         }

@@ -14,7 +14,7 @@
 use pinoox\component\kernel\ContainerBuilder;
 use pinoox\portal\app\App;
 use pinoox\portal\Config;
-use pinoox\component\Dir;
+use pinoox\portal\Path;
 use pinoox\component\Lang;
 use pinoox\component\Service;
 use pinoox\component\Url;
@@ -72,7 +72,7 @@ if (!function_exists('furl')) {
 if (!function_exists('path')) {
     function path($path = null, $app = null)
     {
-        return Dir::path($path, $app);
+        return Path::get($path, $app);
     }
 }
 

@@ -13,9 +13,8 @@
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Config;
-use pinoox\component\Dir;
 use pinoox\component\Download;
 use pinoox\component\HelperHeader;
 use pinoox\component\Lang;
@@ -27,7 +26,7 @@ class MarketController extends LoginConfiguration
 {
     public function getDownloads()
     {
-        $result = AppModel::fetch_all_downloads();
+        $result = AppHelper::fetch_all_downloads();
         Response::json($result);
     }
 
@@ -77,7 +76,7 @@ class MarketController extends LoginConfiguration
 
     public function downloadRequest($package_name)
     {
-        $app = AppModel::fetch_by_package_name($package_name);
+        $app = AppHelper::fetch_by_package_name($package_name);
         if (!empty($app))
             Response::json(rlang('manager.currently_installed'), false);
 

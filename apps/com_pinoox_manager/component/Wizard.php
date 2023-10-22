@@ -15,9 +15,8 @@
 namespace pinoox\app\com_pinoox_manager\component;
 
 
-use pinoox\component\app\AppProvider;
 use pinoox\component\Cache;
-use pinoox\component\Config;
+use pinoox\portal\Config;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\Lang;
@@ -25,11 +24,11 @@ use pinoox\component\Router;
 use pinoox\component\Service;
 use pinoox\component\Url;
 use pinoox\component\User;
-use pinoox\component\Zip;
-use pinoox\model\PinooxDatabase;
-use pinoox\model\SessionModel;
 use pinoox\model\TokenModel;
 use pinoox\model\UserModel;
+use pinoox\portal\Path;
+use pinoox\portal\Pinker;
+use pinoox\portal\Zip;
 
 class Wizard
 {
@@ -47,12 +46,10 @@ class Wizard
             return false;
 
         $appPath = path('~apps/' . $data['package_name'] . '/');
-        Zip::extract($pinFile, $appPath);
+        Zip::openFile($pinFile)->extractTo($appPath);
 
         //check database
-        $appDB = path('~apps/' . $data['package_name'] . '/app.db');
-
-        self::runQuery($appDB, $data['package_name']);
+        self::runQuery($data['package_name']);
         self::changeLang($data['package_name']);
         self::runService($data['package_name'], 'install');
         self::setApp('com_pinoox_manager', true);
@@ -70,19 +67,21 @@ class Wizard
         $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
 
         if (!is_file($configFile)) {
-            Zip::addEntries('app.php');
-            Zip::extract($pinFile, $dir);
+            Zip::openFile($pinFile)->extractTo($dir,[
+                'app.php'
+            ]);
         }
 
-        $app = new AppProvider($configFile);
+        $app = Config::file($configFile);
         $iconPath = $app->icon;
 
         $icon = Url::file('resources/default.png');
         if (!empty($iconPath)) {
-            $iconFile = Dir::path($dir . '>' . $app->icon);
+            $iconFile = Path::get($dir . '>' . $app->icon);
             if (!is_file($iconFile)) {
-                Zip::addEntries($app->icon);
-                Zip::extract($pinFile, $dir);
+                Zip::openFile($pinFile)->extractTo($dir,[
+                    $iconFile
+                ]);
             }
 
             if (is_file($iconFile))
@@ -92,12 +91,12 @@ class Wizard
         return [
             'type' => 'app',
             'filename' => $filename,
-            'package_name' => $app->packageName,
-            'app' => $app->packageName,
+            'package_name' => $app->package_name,
+            'app' => $app->package_name,
             'name' => $app->name,
             'description' => $app->description,
-            'version' => $app->versionName,
-            'version_code' => $app->versionCode,
+            'version' => $app->version_name,
+            'version_code' => $app->version_code,
             'developer' => $app->developer,
             'path_icon' => $app->icon,
             'icon' => $icon,
@@ -136,7 +135,7 @@ class Wizard
         return true;
     }
 
-    public static function runQuery($appDB, $package_name, $isRemoveFile = true, $isCopyUser = true)
+    public static function runQuery($package_name, $isRemoveFile = true, $isCopyUser = true)
     {
         if (is_file($appDB)) {
             $prefix = Config::get('~database.prefix');
@@ -173,14 +172,6 @@ class Wizard
         AppProvider::set('lang', $lang);
         AppProvider::save();
         return true;
-    }
-
-    private static function setApp($packageName, $isAgain = false)
-    {
-        if (self::$isApp && !$isAgain) return;
-        self::$isApp = true;
-        Router::setApp($packageName);
-        AppProvider::app($packageName);
     }
 
     private static function runService($packageName, $state = 'install')

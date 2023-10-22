@@ -2,8 +2,7 @@
 namespace pinoox\command;
 
 
-use PHPUnit\Framework\TestCase;
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
@@ -90,7 +89,7 @@ class makeTest extends Console implements CommandInterface
     {
         $this->package =  $this->argument('package_name');
         if ( $this->package != '~' ) {
-            $app = AppModel::fetch_by_package_name($this->package);
+            $app = AppHelper::fetch_by_package_name($this->package);
             if (is_null($app))
                 $this->error(sprintf('Can not find app with name `%s`!', $this->package));
         }

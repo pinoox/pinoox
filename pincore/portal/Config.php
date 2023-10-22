@@ -14,6 +14,7 @@
 
 namespace pinoox\portal;
 
+use pinoox\component\File;
 use pinoox\component\package\reference\ReferenceInterface;
 use pinoox\component\source\Portal;
 use pinoox\component\store\config\Config as ObjectPortal1;
@@ -32,6 +33,7 @@ class Config extends Portal
     const folder = 'config';
     const ext = 'config.php';
 
+
     public static function __register(): void
     {
         self::__bind(FileConfigStrategy::class, 'strategy')->setArguments([
@@ -42,7 +44,6 @@ class Config extends Portal
             self::__ref('strategy')
         ]);
     }
-
 
     /**
      * Set file for pinoox baker
@@ -55,10 +56,14 @@ class Config extends Portal
         return self::initFileConfig($fileName);
     }
 
+    public static function file(string $file): ObjectPortal1
+    {
+        $pinker = Pinker::create($file, $file);
+        return self::create(new FileConfigStrategy($pinker));
+    }
 
     private static function initFileConfig(string $fileName): ObjectPortal1
     {
-        $name = $fileName;
         $fileName = $fileName . '.' . self::ext;
         $ref = Path::prefixReference($fileName, self::folder);
         $pinker = Pinker::file($ref);

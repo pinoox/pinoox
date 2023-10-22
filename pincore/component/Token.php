@@ -115,7 +115,7 @@ class Token
         if ($token)
             $token->token_data = Str::decodeJson($token->token_data);
 
-        return $token;
+        return $token->toArray();
     }
 
     public static function setData($token_key, $token_data, $UpdateLifetime = false)

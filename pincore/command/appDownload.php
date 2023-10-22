@@ -167,7 +167,7 @@ class appDownload extends Console implements CommandInterface
 
     private function downloadRequest($packageName, $token)
     {
-        $app = AppModel::fetch_by_package_name($packageName);
+        $app = AppHelper::fetch_by_package_name($packageName);
         if (!empty($app))
             $this->error('This application exist in your applications!');
 

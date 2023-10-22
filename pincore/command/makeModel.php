@@ -2,7 +2,7 @@
 namespace pinoox\command;
 
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
@@ -65,7 +65,7 @@ class makeModel extends Console implements CommandInterface
 	public function handle()
 	{
         $this->package =  $this->argument('package_name');
-        $app = AppModel::fetch_by_package_name($this->package);
+        $app = AppHelper::fetch_by_package_name($this->package);
         if ( is_null($app) )
             $this->error(sprintf('Can not find app with name `%s`!' , $this->package));
 

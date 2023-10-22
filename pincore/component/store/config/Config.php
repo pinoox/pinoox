@@ -162,4 +162,14 @@ class Config implements ConfigInterface
     {
         return $this->strategy;
     }
+
+    public function __get(string $name)
+    {
+        return $this->get($name);
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->set($name, $value);
+    }
 }

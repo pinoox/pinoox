@@ -12,8 +12,6 @@
 
 namespace pinoox\app\com_pinoox_manager\controller;
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\app\com_pinoox_manager\model\LangModel;
 use pinoox\component\helpers\HelperHeader;
 use pinoox\component\helpers\Str;
 use pinoox\component\kernel\controller\Controller;
@@ -54,7 +52,7 @@ class MainController extends Controller
     public function app($package_name)
     {
         if (User::isLoggedIn() && Router::existApp($package_name)) {
-            $app = AppModel::fetch_by_package_name($package_name);
+            $app = AppHelper::fetch_by_package_name($package_name);
             if ($app['enable'] && !$app['sys-app']) {
                 self::$template = null;
                 User::reset();

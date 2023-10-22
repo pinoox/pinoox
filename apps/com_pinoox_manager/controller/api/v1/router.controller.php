@@ -12,7 +12,7 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Config;
 use pinoox\component\HelperString;
 use pinoox\component\Request;
@@ -27,7 +27,7 @@ class RouterController extends LoginConfiguration
         $routes = Config::get('~app');
         if (!empty($routes)) {
             foreach ($routes as $alias => $packageName) {
-                $app = AppModel::fetch_by_package_name($packageName);
+                $app = AppHelper::fetch_by_package_name($packageName);
                 $app['package'] = $packageName;
                 $app['is_lock'] = ($alias === 'manager');
                 $routes[$alias] = $app;
@@ -72,7 +72,7 @@ class RouterController extends LoginConfiguration
         if ($data['alias'] == 'manager')
             Response::json(rlang('manager.request_not_valid'), false);
 
-        $package = AppModel::fetch_by_package_name($data['packageName']);
+        $package = AppHelper::fetch_by_package_name($data['packageName']);
         if (empty($package) || !$package['router'])
             Response::json(rlang('manager.request_not_valid'), false);
 

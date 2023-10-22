@@ -12,6 +12,7 @@
 
 namespace pinoox\component;
 
+use Illuminate\Database\Eloquent\Builder;
 use pinoox\portal\app\App;
 use pinoox\model\TokenModel;
 use pinoox\model\UserModel;
@@ -74,17 +75,21 @@ class User
             return false;
         }
 
+        $user = UserModel::where('app',self::getApp());
+        $user->where(function (Builder $query) use($username){
+            $query->where('email',$username)->$query->orWhere('username',$username);
+        });
         if ($isActive)
         {
-            UserModel::where_status(UserModel::active);
+            $user->where('status', UserModel::active);
         }
-        $user = UserModel::fetch_user_by_email_or_username($username);
+        $user = $user->first();
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
         }
 
-        if (!Security::passVerify($password, $user['password'])) {
+        if (!Security::passVerify($password, $user->password)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
         }
@@ -152,13 +157,12 @@ class User
         return false;
     }
 
-    public static function setToken($data)
+    public static function setToken(UserModel $user)
     {
-        if (isset($data['password']))
-            unset($data['password']);
-        $user_id = $data['user_id'];
+        $user->makeHidden('password');
+        $user_id = $user->user_id;
         $token_key = self::getTokenKey();
-        $token_key = Token::generate($data, 'pinoox_user', $user_id, $token_key);
+        $token_key = Token::generate($user->toArray(), 'pinoox_user', $user_id, $token_key);
         self::setClientToken($token_key);
     }
 
@@ -211,10 +215,12 @@ class User
         $token = self::getToken();
         $user_id = @$token['user_id'];
         if ($user_id && empty(self::$user)) {
-            $user = UserModel::fetch_by_id($user_id);
-            if ($user && $user['status'] == 'active') {
-                if (isset($user['password'])) unset($user['password']);
-                self::$user = $user;
+            $user = UserModel::where('app',self::getApp())
+            ->where('user_id',$user_id)
+            ->first();
+            if ($user && $user->status == UserModel::active) {
+                $user->makeHidden('password');
+                self::$user = $user->toArray();
                 if (self::$updateTokenKey) {
                     $token_key = Token::changeKey($token['token_key'], true, false);
                     self::setClientToken($token_key);

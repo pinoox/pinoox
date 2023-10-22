@@ -13,14 +13,15 @@
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
 use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\app\com_pinoox_manager\model\AppModel;
-use pinoox\component\app\AppProvider;
+use pinoox\app\com_pinoox_manager\component\AppHelper;
 use pinoox\component\Dir;
 use pinoox\component\File;
 use pinoox\component\Lang;
-use pinoox\component\Request;
+use pinoox\component\Request as RequestData;
 use pinoox\component\Response;
 use pinoox\component\Uploader;
+use pinoox\portal\app\AppEngine;
+use pinoox\portal\Path;
 
 class AppController extends LoginConfiguration
 {
@@ -29,139 +30,135 @@ class AppController extends LoginConfiguration
         switch ($filter) {
             case 'installed':
             {
-                $result = AppModel::fetch_all(false);
+                $result = AppHelper::fetch_all(false);
                 break;
             }
             case 'systems':
             {
-                $result = AppModel::fetch_all(true);
+                $result = AppHelper::fetch_all(true);
                 break;
             }
             default:
             {
-                $result = AppModel::fetch_all(null, true);
+                $result = AppHelper::fetch_all(null, true);
             }
         }
 
-        Response::json($result);
+        return $result;
     }
 
     public function getConfig($packageName)
     {
-        $config = AppModel::fetch_by_package_name($packageName);
-        Response::json($config);
+        $config = AppHelper::fetch_by_package_name($packageName);
+        return $config;
     }
 
     public function setConfig($packageName, $key)
     {
-        $config = Request::inputOne('config');
+        $config = RequestData::inputOne('config');
 
         if ($key == 'dock')
             $config = !$config;
         if ($key == 'router')
             $config = $config === 'multiple' ? 'single' : 'multiple';
 
-        $currentApp = AppProvider::app();
         if (!is_null($config)) {
-            AppProvider::app($packageName);
-            AppProvider::set($key, $config);
-            AppProvider::save();
-            Response::json($config, true);
+            AppEngine::config($packageName)
+            ->set($key, $config)
+            ->save();
+            return $this->message($config, true);
         } else {
-            Response::json(null, false);
+            return $this->message(null, false);
         }
-        AppProvider::app($currentApp);
-
-
     }
 
     public function install($packageName)
     {
         if (empty($packageName))
-            Response::json(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(rlang('manager.request_install_app_not_valid'), false);
 
         $pinFile = Wizard::get_downloaded($packageName);
         if (!is_file($pinFile))
-            Response::json(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(rlang('manager.request_install_app_not_valid'), false);
 
         if (Wizard::installApp($pinFile)) {
-            Response::json(rlang('manager.done_successfully'), true);
+            return $this->message(rlang('manager.done_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                Response::json(rlang('manager.request_install_app_not_valid'), false);
+                return $this->message(rlang('manager.request_install_app_not_valid'), false);
             else
-                Response::json($message, false);
+                return $this->message($message, false);
         }
     }
 
     public function installPackage($filename)
     {
         if (empty($filename))
-            Response::json(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(rlang('manager.request_install_app_not_valid'), false);
 
-        $pinFile = Dir::path(self::manualPath . $filename);
+        $pinFile = Path::get(self::manualPath . $filename);
         if (!is_file($pinFile))
-            Response::json(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(rlang('manager.request_install_app_not_valid'), false);
         if (Wizard::installApp($pinFile)) {
-            Response::json(rlang('manager.done_successfully'), true);
+            return $this->message(rlang('manager.done_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                Response::json(rlang('manager.request_install_app_not_valid'), false);
+                return $this->message(rlang('manager.request_install_app_not_valid'), false);
             else
-                Response::json($message, false);
+                return $this->message($message, false);
         }
     }
 
     public function updatePackage($filename)
     {
         if (empty($filename))
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(rlang('manager.request_update_app_not_valid'), false);
 
-        $pinFile = Dir::path(self::manualPath . $filename);
+        $pinFile = Path::get(self::manualPath . $filename);
         if (!is_file($pinFile))
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(rlang('manager.request_update_app_not_valid'), false);
         if (Wizard::updateApp($pinFile)) {
-            Response::json(rlang('manager.update_successfully'), true);
+            return $this->message(rlang('manager.update_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                Response::json(rlang('manager.request_update_app_not_valid'), false);
+                return $this->message(rlang('manager.request_update_app_not_valid'), false);
             else
-                Response::json($message, false);
+                return $this->message($message, false);
         }
     }
 
     public function update($packageName)
     {
         if (empty($packageName))
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(rlang('manager.request_update_app_not_valid'), false);
 
         $pinFile = Wizard::get_downloaded($packageName);
         if (!is_file($pinFile))
-            Response::json(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(rlang('manager.request_update_app_not_valid'), false);
 
         if (Wizard::updateApp($pinFile)) {
-            Response::json(rlang('manager.update_successfully'), true);
+            return $this->message(rlang('manager.update_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                Response::json(rlang('manager.request_update_app_not_valid'), false);
+                return $this->message(rlang('manager.request_update_app_not_valid'), false);
             else
-                Response::json($message, false);
+                return $this->message($message, false);
         }
     }
 
     public function remove($packageName)
     {
         Wizard::deleteApp($packageName);
-        Response::json(rlang('manager.done_successfully'), true);
+        return $this->message(rlang('manager.done_successfully'), true);
     }
 
     public function files()
     {
-        $path = Dir::path(self::manualPath);
+        $path = Path::get(self::manualPath);
         $files = File::get_files_by_pattern($path, '*.pin');
         $files = array_map(function ($file) {
             $data = Wizard::pullDataPackage($file);
@@ -176,28 +173,28 @@ class AppController extends LoginConfiguration
             return $data;
         }, $files);
         $files = array_filter($files);
-        Response::json($files);
+        return $this->message($files);
     }
 
     public function deleteFile()
     {
-        $filename = Request::inputOne('filename', null, '!empty');
+        $filename = RequestData::inputOne('filename', null, '!empty');
 
         if (empty($filename))
-            Response::json(Lang::get('manager.error_happened'), false);
+            return $this->message(Lang::get('manager.error_happened'), false);
 
-        $pinFile = Dir::path(self::manualPath . $filename);
+        $pinFile = Path::get(self::manualPath . $filename);
         if (!is_file($pinFile))
-            Response::json(Lang::get('manager.error_happened'), false);
+            return $this->message(Lang::get('manager.error_happened'), false);
 
         Wizard::deletePackageFile($pinFile);
-        Response::json(Lang::get('manager.delete_successfully'), true);
+        return $this->message(Lang::get('manager.delete_successfully'), true);
     }
 
     public function filesUpload()
     {
-        if (Request::isFile('files')) {
-            $path = Dir::path(self::manualPath);
+        if (RequestData::isFile('files')) {
+            $path = Path::get(self::manualPath);
             $up = Uploader::init('files', $path)->allowedTypes("pin", '*')
                 ->changeName('none')
                 ->finish();
@@ -212,11 +209,11 @@ class AppController extends LoginConfiguration
             $lengthUploaded = count($uploaded);
 
             if ($length === 1 && $lengthUploaded === $length) {
-                Response::json(Lang::get('manager.file_uploaded_correctly'), true);
+                return $this->message(Lang::get('manager.file_uploaded_correctly'), true);
             } else if ($lengthUploaded === $length) {
-                Response::json(Lang::get('manager.files_uploaded_correctly'), true);
+                return $this->message(Lang::get('manager.files_uploaded_correctly'), true);
             } else {
-                Response::json([
+                return $this->message([
                     'message' => Lang::replace('manager.some_files_uploaded_correctly', $length, $lengthUploaded),
                     'errs' => $errs
                 ], false);

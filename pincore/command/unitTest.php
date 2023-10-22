@@ -3,7 +3,7 @@ namespace pinoox\command;
 
 
 use PHPUnit\TextUI\Command;
-use pinoox\app\com_pinoox_manager\model\AppModel;
+use pinoox\app\com_pinoox_manager\controller\AppHelper;
 use pinoox\component\Console;
 use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
@@ -75,7 +75,7 @@ class unitTest extends Console implements CommandInterface
 	*/
 	public function handle()
 	{
-        $apps = AppModel::fetch_all(null , true);
+        $apps = AppHelper::fetch_all(null , true);
         $apps = array_merge(['root'], array_keys($apps) ) ;
         $appId = $this->choice('Please select application you want to run test there.',  $apps );
         $path = isset($apps[$appId]) ? $apps[$appId] : null ;

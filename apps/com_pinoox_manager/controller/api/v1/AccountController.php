@@ -13,10 +13,10 @@
 
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
-use pinoox\component\Config;
-use pinoox\component\HelperString;
+use pinoox\portal\Config;
+use pinoox\component\helpers\Str;
 use pinoox\component\HttpRequest;
-use pinoox\component\Request;
+use pinoox\component\Request as RequestData;
 use pinoox\component\Response;
 use pinoox\component\Url;
 use pinoox\component\Validation;
@@ -26,7 +26,7 @@ class AccountController extends LoginConfiguration
 
     public function login()
     {
-        $form = Request::input('email,password', null, '!empty');
+        $form = RequestData::input('email,password', null, '!empty');
 
         $valid = Validation::check($form, [
             'email' => ['required', rlang('user.username_or_email')],
@@ -38,7 +38,7 @@ class AccountController extends LoginConfiguration
 
         $form['remote_url'] = Url::site();
 
-        $data = Request::sendPost(
+        $data = RequestData::sendPost(
             'https://www.pinoox.com/api/manager/v1/account/login',
             $form,
             [
@@ -48,16 +48,18 @@ class AccountController extends LoginConfiguration
         );
         $array = json_decode($data, true);
         if ($array['status']) {
-            Config::set('connect.token_key', $array['result']['token']);
-            Config::save('connect');
+            Config::name('connect')
+                ->set('token_key', $array['result']['token'])
+                ->save();
         }
-        exit($data);
+
+        return $data;
     }
 
     public function getPinooxAuth()
     {
         $token_key = Config::get('connect.token_key');
-        $data = Request::sendPost(
+        $data = RequestData::sendPost(
             'https://www.pinoox.com/api/manager/v1/account/getData',
             [
                 'remote_url' => Url::site(),
@@ -69,18 +71,17 @@ class AccountController extends LoginConfiguration
             ]
         );
 
-        $data = HelperString::decodeJson($data);
-        if($data['status'])
-        {
+        $data = Str::decodeJson($data);
+        if ($data['status']) {
             Response::json($data['result']);
         }
 
-        Response::json(null);
+        return null;
     }
 
     public function connect()
     {
-        $data = Request::sendPost(
+        $data = RequestData::sendPost(
             'https://www.pinoox.com/api/manager/v1/account/getToken',
             [
                 'remote_url' => Url::site(),
@@ -93,24 +94,25 @@ class AccountController extends LoginConfiguration
 
         $array = json_decode($data, true);
         if (!empty($array['token_key'])) {
-            Config::set('connect.token_key', $array['token_key']);
-            Config::save('connect');
+            Config::name('connect')
+                ->set('token_key', $array['token_key'])
+                ->save();
 
-            Response::json($array['token_key'], true);
+            return $this->message($array['token_key'], true);
         }
 
-        Response::json(null, false);
+        return $this->message(null, false);
     }
 
     public function getConnectData()
     {
-        $data = Config::get('connect');
-        Response::json($data);
+        return Config::name('connect')->get();
     }
 
     public function logout()
     {
-        Config::set('connect.token_key',null);
-        Config::save('connect');
+        Config::name('connect')
+            ->set('token_key', null)
+            ->save();
     }
 }
