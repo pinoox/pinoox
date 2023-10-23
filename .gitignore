@@ -19,3 +19,7 @@ package-lock.json
 # MacOS
 .DS_Store
 
+apps/
+!apps/com_pinoox_installer/
+!apps/com_pinoox_manager/
+!apps/com_pinoox_welcome/
