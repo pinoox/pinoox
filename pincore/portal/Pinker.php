@@ -64,9 +64,6 @@ class Pinker extends Portal
         }
 
         $bakedFile = Path::createPath($fileName, 'pincore');
-
-        dump($mainFile, $bakedFile);
-
         return self::create($mainFile, $bakedFile);
     }
 
