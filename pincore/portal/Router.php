@@ -62,8 +62,6 @@ class Router extends Portal
             ]);
 
         self::defaultRoutes();
-
-        dd(self::getMainCollection());
     }
 
     /**
