@@ -14,6 +14,7 @@
 namespace pinoox\component\router;
 
 use Closure;
+use PhpParser\Node\Stmt\Else_;
 use pinoox\component\helpers\Str;
 use pinoox\component\package\App;
 
@@ -42,6 +43,9 @@ class Route
         if ($this->path === '*') {
             $this->path = '{parameters}';
             $filters['parameters'] = '.*';
+            $this->path = $this->getPath('');
+        } else {
+            $this->path = $this->getPath('/');
         }
 
         $this->name = $this->buildName($name);
@@ -104,11 +108,11 @@ class Route
     /**
      * @return string
      */
-    public function getPath(): string
+    public function getPath(string $separator = '/'): string
     {
         $prefixPath = (!empty($this->collection->prefixPath)) ? Str::lastDelete($this->collection->prefixPath, '/') : '';
         $path = Str::firstDelete($this->path, '/');
-        return $prefixPath . '/' . $path;
+        return $prefixPath . $separator . $path;
     }
 
     /**

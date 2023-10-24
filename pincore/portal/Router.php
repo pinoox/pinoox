@@ -62,6 +62,8 @@ class Router extends Portal
             ]);
 
         self::defaultRoutes();
+
+        dd(self::getMainCollection());
     }
 
     /**
@@ -133,9 +135,8 @@ class Router extends Portal
             path: '/{slug}/',
             action: function ($slug) {
                 $slug = '/' . $slug;
-                $slug = Str::firstDelete($slug, App::path() . '/');
                 $slug = Str::lastDelete($slug, '/');
-                return new RedirectResponse('/' . $slug, 301);
+                return new RedirectResponse('~' . $slug, 301);
             },
             filters: [
                 'slug' => '.+/'

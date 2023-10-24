@@ -113,8 +113,8 @@ class Collection
 
     public function addCollection(Collection $collection)
     {
-        if (!empty($collection->path))
-            $collection->routes->addPrefix($collection->path);
+//        if (!empty($collection->path))
+//            $collection->routes->addPrefix($collection->path);
 
         $this->routes->addCollection($collection->routes);
     }

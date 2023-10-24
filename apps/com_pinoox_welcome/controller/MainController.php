@@ -22,7 +22,6 @@ class MainController extends Controller
 {
     public function __invoke()
     {
-        dd(Token::get('26e0041b6a5bd952edd689dd20d7d923')->token_data);
         return View::render('hello');
     }
 }
