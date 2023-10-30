@@ -12,6 +12,8 @@
 
 namespace pinoox\component\http;
 
+use pinoox\component\helpers\HelperArray;
+use pinoox\component\helpers\Str;
 use pinoox\component\router\Collection;
 use pinoox\component\router\Route;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
@@ -67,5 +69,26 @@ class Request extends RequestSymfony
     public function setBasePath(string $basePath) : void
     {
         $this->basePath = $basePath;
+    }
+
+    public function json($keys, $default = null, $validation = null, $removeNull = false)
+    {
+        return HelperArray::parseParams(
+            $this->toArray(),
+            $keys,
+            $default,
+            $validation,
+            $removeNull
+        );
+    }
+
+    public function jsonOne($key, $default = null, $validation = null, $removeNull = false)
+    {
+        return HelperArray::parseParam(
+            $this->toArray(),
+            $key,
+            $default,
+            $validation,
+        );
     }
 }
