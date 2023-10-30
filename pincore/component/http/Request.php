@@ -71,7 +71,7 @@ class Request extends RequestSymfony
         $this->basePath = $basePath;
     }
 
-    public function json($keys, $default = null, $validation = null)
+    public function json($keys, $default = null, $validation = null, $removeNull = false)
     {
         return HelperArray::parseParams(
             $this->toArray(),
@@ -82,7 +82,7 @@ class Request extends RequestSymfony
         );
     }
 
-    public function jsonOne($key, $default = null, $validation = null, $removeNull = false)
+    public function jsonOne($key, $default = null, $validation = null)
     {
         return HelperArray::parseParam(
             $this->toArray(),
