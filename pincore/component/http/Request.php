@@ -71,7 +71,7 @@ class Request extends RequestSymfony
         $this->basePath = $basePath;
     }
 
-    public function json($keys, $default = null, $validation = null, $removeNull = false)
+    public function json($keys, $default = null, $validation = null)
     {
         return HelperArray::parseParams(
             $this->toArray(),
