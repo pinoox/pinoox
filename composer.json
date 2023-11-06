@@ -26,6 +26,7 @@
         "symfony/asset": "^6.2",
         "symfony/dependency-injection": "^6.0",
         "symfony/error-handler": "^6.0",
+        "symfony/filesystem": "^6.3",
         "symfony/finder": "^6.0",
         "symfony/http-client": "^6.0",
         "symfony/http-foundation": "^6.0",
