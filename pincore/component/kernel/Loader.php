@@ -18,8 +18,11 @@ use pinoox\component\Service;
 
 class Loader
 {
+    public static ClassLoader $loader;
+
     public static function boot(ClassLoader $loader)
     {
+        self::$loader = $loader;
         new LoaderManager($loader);
         self::loadServices();
     }

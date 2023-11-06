@@ -12,14 +12,19 @@
 
 namespace pinoox\component\kernel;
 
+use pinoox\component\helpers\HelperString;
 use pinoox\component\http\Request;
 use pinoox\component\Lang;
 use pinoox\component\store\Session;
 use pinoox\component\Url;
+use pinoox\portal\app\AppEngine;
+use pinoox\portal\Config;
 use pinoox\portal\kernel\HttpKernel;
+use pinoox\portal\Path;
 use Symfony\Component\HttpFoundation\Response;
 use pinoox\portal\Router;
 use pinoox\portal\app\App;
+
 class Boot
 {
     public static ?Request $request = null;
@@ -56,16 +61,34 @@ class Boot
     public static function handle(?Request $request = null)
     {
         Lang::change(App::get('lang'));
+        self::loadLoader();
         self::setRoute();
         $request = !empty($request) ? $request : self::$request;
         $response = HttpKernel::handle($request);
         $response->send();
-        HttpKernel::terminate($request,$response);
+        HttpKernel::terminate($request, $response);
+    }
+
+    private static function loadLoader(): void
+    {
+        $coreLoaders = Config::name('~loader')->get();
+        $appLoaders = App::get('loader');
+        $loaders = array_merge($appLoaders, $coreLoaders);
+        $classMap = [];
+        foreach ($loaders as $classname => $path) {
+            if (HelperString::firstHas($classname, '@')) {
+                require_once Path::get($path);
+            } else {
+                $classMap[$classname] = $path;
+            }
+        }
+
+        Loader::$loader->addClassMap($classMap);
     }
 
     private function setNext(): void
     {
-         self::$request->setSession(new Session());
+        self::$request->setSession(new Session());
         self::$next = function ($request): Response {
             return HttpKernel::handle($request);
         };

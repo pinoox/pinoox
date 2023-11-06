@@ -25,6 +25,8 @@ use pinoox\component\store\config\Config;
 use pinoox\component\store\config\strategy\FileConfigStrategy;
 use pinoox\component\store\baker\Pinker;
 use Exception;
+use pinoox\portal\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 
 class AppEngine implements EngineInterface
 {
@@ -40,7 +42,7 @@ class AppEngine implements EngineInterface
      * @param string $appFile
      * @param string $folderPinker
      */
-    public function __construct(string $pathApp, private string $appFile, private string $folderPinker, private array $defaultData = [])
+    public function __construct(private string $pathApp, private string $appFile, private string $folderPinker, private array $defaultData = [])
     {
         $this->arrayLoader = new ArrayLoader($appFile);
         $this->packageLoader = new PackageLoader($appFile, $pathApp);
@@ -161,5 +163,20 @@ class AppEngine implements EngineInterface
     private function checkName($packageName): bool
     {
         return !!preg_match('/^[a-zA-Z]+[a-zA-Z0-9]*+[_]\s{0,1}[a-zA-Z0-9]+[_]\s{0,1}[a-zA-Z0-9]+[_]{0,1}[a-zA-Z0-9]+$/m', $packageName);
+    }
+
+
+    public function getAll()
+    {
+        $files = Finder::in($this->pathApp)->depth(1)->files();
+        $result = $this->arrayLoader->getPackages();
+        /**
+         * @var SplFileInfo $file
+         */
+        foreach ($files as $file) {
+            if ($this->supports($file->getRelativePath()))
+                $result[$file->getRelativePath()] = $file->getPath();
+        }
+        return $result;
     }
 }

@@ -22,12 +22,14 @@ use pinoox\portal\Config;
 use pinoox\portal\Pinker;
 
 /**
+ * @method static bool stable(string $packageName)
  * @method static ObjectPortal2 routes(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
  * @method static ObjectPortal1 config(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
  * @method static bool exists(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
  * @method static AppEngine add($packageName, $path)
- * @method static bool supports(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
  * @method static string path(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
+ * @method static bool supports(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
+ * @method static getAll()
  * @method static \pinoox\component\package\engine\AppEngine ___()
  *
  * @see \pinoox\component\package\engine\AppEngine
@@ -38,11 +40,11 @@ class AppEngine extends Portal
 
 	public static function __register(): void
 	{
-//        $path = PINOOX_PATH.'pincore';
-//        $file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
-//        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
-//        $config = Config::create($fileStrategy);
-//
+		//        $path = PINOOX_PATH.'pincore';
+		//        $file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
+		//        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
+		//        $config = Config::create($fileStrategy);
+		//
 		$pathApps = PINOOX_PATH . 'apps';
 		$pathConfig = 'config' . DIRECTORY_SEPARATOR . 'app' . DIRECTORY_SEPARATOR . 'source.config.php';
 		$appConfig = Pinker::path($pathConfig,PINOOX_PATH . 'pincore');
@@ -51,7 +53,7 @@ class AppEngine extends Portal
 		        $pathApps,
 		        self::file,
 		        Pinker::folder,
-                $appConfig->pickup(),
+		        $appConfig->pickup(),
 		    ]);
 	}
 

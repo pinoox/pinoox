@@ -12,6 +12,8 @@
 
 namespace pinoox\component\kernel;
 
+use pinoox\component\helpers\Str;
+use pinoox\portal\app\AppEngine;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -47,16 +49,35 @@ class Terminal
 
     private function finds(): void
     {
+        $this->loadTerminals(PINOOX_CORE_PATH);
+
+        $packages = AppEngine::getAll();
+        foreach ($packages as $package => $path) {
+            $this->loadTerminals($path, $package);
+        }
+    }
+
+    private function loadTerminals(string $path, ?string $package = null)
+    {
+        $path = Str::ds($path);
+        if (!Str::lastHas($path, DIRECTORY_SEPARATOR))
+            $path .= DIRECTORY_SEPARATOR;
+        if (!is_dir($path . 'terminal'))
+            return;
         $finder = new Finder();
-        $finder->in(PINOOX_CORE_PATH . 'terminal')
+        $finder->in($path . 'terminal')
             ->files()
             ->filter(static function (SplFileInfo $file) {
                 return $file->isDir() || \preg_match('/\Command.(php)$/', $file->getPathname());
             });
 
+        /**
+         * @var SplFileInfo $f
+         */
         foreach ($finder as $f) {
-            $path = $f->getPath();
-            $namespace = "pinoox" . '\\' . str_replace(PINOOX_CORE_PATH, '', $path) . '\\';
+            $loc = $f->getPath();
+            $namespace = !empty($package) ? "pinoox" . '\\' . 'app' . '\\' . $package . '\\' : "pinoox" . '\\';
+            $namespace = $namespace . str_replace($path, '', $loc) . '\\';
             $namespace = str_replace('/', '\\', $namespace);
             $this->commands[] = [
                 'path' => $path,
@@ -65,7 +86,6 @@ class Terminal
                 'namespace' => $namespace,
             ];
         }
-
     }
 
     private function bindCommands(): void

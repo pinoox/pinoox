@@ -40,6 +40,5 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 |
 */
 $composer = require PINOOX_VENDOR_PATH . 'autoload.php';
-$loader = new \pinoox\component\kernel\LoaderManager($composer);
 Debug::enable();
 Loader::boot($composer);

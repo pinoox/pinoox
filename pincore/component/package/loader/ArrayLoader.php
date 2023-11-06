@@ -24,7 +24,7 @@ final class ArrayLoader implements LoaderInterface
      */
     public function __construct(
         private string $appFile,
-        private array $packages = []
+        private array  $packages = []
     )
     {
     }
@@ -66,5 +66,10 @@ final class ArrayLoader implements LoaderInterface
     public function add(string $packageName, string $path): void
     {
         $this->packages[$packageName] = $path;
+    }
+
+    public function getPackages()
+    {
+        return $this->packages;
     }
 }
