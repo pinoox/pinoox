@@ -29,7 +29,7 @@ use pinoox\portal\Pinker;
  * @method static AppEngine add($packageName, $path)
  * @method static string path(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
  * @method static bool supports(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
- * @method static getAll()
+ * @method static array all()
  * @method static \pinoox\component\package\engine\AppEngine ___()
  *
  * @see \pinoox\component\package\engine\AppEngine

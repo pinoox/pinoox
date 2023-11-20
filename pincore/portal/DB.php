@@ -61,10 +61,6 @@ class DB extends Portal
     {
         //get configs
         $mode = self::mode();
-       if( empty($mode))
-            {
-                dd('p',Config::name('~pinoox')->get());
-            }
         if (!($config = Config::name('~database')->getLinear(null, $mode)))
             throw new Exception('Database config "' . $mode . '" not defined');
 

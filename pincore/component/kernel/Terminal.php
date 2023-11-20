@@ -51,7 +51,7 @@ class Terminal
     {
         $this->loadTerminals(PINOOX_CORE_PATH);
 
-        $packages = AppEngine::getAll();
+        $packages = AppEngine::all();
         foreach ($packages as $package => $path) {
             $this->loadTerminals($path, $package);
         }

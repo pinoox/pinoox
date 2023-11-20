@@ -26,6 +26,7 @@ use pinoox\component\store\config\strategy\FileConfigStrategy;
 use pinoox\component\store\baker\Pinker;
 use Exception;
 use pinoox\portal\Finder;
+use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\SplFileInfo;
 
 class AppEngine implements EngineInterface
@@ -166,16 +167,23 @@ class AppEngine implements EngineInterface
     }
 
 
-    public function getAll()
+    public function all(): array
     {
-        $files = Finder::in($this->pathApp)->depth(1)->files();
+        $files = [];
+        try {
+            $files = Finder::in($this->pathApp)->depth(1)->files();
+
+        } catch (DirectoryNotFoundException $e) {
+        }
+
         $result = $this->arrayLoader->getPackages();
         /**
          * @var SplFileInfo $file
          */
         foreach ($files as $file) {
-            if ($this->supports($file->getRelativePath()))
+            if ($this->supports($file->getRelativePath())) {
                 $result[$file->getRelativePath()] = $file->getPath();
+            }
         }
         return $result;
     }
