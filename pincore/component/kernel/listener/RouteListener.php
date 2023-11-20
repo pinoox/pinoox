@@ -5,6 +5,7 @@ namespace pinoox\component\kernel\listener;
 use pinoox\component\Dir;
 use pinoox\component\http\Request;
 use pinoox\component\template\View;
+use pinoox\portal\Path;
 use Symfony\Component\Asset\Context\RequestStackContext;
 use Symfony\Component\Asset\Package;
 use Symfony\Component\Asset\PathPackage;
@@ -37,7 +38,7 @@ class RouteListener implements EventSubscriberInterface
 
     private function createWelcomeResponse(): Response
     {
-        $view = new View('no-route', Dir::path('~pincore/resource/views/'));
+        $view = new View('no-route', Path::get('~pincore/resource/views/'));
         return new Response($view->render('home'));
     }
 }

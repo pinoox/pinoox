@@ -21,7 +21,6 @@ class AppConfig implements ConfigInterface
 
     public function __construct(private Pinker $pinker, private array $defaultData = [])
     {
-        dd('AppConfig');
         $fileData = $this->pinker->pickup();
         $data = array_merge($this->defaultData, $fileData);
         $this->pinker->data($data);

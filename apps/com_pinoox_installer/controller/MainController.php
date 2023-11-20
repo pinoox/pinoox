@@ -38,7 +38,6 @@ class MainController extends Controller
         $user = $user->first();
         $user->makeHidden('password');
 
-        dd($user->toArray());
         return View::render('index');
     }
 

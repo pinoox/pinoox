@@ -62,9 +62,7 @@ class Lang extends Portal
 		    );
 		    $path = Path::createPath($reference,'pincore');
 		    self::$tmp[$fileName] = self::create(new FileLangSource($path));
-
-		    dd(self::$tmp[$fileName]);
-		}
+        }
 
 		//return (self::$tmp[$fileName])->get($reference->getPath());
 	}
