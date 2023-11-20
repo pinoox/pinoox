@@ -9,4 +9,3 @@ ini_set("log_errors", 1);
  */
 #boot pinoox
 include_once __DIR__ . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . 'bootstrap.php';
-

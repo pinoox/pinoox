@@ -60,6 +60,7 @@ class AppRouter
 
         // set app current
         $url = empty($url) ? Url::parts() : $url;
+
         $parts = !empty($url) ? Str::explodeDropping('/', $url) : [];
         foreach ($parts as $part) {
             $part = '/' . $part;
