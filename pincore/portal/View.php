@@ -14,7 +14,7 @@
 
 namespace pinoox\portal;
 
-use pinoox\component\Dir;
+use pinoox\component\http\Response;
 use pinoox\component\source\Portal;
 use pinoox\component\template\View as ObjectPortal1;
 use pinoox\component\template\reference\TemplatePathReference as ObjectPortal2;
@@ -39,49 +39,58 @@ use pinoox\portal\app\App;
  */
 class View extends Portal
 {
-	public static function __register(): void
-	{
-		// theme names
-		$folders = App::get('theme');
+    public static function __register(): void
+    {
+        // theme names
+        $folders = App::get('theme');
         // base path
-		$pathTheme = Path::get(App::get('path-theme'));
+        $pathTheme = Path::get(App::get('path-theme'));
 
-		self::__bind(ObjectPortal1::class)->setArguments([
-		    $folders,
-		    $pathTheme
-		]);
+        self::__bind(ObjectPortal1::class)->setArguments([
+            $folders,
+            $pathTheme
+        ]);
     }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'view';
-	}
+    public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
+    {
+        $content = self::render($name, $parameters);
+        $response = new Response($content);
+        if (!empty($contentType))
+            $response->headers->set('Content-Type', $contentType);
+        return $response;
+    }
+
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'view';
+    }
 
 
-	/**
-	 * Get exclude method names.
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names.
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'set',
-		    'ready'
-		];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'set',
+            'ready'
+        ];
+    }
 }
