@@ -18,13 +18,18 @@ class Response extends ResponseSymfony
 {
     private bool $statusResponseError = false;
 
-    public function isResponseError() : bool
+    public function isResponseError(): bool
     {
         return $this->statusResponseError;
     }
 
-    public function setResponseError(bool $status) : void
+    public function setResponseError(bool $status): void
     {
         $this->statusResponseError = $status;
+    }
+
+    public function addContentType(string $contentType): void
+    {
+        $this->headers->set('Content-Type', $contentType);
     }
 }

@@ -58,7 +58,7 @@ class View extends Portal
         $content = self::render($name, $parameters);
         $response = new Response($content);
         if (!empty($contentType))
-            $response->headers->set('Content-Type', $contentType);
+            $response->addContentType($contentType);
         return $response;
     }
 
