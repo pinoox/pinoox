@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\http;
+namespace pinoox\component\Http;
 
 use pinoox\component\helpers\HelperArray;
 use pinoox\component\helpers\Str;
@@ -61,12 +61,12 @@ class Request extends RequestSymfony
         return parent::create($uri, $method, $parameters, $cookies, $files, $server, $content);
     }
 
-    public function setBaseUrl(string $baseUrl) : void
+    public function setBaseUrl(string $baseUrl): void
     {
         $this->baseUrl = $baseUrl;
     }
 
-    public function setBasePath(string $basePath) : void
+    public function setBasePath(string $basePath): void
     {
         $this->basePath = $basePath;
     }
@@ -90,5 +90,10 @@ class Request extends RequestSymfony
             $default,
             $validation,
         );
+    }
+
+    public static function take(): static
+    {
+        return static::createFromGlobals();
     }
 }

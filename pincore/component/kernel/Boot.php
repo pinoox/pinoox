@@ -32,7 +32,7 @@ class Boot
 
     public function build()
     {
-        self::$request = Request::createFromGlobals();
+        self::$request = Request::take();
         if (is_null(Url::request())) {
             /* global $argv;
              Console::run($argv);*/
