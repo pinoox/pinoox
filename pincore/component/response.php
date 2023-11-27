@@ -12,7 +12,7 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\HelperHeader;
+use pinoox\component\Helpers\HelperHeader;
 
 class Response
 {

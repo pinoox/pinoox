@@ -12,7 +12,7 @@
 
 namespace pinoox\component\kernel;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\Http\Request;
 use pinoox\component\Lang;
 use pinoox\component\store\Session;

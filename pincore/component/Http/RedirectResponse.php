@@ -13,7 +13,7 @@
 
 namespace pinoox\component\Http;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseSymfony;
 

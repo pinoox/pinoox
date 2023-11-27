@@ -13,7 +13,7 @@
 
 namespace pinoox\terminal\portal;
 
-use pinoox\component\helpers\PhpFile\PortalFile;
+use pinoox\component\Helpers\PhpFile\PortalFile;
 use pinoox\component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

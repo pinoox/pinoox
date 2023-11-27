@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
 use pinoox\component\database\Model;
 use pinoox\component\File;

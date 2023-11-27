@@ -14,7 +14,7 @@
 namespace pinoox\app\com_pinoox_installer\controller;
 
 use pinoox\component\Dir;
-use pinoox\component\helpers\HelperArray;
+use pinoox\component\Helpers\HelperArray;
 use pinoox\component\kernel\controller\Controller;
 use pinoox\component\Lang;
 use pinoox\component\Http\Request;

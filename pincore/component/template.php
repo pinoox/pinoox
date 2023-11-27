@@ -13,9 +13,9 @@
 namespace pinoox\component;
 
 use pinoox\component\package\App;
-use pinoox\component\helpers\HelperArray;
-use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperArray;
+use pinoox\component\Helpers\HelperHeader;
+use pinoox\component\Helpers\HelperString;
 use pinoox\portal\Config;
 
 class Template

@@ -19,9 +19,9 @@ use pinoox\component\source\Portal;
 
 class Data extends Portal
 {
-    public static function data(mixed $data): \pinoox\component\helpers\Data
+    public static function data(mixed $data): \pinoox\component\Helpers\Data
     {
-        return new \pinoox\component\helpers\Data($data);
+        return new \pinoox\component\Helpers\Data($data);
     }
 
     /**

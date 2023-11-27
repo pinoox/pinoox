@@ -13,7 +13,7 @@
 
 namespace pinoox\component\kernel\listener;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\portal\app\App;
 use pinoox\component\router\Route;
 use pinoox\portal\Router;

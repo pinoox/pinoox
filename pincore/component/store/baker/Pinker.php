@@ -13,9 +13,9 @@
 
 namespace pinoox\component\store\baker;
 
-use pinoox\component\helpers\HelperAnnotations;
-use pinoox\component\helpers\HelperObject;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperAnnotations;
+use pinoox\component\Helpers\HelperObject;
+use pinoox\component\Helpers\Str;
 
 /**
  * Class to manage Pinker data

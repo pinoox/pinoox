@@ -12,7 +12,7 @@
 
 namespace pinoox\component\kernel;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\portal\app\AppEngine;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Finder\Finder;

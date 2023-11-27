@@ -18,7 +18,7 @@ use pinoox\portal\Path;
 use pinoox\component\Lang;
 use pinoox\component\Service;
 use pinoox\component\Url;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\kernel\Container;
 use pinoox\portal\View;
 use pinoox\component\File;

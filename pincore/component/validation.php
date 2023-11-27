@@ -13,8 +13,8 @@
 namespace pinoox\component;
 
 use Closure;
-use pinoox\component\helpers\HelperArray;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperArray;
+use pinoox\component\Helpers\HelperString;
 use ReflectionClass;
 use ReflectionMethod;
 

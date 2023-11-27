@@ -12,8 +12,8 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\HelperArray;
-use pinoox\component\helpers\HelperHeader;
+use pinoox\component\Helpers\HelperArray;
+use pinoox\component\Helpers\HelperHeader;
 use pinoox\portal\app\App;
 use pinoox\model\SessionModel;
 

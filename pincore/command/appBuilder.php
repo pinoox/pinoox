@@ -5,7 +5,7 @@ namespace pinoox\command;
 use pinoox\component\Console;
 use pinoox\component\Dir;
 use pinoox\component\File;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 

@@ -13,7 +13,7 @@
 namespace pinoox\component\package;
 
 use Exception;
-use pinoox\component\helpers\HelperArray;
+use pinoox\component\Helpers\HelperArray;
 use pinoox\portal\Config;
 use pinoox\portal\Pinker;
 

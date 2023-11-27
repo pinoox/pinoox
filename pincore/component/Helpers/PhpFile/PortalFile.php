@@ -11,14 +11,14 @@
  */
 
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
 use Nette\PhpGenerator\ClassLike;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use pinoox\component\File;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\kernel\Container;
 use pinoox\component\source\Portal;
 use pinoox\portal\AppManager;

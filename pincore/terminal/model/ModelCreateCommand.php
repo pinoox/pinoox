@@ -2,8 +2,8 @@
 
 namespace pinoox\terminal\model;
 
-use pinoox\component\helpers\PhpFile\ModelFile;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\PhpFile\ModelFile;
+use pinoox\component\Helpers\Str;
 use pinoox\component\Terminal;
 use pinoox\portal\AppManager;
 use Symfony\Component\Console\Attribute\AsCommand;

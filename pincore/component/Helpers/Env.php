@@ -15,13 +15,14 @@ namespace pinoox\component\Helpers;
 
 
 use pinoox\component\store\config\data\DataManager;
+use Symfony\Component\Dotenv\Dotenv;
 
 class Env
 {
     private static $dataManager;
     private static $initData;
 
-    public function __construct()
+    public function __construct(private readonly string $basePath = '')
     {
         self::$dataManager = new DataManager();
         self::$initData = $_ENV;
@@ -43,9 +44,20 @@ class Env
         self::$dataManager->remove($key);
     }
 
-    public function restore()
+    public function restore(): void
     {
         self::$dataManager->setData(self::$initData);
-       // $_ENV = self::$initData;
+    }
+
+    public function register(): void
+    {
+        $dotenv = new Dotenv();
+        $dotenv->bootEnv($this->basePath . '/.env');
+
+        if (isset($_SERVER['SYMFONY_DOTENV_VARS']))
+            unset($_SERVER['SYMFONY_DOTENV_VARS']);
+
+        if (isset($_ENV['SYMFONY_DOTENV_VARS']))
+            unset($_ENV['SYMFONY_DOTENV_VARS']);
     }
 }

@@ -12,7 +12,7 @@
 namespace pinoox\command;
 
 use pinoox\component\Console;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 
 class help extends Console implements CommandInterface

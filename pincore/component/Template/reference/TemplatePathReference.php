@@ -14,7 +14,7 @@
 namespace pinoox\component\template\reference;
 
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 
 class TemplatePathReference
 {

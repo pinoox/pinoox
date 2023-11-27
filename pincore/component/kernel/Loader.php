@@ -15,6 +15,7 @@ namespace pinoox\component\kernel;
 use Composer\Autoload\ClassLoader;
 use pinoox\portal\Config;
 use pinoox\component\Service;
+use pinoox\portal\Env;
 
 class Loader
 {
@@ -24,6 +25,7 @@ class Loader
     {
         self::$loader = $loader;
         new LoaderManager($loader);
+        Env::register();
         self::loadServices();
     }
 

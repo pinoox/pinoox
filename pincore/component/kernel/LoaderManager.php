@@ -13,7 +13,7 @@
 namespace pinoox\component\kernel;
 
 use Composer\Autoload\ClassLoader;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 
 /**
  * Class LoaderManager

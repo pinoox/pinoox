@@ -13,7 +13,7 @@
 
 namespace pinoox\component\router;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use Symfony\Component\Routing\Route as RouteSymfony;
 
 class RouteCapsule extends RouteSymfony

@@ -14,7 +14,7 @@
 namespace pinoox\app\com_pinoox_manager\controller\api\v1;
 
 use pinoox\portal\Config;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\HttpRequest;
 use pinoox\component\Request as RequestData;
 use pinoox\component\Response;

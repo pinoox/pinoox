@@ -4,8 +4,8 @@ namespace pinoox\command\create;
 
 use pinoox\component\console;
 use pinoox\component\File;
-use pinoox\component\helpers\PhpFile\MigrationFile;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\PhpFile\MigrationFile;
+use pinoox\component\Helpers\Str;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\migration\MigrationToolkit;
 use pinoox\component\migration\MigrationConfig as Config;

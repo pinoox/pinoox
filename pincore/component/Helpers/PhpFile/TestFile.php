@@ -11,9 +11,9 @@
  */
 
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
 use pinoox\component\File;
 

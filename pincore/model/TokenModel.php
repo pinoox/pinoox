@@ -16,8 +16,8 @@ namespace pinoox\model;
 
 use pinoox\component\database\Model;
 use pinoox\component\Date;
-use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperHeader;
+use pinoox\component\Helpers\Str;
 use pinoox\component\Token;
 
 class TokenModel extends Model

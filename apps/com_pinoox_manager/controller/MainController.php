@@ -12,8 +12,8 @@
 
 namespace pinoox\app\com_pinoox_manager\controller;
 
-use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperHeader;
+use pinoox\component\Helpers\Str;
 use pinoox\component\kernel\controller\Controller;
 use pinoox\component\Router;
 use pinoox\component\User;

@@ -15,8 +15,8 @@ namespace pinoox\command\portal;
 
 
 use pinoox\component\Console;
-use pinoox\component\helpers\HelperString;
-use pinoox\component\helpers\PhpFile\PortalFile;
+use pinoox\component\Helpers\HelperString;
+use pinoox\component\Helpers\PhpFile\PortalFile;
 use pinoox\component\interfaces\CommandInterface;
 
 class PortalUpdate extends console implements CommandInterface

@@ -13,7 +13,7 @@
 
 namespace pinoox\terminal\test;
 
-use pinoox\component\helpers\PhpFile\TestFile;
+use pinoox\component\Helpers\PhpFile\TestFile;
 use pinoox\component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

@@ -15,7 +15,7 @@ namespace pinoox\component\router;
 
 use Closure;
 use PhpParser\Node\Stmt\Else_;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\package\App;
 
 class Route

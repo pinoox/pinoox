@@ -11,7 +11,7 @@
  */
 namespace pinoox\component\package;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\Url;
 use pinoox\portal\Config;
 

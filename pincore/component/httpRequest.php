@@ -16,8 +16,8 @@ namespace pinoox\component;
 
 
 use mysql_xdevapi\Exception;
-use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperHeader;
+use pinoox\component\Helpers\HelperString;
 
 class HttpRequest
 {

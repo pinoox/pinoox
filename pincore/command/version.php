@@ -6,7 +6,7 @@ namespace pinoox\command;
 use pinoox\app\com_pinoox_manager\component\Notification;
 use pinoox\portal\Config;
 use pinoox\component\Console;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\HttpRequest;
 use pinoox\component\interfaces\CommandInterface;
 use pinoox\component\Lang;

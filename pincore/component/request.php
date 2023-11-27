@@ -12,8 +12,8 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\HelperArray;
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperArray;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\Http\Http;
 use ReflectionException;
 use Symfony\Component\HttpClient\HttpClient;

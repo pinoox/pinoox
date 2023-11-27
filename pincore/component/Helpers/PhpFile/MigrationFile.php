@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
 use Illuminate\Database\Schema\Blueprint;
 use Nette\PhpGenerator\ClassType;
 use pinoox\component\File;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\migration\MigrationBase;
 
 class MigrationFile extends PhpFile

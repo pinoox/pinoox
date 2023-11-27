@@ -11,15 +11,15 @@
  */
 
 
-namespace pinoox\component\helpers\PhpFile;
+namespace pinoox\component\Helpers\PhpFile;
 
 use Illuminate\Database\Eloquent\Builder;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use PHPUnit\Framework\MockObject\ReflectionException;
 use pinoox\component\File;
-use pinoox\component\helpers\HelperAnnotations;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperAnnotations;
+use pinoox\component\Helpers\Str;
 use ReflectionFunction;
 use ReflectionMethod;
 use SebastianBergmann\Type\ReflectionMapper;

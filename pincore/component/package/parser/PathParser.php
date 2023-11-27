@@ -14,7 +14,7 @@
 namespace pinoox\component\package\parser;
 
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\package\reference\PathReference;
 use pinoox\component\package\reference\ReferenceInterface;
 

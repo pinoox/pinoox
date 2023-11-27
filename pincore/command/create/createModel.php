@@ -7,7 +7,7 @@ use mysql_xdevapi\Exception;
 use pinoox\component\ClassBuilder;
 use pinoox\component\console;
 use pinoox\component\File;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\HelperString;
 use pinoox\component\interfaces\CommandInterface;
 

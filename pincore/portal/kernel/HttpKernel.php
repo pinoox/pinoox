@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\kernel\Container;
 use pinoox\component\kernel\ContainerBuilder;
 use pinoox\component\kernel\Kernel;

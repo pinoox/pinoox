@@ -13,7 +13,7 @@
 use pinoox\component\Http\RedirectResponse;
 use function pinoox\router\{route, collection, get};
 use pinoox\app\com_pinoox_installer\controller\ApiController;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 
 route(
     path: '/',

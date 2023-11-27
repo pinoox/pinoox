@@ -14,7 +14,7 @@
 namespace pinoox\component\template\parser;
 
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateReferenceInterface;

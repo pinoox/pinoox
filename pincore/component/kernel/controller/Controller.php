@@ -3,7 +3,7 @@
 
 namespace pinoox\component\kernel\controller;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\Http\Request;
 use pinoox\portal\app\App;
 use pinoox\component\router\Collection;

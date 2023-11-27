@@ -13,7 +13,7 @@
 namespace pinoox\component\package;
 
 use Exception;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\package\engine\AppEngine;
 use pinoox\component\package\engine\EngineInterface;
 use pinoox\component\store\config\ConfigInterface;

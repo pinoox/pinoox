@@ -12,7 +12,7 @@
 
 namespace pinoox\component\Http;
 
-use pinoox\component\helpers\HelperArray;
+use pinoox\component\Helpers\HelperArray;
 use pinoox\component\router\Collection;
 use pinoox\component\router\Route;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;

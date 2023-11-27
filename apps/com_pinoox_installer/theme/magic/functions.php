@@ -1,6 +1,6 @@
 <?php
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\File;
 
 function webpack_manifest($file = null)

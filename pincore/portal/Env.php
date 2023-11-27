@@ -20,7 +20,8 @@ use pinoox\component\source\Portal;
  * @method static mixed get(?string $key = NULL, mixed $default = NULL)
  * @method static Env set(string $key, mixed $value)
  * @method static Env remove(string $key)
- * @method static restore()
+ * @method static Env restore()
+ * @method static Env register()
  * @method static \pinoox\component\Helpers\Env ___()
  *
  * @see \pinoox\component\Helpers\Env
@@ -29,7 +30,9 @@ class Env extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\Helpers\Env::class);
+		self::__bind(\pinoox\component\Helpers\Env::class)->setArguments([
+		    PINOOX_PATH
+		]);
 	}
 
 
@@ -60,7 +63,7 @@ class Env extends Portal
 	public static function __callback(): array
 	{
 		return [
-			'set'
+		    'set'
 		];
 	}
 }

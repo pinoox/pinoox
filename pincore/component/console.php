@@ -13,7 +13,7 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\HelperString;
+use pinoox\component\Helpers\HelperString;
 use pinoox\component\package\AppBuilder;
 use ReflectionClass;
 use pinoox\portal\Finder;

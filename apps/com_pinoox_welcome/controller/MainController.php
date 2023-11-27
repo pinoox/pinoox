@@ -23,6 +23,7 @@ class MainController extends Controller
 {
     public function __invoke()
     {
+        dd('a');
         return View::render('hello');
     }
 }

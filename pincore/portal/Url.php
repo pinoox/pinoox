@@ -14,7 +14,7 @@
 
 namespace pinoox\portal;
 
-use pinoox\component\helpers\Url as ObjectPortal1;
+use pinoox\component\Helpers\Url as ObjectPortal1;
 use pinoox\component\package\parser\UrlParser;
 use pinoox\component\source\Portal;
 use pinoox\portal\app\AppEngine;
@@ -31,9 +31,9 @@ use pinoox\portal\app\AppEngine;
  * @method static string prefixName(\pinoox\component\package\reference\ReferenceInterface|string $url, string $prefix)
  * @method static \pinoox\component\package\parser\UrlParser ___parser()
  * @method static \pinoox\component\package\parser\UrlParser ___parser()
- * @method static \pinoox\component\helpers\Url ___()
+ * @method static \pinoox\component\Helpers\Url ___()
  *
- * @see \pinoox\component\helpers\Url
+ * @see \pinoox\component\Helpers\Url
  */
 class Url extends Portal
 {

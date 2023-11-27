@@ -13,7 +13,7 @@
 
 namespace pinoox\component\router;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\Http\RedirectResponse;
 use pinoox\component\kernel\Container;
 use pinoox\component\package\App;

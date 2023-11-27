@@ -2,7 +2,7 @@
 
 namespace pinoox\terminal\migrate;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\Terminal;
 use pinoox\portal\AppManager;
 use pinoox\portal\StubGenerator;

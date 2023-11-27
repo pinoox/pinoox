@@ -14,7 +14,7 @@
 namespace pinoox\component\source;
 
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\component\kernel\Container;
 use pinoox\component\kernel\ContainerBuilder;
 use SebastianBergmann\Type\ReflectionMapper;

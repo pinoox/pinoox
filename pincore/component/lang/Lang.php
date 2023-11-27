@@ -14,7 +14,7 @@
 
 namespace pinoox\component\lang;
 
-use pinoox\component\helpers\HelperArray;
+use pinoox\component\Helpers\HelperArray;
 use pinoox\component\kernel\Exception;
 use pinoox\component\lang\source\LangSource;
 

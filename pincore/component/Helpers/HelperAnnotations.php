@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\helpers;
+namespace pinoox\component\Helpers;
 
 
 use Illuminate\Database\Eloquent\Builder;

@@ -14,7 +14,7 @@
 
 namespace pinoox\portal;
 
-use pinoox\component\helpers\Path as ObjectPortal1;
+use pinoox\component\Helpers\Path as ObjectPortal1;
 use pinoox\component\package\parser\PathParser;
 use pinoox\component\package\reference\PathReference;
 use pinoox\component\package\reference\ReferenceInterface;
@@ -34,9 +34,9 @@ use pinoox\portal\app\AppEngine;
  * @method static ReferenceInterface prefixReference(\pinoox\component\package\reference\ReferenceInterface|string $path, string $prefix)
  * @method static ReferenceInterface reference(\pinoox\component\package\reference\ReferenceInterface|string $path)
  * @method static \pinoox\component\package\parser\PathParser ___parser()
- * @method static \pinoox\component\helpers\Path ___()
+ * @method static \pinoox\component\Helpers\Path ___()
  *
- * @see \pinoox\component\helpers\Path
+ * @see \pinoox\component\Helpers\Path
  */
 class Path extends Portal
 {

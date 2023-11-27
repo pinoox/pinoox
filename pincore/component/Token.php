@@ -12,8 +12,8 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\HelperHeader;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperHeader;
+use pinoox\component\Helpers\Str;
 use pinoox\portal\app\App;
 use pinoox\model\TokenModel;
 

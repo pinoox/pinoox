@@ -16,9 +16,9 @@ namespace pinoox\command\create;
 
 use JetBrains\PhpStorm\ArrayShape;
 use pinoox\component\Console;
-use pinoox\component\helpers\HelperString;
-use pinoox\component\helpers\PhpFile\PortalFile;
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\HelperString;
+use pinoox\component\Helpers\PhpFile\PortalFile;
+use pinoox\component\Helpers\Str;
 use pinoox\component\interfaces\CommandInterface;
 
 class CreatePortal extends console implements CommandInterface

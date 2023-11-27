@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\helpers;
+namespace pinoox\component\Helpers;
 
 
 use pinoox\component\package\engine\EngineInterface;

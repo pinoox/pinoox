@@ -12,7 +12,7 @@
 
 namespace pinoox\component;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\portal\app\App;
 
 class Url

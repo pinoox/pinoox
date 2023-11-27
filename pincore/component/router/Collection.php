@@ -12,7 +12,7 @@
 
 namespace pinoox\component\router;
 
-use pinoox\component\helpers\Str;
+use pinoox\component\Helpers\Str;
 use pinoox\portal\app\App;
 
 class Collection
