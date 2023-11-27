@@ -2,10 +2,10 @@
 
 namespace pinoox\controller;
 
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\component\kernel\controller\Controller;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
-use pinoox\component\http\Response;
+use pinoox\component\Http\Response;
 
 class ErrorController extends Controller
 {

@@ -15,7 +15,7 @@
 namespace pinoox\portal;
 
 use pinoox\component\helpers\Str;
-use pinoox\component\http\RedirectResponse;
+use pinoox\component\Http\RedirectResponse;
 use pinoox\portal\app\App;
 use pinoox\component\router\Collection as ObjectPortal1;
 use pinoox\component\source\Portal;

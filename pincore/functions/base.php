@@ -22,6 +22,8 @@ use pinoox\component\helpers\Str;
 use pinoox\component\kernel\Container;
 use pinoox\portal\View;
 use pinoox\component\File;
+use pinoox\portal\Env;
+use pinoox\portal\Pinker;
 
 if (!function_exists('url')) {
     function url($link = null)
@@ -109,7 +111,7 @@ if (!function_exists('config')) {
     {
         $parts = explode('.', $key);
         $name = array_shift($parts);
-        $key = !empty($parts)? implode('.', $parts) : null;
+        $key = !empty($parts) ? implode('.', $parts) : null;
         $config = Config::name($name);
         $args = func_get_args();
         if (isset($args[1]))
@@ -200,5 +202,20 @@ if (!function_exists('pincore')) {
     function pincore(): ContainerBuilder
     {
         return Container::pincore();
+    }
+}
+
+if (!function_exists('_env')) {
+    /**
+     * get & set in env
+     *
+     * @return mixed
+     */
+    function _env($key = null, $value = null)
+    {
+        if (empty($value))
+            return Env::get($key);
+        else
+            Env::set($key, $value);
     }
 }

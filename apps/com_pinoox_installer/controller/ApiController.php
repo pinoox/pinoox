@@ -17,7 +17,7 @@ use pinoox\component\Dir;
 use pinoox\component\helpers\HelperArray;
 use pinoox\component\kernel\controller\Controller;
 use pinoox\component\Lang;
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\component\migration\Migrator;
 use pinoox\component\Security;
 use pinoox\component\System;

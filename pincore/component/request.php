@@ -14,7 +14,7 @@ namespace pinoox\component;
 
 use pinoox\component\helpers\HelperArray;
 use pinoox\component\helpers\HelperString;
-use pinoox\component\http\Http;
+use pinoox\component\Http\Http;
 use ReflectionException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;

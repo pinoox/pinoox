@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\http;
+namespace pinoox\component\Http;
 
 use Symfony\Component\HttpFoundation\Response as ResponseSymfony;
 

@@ -13,7 +13,7 @@
 
 namespace pinoox\component\kernel\resolver;
 
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**

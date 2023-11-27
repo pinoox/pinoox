@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use pinoox\component\http\RedirectResponse;
+use pinoox\component\Http\RedirectResponse;
 use function pinoox\router\{route, collection, get};
 use pinoox\app\com_pinoox_installer\controller\ApiController;
 

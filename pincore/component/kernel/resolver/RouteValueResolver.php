@@ -14,7 +14,7 @@
 namespace pinoox\component\kernel\resolver;
 
 
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\component\router\Route;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 

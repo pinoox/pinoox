@@ -48,6 +48,11 @@ class DataManager implements DataInterface
         $this->data = $data;
     }
 
+    public function setDataFollow(mixed &$data = []): void
+    {
+        $this->data = &$data;
+    }
+
     private function fetchData(?string $key = null, bool $isMerge = false)
     {
         $data = $this->data;
@@ -72,7 +77,7 @@ class DataManager implements DataInterface
 
     public function restore(): void
     {
-        $this->reset();;
+        $this->reset();
     }
 
     public function add(string $key, mixed $value): void

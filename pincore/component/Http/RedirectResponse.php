@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\http;
+namespace pinoox\component\Http;
 
 use pinoox\component\helpers\Str;
 use pinoox\component\Url;

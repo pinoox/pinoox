@@ -15,7 +15,7 @@ namespace pinoox\component\kernel\resolver;
 
 
 use pinoox\component\database\Model;
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\portal\DB;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;

@@ -3,7 +3,7 @@
 namespace pinoox\component\kernel\listener;
 
 use pinoox\component\Dir;
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\component\template\View;
 use pinoox\portal\Path;
 use Symfony\Component\Asset\Context\RequestStackContext;
@@ -12,7 +12,7 @@ use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
 use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use pinoox\component\http\Response;
+use pinoox\component\Http\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;

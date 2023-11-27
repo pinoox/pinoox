@@ -13,11 +13,10 @@
 namespace pinoox\component\kernel;
 
 use pinoox\component\helpers\HelperString;
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\component\Lang;
 use pinoox\component\store\Session;
 use pinoox\component\Url;
-use pinoox\portal\app\AppEngine;
 use pinoox\portal\Config;
 use pinoox\portal\kernel\HttpKernel;
 use pinoox\portal\Path;

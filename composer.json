@@ -20,7 +20,6 @@
         "ext-mysqli": "*",
         "doctrine/dbal": "^3.5",
         "illuminate/database": "^8.0",
-        "illuminate/events": "^8.0",
         "nelexa/zip": "^4.0",
         "nette/php-generator": "^4.0",
         "symfony/asset": "^6.2",

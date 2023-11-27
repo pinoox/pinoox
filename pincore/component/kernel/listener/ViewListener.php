@@ -5,8 +5,8 @@ namespace pinoox\component\kernel\listener;
 use pinoox\component\template\ViewInterface;
 use pinoox\portal\View;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use pinoox\component\http\JsonResponse;
-use pinoox\component\http\Response;
+use pinoox\component\Http\JsonResponse;
+use pinoox\component\Http\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 

@@ -14,7 +14,7 @@
 
 namespace pinoox\model;
 
-use pinoox\component\database\Model;
+use pinoox\component\Database\Model;
 
 class FileModel extends Model
 {

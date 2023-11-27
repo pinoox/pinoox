@@ -14,7 +14,7 @@
 namespace pinoox\component\router;
 
 use pinoox\component\helpers\Str;
-use pinoox\component\http\RedirectResponse;
+use pinoox\component\Http\RedirectResponse;
 use pinoox\component\kernel\Container;
 use pinoox\component\package\App;
 use Closure;

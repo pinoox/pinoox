@@ -39,6 +39,7 @@ For a deeper understanding of Pinoox's architecture and how 'app' works, refer t
 
 We welcome contributions from the community. If you're interested in improving Pinoox or have ideas to share, please read our [Contribution Guidelines](https://github.com/yourusername/pinoox/blob/main/CONTRIBUTING.md) to get started.
 
+
 ## License
 
 Pinoox is open-source software released under the [MIT License](https://github.com/pinoox/pinoox/blob/main/LICENSE). You are free to use, modify, and distribute Pinoox for both personal and commercial purposes.

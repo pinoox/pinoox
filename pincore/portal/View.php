@@ -14,7 +14,7 @@
 
 namespace pinoox\portal;
 
-use pinoox\component\http\Response;
+use pinoox\component\Http\Response;
 use pinoox\component\source\Portal;
 use pinoox\component\template\View as ObjectPortal1;
 use pinoox\component\template\reference\TemplatePathReference as ObjectPortal2;

@@ -4,15 +4,15 @@
 namespace pinoox\component\kernel\controller;
 
 use pinoox\component\helpers\HelperString;
-use pinoox\component\http\Request;
+use pinoox\component\Http\Request;
 use pinoox\portal\app\App;
 use pinoox\component\router\Collection;
 use pinoox\portal\Router;
 use pinoox\component\template\ViewInterface;
 use Psr\Container\ContainerInterface;
-use pinoox\component\http\RedirectResponse;
-use pinoox\component\http\JsonResponse;
-use pinoox\component\http\Response;
+use pinoox\component\Http\RedirectResponse;
+use pinoox\component\Http\JsonResponse;
+use pinoox\component\Http\Response;
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
