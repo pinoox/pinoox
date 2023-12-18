@@ -167,7 +167,7 @@ abstract class Portal
      * @param array $args
      * @return mixed
      */
-    private static function callMethod(string $method, array $args): mixed
+    protected static function callMethod(string $method, array $args): mixed
     {
         $instance = static::__instance();
 
@@ -254,7 +254,7 @@ abstract class Portal
      */
     public static function __callStatic(string $method, array $args): mixed
     {
-        return self::callMethod($method, $args);
+        return static::callMethod($method, $args);
     }
 
     /**
@@ -268,7 +268,7 @@ abstract class Portal
      */
     public function __call(string $method, array $args): mixed
     {
-        return self::callMethod($method, $args);
+        return static::callMethod($method, $args);
     }
 
 

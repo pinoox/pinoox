@@ -61,7 +61,7 @@ class PhpFile
     /**
      * @throws \ReflectionException
      */
-    public static function getReturnTypeMethod(ReflectionMethod $method): string
+    public static function getReturnTypeMethod(ReflectionFunction|ReflectionMethod $method): string
     {
         $return = null;
         if (!$method->hasReturnType()) {

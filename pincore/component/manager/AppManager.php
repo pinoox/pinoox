@@ -12,6 +12,7 @@
 
 namespace pinoox\component\manager;
 
+use pinoox\component\kernel\Loader;
 use pinoox\component\package\AppBuilder;
 use pinoox\portal\Config;
 use Symfony\Component\Finder\Finder;
@@ -40,7 +41,7 @@ class AppManager
 
     public function __construct()
     {
-        $this->basePath = PINOOX_PATH . 'apps' . DS;
+        $this->basePath = Loader::basePath() . '/apps' . DS;
     }
 
     public function getApps(): array

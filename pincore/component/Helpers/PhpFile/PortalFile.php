@@ -307,12 +307,13 @@ class PortalFile extends PhpFile
 
         $args = str_replace("\n", '', self::getMethodParametersForDeclaration($method));
         $args = str_replace("array ()", '[]', $args);
+
         if ($return === $name) {
             $returnType = $className;
         } else if ($return === 'static') {
             $returnType = '\\' . $serviceName;
         } else if (!empty($return) && (class_exists($return) || interface_exists($return) || trait_exists($return))) {
-            $returnType = Str::firstDelete($return,'\\');
+            $returnType = Str::firstDelete($return, '\\');
             if ($use = self::getUse($namespace, $returnType)) {
                 $returnType = $use;
             } else {
@@ -334,8 +335,14 @@ class PortalFile extends PhpFile
             $returnTypeParts = explode('|', $returnType);
             foreach ($returnTypeParts as $index => $part) {
                 if ((class_exists($part) || interface_exists($part) || trait_exists($part))) {
-                    if (!Str::firstHas($part, '\\'))
-                        $returnTypeParts[$index] = '\\' . $part;
+                    if (!Str::firstHas($part, '\\')) {
+                        if (Str::firstHas($part, '?')) {
+                            $part = str_replace('?', '', $part);
+                            $returnTypeParts[$index] = '?\\' . $part;
+                        } else {
+                            $returnTypeParts[$index] = '\\' . $part;
+                        }
+                    }
                 }
             }
 
@@ -404,6 +411,7 @@ class PortalFile extends PhpFile
 
                 if (in_array($methodName, $exclude))
                     continue;
+
                 $returnType = $this->getReturnTypeMethod($func);
                 if ($returnType === 'void' && $isCallBack && empty($callback)) {
                     $voidMethods[] = $methodName;

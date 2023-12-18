@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\kernel\url;
+namespace pinoox\component\Path\Manager;
 
-use Symfony\Component\Routing\Generator\UrlGenerator as UrlGeneratorSymfony;
 
-class UrlGenerator extends UrlGeneratorSymfony
+class PathManager extends Manager implements ManagerInterface
 {
+    protected string $replaceSeparator = '/';
 }

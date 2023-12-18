@@ -14,26 +14,46 @@
 namespace pinoox\component\package\engine;
 
 
-use pinoox\component\package\App;
+use pinoox\component\package\AppManager;
 use pinoox\component\package\loader\ArrayLoader;
 use pinoox\component\package\loader\ChainLoader;
 use pinoox\component\package\loader\LoaderInterface;
 use pinoox\component\package\loader\PackageLoader;
 use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\Manager\PathManager;
 use pinoox\component\router\Router;
 use pinoox\component\store\config\Config;
 use pinoox\component\store\config\strategy\FileConfigStrategy;
 use pinoox\component\store\baker\Pinker;
 use Exception;
-use pinoox\portal\Finder;
+use pinoox\portal\app\App;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\SplFileInfo;
+use pinoox\component\store\config\ConfigInterface;
 
 class AppEngine implements EngineInterface
 {
     private LoaderInterface $loader;
     private PackageLoader $packageLoader;
     private ArrayLoader $arrayLoader;
+    /**
+     * @var PathManager[]
+     */
+    private array $pathManager;
+
+    /**
+     * @var AppManager[]
+     */
+    private array $appManager;
+    /**
+     * @var ConfigInterface[]
+     */
+    private array $appConfig;
+    /**
+     * @var Router[]
+     */
+    private array $router;
 
     /**
      * AppEngine constructor.
@@ -54,7 +74,7 @@ class AppEngine implements EngineInterface
         ]);
     }
 
-    public function stable(string $packageName): bool
+    public function stable(string|ReferenceInterface $packageName): bool
     {
         $enable = false;
 
@@ -68,47 +88,54 @@ class AppEngine implements EngineInterface
         return $enable === true;
     }
 
-    public function routes(ReferenceInterface|string $packageName): Router
+    public function routes(ReferenceInterface|string $packageName, string $path = ''): Router
     {
-        $routes = $this->config($packageName)->get('router.routes');
-        $path = App::path();
-        $router = new Router();
-        $router->collection('ttt/', $routes);
-        return $router;
+        $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
+        $key = $packageName . ':' . $path;
+        if (empty($this->router[$key])) {
+            $this->router[$key] = App::meeting($packageName, function () {
+                return \pinoox\portal\Router::___();
+            }, $path);
+        }
+        return $this->router[$key];
+    }
+
+    public function manager(ReferenceInterface|string $packageName): AppManager
+    {
+        $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
+
+        if (empty($this->appManager[$packageName]))
+            $this->appManager[$packageName] = new AppManager($this, $packageName);
+
+        return $this->appManager[$packageName];
     }
 
     /**
      * Get config app.
      *
      * @param ReferenceInterface|string $packageName
-     * @return Config
+     * @return ConfigInterface
      * @throws \Exception
      */
-    public function config(ReferenceInterface|string $packageName): Config
+    public function config(ReferenceInterface|string $packageName): ConfigInterface
     {
-        $path = $this->loader->path($packageName);
-        $mainFile = $this->ds($path . '/' . $this->appFile);
-        $bakedFile = $this->ds($path . '/' . $this->folderPinker . '/' . $this->appFile);
-        $pinker = new Pinker($mainFile, $bakedFile);
-        $pinker
-            ->dumping(true);
-        $fileStrategy = new FileConfigStrategy($pinker);
-        $appConfig = new Config($fileStrategy);
-        $appConfig->merge($this->defaultData);
-        $appConfig->set('package', $packageName);
-        return $appConfig;
+        $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
+
+        if (empty($this->appConfig[$packageName])) {
+            $mainFile = $this->path($packageName, $this->appFile);
+            $bakedFile = $this->path($packageName, $this->folderPinker . '/' . $this->appFile);
+            $pinker = new Pinker($mainFile, $bakedFile);
+            $pinker
+                ->dumping(true);
+            $fileStrategy = new FileConfigStrategy($pinker);
+            $config = new Config($fileStrategy);
+            $config->merge($this->defaultData);
+            $config->set('package', $packageName);
+            $this->appConfig[$packageName] = $config;
+        }
+        return $this->appConfig[$packageName];
     }
 
-    /**
-     * replace directory separator
-     *
-     * @param string $string
-     * @return string
-     */
-    private function ds(string $string): string
-    {
-        return str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $string);
-    }
 
     /**
      * Exists app.
@@ -124,10 +151,10 @@ class AppEngine implements EngineInterface
     /**
      * add app
      *
-     * @param $packageName
-     * @param $path
+     * @param string $packageName
+     * @param string $path
      */
-    public function add($packageName, $path): void
+    public function add(string $packageName,string $path): void
     {
         $this->arrayLoader->add($packageName, $path);
     }
@@ -139,9 +166,28 @@ class AppEngine implements EngineInterface
      * @return string
      * @throws \Exception
      */
-    public function path(ReferenceInterface|string $packageName): string
+    private function pathPackage(ReferenceInterface|string $packageName): string
     {
         return $this->loader->path($packageName);
+    }
+
+    /**
+     * Get path app.
+     *
+     * @param ReferenceInterface|string $packageName
+     * @param string $path
+     * @return string
+     * @throws \Exception
+     */
+    public function path(ReferenceInterface|string $packageName, string $path = ''): string
+    {
+        $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
+
+        if (empty($this->pathManager[$packageName])) {
+            $basePath = $this->pathPackage($packageName);
+            $this->pathManager[$packageName] = new PathManager($basePath);
+        }
+        return ($this->pathManager[$packageName])->get($path);
     }
 
     /**
@@ -158,10 +204,10 @@ class AppEngine implements EngineInterface
     /**
      * Check valid package name
      *
-     * @param $packageName
+     * @param string $packageName
      * @return bool
      */
-    private function checkName($packageName): bool
+    private function checkName(string $packageName): bool
     {
         return !!preg_match('/^[a-zA-Z]+[a-zA-Z0-9]*+[_]\s{0,1}[a-zA-Z0-9]+[_]\s{0,1}[a-zA-Z0-9]+[_]{0,1}[a-zA-Z0-9]+$/m', $packageName);
     }
@@ -171,7 +217,7 @@ class AppEngine implements EngineInterface
     {
         $files = [];
         try {
-            $files = Finder::in($this->pathApp)->depth(1)->files();
+            $files = (new Finder())->in($this->pathApp)->depth(1)->files();
 
         } catch (DirectoryNotFoundException $e) {
         }
@@ -182,7 +228,7 @@ class AppEngine implements EngineInterface
          */
         foreach ($files as $file) {
             if ($this->supports($file->getRelativePath())) {
-                $result[$file->getRelativePath()] = $file->getPath();
+                $result[$file->getRelativePath()] = str_replace('\\', '/', $file->getPath());
             }
         }
         return $result;

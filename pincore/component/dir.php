@@ -13,6 +13,7 @@
 namespace pinoox\component;
 
 use pinoox\component\Helpers\HelperString;
+use pinoox\component\kernel\Loader;
 use pinoox\portal\app\App       ;
 
 class Dir
@@ -69,13 +70,14 @@ class Dir
      */
     public static function path($path = null, $app = null)
     {
-        $result = PINOOX_PATH;
+        $result = Loader::basePath();
 
         $isBase = false;
 
+        $path = self::ds($path);
         if ($app !== '~' && !HelperString::firstHas($path, '~')) {
             $packageName = is_null($app) ? App::package() : $app;
-            $result .= Router::app_folder . DIRECTORY_SEPARATOR . $packageName . DIRECTORY_SEPARATOR;
+            $result .= '/'.Router::app_folder .'/'. $packageName .'/';
         } else {
             $isBase = true;
             $path = HelperString::firstDelete($path, '~');
@@ -86,13 +88,15 @@ class Dir
                 $path = HelperString::firstDelete($path, self::app());
                 $path = HelperString::firstDelete($path, Url::app());
             } else {
-                $path = HelperString::firstDelete($path, PINOOX_PATH);
+                $path = HelperString::firstDelete($path, Loader::basePath());
                 $path = HelperString::firstDelete($path, Url::site());
             }
             $path = self::ds($path);
-            $path = HelperString::firstDelete($path, DIRECTORY_SEPARATOR);
-            $result = $result . $path;
+            $path = HelperString::firstDelete($path,'/');
+            $result = $result .'/'. $path;
+
         }
+
         return $result;
     }
 
@@ -103,7 +107,7 @@ class Dir
      */
     private static function app()
     {
-        return PINOOX_PATH . Router::app_folder . DIRECTORY_SEPARATOR . App::package() . DIRECTORY_SEPARATOR;
+        return self::ds(Loader::basePath() .'/'. Router::app_folder . '/' . App::package() . '/');
     }
 
     /**
@@ -190,7 +194,7 @@ class Dir
      */
     public static function ds($path)
     {
-        return str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $path);
+        return str_replace(['\\', '>'], '/', $path);
     }
 
 }

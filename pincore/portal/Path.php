@@ -15,6 +15,7 @@
 namespace pinoox\portal;
 
 use pinoox\component\Helpers\Path as ObjectPortal1;
+use pinoox\component\kernel\Loader;
 use pinoox\component\package\parser\PathParser;
 use pinoox\component\package\reference\PathReference;
 use pinoox\component\package\reference\ReferenceInterface;
@@ -48,7 +49,7 @@ class Path extends Portal
 		parent::__bind(ObjectPortal1::class)
 		    ->setArgument('parser', self::__ref('parser'))
 		    ->setArgument('appEngine', AppEngine::__instance())
-		    ->setArgument('basePath', PINOOX_PATH);
+		    ->setArgument('basePath', Loader::basePath());
 	}
 
 

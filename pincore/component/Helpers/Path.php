@@ -91,7 +91,7 @@ class Path
         if ($packageName === '~') {
             $basePath = $this->basePath;
         } else if ($packageName === 'pincore') {
-            $basePath = $this->basePath . 'pincore' . DIRECTORY_SEPARATOR;
+            $basePath = $this->basePath . '/pincore' . DIRECTORY_SEPARATOR;
         } else if (is_null($packageName) && $this->packageName && $this->appEngine->exists($this->packageName)) {
             $basePath = $this->appEngine->path($this->packageName);
         } else if ($packageName && $this->appEngine->exists($packageName)) {

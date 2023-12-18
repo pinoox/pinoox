@@ -14,7 +14,6 @@
 
 namespace pinoox\portal\kernel;
 
-use pinoox\portal\Router;
 use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
@@ -28,12 +27,13 @@ use pinoox\component\kernel\Kernel;
 use pinoox\component\kernel\event\ResponseEvent;
 use pinoox\component\source\Portal;
 use pinoox\portal\Path;
+use pinoox\portal\Router;
 
 /**
  * @method static ObjectPortal1 handleSubRequest(\Symfony\Component\HttpFoundation\Request $request)
  * @method static ObjectPortal1 handle(\Symfony\Component\HttpFoundation\Request $request, int $type = 1, bool $catch = true)
  * @method static terminate(\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response)
- * @method static terminateWithException(\Throwable $exception, ?Symfony\Component\HttpFoundation\Request $request = NULL)
+ * @method static HttpKernel terminateWithException(\Throwable $exception, ?Symfony\Component\HttpFoundation\Request $request = NULL)
  * @method static \Symfony\Component\HttpFoundation\RequestStack ___requestStack()
  * @method static \Symfony\Component\Routing\RequestContext ___context()
  * @method static \Symfony\Component\Routing\Matcher\UrlMatcher ___matcher()
@@ -46,7 +46,7 @@ class HttpKernel extends Portal
 {
 	public static function __register(): void
 	{
-        $routes = Router::getMainCollection()->routes;
+		$routes = Router::getMainCollection()->routes;
 		self::setParams();
 		self::addEvents();
 		self::__bind(RequestStack::class, 'request_stack');
@@ -66,7 +66,6 @@ class HttpKernel extends Portal
 		        self::__ref('request_stack'),
 		        Resolver::__ref('argument'),
 		    ]);
-
 	}
 
 
@@ -112,6 +111,8 @@ class HttpKernel extends Portal
 	 */
 	public static function __callback(): array
 	{
-		return [];
+		return [
+			'terminateWithException'
+		];
 	}
 }

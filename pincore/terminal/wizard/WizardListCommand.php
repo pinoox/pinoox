@@ -13,6 +13,7 @@
 
 namespace pinoox\terminal\wizard;
 
+use pinoox\component\kernel\Loader;
 use pinoox\component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -31,7 +32,7 @@ use Symfony\Component\Process\Process;
 class WizardListCommand extends Terminal
 {
 
-    const PATH = PINOOX_PATH . 'pins' . DS;
+    const PATH = '/pins/';
 
     protected function configure(): void
     {
@@ -69,7 +70,8 @@ class WizardListCommand extends Terminal
     private function fetchPinFiles(): array
     {
         $finder = new Finder();
-        $finder->files()->in(self::PATH)->name('*.pin');
+        $path = Loader::basePath() . self::PATH;
+        $finder->files()->in($path)->name('*.pin');
 
         $files = [];
         foreach ($finder as $file) {

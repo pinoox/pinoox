@@ -27,7 +27,7 @@ final class PackageLoader implements LoaderInterface
 
     private function getPathPackage($packageName): string
     {
-        return $this->basePath . DIRECTORY_SEPARATOR . $packageName;
+        return $this->basePath . '/' . $packageName;
     }
 
     public function path(string $packageName): string
@@ -37,6 +37,6 @@ final class PackageLoader implements LoaderInterface
 
     public function exists(string $packageName): bool
     {
-        return is_file($this->getPathPackage($packageName) . DIRECTORY_SEPARATOR . $this->appFile);
+        return is_file($this->getPathPackage($packageName) . '/' . $this->appFile);
     }
 }

@@ -20,15 +20,6 @@ use pinoox\component\package\App;
 
 class Route
 {
-    private const FOR_ROUTE = 'route';
-
-    /**
-     * all route names
-     *
-     * @var array
-     */
-    public static array $names = [];
-
     public function __construct(
         private Collection           $collection,
         private string|array         $path,
@@ -37,6 +28,7 @@ class Route
         private string|array         $methods = [],
         private array                $defaults = [],
         private array                $filters = [],
+        private int                $priority = 0,
         private string               $prefixName = ''
     )
     {
@@ -72,9 +64,9 @@ class Route
         return $route;
     }
 
-    public function countAll(): int
+    public function getPriority(): int
     {
-        return count(self::$names);
+        return $this->priority;
     }
 
     /**
@@ -85,25 +77,8 @@ class Route
      */
     private function buildName(string $name = ''): string
     {
-        $prefix = $this->collection->name;
-        $prefix = $this->prefixName . $prefix;
-        $name = !empty($name) ? $name : self::generateRandomName($prefix);
-        $name = $prefix . $name;
-        self::$names[$prefix . $name] = $this;
-
-        return $name;
+        return $this->prefixName . $name;
     }
-
-    /**
-     * get all names
-     *
-     * @return array
-     */
-    public function all(): array
-    {
-        return self::$names;
-    }
-
 
     /**
      * @return string
@@ -169,20 +144,5 @@ class Route
     public function getName(): string
     {
         return $this->name;
-    }
-
-    /**
-     * generate random name
-     *
-     * @param string $prefix
-     * @return string
-     */
-    public static function generateRandomName(string $prefix = ''): string
-    {
-        $name = self::FOR_ROUTE . '_' . count(self::$names);
-        if (isset(self::$names[$prefix . $name])) {
-            $name = self::FOR_ROUTE . '_' . Str::generateLowRandom(8);
-        }
-        return $name;
     }
 }

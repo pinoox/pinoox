@@ -52,6 +52,12 @@ class View extends Portal
         ]);
     }
 
+    protected static function callMethod(string $method, array $args): mixed
+    {
+        if (!self::__has())
+            static::__register();
+        return parent::callMethod($method, $args);
+    }
 
     public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
     {
@@ -68,7 +74,7 @@ class View extends Portal
      */
     public static function __name(): string
     {
-        return 'view';
+        return !empty(App::package()) ? 'view.' . App::package() : 'view';
     }
 
 

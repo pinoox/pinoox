@@ -13,6 +13,7 @@
 namespace pinoox\component;
 
 use pinoox\component\Helpers\Str;
+use pinoox\component\kernel\Loader;
 use pinoox\portal\app\App;
 
 class Url
@@ -115,9 +116,10 @@ class Url
                 $link = Str::firstDelete($link, Dir::path());
                 $link = Str::firstDelete($link, self::app());
             } else {
-                $link = Str::firstDelete($link, PINOOX_PATH);
+                $link = Str::firstDelete($link, Loader::basePath());
                 $link = Str::firstDelete($link, self::site());
             }
+
             $link = str_replace(['\\', '>'], '/', $link);
             $link = Str::firstDelete($link, '/');
             $result = $result . $link;

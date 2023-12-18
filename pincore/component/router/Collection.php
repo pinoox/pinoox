@@ -68,7 +68,7 @@ class Collection
 
     public function addRoute(Route $route)
     {
-        $this->routes->add($route->getName(), $route->get(), $route->countAll());
+        $this->routes->add($route->getName(), $route->get(), $route->getPriority());
     }
 
     public function buildAction($action)
@@ -87,9 +87,7 @@ class Collection
                 } else if (!empty($this->controller)) {
                     $class = $this->controller;
                     return [$class, $parts[0]];
-                }
-                else
-                {
+                } else {
                     return $this->buildController($method);
                 }
             } else if ($countParts == 2) {

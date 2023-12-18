@@ -40,6 +40,6 @@ route(
 
 collection(
     path: '/api/v1',
-    routes: 'router>api.php',
+    routes: 'router/api.php',
     controller: ApiController::class,
 );

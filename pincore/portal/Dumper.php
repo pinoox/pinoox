@@ -18,20 +18,16 @@ use pinoox\component\kernel\Loader;
 use pinoox\component\source\Portal;
 
 /**
- * @method static mixed get(?string $key = NULL, mixed $default = NULL)
- * @method static Env set(string $key, mixed $value)
- * @method static Env remove(string $key)
- * @method static Env restore()
- * @method static Env register()
- * @method static \pinoox\component\Helpers\Env ___()
+ * @method static register()
+ * @method static \pinoox\component\Dumper\Dumper ___()
  *
- * @see \pinoox\component\Helpers\Env
+ * @see \pinoox\component\Dumper\Dumper
  */
-class Env extends Portal
+class Dumper extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\Helpers\Env::class)->setArguments([
+		self::__bind(\pinoox\component\Dumper\Dumper::class)->setArguments([
             Loader::basePath()
 		]);
 	}
@@ -43,7 +39,7 @@ class Env extends Portal
 	 */
 	public static function __name(): string
 	{
-		return 'env';
+		return 'dumper';
 	}
 
 
@@ -63,8 +59,6 @@ class Env extends Portal
 	 */
 	public static function __callback(): array
 	{
-		return [
-		    'set'
-		];
+		return [];
 	}
 }

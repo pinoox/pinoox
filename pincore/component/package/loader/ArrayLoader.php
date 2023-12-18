@@ -54,7 +54,7 @@ final class ArrayLoader implements LoaderInterface
      */
     private function checkExistsFile(string $packageName): bool
     {
-        return is_file($this->packages[$packageName] . DIRECTORY_SEPARATOR . $this->appFile);
+        return is_file($this->packages[$packageName] . '/' . $this->appFile);
     }
 
     /**

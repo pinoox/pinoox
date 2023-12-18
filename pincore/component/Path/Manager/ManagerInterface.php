@@ -11,10 +11,11 @@
  */
 
 
-namespace pinoox\component\kernel\url;
+namespace pinoox\component\Path\Manager;
 
-use Symfony\Component\Routing\Generator\UrlGenerator as UrlGeneratorSymfony;
 
-class UrlGenerator extends UrlGeneratorSymfony
+interface ManagerInterface
 {
+    public function get(string $path = ''): string;
+    public function trim(string $path): string;
 }

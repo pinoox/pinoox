@@ -82,7 +82,7 @@ class Boot
             }
         }
 
-        Loader::$loader->addClassMap($classMap);
+        Loader::composer()->addClassMap($classMap);
     }
 
     private function setNext(): void

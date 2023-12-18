@@ -52,25 +52,23 @@ class App extends Portal
     /**
      * @param string $packageName
      * @param Closure $closure
+     * @param string $path
      * @return mixed
      * @throws Exception
      */
-    public static function meeting(string $packageName, Closure $closure): mixed
+    public static function meeting(string $packageName, Closure $closure,string $path = ''): mixed
     {
         if (!self::exists($packageName))
             throw new Exception('package `' . $packageName . '` not found!');
 
         $mainLayer = self::current();
-        $path = Boot::$request?->getRequestUri() ?? '';
         self::setLayer(new AppLayer($path, $packageName));
-        View::__rebuild();
         if (!is_callable($closure))
             throw new Exception('the value must be of function type');
 
         $result = $closure();
 
         self::setLayer($mainLayer);
-        View::__rebuild();
 
         return $result;
     }

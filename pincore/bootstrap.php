@@ -11,13 +11,11 @@
  */
 
 use pinoox\component\kernel\Loader;
-use Symfony\Component\ErrorHandler\Debug;
 
 define('DS', DIRECTORY_SEPARATOR);
 define('PINOOX_START', microtime(true));
 define('PINOOX_DEFAULT_LANG', 'en');
 define('PINOOX_PATH', dirname(__DIR__) . DS);
-define('PINOOX_VENDOR_PATH', PINOOX_PATH . 'vendor' . DS);
 define('PINOOX_CORE_PATH', __DIR__ . DS);
 define('PINOOX_APP_PATH', realpath(__DIR__ . DS . '..') . DS . 'apps' . DS);
 define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
@@ -33,6 +31,10 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 | into the script here, so we don't need to manually load our classes.
 |
 */
-$composer = require PINOOX_VENDOR_PATH . 'autoload.php';
-Debug::enable();
-Loader::boot($composer);
+
+
+$composer = require dirname(__DIR__) . '/vendor/autoload.php';
+
+\Symfony\Component\ErrorHandler\Debug::enable();
+
+Loader::boot($composer,dirname(__DIR__));

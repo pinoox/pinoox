@@ -13,6 +13,7 @@
 
 namespace pinoox\terminal\wizard;
 
+use pinoox\component\kernel\Loader;
 use pinoox\component\Terminal;
 use pinoox\portal\AppWizard;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -27,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class WizardInstallCommand extends Terminal
 {
-    const PATH = PINOOX_PATH . 'pins' . DS;
+    const PATH = 'pins' . DS;
 
     protected function configure(): void
     {
@@ -48,7 +49,7 @@ class WizardInstallCommand extends Terminal
         $migration = $input->getOption('migration')  ?? null;
 
         $package = str_replace('.pin', '', $package);
-        $pin = self::PATH . $package . '.pin';
+        $pin = Loader::basePath() .'/'. $package . '.pin';
 
         if (!file_exists($pin)) {
             $this->error('package file not found: "' . $pin . '"');

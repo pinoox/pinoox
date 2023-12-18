@@ -16,10 +16,14 @@ namespace pinoox\component\router;
 use pinoox\component\Helpers\Str;
 use pinoox\component\Http\RedirectResponse;
 use pinoox\component\kernel\Container;
+use Symfony\Component\Routing\Generator\UrlGenerator;
 use pinoox\component\package\App;
 use Closure;
 use Exception;
+use pinoox\component\package\AppManager;
+use pinoox\component\package\engine\AppEngine;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\RequestContext;
 
 class Router
 {
@@ -39,9 +43,31 @@ class Router
      */
     private array $actions = [];
 
-    public function __construct(private string $app, private string $pathApp)
+    private AppManager $app;
+
+    private const FOR_ROUTE = 'route';
+
+    /**
+     * all route names
+     *
+     * @var array
+     */
+    public array $names = [];
+
+    public function __construct(AppManager $app)
     {
+        $this->changeApp($app);
         $this->collection();
+    }
+
+    private function changeApp(AppManager $app): void
+    {
+        $this->app = $app;
+    }
+
+    public function path(string $name, array $params = []): string
+    {
+        return (new \pinoox\component\kernel\url\UrlGenerator($this->getMainCollection()->routes,RequestContext::fromUri('')))->generate($name, $params);
     }
 
     /**
@@ -67,7 +93,8 @@ class Router
                 $this->add($path, $action, $routeName, $methods, $defaults, $filters);
             }
         } else {
-            $this->currentCollection()->add(new Route(
+            $name = $this->buildName($name);
+            $route = $this->names[$name] = new Route(
                 collection: $this->currentCollection(),
                 path: $path,
                 action: $action,
@@ -75,8 +102,10 @@ class Router
                 methods: $methods,
                 defaults: $defaults,
                 filters: $filters,
-                prefixName: $this->getPrefixName(),
-            ));
+                priority: count($this->names),
+            );
+
+            $this->currentCollection()->add($route);
         }
     }
 
@@ -177,7 +206,7 @@ class Router
     private function loadFiles(string|array $routes): void
     {
         if (is_string($routes)) {
-            $routes = !is_file($routes) ? Str::ds($this->pathApp . '/' . $routes) : $routes;
+            $routes = !is_file($routes) ? $this->app->path($routes) : $routes;
             if (is_file($routes))
                 include $routes;
         } else if (is_array($routes)) {
@@ -234,7 +263,7 @@ class Router
     private function buildNameAction(string $name, bool $isPrefix = true): string
     {
         $prefixName = $isPrefix ? $this->currentCollection()->name : '';
-        return $this->getPrefixName($prefixName . $name);
+        return $prefixName . $name;
     }
 
     /**
@@ -323,12 +352,44 @@ class Router
     {
         $collection = !empty($collection) ? $collection : Router::currentCollection();
         $prefix = $collection->name;
-        $prefix = $this->getPrefixName($prefix);
-        return Route::generateRandomName($prefix);
+        return $this->generateRandomName($prefix);
     }
 
-    private function getPrefixName(?string $name = null): string
+    /**
+     * build name for route
+     *
+     * @param string $name
+     * @return string
+     */
+    private function buildName(string $name): string
     {
-        return $this->app . ':' . $name;
+        $prefix = $this->currentCollection()->name;
+        $name = !empty($name) ? $name : self::generateRandomName($prefix);
+        return $prefix . $name;
+    }
+
+    /**
+     * get all names
+     *
+     * @return array
+     */
+    public function all(): array
+    {
+        return $this->names;
+    }
+
+    /**
+     * generate random name
+     *
+     * @param string $prefix
+     * @return string
+     */
+    public function generateRandomName(string $prefix = ''): string
+    {
+        $name = self::FOR_ROUTE . '_' . count($this->names);
+        if (isset($this->names[$prefix . $name])) {
+            $name = self::FOR_ROUTE . '_' . Str::generateLowRandom(8);
+        }
+        return $name;
     }
 }
