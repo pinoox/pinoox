@@ -21,7 +21,7 @@ class RedirectResponse extends RedirectResponseSymfony
 {
     public function setTargetUrl(string $url): static
     {
-        if (!empty($url)) {
+        if (!filter_var($url, FILTER_VALIDATE_URL)) {
             $base = Url::link('^');
             if (Str::firstHas($url, $base))
                 $url = Str::firstDelete($url, $base);

@@ -14,7 +14,15 @@
 namespace pinoox\component\kernel\url;
 
 use Symfony\Component\Routing\Generator\UrlGenerator as UrlGeneratorSymfony;
+use Symfony\Component\Routing\RouteCollection;
 
 class UrlGenerator extends UrlGeneratorSymfony
 {
+    /**
+     * @param RouteCollection $routes
+     */
+    public function setRoutes(RouteCollection $routes): void
+    {
+        $this->routes = $routes;
+    }
 }

@@ -14,14 +14,10 @@
 namespace pinoox\component\router;
 
 use pinoox\component\Helpers\Str;
-use pinoox\component\Http\RedirectResponse;
-use pinoox\component\kernel\Container;
-use Symfony\Component\Routing\Generator\UrlGenerator;
-use pinoox\component\package\App;
 use Closure;
-use Exception;
+use pinoox\component\Http\RedirectResponse;
+use pinoox\component\kernel\url\UrlGenerator;
 use pinoox\component\package\AppManager;
-use pinoox\component\package\engine\AppEngine;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
@@ -44,6 +40,7 @@ class Router
     private array $actions = [];
 
     private AppManager $app;
+    private UrlGeneratorInterface $urlGenerator;
 
     private const FOR_ROUTE = 'route';
 
@@ -57,7 +54,6 @@ class Router
     public function __construct(AppManager $app)
     {
         $this->changeApp($app);
-        $this->collection();
     }
 
     private function changeApp(AppManager $app): void
@@ -67,7 +63,24 @@ class Router
 
     public function path(string $name, array $params = []): string
     {
-        return (new \pinoox\component\kernel\url\UrlGenerator($this->getMainCollection()->routes,RequestContext::fromUri('')))->generate($name, $params);
+        if (empty($this->urlGenerator))
+            $this->urlGenerator = new UrlGenerator($this->getMainCollection()->routes, RequestContext::fromUri(''));
+
+        return $this->urlGenerator->generate($name, $params);
+    }
+
+    public function getAllPath(): array
+    {
+        $paths = [];
+        $routes = $this->getMainCollection()->routes->all();
+        /**
+         * @var RouteCapsule $route
+         */
+        foreach ($routes as $name => $route) {
+            $paths[$name] = $route->getPath();
+        }
+
+        return $paths;
     }
 
     /**

@@ -14,6 +14,7 @@
 namespace pinoox\app\com_pinoox_welcome\controller;
 
 use pinoox\component\kernel\controller\Controller;
+use pinoox\component\router\RouteCapsule;
 use pinoox\component\Token;
 use pinoox\model\UserModel;
 use pinoox\portal\Env;
@@ -24,9 +25,6 @@ class MainController extends Controller
 {
     public function __invoke()
     {
-        $routes = \pinoox\portal\app\AppEngine::routes('com_pinoox_installer','installeraaa');
-        $routes->add('test',name:'test');
-        dd(Router::path('route_1'));
         return View::render('hello');
     }
 }
