@@ -91,7 +91,7 @@ class Path
         if ($packageName === '~') {
             $basePath = $this->basePath;
         } else if ($packageName === 'pincore') {
-            $basePath = $this->basePath . '/pincore' . DIRECTORY_SEPARATOR;
+            $basePath = $this->basePath . '/pincore/';
         } else if (is_null($packageName) && $this->packageName && $this->appEngine->exists($this->packageName)) {
             $basePath = $this->appEngine->path($this->packageName);
         } else if ($packageName && $this->appEngine->exists($packageName)) {
@@ -100,7 +100,7 @@ class Path
             throw new \Exception('file not found!');
         }
 
-        return Str::lastDelete($basePath, DIRECTORY_SEPARATOR);
+        return Str::lastDelete($basePath, '/');
     }
 
 
@@ -112,7 +112,7 @@ class Path
      */
     public function ds(string $path): string
     {
-        return str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $path);
+        return str_replace(['\\', '>'], '/', $path);
     }
 
     public function parse(string $name): ReferenceInterface

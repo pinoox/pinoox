@@ -65,6 +65,7 @@ final class ArrayLoader implements LoaderInterface
      */
     public function add(string $packageName, string $path): void
     {
+        $path = str_replace('\\', '/', $path);
         $this->packages[$packageName] = $path;
     }
 

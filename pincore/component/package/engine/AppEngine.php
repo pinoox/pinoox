@@ -154,7 +154,7 @@ class AppEngine implements EngineInterface
      * @param string $packageName
      * @param string $path
      */
-    public function add(string $packageName,string $path): void
+    public function add(string $packageName, string $path): void
     {
         $this->arrayLoader->add($packageName, $path);
     }
@@ -222,13 +222,20 @@ class AppEngine implements EngineInterface
         } catch (DirectoryNotFoundException $e) {
         }
 
-        $result = $this->arrayLoader->getPackages();
+        $result = [];
+        $arrayPackages = $this->arrayLoader->getPackages();
+        foreach ($arrayPackages as $package => $path) {
+            if ($this->exists($package)) {
+                $result[$package] = $this->manager($package);
+            }
+        }
         /**
          * @var SplFileInfo $file
          */
         foreach ($files as $file) {
-            if ($this->supports($file->getRelativePath())) {
-                $result[$file->getRelativePath()] = str_replace('\\', '/', $file->getPath());
+            $package = $file->getRelativePath();
+            if ($this->supports($package)) {
+                $result[$package] = $this->manager($package);
             }
         }
         return $result;

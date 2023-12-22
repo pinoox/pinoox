@@ -13,6 +13,7 @@
 namespace pinoox\component\kernel;
 
 use pinoox\component\Helpers\Str;
+use pinoox\component\package\AppManager;
 use pinoox\portal\app\AppEngine;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Finder\Finder;
@@ -52,8 +53,11 @@ class Terminal
         $this->loadTerminals(PINOOX_CORE_PATH);
 
         $packages = AppEngine::all();
-        foreach ($packages as $package => $path) {
-            $this->loadTerminals($path, $package);
+        /**
+         * @var AppManager $app
+         */
+        foreach ($packages as $app) {
+            $this->loadTerminals($app->path(), $app->package());
         }
     }
 

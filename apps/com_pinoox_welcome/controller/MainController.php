@@ -14,10 +14,13 @@
 namespace pinoox\app\com_pinoox_welcome\controller;
 
 use pinoox\component\kernel\controller\Controller;
+use pinoox\component\package\AppManager;
 use pinoox\component\router\RouteCapsule;
 use pinoox\component\Token;
 use pinoox\model\UserModel;
+use pinoox\portal\app\AppEngine;
 use pinoox\portal\Env;
+use pinoox\portal\Path;
 use pinoox\portal\Router;
 use pinoox\portal\View;
 
