@@ -13,19 +13,21 @@
 
 namespace pinoox\component\Path\Manager;
 
+use Symfony\Component\Filesystem\Path;
+
 abstract class Manager implements ManagerInterface
 {
     private string $basePath;
     protected string $replaceSeparator = '/';
     protected string|array $signs = '\\';
-    protected bool $allowRepeat = false;
+    protected bool $isCanonicalize = true;
 
     public function __construct(string $basePath = '')
     {
         $this->setBasePath($basePath);
     }
 
-    public function trim(string $path): string
+    public function canonicalize(string $path): string
     {
         $realPath = $path;
 
@@ -33,12 +35,9 @@ abstract class Manager implements ManagerInterface
             $realPath = $path = str_replace($this->signs, $this->replaceSeparator, $path);
         }
 
-        if (!$this->allowRepeat) {
-            $path = trim($path, $this->replaceSeparator);
-            $path = implode($this->replaceSeparator, array_filter(explode($this->replaceSeparator, $path)));
-
+        if ($this->isCanonicalize) {
+            $path = Path::canonicalize($path);
             $path = str_ends_with($realPath, $this->replaceSeparator) ? $path . $this->replaceSeparator : $path;
-            $path = str_starts_with($realPath, $this->replaceSeparator) ? $this->replaceSeparator . $path : $path;
         }
 
         return $path;
@@ -52,7 +51,7 @@ abstract class Manager implements ManagerInterface
         } else if (!empty($basePath)) {
             $path = $basePath . $this->replaceSeparator . $path;
         }
-        return $this->trim($path);
+        return $this->canonicalize($path);
     }
 
     /**

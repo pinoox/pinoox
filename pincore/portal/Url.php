@@ -15,7 +15,7 @@
 namespace pinoox\portal;
 
 use pinoox\component\Helpers\Url as ObjectPortal1;
-use pinoox\component\package\parser\UrlParser;
+use pinoox\component\Path\parser\UrlParser;
 use pinoox\component\source\Portal;
 use pinoox\portal\app\AppEngine;
 
@@ -23,14 +23,10 @@ use pinoox\portal\app\AppEngine;
  * @method static ObjectPortal1 set($key, $value)
  * @method static string|null app(?string $packageName = NULL)
  * @method static string replaceToSlash(string $url, array|string $search = array (  0 => '\\',  1 => '>',))
- * @method static string prefix(\pinoox\component\package\reference\ReferenceInterface|string $url, string $prefix)
- * @method static ObjectPortal2 parse(string $name)
- * @method static ObjectPortal3 reference(\pinoox\component\package\reference\ReferenceInterface|string $url)
- * @method static string get(\pinoox\component\package\reference\ReferenceInterface|string $url = '')
- * @method static ObjectPortal4 prefixReference(\pinoox\component\package\reference\ReferenceInterface|string $url, string $prefix)
- * @method static string prefixName(\pinoox\component\package\reference\ReferenceInterface|string $url, string $prefix)
- * @method static \pinoox\component\package\parser\UrlParser ___parser()
- * @method static \pinoox\component\package\parser\UrlParser ___parser()
+ * @method static string prefix(\pinoox\component\Path\reference\ReferenceInterface|string $url, string $prefix)
+ * @method static string get(\pinoox\component\Path\reference\ReferenceInterface|string $url = '')
+ * @method static string prefixName(\pinoox\component\Path\reference\ReferenceInterface|string $url, string $prefix)
+ * @method static \pinoox\component\Path\parser\UrlParser ___parser()
  * @method static \pinoox\component\Helpers\Url ___()
  *
  * @see \pinoox\component\Helpers\Url

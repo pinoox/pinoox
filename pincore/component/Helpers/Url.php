@@ -15,9 +15,9 @@ namespace pinoox\component\Helpers;
 
 
 use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\package\parser\UrlParser;
-use pinoox\component\package\reference\ReferenceInterface;
-use pinoox\component\package\reference\UrlReference;
+use pinoox\component\Path\parser\UrlParser;
+use pinoox\component\Path\reference\ReferenceInterface;
+use pinoox\component\Path\reference\UrlReference;
 
 class Url
 {

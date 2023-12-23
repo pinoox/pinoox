@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\package\reference;
+namespace pinoox\component\Path\reference;
 
 class UrlReference implements ReferenceInterface
 {

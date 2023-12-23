@@ -194,7 +194,7 @@ class Dir
      */
     public static function ds($path)
     {
-        return str_replace(['\\', '>'], '/', $path);
+        return str_replace('\\', '/', $path);
     }
 
 }

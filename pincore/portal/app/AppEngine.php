@@ -26,13 +26,13 @@ use pinoox\portal\Pinker;
 
 /**
  * @method static bool stable(string $packageName)
- * @method static ObjectPortal2 routes(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
- * @method static ObjectPortal1 config(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
- * @method static bool exists(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
- * @method static AppManager manager(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
+ * @method static ObjectPortal2 routes(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
+ * @method static ObjectPortal1 config(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
+ * @method static bool exists(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
+ * @method static AppManager manager(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
  * @method static AppEngine add($packageName, $path)
- * @method static ManagerInterface path(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
- * @method static bool supports(\pinoox\component\package\reference\ReferenceInterface|string $packageName)
+ * @method static ManagerInterface path(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
+ * @method static bool supports(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
  * @method static array all()
  * @method static \pinoox\component\package\engine\AppEngine ___()
  *

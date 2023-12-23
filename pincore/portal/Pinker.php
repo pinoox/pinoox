@@ -14,8 +14,8 @@
 
 namespace pinoox\portal;
 
-use pinoox\component\package\reference\PathReference;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\PathReference;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\source\Portal;
 use pinoox\component\store\baker\Pinker as ObjectPortal1;
 
@@ -88,7 +88,7 @@ class Pinker extends Portal
 
 	public static function ds(string $path): string
 	{
-		return str_replace(['/', '\\'], '/', $path);
+		return str_replace('\\', '/', $path);
 	}
 
 

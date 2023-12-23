@@ -11,10 +11,8 @@
  */
 
 
-namespace pinoox\component\package\reference;
+namespace pinoox\component\Path\reference;
 
-
-use pinoox\component\package\loader\LoaderInterface;
 
 class PathReference implements ReferenceInterface
 {

@@ -11,9 +11,9 @@
  */
 
 
-namespace pinoox\component\package\parser;
+namespace pinoox\component\Path\parser;
 
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\ReferenceInterface;
 
 interface ParserInterface
 {

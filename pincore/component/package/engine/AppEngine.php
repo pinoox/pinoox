@@ -19,7 +19,7 @@ use pinoox\component\package\loader\ArrayLoader;
 use pinoox\component\package\loader\ChainLoader;
 use pinoox\component\package\loader\LoaderInterface;
 use pinoox\component\package\loader\PackageLoader;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\Path\Manager\PathManager;
 use pinoox\component\router\Router;
 use pinoox\component\store\config\Config;

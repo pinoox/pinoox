@@ -15,7 +15,7 @@ namespace pinoox\component\package;
 
 
 use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\router\Router;
 use pinoox\component\store\config\ConfigInterface;
 

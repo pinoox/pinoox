@@ -6,5 +6,5 @@
  *
  */
 
-include_once __DIR__ . DIRECTORY_SEPARATOR . 'pincore' . DIRECTORY_SEPARATOR . 'bootstrap.php';
+include_once __DIR__ . '/bootstrap.php';
 

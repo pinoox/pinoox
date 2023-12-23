@@ -11,11 +11,12 @@
  */
 
 
-namespace pinoox\component\Path\Manager;
+namespace pinoox\component\Path;
 
 
-interface ManagerInterface
+use pinoox\component\Path\reference\ReferenceInterface;
+
+interface PathInterface
 {
-    public function get(string $path = ''): string;
-    public function canonicalize(string $path): string;
+    public function get(string|ReferenceInterface $path = ''): string;
 }

@@ -60,7 +60,7 @@ class Lang
         $key = HelperString::firstDelete($key, '~');
         $keys = explode('.', $key);
         $filename = $keys[0];
-        $filename = str_replace(['/', '\\'], '>', $filename);
+        $filename = str_replace('\\', '/', $filename);
 
         if ($isApp) {
             $app = (empty(self::$app)) ? App::package() : self::$app;
@@ -151,7 +151,7 @@ class Lang
         $default = '{' . $value . '}';
         $info = explode('.', $value);
         $filename = array_shift($info);
-        $filename = str_replace(['/', '\\'], '>', $filename);
+        $filename = str_replace( '\\', '/', $filename);
 
         if (HelperString::firstHas($filename, '~')) {
             $filename = HelperString::firstDelete($filename, '~');

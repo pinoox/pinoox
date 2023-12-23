@@ -12,6 +12,7 @@
 
 namespace pinoox\component\package;
 
+use Closure;
 use Exception;
 use pinoox\component\store\config\ConfigInterface;
 use pinoox\component\package\engine\AppEngine;
@@ -65,7 +66,33 @@ class App
      */
     public function setLayer(AppLayer $appLayer)
     {
-        $this->appLayer = $appLayer;
+        $this->appLayer->setPath($appLayer->getPath());
+        $this->appLayer->setPackageName($appLayer->getPackageName());
+    }
+
+    /**
+     * @param string $packageName
+     * @param Closure $closure
+     * @param string $path
+     * @return mixed
+     * @throws Exception
+     */
+    public function meeting(string $packageName, Closure $closure, string $path = ''): mixed
+    {
+        if (!$this->exists($packageName))
+            throw new Exception('package `' . $packageName . '` not found!');
+
+        $mainLayer = new AppLayer($this->path(), $this->package());
+
+        $this->setLayer(new AppLayer($path, $packageName));
+        if (!is_callable($closure))
+            throw new Exception('the value must be of function type');
+
+        $result = $closure();
+
+        $this->setLayer($mainLayer);
+
+        return $result;
     }
 
     /**
@@ -168,7 +195,7 @@ class App
      * @param mixed $value
      * @return Config|null
      */
-    public function add(string $key, mixed $value): ?Config
+    public function add(string $key, mixed $value): ?ConfigInterface
     {
         $packageName = $this->appLayer?->getPackageName();
         if (empty($packageName))
@@ -183,7 +210,7 @@ class App
      *
      * @return Config|null
      */
-    public function save(): ?Config
+    public function save(): ?ConfigInterface
     {
         $packageName = $this->appLayer?->getPackageName();
         if (empty($packageName))

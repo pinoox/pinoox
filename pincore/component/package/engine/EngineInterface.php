@@ -16,7 +16,7 @@ namespace pinoox\component\package\engine;
 
 use pinoox\component\Path\Manager\ManagerInterface;
 use pinoox\component\store\config\ConfigInterface;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\router\Router;
 use RuntimeException;
 

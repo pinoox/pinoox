@@ -15,8 +15,8 @@
 namespace pinoox\portal;
 
 use pinoox\component\lang\source\FileLangSource;
-use pinoox\component\package\reference\PathReference;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\PathReference;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\source\Portal;
 
 /**

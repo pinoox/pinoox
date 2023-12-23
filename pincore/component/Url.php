@@ -120,7 +120,7 @@ class Url
                 $link = Str::firstDelete($link, self::site());
             }
 
-            $link = str_replace(['\\', '>'], '/', $link);
+            $link = str_replace('\\', '/', $link);
             $link = Str::firstDelete($link, '/');
             $result = $result . $link;
         }

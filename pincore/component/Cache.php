@@ -104,7 +104,7 @@ class Cache
             return;
         }
 
-        $filename = str_replace(['/', '\\'], '>', $name);
+        $filename = str_replace( '\\', '/', $name);
         $filename = HelperString::firstDelete($filename, '!');
 
         if (HelperString::firstHas($filename, '~')) {
@@ -162,7 +162,7 @@ class Cache
         $pointer = $isInfo ? 'info' : 'data';
         $info = explode('.', $value);
         $filename = array_shift($info);
-        $filename = str_replace(['/', '\\'], '>', $filename);
+        $filename = str_replace('\\', '/', $filename);
 
         if (HelperString::firstHas($filename, '~')) {
             $filename = HelperString::firstDelete($filename, '~');
@@ -384,7 +384,7 @@ class Cache
         $key = HelperString::firstDelete($key, '~');
         $keys = explode('.', $key);
         $filename = $keys[0];
-        $filename = str_replace(['/', '\\'], '>', $filename);
+        $filename = str_replace( '\\', '/', $filename);
 
         if ($isApp) {
             $app = (empty(self::$app)) ? App::package() : self::$app;

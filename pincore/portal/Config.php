@@ -15,7 +15,7 @@
 namespace pinoox\portal;
 
 use pinoox\component\File;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\ReferenceInterface;
 use pinoox\component\source\Portal;
 use pinoox\component\store\config\Config as ObjectPortal1;
 use pinoox\component\store\config\data\DataManager;

@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\package\parser;
+namespace pinoox\component\Path\parser;
 
 
 use pinoox\component\Helpers\Str;
-use pinoox\component\package\reference\UrlReference;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\UrlReference;
+use pinoox\component\Path\reference\ReferenceInterface;
 
 class UrlParser implements ParserInterface
 {

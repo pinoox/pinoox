@@ -11,24 +11,15 @@
  */
 
 
-namespace pinoox\component\package\parser;
+namespace pinoox\component\Path\parser;
 
 
 use pinoox\component\Helpers\Str;
-use pinoox\component\package\reference\PathReference;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\reference\PathReference;
+use pinoox\component\Path\reference\ReferenceInterface;
 
 class PathParser implements ParserInterface
 {
-    public function __construct(private ?string $packageName = null)
-    {
-    }
-
-    public function getPackageName(): ?string
-    {
-        return $this->packageName;
-    }
-
     public function parse(ReferenceInterface|string $name): ReferenceInterface
     {
         if ($name instanceof ReferenceInterface) {
@@ -40,7 +31,7 @@ class PathParser implements ParserInterface
             $app = $parts[0];
             $path = $parts[1];
         } else {
-            $app = $this->packageName;
+            $app = null;
             $path = $parts[0];
             if (Str::firstHas($path, '~')) {
                 $app = '~';

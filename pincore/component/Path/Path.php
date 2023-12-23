@@ -11,33 +11,29 @@
  */
 
 
-namespace pinoox\component\Helpers;
+namespace pinoox\component\Path;
 
-
+use pinoox\component\package\AppLayer;
 use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\package\parser\PathParser;
-use pinoox\component\package\reference\PathReference;
-use pinoox\component\package\reference\ReferenceInterface;
+use pinoox\component\Path\parser\PathParser;
+use pinoox\component\Path\reference\PathReference;
+use pinoox\component\Path\reference\ReferenceInterface;
+use pinoox\component\Path\Manager\PathManager;
 
-class Path
+class Path implements PathInterface
 {
     /**
      * @var string[]
      */
     private array $paths = [];
 
-    /**
-     * @var string|null
-     */
-    private ?string $packageName;
-
     public function __construct(
-        private PathParser $parser,
-        private EngineInterface $appEngine,
-        private string $basePath
+        private readonly string          $basePath,
+        private readonly PathParser      $parser,
+        private readonly EngineInterface $appEngine,
+        private readonly AppLayer        $appLayer
     )
     {
-        $this->packageName = $this->parser->getPackageName();
     }
 
 
@@ -49,7 +45,7 @@ class Path
      */
     public function app(?string $packageName = null): ?string
     {
-        $packageName = !is_null($packageName) ? $packageName : $this->packageName;
+        $packageName = !is_null($packageName) ? $packageName : $this->appLayer->getPackageName();
         try {
             return $this->appEngine->path($packageName);
         } catch (\Exception $e) {
@@ -65,54 +61,46 @@ class Path
      * @return string
      * @throws \Exception
      */
-    public function get(string|ReferenceInterface $path = ''): string
+    public function get(string|ReferenceInterface $path = '',string $package = ''): string
     {
         $parser = $this->reference($path);
+        $package = empty($package)? $parser->getPackageName() : $package;
         $key = $parser->get();
 
         if (isset($this->paths[$key]))
             return $this->paths[$key];
 
-        $basePath = $this->getBasePath($parser->getPackageName());
-        $value = !empty($parser->getPath()) ? $basePath . '/' . $parser->getPath() : $basePath;
-        $value = $this->ds($value);
+        $pathManager = $this->getManager($package);
+        $value = !empty($parser->getPath()) ? $parser->getPath() : '';
+        $value = $pathManager->get($value);
         return $this->paths[$key] = $value;
     }
 
-    public function set($key, $value): Path
+    public function set($key, $value): static
     {
         $this->paths[$key] = $value;
         return $this;
     }
 
 
-    private function getBasePath(?string $packageName = null): string
+    /**
+     * @throws \Exception
+     */
+    private function getManager(?string $packageName = null): PathManager
     {
+        $pathManager = new PathManager();
+        $currentPackage = $this->appLayer->getPackageName();
         if ($packageName === '~') {
-            $basePath = $this->basePath;
-        } else if ($packageName === 'pincore') {
-            $basePath = $this->basePath . '/pincore/';
-        } else if (is_null($packageName) && $this->packageName && $this->appEngine->exists($this->packageName)) {
-            $basePath = $this->appEngine->path($this->packageName);
+            $pathManager->setBasePath($this->basePath);
+        } else if (is_null($packageName) && $currentPackage && $this->appEngine->exists($currentPackage)) {
+            $pathManager->setBasePath($this->appEngine->path($currentPackage));
         } else if ($packageName && $this->appEngine->exists($packageName)) {
-            $basePath = $this->appEngine->path($packageName);
+            $pathManager->setBasePath($this->appEngine->path($packageName));
         } else {
             throw new \Exception('file not found!');
         }
 
-        return Str::lastDelete($basePath, '/');
-    }
-
-
-    /**
-     * Convert string path by a directory separator
-     *
-     * @param string $path
-     * @return string
-     */
-    public function ds(string $path): string
-    {
-        return str_replace(['\\', '>'], '/', $path);
+        return $pathManager;
     }
 
     public function parse(string $name): ReferenceInterface
@@ -136,6 +124,9 @@ class Path
         return $reference->get();
     }
 
+    /**
+     * @throws \Exception
+     */
     public function prefix(string|ReferenceInterface $path, string $prefix): string
     {
         $reference = $this->prefixReference($path, $prefix);
@@ -153,7 +144,7 @@ class Path
             $path);
     }
 
-    public function reference(string|ReferenceInterface $path) : ReferenceInterface
+    public function reference(string|ReferenceInterface $path): ReferenceInterface
     {
         if (!($path instanceof ReferenceInterface))
             $path = $this->parser->parse($path);
