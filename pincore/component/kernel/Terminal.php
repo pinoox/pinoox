@@ -64,8 +64,8 @@ class Terminal
     private function loadTerminals(string $path, ?string $package = null)
     {
         $path = Str::ds($path);
-        if (!Str::lastHas($path, DIRECTORY_SEPARATOR))
-            $path .= DIRECTORY_SEPARATOR;
+        if (!Str::lastHas($path, '/'))
+            $path .= '/';
         if (!is_dir($path . 'terminal'))
             return;
         $finder = new Finder();

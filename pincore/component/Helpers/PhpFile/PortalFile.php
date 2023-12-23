@@ -52,8 +52,8 @@ class PortalFile extends PhpFile
 
     private function buildPortalPath(): void
     {
-        $path = $this->portalFolder . '\\' . $this->classname . '.php';
-        $this->portalPath = $this->replaceDirectorySepartor($path, DS);
+        $path = $this->portalFolder . '/' . $this->classname . '.php';
+        $this->portalPath = $this->replaceDirectorySepartor($path, '/');
     }
 
 
@@ -83,9 +83,9 @@ class PortalFile extends PhpFile
         $this->service = $service;
     }
 
-    private function replaceDirectorySepartor($path, $replace = DS)
+    private function replaceDirectorySepartor($path, $replace = '/')
     {
-        return str_replace(['\\', '/', '>'], $replace, $path);
+        return str_replace('\\', $replace, $path);
     }
 
     private function buildPackage($input): void

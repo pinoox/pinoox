@@ -401,6 +401,6 @@ class Str
 
     public static function ds(string $path): string
     {
-        return str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $path);
+        return str_replace( '\\', '/', $path);
     }
 }

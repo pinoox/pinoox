@@ -43,7 +43,7 @@ class TestCreateCommand extends Terminal
         $testName = $input->getArgument('TestName');
         $subFolder = $input->getOption('unit') ? 'Unit' : 'Feature';
 
-        $exportPath = 'tests' . DS . $subFolder . DS . $testName . '.php';
+        $exportPath = 'tests/' . $subFolder . '/' . $testName . '.php';
 
         if (file_exists($exportPath)) {
             $this->error($testName . "Test file already exists");

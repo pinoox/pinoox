@@ -43,7 +43,7 @@ class TestCommand extends Terminal
 
         $this->info('Running tests...');
 
-        $command = Path::get('~') . DS . 'vendor' . DS . 'bin' . DS . 'pest ';
+        $command = Path::get('~')  . '/vendor/bin/pest ';
 
         if ($input->getOption('filter'))
             $command .= ' --filter=' . $input->getOption('filter');

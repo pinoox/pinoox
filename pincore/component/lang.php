@@ -19,7 +19,7 @@ class Lang
 {
     private static $data = [];
     private static $tempData = [];
-    private static $lang = PINOOX_DEFAULT_LANG;
+    private static $lang = 'en';
     private static $app = null;
 
     public static function exists($lang,$app = null)

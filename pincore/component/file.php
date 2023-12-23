@@ -33,7 +33,7 @@ class File
     public static function rename($file, $newName)
     {
         if (!file_exists($file)) return false;
-        $path = dirname($file) . DIRECTORY_SEPARATOR;
+        $path = dirname($file) . '/';
 
         $r = @rename($file, $path . $newName);
 
@@ -71,8 +71,8 @@ class File
     {
 
         $data = 'no access ...';
-        $pathIndex = $folder . DIRECTORY_SEPARATOR . 'index.html';
-        $pathHtaccess = $folder . DIRECTORY_SEPARATOR . '.htaccess';
+        $pathIndex = $folder . '/index.html';
+        $pathHtaccess = $folder . '/.htaccess';
 
         if (is_dir($folder)) {
             if ($safe) {
@@ -197,7 +197,7 @@ class File
         $paths = array_filter($paths);
         $paths = array_diff($paths, array(".", ".."));
         foreach ($paths as $file) {
-            $file = $directory . DIRECTORY_SEPARATOR . $file;
+            $file = $directory . '/' . $file;
             if (is_dir($file)) {
                 self::remove($file);
             } else {
@@ -205,7 +205,7 @@ class File
                     self::remove_file($file);
             }
         }
-        $pathHtAccess = $directory . DIRECTORY_SEPARATOR . '.htaccess';
+        $pathHtAccess = $directory . '/.htaccess';
         if (file_exists($pathHtAccess)) {
             self::remove_file($pathHtAccess);
         }
@@ -359,7 +359,7 @@ class File
      * @param string $delimiter
      * @return string
      */
-    public static function get_name_by_slice($path, $slice = 0, $delimiter = DIRECTORY_SEPARATOR)
+    public static function get_name_by_slice($path, $slice = 0, $delimiter = '/')
     {
 
         $arrPath = explode($delimiter, $path);
@@ -519,18 +519,16 @@ class File
      * Get folders path
      *
      * @param string $directory
-     * @param string $directory_seperator
+     * @param string $directory_separator
      * @return array
      */
-    public static function get_dir_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR)
+    public static function get_dir_folders(string $directory, string $directory_separator = '/'): array
     {
         if (!file_exists($directory)) return [];
 
-        $dirs = array_map(function ($item) use ($directory_seperator) {
-            return $item . $directory_seperator;
+        return array_map(function ($item) use ($directory_separator) {
+            return $item . $directory_separator;
         }, glob($directory . "*", GLOB_ONLYDIR));
-
-        return $dirs;
     }
 
     /**
@@ -541,7 +539,7 @@ class File
      * @param int $flag
      * @return array
      */
-    public static function get_files_by_pattern($dir, $pattern = '*', $flag = 0)
+    public static function get_files_by_pattern(string $dir, string $pattern = '*', int $flag = 0): array
     {
         if (!file_exists($dir)) return [];
 
@@ -561,7 +559,7 @@ class File
      * @param string $directory_seperator
      * @return array
      */
-    public static function get_pro_directory($dir, $directory_seperator = DIRECTORY_SEPARATOR)
+    public static function get_pro_directory($dir, $directory_seperator = '/')
     {
         $filter = self::$whereDirectory;
         self::$whereDirectory = [];
@@ -602,7 +600,7 @@ class File
      * @param array $no_dirs
      * @return array
      */
-    private static function get_pro_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR, $no_dirs = array())
+    private static function get_pro_folders($directory, $directory_seperator = '/', $no_dirs = array())
     {
         if (!file_exists($directory)) return [];
 
@@ -622,18 +620,18 @@ class File
      * Get all folders
      *
      * @param string $directory
-     * @param string $directory_seperator
+     * @param string $directory_separator
      * @return array
      */
-    private static function get_all_folders($directory, $directory_seperator = DIRECTORY_SEPARATOR)
+    private static function get_all_folders(string $directory, string $directory_separator = '/'): array
     {
         if (!file_exists($directory)) return [];
 
-        $dirs = array_map(function ($item) use ($directory_seperator) {
-            return $item . $directory_seperator;
+        $dirs = array_map(function ($item) use ($directory_separator) {
+            return $item . $directory_separator;
         }, array_filter(glob($directory . "*"), 'is_dir'));
         foreach ($dirs as $dir) {
-            $dirs = array_merge($dirs, self::get_all_folders($dir, $directory_seperator));
+            $dirs = array_merge($dirs, self::get_all_folders($dir, $directory_separator));
         }
 
         return $dirs;

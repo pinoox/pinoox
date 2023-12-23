@@ -42,10 +42,9 @@ class AppRouter extends Portal
 	public static function __register(): void
 	{
 		$path = Loader::basePath().'/pincore';
-		$file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
+		$file = 'config/app/router.config.php';
         $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
 		$config = Config::create($fileStrategy);
-
 		self::__bind(\pinoox\component\package\AppRouter::class)->setArguments([
 		    $config,
 		    AppEngine::__ref(),

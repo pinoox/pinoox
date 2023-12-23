@@ -70,7 +70,7 @@ class pinkerClear extends Console implements CommandInterface
                     $folders = $this->removePinkerFromPath(Dir::path('~apps/' . $this->argument('app_name')), true);
             }
             foreach ($folders as $folder) {
-                $this->success(sprintf('pinker deleted in `%s`.', str_replace(['\\','/'],DIRECTORY_SEPARATOR, $folder)));
+                $this->success(sprintf('pinker deleted in `%s`.', str_replace('\\','/', $folder)));
                 $this->newLine();
             }
             $this->success('all pinker folder deleted.');
@@ -80,9 +80,9 @@ class pinkerClear extends Console implements CommandInterface
 
 	private function removePinkerFromPath($path, $checkSubDire = false){
 	    $folders = [];
-        if( is_dir($path.DIRECTORY_SEPARATOR.'pinker'.DIRECTORY_SEPARATOR)) {
-            $folders[] = $path . DIRECTORY_SEPARATOR . 'pinker' . DIRECTORY_SEPARATOR;
-            File::remove($path . DIRECTORY_SEPARATOR . 'pinker' . DIRECTORY_SEPARATOR);
+        if( is_dir($path.'/pinker/')) {
+            $folders[] = $path .  '/pinker/' ;
+            File::remove($path  . '/pinker/');
         }
         if ($checkSubDire) {
             $dirs = File::get_dir_folders($path);

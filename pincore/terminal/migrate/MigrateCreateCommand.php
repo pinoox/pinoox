@@ -91,7 +91,7 @@ class MigrateCreateCommand extends Terminal
 
         //create filename
         $migrationFilename = $this->toolkit->generateMigrationFileName($fileName);
-        $exportPath = $this->app['migration'] . DS . $migrationFilename;
+        $exportPath = $this->app['migration'] . '/' . $migrationFilename;
 
         try {
             $isCreated = StubGenerator::generate('migration.create.stub', $exportPath, [
@@ -103,7 +103,7 @@ class MigrateCreateCommand extends Terminal
                 //print success messages
                 $this->success('✓ Created Class ' . $this->className);
                 $this->success(' in path: ' . $this->app['migration']);
-                $this->warning(DS . $migrationFilename);
+                $this->warning('/' . $migrationFilename);
                 $this->newLine();
             } else {
                 $this->error('Can\'t generate a new migration class!');

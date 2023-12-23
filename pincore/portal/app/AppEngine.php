@@ -45,19 +45,20 @@ class AppEngine extends Portal
 	public static function __register(): void
 	{
 		//        $path = PINOOX_PATH.'pincore';
-		//        $file = 'config'.DIRECTORY_SEPARATOR.'app'.DIRECTORY_SEPARATOR.'router.config.php';
+		//        $file = 'config/app/router.config.php';
 		//        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
 		//        $config = Config::create($fileStrategy);
 		//
 		$pathApps = Loader::basePath() . '/apps';
 		$pathConfig = 'config/app/source.config.php';
 		$appConfig = Pinker::path($pathConfig,Loader::basePath() . '/pincore');
+        $defaultData = $appConfig->pickup()?? [];
 		self::__bind(\pinoox\component\package\engine\AppEngine::class)
 		    ->setArguments([
 		        $pathApps,
 		        self::file,
 		        Pinker::folder,
-		        $appConfig->pickup(),
+                $defaultData,
 		    ]);
 	}
 

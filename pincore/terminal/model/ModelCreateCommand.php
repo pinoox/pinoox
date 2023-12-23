@@ -70,15 +70,15 @@ class ModelCreateCommand extends Terminal
                 exportPath: $exportPath,
                 className: $this->className,
                 package: $this->app['package'],
-                namespace: $this->app['namespace'] . DS . 'model'
+                namespace: $this->app['namespace'] . '/model'
             );
 
             if ($isCreated) {
                 //print success messages
-                $this->success(sprintf('Model created in "%s"', str_replace(['\\', '/'], DS, $exportPath)));
+                $this->success(sprintf('Model created in "%s"', str_replace('\\', '/', $exportPath)));
                 $this->newLine();
             } else {
-                $this->error(sprintf('Same file exist in "%s"!', str_replace(['\\', '/'], DS, $exportPath)));
+                $this->error(sprintf('Same file exist in "%s"!', str_replace('\\', '/', $exportPath)));
             }
         } catch (\Exception $e) {
             $this->error($e);
@@ -87,7 +87,7 @@ class ModelCreateCommand extends Terminal
 
     private function check()
     {
-        if (file_exists($this->modelFolder . DS . $this->modelFileName)) {
+        if (file_exists($this->modelFolder . '/' . $this->modelFileName)) {
             $this->error('☓  The model name "' . $this->className . '" already exists ');
         }
     }
@@ -98,6 +98,6 @@ class ModelCreateCommand extends Terminal
         $this->className = Str::toCamelCase($this->className);
         $this->modelFileName = $this->className . '.php';
 
-        return $this->modelFolder . DS . $this->modelFileName;
+        return $this->modelFolder . '/' . $this->modelFileName;
     }
 }

@@ -15,7 +15,9 @@ namespace pinoox\component\Helpers;
 
 
 use pinoox\component\store\config\data\DataManager;
+use pinoox\portal\FileSystem;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\Templating\Storage\FileStorage;
 
 class Env
 {
@@ -52,6 +54,10 @@ class Env
     public function register(): void
     {
         $dotenv = new Dotenv();
+        $path = $this->basePath . '/.env';
+        if (!FileSystem::exists($path)) {
+            FileSystem::dumpFile($this->basePath . '/.env', '');
+        }
         $dotenv->bootEnv($this->basePath . '/.env');
 
         if (isset($_SERVER['SYMFONY_DOTENV_VARS']))

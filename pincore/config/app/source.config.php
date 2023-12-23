@@ -38,7 +38,7 @@ return [
     'token' => null,
     'user-type' => null,
     'user' => null,
-    'lang' => PINOOX_DEFAULT_LANG,
+    'lang' => 'en',
     'theme' => 'default',
     'path-theme' => 'theme',
     'name' => 'app',

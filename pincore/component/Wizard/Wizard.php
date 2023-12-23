@@ -16,6 +16,7 @@ use PhpZip\Exception\ZipEntryNotFoundException;
 use PhpZip\Exception\ZipException;
 use PhpZip\ZipFile;
 use pinoox\component\kernel\Exception;
+use pinoox\component\package\engine\EngineInterface;
 use pinoox\portal\Zip;
 
 /**
@@ -23,7 +24,7 @@ use pinoox\portal\Zip;
  *
  * Provides a base class for handling package installation and extraction.
  */
-abstract class Wizard
+abstract class Wizard implements WizardInterface
 {
     /**
      * @var string The path to the package file
@@ -53,7 +54,7 @@ abstract class Wizard
     /**
      * @var string The root path for temporary files
      */
-    protected string $tmpPathRoot = PINOOX_CORE_PATH . 'pinker' . DS . 'wizard_tmp';
+    protected string $tmpPathRoot = 'wizard_tmp';
 
     /**
      * @var string The path to the package directory
@@ -85,6 +86,12 @@ abstract class Wizard
      */
     protected ZipFile $zip;
 
+    public function __construct(
+        protected EngineInterface $appEngine
+    )
+    {
+    }
+
     /**
      * Initializes the path and performs validation.
      *
@@ -110,7 +117,7 @@ abstract class Wizard
     protected function setPackage(): void
     {
         $this->package = $this->info['package'];
-        $this->packagePath = PINOOX_APP_PATH . $this->package . DS;
+        $this->packagePath = $this->appEngine->path($this->package);
     }
 
     /**
@@ -186,10 +193,12 @@ abstract class Wizard
      */
     private function createTmp(): void
     {
-        if (!is_dir($this->tmpPathRoot)) {
-            mkdir($this->tmpPathRoot);
+        $tmpPath = $this->appEngine->path('pinker/' . $this->tmpPathRoot);
+
+        if (!is_dir($tmpPath)) {
+            mkdir($tmpPath);
         }
-        $this->tmpPathPackage = $this->tmpPathRoot . DS . basename($this->filename, '.pin');
+        $this->tmpPathPackage = $tmpPath . '/' . basename($this->filename, '.pin');
         if (!is_dir($this->tmpPathPackage)) {
             mkdir($this->tmpPathPackage);
         }
@@ -261,7 +270,7 @@ abstract class Wizard
      */
     protected function checkUpdate(): bool
     {
-        return $this->isUpdate = file_exists(PINOOX_APP_PATH . $this->package);
+        return $this->isUpdate = $this->appEngine->exists($this->package);
     }
 
     /**
@@ -286,7 +295,7 @@ abstract class Wizard
      */
     protected function getExistsPackageInfo(): bool|array
     {
-        $existsInfo = include PINOOX_APP_PATH . $this->package . DS . $this->targetFile();
+        $existsInfo = include $this->appEngine->path($this->package, $this->targetFile());
         if (empty($existsInfo)) {
             $this->setError('The package is not valid because there is no essential file inside (Doesn\'t exist "' . $this->targetFile() . '" in "' . $this->package . '")');
             return false;
@@ -302,14 +311,19 @@ abstract class Wizard
     protected function loadTargetFileFromPin(): void
     {
         if ($this->type == 'template') {
-            $this->info = json_decode(file_get_contents($this->tmpPathPackage . DS . $this->targetFile()), true);
+            $this->info = json_decode(file_get_contents($this->tmpPathPackage . '/' . $this->targetFile()), true);
         } else {
-            $this->info = include $this->tmpPathPackage . DS . $this->targetFile();
+            $this->info = include $this->tmpPathPackage . '/' . $this->targetFile();
         }
 
         $this->setPackage();
 
         $this->checkUpdate();
+    }
+
+    public function type($type): void
+    {
+        $this->type = $type;
     }
 
     /**

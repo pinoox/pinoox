@@ -68,7 +68,7 @@ class cacheClear extends Console implements CommandInterface
                 $folders = $this->removePinkerFromPath(Dir::path('~apps/'.$this->argument('app_name') ) , true);
         }
 		foreach ($folders as $folder){
-		    $this->success(sprintf('cache clear in `%s`.' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, $folder)));
+		    $this->success(sprintf('cache clear in `%s`.' , str_replace('\\','/', $folder)));
 		    $this->newLine();
         }
         $this->success('all cache cleared.');
@@ -76,9 +76,9 @@ class cacheClear extends Console implements CommandInterface
 
 	private function removePinkerFromPath($path, $checkSubDire = false){
 	    $folders = [];
-        if( is_dir($path.DIRECTORY_SEPARATOR.'pinker'.DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR)) {
-            $folders[] = $path . DIRECTORY_SEPARATOR . 'pinker' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR;
-            File::remove($path . DIRECTORY_SEPARATOR . 'pinker' . DIRECTORY_SEPARATOR.'cache'.DIRECTORY_SEPARATOR);
+        if( is_dir($path.'/pinker/cache/')) {
+            $folders[] = $path .'/pinker/cache/';
+            File::remove($path . '/pinker/cache/');
         }
         if ($checkSubDire) {
             $dirs = File::get_dir_folders($path);

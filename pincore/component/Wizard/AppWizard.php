@@ -10,11 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\wizard;
+namespace pinoox\component\Wizard;
 
 use PhpZip\Exception\ZipException;
 use pinoox\component\kernel\Exception;
 use pinoox\component\migration\Migrator;
+use pinoox\component\package\engine\EngineInterface;
 
 class AppWizard extends Wizard implements WizardInterface
 {
@@ -24,20 +25,7 @@ class AppWizard extends Wizard implements WizardInterface
      */
     private bool $migration = false;
 
-    public function __construct()
-    {
-        $this->type('app');
-    }
-
-    /**
-     * Set the type of package ( app or template)
-     *
-     * @param string $type The type of the wizard.
-     */
-    public function type(string $type)
-    {
-        $this->type = $type;
-    }
+    protected string $type = 'app';
 
     /**
      * Install the package and return the installation result.
@@ -95,7 +83,7 @@ class AppWizard extends Wizard implements WizardInterface
     private function addIcon(): void
     {
         if (!isset($this->info)) return;
-        $this->info['icon_path'] = $this->tmpPathPackage . DS . $this->info['icon'];
+        $this->info['icon_path'] = $this->tmpPathPackage . '/' . $this->info['icon'];
     }
 
     /**
@@ -130,7 +118,7 @@ class AppWizard extends Wizard implements WizardInterface
      */
     public function isInstalled(): bool
     {
-        return is_dir(PINOOX_APP_PATH . $this->package);
+        return $this->appEngine->exists($this->package);
     }
 
     /**

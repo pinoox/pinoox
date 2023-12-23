@@ -73,7 +73,7 @@ class PortalUpdate extends console implements CommandInterface
     {
         $path = $this->getPath($portalName);
         PortalFile::updatePortal($path, $portalName,$packageName);
-        $this->success(sprintf('Portal update in "%s".', str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path)));
+        $this->success(sprintf('Portal update in "%s".', str_replace('\\', '/', $path)));
         $this->newLine();
     }
 

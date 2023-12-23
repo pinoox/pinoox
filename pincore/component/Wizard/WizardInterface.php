@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\wizard;
+namespace pinoox\component\Wizard;
 
 interface WizardInterface
 {
-    public function type(string $type);
+    public function type(string $type): void;
 
     public function install();
 

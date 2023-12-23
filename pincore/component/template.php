@@ -42,7 +42,6 @@ class Template
     private $offViewsList = array();
     private $linkBaseMapAssets = '';
     private $isMinify = false;
-    const DS = DIRECTORY_SEPARATOR;
 
     /*
      * Class Template
@@ -75,22 +74,22 @@ class Template
         self::$folder = App::get('theme');
         self::$pathTheme = App::get('path-theme');
         self::$pathTheme = Dir::path(self::$pathTheme);
-        self::$pathTheme = HelperString::lastDelete(self::$pathTheme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        self::$pathTheme = HelperString::lastDelete(self::$pathTheme, '/') . '/';
         if ($folder != null)
             self::$folder = $folder;
 
         if ($path != null) {
-            if (!$this->characterLastHas($path, DIRECTORY_SEPARATOR)) {
-                $path .= DIRECTORY_SEPARATOR;
+            if (!$this->characterLastHas($path, '/')) {
+                $path .= '/';
             }
             self::$pathTheme = $path;
         }
 
-        $path = HelperString::lastDelete(self::$pathTheme, DIRECTORY_SEPARATOR);
+        $path = HelperString::lastDelete(self::$pathTheme, '/');
         Dir::setTheme(self::$folder, $path);
         Url::setTheme(self::$folder, $path);
 
-        self::$path = self::$pathTheme . self::$folder . DIRECTORY_SEPARATOR;
+        self::$path = self::$pathTheme . self::$folder . '/';
         self::$data['_url'] = Url::link('~' . self::$path);
         self::setBaseUrlMapAssets(self::$data['_url']);
 
@@ -115,9 +114,9 @@ class Template
     public static function loadInfoInTheme($folder = null, $dir = null)
     {
         if (!empty($dir)) {
-            $path = $dir . $folder . DIRECTORY_SEPARATOR;
+            $path = $dir . $folder . '/';
         } else {
-            $path = (!empty($folder)) ? self::$pathTheme . $folder . DIRECTORY_SEPARATOR : self::$path;
+            $path = (!empty($folder)) ? self::$pathTheme . $folder . '/' : self::$path;
 
         }
         $path_options = $path . 'info.json';
@@ -218,7 +217,7 @@ class Template
 
     private static function fixPathSeparator($section)
     {
-        $view = str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $section);
+        $view = str_replace('\\', '/', $section);
         return $view;
     }
 
@@ -841,7 +840,7 @@ class Template
             return $_file;
         } else {
             if (!empty($folder = self::getInfo('extends'))) {
-                $_file = self::$pathTheme . $folder . DIRECTORY_SEPARATOR . $path;
+                $_file = self::$pathTheme . $folder . '/' . $path;
                 if (!self::existsExt($_file)) $_file .= '.php';
                 if (is_file($_file)) {
                     return $_file;
@@ -1007,7 +1006,7 @@ class Template
 
         $templates = [];
         foreach ($names as $name) {
-            $path = self::$pathTheme . $name . self::DS;
+            $path = self::$pathTheme . $name . '/';
             $metaFile = $path . 'meta.json';
 
             if (!is_file($metaFile))

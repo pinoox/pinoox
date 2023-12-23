@@ -44,7 +44,7 @@ abstract class LangSource
 
     public function getLocalePath(): string
     {
-        return $this->getPath() . DS . $this->getLocale() . DS;
+        return $this->getPath() . '/' . $this->getLocale() . '/';
     }
 
     public function getPath(): string

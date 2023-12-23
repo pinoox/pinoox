@@ -146,7 +146,7 @@ class Url
         if ($packageName === '~') {
             $baseUrl = $this->baseUrl;
         } else if ($packageName === 'pincore') {
-            $baseUrl = $this->baseUrl . 'pincore' . DIRECTORY_SEPARATOR;
+            $baseUrl = $this->baseUrl . 'pincore' . '/';
         } else if (is_null($packageName) && $this->appEngine->exists($this->packageName)) {
             $baseUrl = $this->appEngine->url($this->packageName);
         } else if ($packageName && $this->appEngine->exists($packageName)) {
@@ -155,6 +155,6 @@ class Url
             throw new \Exception('file not found!');
         }
 
-        return Str::lastDelete($baseUrl, DIRECTORY_SEPARATOR);
+        return Str::lastDelete($baseUrl, '/');
     }
 }

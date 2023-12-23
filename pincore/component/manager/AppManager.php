@@ -37,11 +37,11 @@ class AppManager
      */
     private array $app;
 
-    private string $defaultMigrationPath = 'database' . DS . 'migrations';
+    private string $defaultMigrationPath = 'database/migrations';
 
     public function __construct()
     {
-        $this->basePath = Loader::basePath() . '/apps' . DS;
+        $this->basePath = Loader::basePath() . '/apps/';
     }
 
     public function getApps(): array
@@ -50,7 +50,7 @@ class AppManager
         $finder->depth(0)->directories()->in($this->basePath);
         foreach ($finder as $folder) {
             $path = $folder->getRealPath();
-            if (!file_exists($path . DS . 'app.php')) continue;
+            if (!file_exists($path . '/app.php')) continue;
 
             $this->apps[] = [
                 'path' => $path,
@@ -89,7 +89,7 @@ class AppManager
         $iterator = $finder->getIterator();
         $iterator->rewind();
         $folder = $iterator->current();
-        $appPath = $folder->getPath() . DS . 'app.php';
+        $appPath = $folder->getPath() . '/app.php';
         if (!file_exists($appPath)) {
             throw new \Exception('The "app.php" file could not found in "' . $packageName . '"');
         };
@@ -98,8 +98,8 @@ class AppManager
 
         $this->injectBasicParams(array: $app,
             package: $packageName,
-            path: $folder->getPath() . DS,
-            migration: $folder->getPath() . DS . $this->getMigrationPath($app),
+            path: $folder->getPath() . '/',
+            migration: $folder->getPath() . '/' . $this->getMigrationPath($app),
             namespace: $this->getNamespace($app)
         );
 
@@ -121,12 +121,12 @@ class AppManager
     private function getMigrationPath($app): string
     {
         if (empty($app)) return false;
-        return str_replace(['/', '\\'], DS, $app['migration']['path'] ?? $this->defaultMigrationPath);
+        return str_replace( '\\', '/', $app['migration']['path'] ?? $this->defaultMigrationPath);
     }
 
     private function getNamespace($app): string
     {
-        return 'pinoox' . DS . 'app' . DS . $app['package'];
+        return 'pinoox\\app\\' . $app['package'];
     }
 
     private function injectBasicParams(array &$array = null, string $package = null, string $path = null, string $migration = null, string $namespace = null): void

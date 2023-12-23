@@ -16,8 +16,8 @@ namespace pinoox\component\Path\Manager;
 abstract class Manager implements ManagerInterface
 {
     private string $basePath;
-    protected string $replaceSeparator = DIRECTORY_SEPARATOR;
-    protected array $signs = ['/', '\\', '>'];
+    protected string $replaceSeparator = '/';
+    protected string|array $signs = '\\';
     protected bool $allowRepeat = false;
 
     public function __construct(string $basePath = '')

@@ -24,7 +24,7 @@ class Upload
     protected static $object = null;
     private static $isStopUpload = false;
     private static $errStopUpload = false;
-    public $dirSeparator = DIRECTORY_SEPARATOR;
+    public $dirSeparator = '/';
     public $isAllType = false;
     public $result = null;
     private $fileInit = null;
@@ -57,7 +57,7 @@ class Upload
      * Example : show all method
      * ^^^^^^^^^^^^^^^^^^^^^^^^^
      * $upload = new Upload('name');
-     * $upload->dirSeparator = DIRECTORY_SEPARATOR;
+     * $upload->dirSeparator = '/';
      * $upload->isAllType = true;
      * $upload->folder("uploads");
      * $upload->sizeUnit("MB");

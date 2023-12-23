@@ -33,7 +33,7 @@ class StubGenerator extends Portal
 
 	private static function getStubsPath(): string
 	{
-		return PINOOX_CORE_PATH . 'stubs' . DS;
+		return PINOOX_CORE_PATH . 'stubs/';
 	}
 
 

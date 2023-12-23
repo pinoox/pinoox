@@ -21,6 +21,7 @@ use pinoox\component\Service;
 use pinoox\portal\Env;
 use pinoox\portal\Dumper;
 use pinoox\portal\Router;
+use Symfony\Component\ErrorHandler\Debug;
 
 class Loader
 {
@@ -32,6 +33,8 @@ class Loader
         self::setBasePath($basePath);
         self::setComposer($loader);
         new LoaderManager($loader);
+
+        Debug::enable();
         Env::register();
         Dumper::register();
 

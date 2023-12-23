@@ -28,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class WizardInstallCommand extends Terminal
 {
-    const PATH = 'pins' . DS;
+    const PATH = 'pins/';
 
     protected function configure(): void
     {

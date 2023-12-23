@@ -199,7 +199,7 @@ class MigrationToolkit
     private function extract($item): array
     {
         $fileName = $this->getFileName($item);
-        $migrationFile = $this->migrationPath . DS . $fileName . '.php';
+        $migrationFile = $this->migrationPath . '/' . $fileName . '.php';
 
         return [$fileName, $migrationFile];
     }

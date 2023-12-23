@@ -26,7 +26,7 @@ class MigrationFile extends PhpFile
     {
         $source = self::source();
 
-        $namespace = str_replace(DS, '\\', $namespace);
+        $namespace = str_replace('/', '\\', $namespace);
         $namespace = $source->addNamespace($namespace);
         $namespace->addUse(Blueprint::class);
         $namespace->addUse(MigrationBase::class);

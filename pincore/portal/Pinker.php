@@ -38,10 +38,10 @@ class Pinker extends Portal
 
 	public static function folder(string $path, string $file): ObjectPortal1
 	{
-		$mainFile = $path . DIRECTORY_SEPARATOR . $file;
-		$mainFile = is_file($mainFile) ? $mainFile : '';
+		$mainFile = $path . '/' . $file;
+        $mainFile = is_file($mainFile) ? $mainFile : '';
 
-		$bakedFile = $path . DIRECTORY_SEPARATOR . self::folder . DIRECTORY_SEPARATOR . $file;
+		$bakedFile = $path . '/' . self::folder . '/' . $file;
 
 		return self::create($mainFile, $bakedFile);
 	}
@@ -88,7 +88,7 @@ class Pinker extends Portal
 
 	public static function ds(string $path): string
 	{
-		return str_replace(['/', '\\', '>'], DIRECTORY_SEPARATOR, $path);
+		return str_replace(['/', '\\'], '/', $path);
 	}
 
 

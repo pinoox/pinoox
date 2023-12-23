@@ -74,9 +74,10 @@ trait ResolvesDumpSource
             }
 
             foreach (self::$adjustableTraces as $name => $key) {
+                $path = str_replace('\\', '/', $traceFile['file']);
                 if (str_ends_with(
-                    $traceFile['file'],
-                    str_replace('/', DIRECTORY_SEPARATOR, $name)
+                    $path,
+                    str_replace('\\', '/', $name)
                 )) {
                     $sourceKey = $traceKey + $key;
                     break;

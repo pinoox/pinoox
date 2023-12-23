@@ -29,7 +29,6 @@ class Console
     private static $CommandEnter = null;
     private static $CommandClass = null;
     private static $ProgressBar = [];
-    const DS = DIRECTORY_SEPARATOR;
 
     private static $foreground_colors = array(
         'black' => '0;30', 'dark_gray' => '1;30',
@@ -723,7 +722,7 @@ class Console
                 if (!$isEnable)
                     continue;
 
-                $commandPath = $path . DIRECTORY_SEPARATOR . 'command' . DIRECTORY_SEPARATOR;
+                $commandPath = $path  . '/command/';
                 if (!is_dir($commandPath))
                     continue;
 
@@ -749,13 +748,13 @@ class Console
         $files = Finder::create()->files()->in($commandPath);
         foreach ($files as $file) {
             $path = $file->getPath();
-            $folders = str_replace($commandPath, '', $file->getPathInfo() . self::DS);
+            $folders = str_replace($commandPath, '', $file->getPathInfo() .'/');
             $baseName = $file->getFilenameWithoutExtension();
             $fileName = $file->getFilename();
             $result[] = [
                 'package_name' => '~',
-                'class' => 'pinoox\command\\' . $folders . $baseName,
-                'file' => $path . self::DS . $fileName
+                'class' => 'pinoox\\command\\' . $folders . $baseName,
+                'file' => $path . '/' . $fileName
             ];
         }
         return $result;

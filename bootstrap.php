@@ -12,12 +12,8 @@
 
 use pinoox\component\kernel\Loader;
 
-define('DS', DIRECTORY_SEPARATOR);
 define('PINOOX_START', microtime(true));
-define('PINOOX_DEFAULT_LANG', 'en');
-define('PINOOX_PATH', dirname(__DIR__) . DS);
-define('PINOOX_CORE_PATH', __DIR__ . DS);
-define('PINOOX_APP_PATH', realpath(__DIR__ . DS . '..') . DS . 'apps' . DS);
+define('PINOOX_CORE_PATH', __DIR__ . '/pincore/');
 define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 
 
@@ -33,8 +29,5 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 */
 
 
-$composer = require dirname(__DIR__) . '/vendor/autoload.php';
-
-\Symfony\Component\ErrorHandler\Debug::enable();
-
-Loader::boot($composer,dirname(__DIR__));
+$composer = require __DIR__ . '/vendor/autoload.php';
+Loader::boot($composer,__DIR__);

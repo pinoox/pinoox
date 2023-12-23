@@ -109,10 +109,10 @@ class createModel extends console implements CommandInterface
                 ->build()
                 ->export($this->modelPath);
             if ($builder->isSuccess()) {
-                $this->success(sprintf('Model created in "%s".', str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $this->modelPath)));
+                $this->success(sprintf('Model created in "%s".', str_replace('\\', '/', $this->modelPath)));
                 $this->newLine();
             } else {
-                $this->error(sprintf('Same file exist in "%s"!', str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $this->modelPath)));
+                $this->error(sprintf('Same file exist in "%s"!', str_replace('\\', '/', $this->modelPath)));
             }
         } catch (\Exception $e) {
             $this->error($e);

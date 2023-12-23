@@ -71,7 +71,7 @@ class appBuilder extends Console implements CommandInterface
             $this->appPath = Dir::path('~apps/' . $this->package);
             $ignoreFiles = $this->find_gitignore_files();
             $rules = $this->parse_git_ignore_files($ignoreFiles);
-            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . DIRECTORY_SEPARATOR);
+            list($allFolders, $allFiles) = $this->getAllFilesAndFoldersOfApp($this->appPath . '/');
             list($acceptedFolders, $acceptedFiles) = $this->checkingFilesAcceptGitIgnore($allFolders, $allFiles, $rules);
             unset($allFolders, $allFiles, $rules, $ignoreFiles);
             $this->makeBuildFile($acceptedFolders, $acceptedFiles, $this->package);
@@ -82,7 +82,7 @@ class appBuilder extends Console implements CommandInterface
             $this->newLine();
             sleep(1);
             gc_collect_cycles();
-            File::remove(str_replace(DIRECTORY_SEPARATOR.$this->package , DIRECTORY_SEPARATOR.$this->tempPackageName.$this->package ,$this->appPath ));
+            File::remove(str_replace('/'.$this->package , '/'.$this->tempPackageName.$this->package ,$this->appPath ));
             $this->error('Some error happened!');
         }
     }
@@ -188,7 +188,7 @@ class appBuilder extends Console implements CommandInterface
         foreach ($folders as $index => $folder) {
             $numCheck = 0;
             foreach ($ignoreRules as $ignoreRule) {
-                if (!$this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $ignoreRule . DIRECTORY_SEPARATOR . '**')) {
+                if (!$this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . '/' . $ignoreRule . '/' . '**')) {
                     $acceptedFolder[$index] = $folder;
                     $tempAcceptedFolder[$index] = str_replace($this->appPath, '', $folder);
                     $this->nextStepProgressBar();
@@ -201,15 +201,15 @@ class appBuilder extends Console implements CommandInterface
             }
             foreach ( $implodeDirs as $implodeDir ){
                 $lastStatus = isset($acceptedFolder[$index]);
-                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
-                $implodeDirsIn = explode(DIRECTORY_SEPARATOR, $implodeDir);
+                $implodeDir = str_replace('\\'  ,  '/', $implodeDir);
+                $implodeDirsIn = explode('/', $implodeDir);
                 $lastImplodeDirIn = "";
                 foreach ( $implodeDirsIn as $ti => $implodeDirIn ) {
                     if ( $ti == 0)
                         $lastImplodeDirIn = $implodeDirIn;
                     if ( $ti > 0 )
-                        $lastImplodeDirIn .= DIRECTORY_SEPARATOR.$implodeDirIn;
-                    if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . DIRECTORY_SEPARATOR . $lastImplodeDirIn . DIRECTORY_SEPARATOR . '**')) {
+                        $lastImplodeDirIn .= '/'.$implodeDirIn;
+                    if ($this->isPathCurrent(str_replace($this->appPath, '', $folder), '**' . '/' . $lastImplodeDirIn . '/' . '**')) {
                         $acceptedFolder[$index] = $folder;
                     } elseif ( ! $lastStatus ) {
                             unset($acceptedFolder[$index]);
@@ -223,7 +223,7 @@ class appBuilder extends Console implements CommandInterface
         foreach ($files as $index => $file) {
             $numCheck = 0;
             foreach ($ignoreRules as $ignoreRule) {
-                if (!$this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $ignoreRule)) {
+                if (!$this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . '/' . $ignoreRule)) {
                     $fileCheck = str_replace($this->appPath, '', $file);
                     $baseName = basename($fileCheck);
                     if ( in_array(substr($fileCheck , 0 , -1 * strlen($baseName)) , $tempAcceptedFolder) or substr($fileCheck , 0 , -1 * strlen($baseName)) == "\\"){
@@ -242,8 +242,8 @@ class appBuilder extends Console implements CommandInterface
                 }
             }
             foreach ( $implodeDirs as $implodeDir ){
-                $implodeDir = str_replace(['\\' , '/'] ,  DIRECTORY_SEPARATOR, $implodeDir);
-                if ($this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir . DIRECTORY_SEPARATOR . '**') or $this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . DIRECTORY_SEPARATOR . $implodeDir)) {
+                $implodeDir = str_replace('\\'  ,  '/', $implodeDir);
+                if ($this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . '/' . $implodeDir . '/' . '**') or $this->isPathCurrent(str_replace($this->appPath, '', $file), '**' . '/' . $implodeDir)) {
                     $acceptedFiles[$index] = $file;
                 }
                 $this->nextStepProgressBar();
@@ -255,18 +255,17 @@ class appBuilder extends Console implements CommandInterface
 
     private function makeBuildFile($folders, $files, $packageName)
     {
-        $DS = DIRECTORY_SEPARATOR;
         $tempPackageName =$this->tempPackageName.$packageName;
         $this->startProgressBar(count($folders) + count($files) + 1 , 'Creating Temp files.');
-        File::make_folder(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ), false,0777 , false);
+        File::make_folder(str_replace('/'.$packageName , '/'.$tempPackageName,$this->appPath ), false,0777 , false);
         $this->nextStepProgressBar();
         foreach ($folders as $folder){
-            File::generate(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin' , 'test');
-            unlink(str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $folder) .$DS . 'make.pin');
+            File::generate(str_replace('/'.$packageName.'/' , '/'.$tempPackageName.'/' , $folder) .'/' . 'make.pin' , 'test');
+            unlink(str_replace('/'.$packageName.'/' , '/'.$tempPackageName.'/' , $folder) .'/' . 'make.pin');
             $this->nextStepProgressBar();
         }
         foreach ($files as $file){
-            @copy($file , str_replace($DS.$packageName.$DS , $DS.$tempPackageName.$DS , $file));
+            @copy($file , str_replace('/'.$packageName.'/' , '/'.$tempPackageName.'/' , $file));
             $this->nextStepProgressBar();
         }
         $this->finishProgressBar();
@@ -278,19 +277,19 @@ class appBuilder extends Console implements CommandInterface
         $setupFileName = $setupFileNameShouldBe;
         $setupFileIndex = 2;
         while (true) {
-            if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
+            if ( file_exists(Dir::path('~') . '/' . $setupFileName . '.pin')) {
                 if ( $this->option('rewrite') == 'rewrite' or $this->option('rewrite') == 'r' )
-                    unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                    unlink(Dir::path('~') . '/' . $setupFileName . '.pin');
                 elseif ( $this->option('rewrite') == 'version' or $this->option('rewrite') == 'v'  ){
                     if ( isset($app['version_code']) ){
                         $setupFileName = sprintf('%s (v_%d)', $setupFileNameShouldBe, $app['version_code']);
-                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
-                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        if ( file_exists(Dir::path('~') . '/' . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . '/' . $setupFileName . '.pin');
                         }
                     }elseif ( isset($app['version']) ){
                         $setupFileName = sprintf('%s (v_%d)', $setupFileNameShouldBe, $app['version']);
-                        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin')) {
-                            unlink(Dir::path('~') . $DS . $setupFileName . '.pin');
+                        if ( file_exists(Dir::path('~') . '/' . $setupFileName . '.pin')) {
+                            unlink(Dir::path('~') . '/' . $setupFileName . '.pin');
                         }
                     } else {
                         $setupFileName = sprintf('%s (%d)', $setupFileNameShouldBe, $setupFileIndex);
@@ -304,15 +303,15 @@ class appBuilder extends Console implements CommandInterface
                 break;
         }
         $this->nextStepProgressBar();
-        $zip = $this->Zip(str_replace($DS.$packageName , $DS.$tempPackageName , $this->appPath) , Dir::path('~') .$DS. $setupFileName . '.pin');
+        $zip = $this->Zip(str_replace('/'.$packageName , '/'.$tempPackageName , $this->appPath) , Dir::path('~') .'/'. $setupFileName . '.pin');
         $this->nextStepProgressBar();
         sleep(1);
         gc_collect_cycles();
-        File::remove(str_replace($DS.$packageName , $DS.$tempPackageName,$this->appPath ));
+        File::remove(str_replace('/'.$packageName , '/'.$tempPackageName,$this->appPath ));
         $this->nextStepProgressBar();
-        if ( file_exists(Dir::path('~') . $DS . $setupFileName . '.pin') and $zip ){
+        if ( file_exists(Dir::path('~') . '/' . $setupFileName . '.pin') and $zip ){
             $this->finishProgressBar();
-            $this->success(sprintf('Setup file maked in `%s`.' , str_replace(['\\','/'],DIRECTORY_SEPARATOR, Dir::path('~') . $setupFileName . '.pin')));
+            $this->success(sprintf('Setup file maked in `%s`.' , str_replace('\\','/', Dir::path('~') . $setupFileName . '.pin')));
         } else {
             $this->danger('Something got error during make build file. please do it manually!');
             $this->error('Some error happened!');
@@ -336,8 +335,8 @@ class appBuilder extends Console implements CommandInterface
         // (tj. wildcard na konci matchuje i '/')
 
         $currentPath = ltrim($currentPath, '/');
-        $mask = str_replace(['\\','/'] , DIRECTORY_SEPARATOR , trim($mask) );
-        $mask = HelperString::lastDelete($mask , DIRECTORY_SEPARATOR);
+        $mask = str_replace('\\' , '/' , trim($mask) );
+        $mask = HelperString::lastDelete($mask , '/');
         $mask = ltrim( $mask, '/');
 
         if ($mask === '*') {
@@ -360,26 +359,26 @@ class appBuilder extends Console implements CommandInterface
             return false;
         }
 
-        $source = str_replace('\\', DIRECTORY_SEPARATOR, realpath($source));
+        $source = str_replace('\\', '/', realpath($source));
 
         if (is_dir($source) === true) {
             $files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::SELF_FIRST);
 
             foreach ($files as $file) {
 
-                $file = str_replace('\\', DIRECTORY_SEPARATOR, $file);
+                $file = str_replace('\\', '/', $file);
 
                 // Ignore "." and ".." folders
-                if (in_array(substr($file, strrpos($file, DIRECTORY_SEPARATOR) + 1), array('.', '..')))
+                if (in_array(substr($file, strrpos($file, '/') + 1), array('.', '..')))
                     continue;
 
                 $file = realpath($file);
 
                 if (is_dir($file) === true) {
-                    $zip->addEmptyDir(str_replace($source . DIRECTORY_SEPARATOR, '', $file . DIRECTORY_SEPARATOR));
+                    $zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
                     $this->nextStepProgressBar();
                 } else if (is_file($file) === true) {
-                    $zip->addFromString(str_replace($source . DIRECTORY_SEPARATOR, '', $file), file_get_contents($file));
+                    $zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
                     $this->nextStepProgressBar();
                 }
             }

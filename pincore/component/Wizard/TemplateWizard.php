@@ -10,23 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\wizard;
+namespace pinoox\component\Wizard;
 
 use PhpZip\Exception\ZipException;
 use pinoox\component\kernel\Exception;
 
 class TemplateWizard extends Wizard implements WizardInterface
 {
-
-    public function __construct()
-    {
-        $this->type('template');
-    }
-
-    public function type(string $type)
-    {
-        $this->type = $type;
-    }
+    protected string $type = 'template';
 
     public function open(string $path): Wizard
     {
@@ -66,6 +57,6 @@ class TemplateWizard extends Wizard implements WizardInterface
 
     private function getThemePath(): string
     {
-        return $this->packagePath . 'theme' . DS . $this->info['name'] . DS;
+        return $this->packagePath . '/theme/' . $this->info['name'] . '/';
     }
 }

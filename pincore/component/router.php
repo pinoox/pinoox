@@ -744,7 +744,7 @@ class Router
     private static function loadLang()
     {
         $lang = App::get('lang');
-        $lang = !empty($lang) ? $lang : PINOOX_DEFAULT_LANG;
+        $lang = !empty($lang) ? $lang : 'en';
         Lang::change($lang);
     }
 

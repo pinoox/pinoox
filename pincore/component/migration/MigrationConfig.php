@@ -18,14 +18,13 @@ use pinoox\portal\DB;
 
 class MigrationConfig
 {
-    const DS = DIRECTORY_SEPARATOR;
     private array|null $errors = null;
     public string|null $appPath = null;
     public string|null $migrationPath = null;
     public string|null $namespace = null;
     public string|null $package = null;
     private array|null $config;
-    public string|null $folders = self::DS . 'database' . self::DS . 'migrations' . self::DS;
+    public string|null $folders =  '\\database\\migrations\\';
 
 
     public function load(string $path, string $package): MigrationConfig
@@ -38,7 +37,7 @@ class MigrationConfig
         if ($this->package == 'pincore') {
             $this->namespace = 'pinoox' . $this->folders;
         } else {
-            $this->namespace = 'pinoox' . self::DS . 'app' . self::DS . $this->package . $this->folders;
+            $this->namespace = 'pinoox\\app\\' . $this->package . $this->folders;
         }
 
         //check database

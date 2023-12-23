@@ -63,8 +63,8 @@ class Wizard
         $filename = File::fullname($pinFile);
         $size = File::size($pinFile);
         $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
-        $configFile = $dir . DIRECTORY_SEPARATOR . 'app.php';
+        $dir = File::dir($pinFile) . '/' . $name;
+        $configFile = $dir  . '/app.php';
 
         if (!is_file($configFile)) {
             Zip::openFile($pinFile)->extractTo($dir,[
@@ -187,7 +187,7 @@ class Wizard
     public static function deletePackageFile($pinFile)
     {
         $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
+        $dir = File::dir($pinFile) . '/' . $name;
         File::remove_file($pinFile);
         File::remove($dir);
     }
@@ -383,8 +383,8 @@ class Wizard
         $filename = File::fullname($pinFile);
         $size = File::size($pinFile);
         $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . DIRECTORY_SEPARATOR . $name;
-        $metaFile = $dir . DIRECTORY_SEPARATOR . 'meta.json';
+        $dir = File::dir($pinFile) . '/' . $name;
+        $metaFile = $dir  . '/meta.json';
 
         if (!is_file($metaFile)) {
             Zip::addEntries('meta.json');

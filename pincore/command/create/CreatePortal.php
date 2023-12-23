@@ -74,7 +74,7 @@ class CreatePortal extends console implements CommandInterface
             ) = $this->getStructure($portalName);
 
         PortalFile::createPortal($path, $portalName, $serviceName, $packageName, $namespace);
-        $this->success(sprintf('Portal created in "%s".', str_replace(['\\', '/'], DIRECTORY_SEPARATOR, $path)));
+        $this->success(sprintf('Portal created in "%s".', str_replace('\\', '/', $path)));
         $this->newLine();
     }
 
