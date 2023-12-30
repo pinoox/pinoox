@@ -11,11 +11,10 @@
  */
 
 
-namespace pinoox\component\router;
+namespace Pinoox\Component\Router;
 
 use Symfony\Component\Routing\RouteCollection as RouteCollectionSymfony;
 
 class RouteCollection extends RouteCollectionSymfony
 {
-
 }

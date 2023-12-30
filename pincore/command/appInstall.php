@@ -1,12 +1,12 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\Console;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Response;
-use pinoox\component\Router;
+use App\com_pinoox_manager\Component\Wizard;
+use Pinoox\Component\Console;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Response;
+use Pinoox\Component\Router;
 
 
 class appInstall extends Console implements CommandInterface

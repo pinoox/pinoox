@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\kernel\resolver;
+namespace Pinoox\Component\Kernel\Resolver;
 
 
-use pinoox\component\database\Model;
-use pinoox\component\Http\Request;
-use pinoox\portal\DB;
+use Pinoox\Component\Database\Model;
+use Pinoox\Component\Http\Request;
+use Pinoox\Portal\DB;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 

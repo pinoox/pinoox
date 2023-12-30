@@ -10,20 +10,20 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\component\Config;
-use pinoox\component\Date;
-use pinoox\component\Lang;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Request;
-use pinoox\component\Response;
-use pinoox\component\Uploader;
-use pinoox\component\Url;
-use pinoox\component\User;
-use pinoox\component\Validation;
-use pinoox\model\PinooxDatabase;
-use pinoox\model\UserModel;
+use Pinoox\Component\Config;
+use Pinoox\Component\Date;
+use Pinoox\Component\Lang;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Request;
+use Pinoox\Component\Response;
+use Pinoox\Component\Uploader;
+use Pinoox\Component\Url;
+use Pinoox\Component\User;
+use Pinoox\Component\Validation;
+use Pinoox\Model\PinooxDatabase;
+use Pinoox\Model\UserModel;
 
 class UserController extends MasterConfiguration
 {

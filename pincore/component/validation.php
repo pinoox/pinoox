@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 use Closure;
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\Helpers\HelperString;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Helpers\HelperString;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -22,7 +22,7 @@ use ReflectionMethod;
  * Validation Help you to check validity of input data in a simple way
  *
  * Class Validation
- * @package pinoox\component
+ * @package Pinoox\Component
  */
 class Validation
 {

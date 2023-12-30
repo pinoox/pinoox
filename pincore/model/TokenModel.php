@@ -12,13 +12,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\model;
+namespace Pinoox\Model;
 
-use pinoox\component\database\Model;
-use pinoox\component\Date;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\Str;
-use pinoox\component\Token;
+use Pinoox\Component\Database\Model;
+use Pinoox\Component\Date;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Token;
 
 class TokenModel extends Model
 {

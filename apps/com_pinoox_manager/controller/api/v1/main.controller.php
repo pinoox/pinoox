@@ -10,13 +10,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\model\LangModel;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Config;
-use pinoox\component\Lang;
-use pinoox\component\Response;
+use App\com_pinoox_manager\Model\LangModel;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Config;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Response;
 
 class MainController extends LoginConfiguration
 {

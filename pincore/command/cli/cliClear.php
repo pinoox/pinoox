@@ -1,11 +1,11 @@
 <?php
 
-namespace pinoox\command\cli;
+namespace Pinoox\Command\cli;
 
 
-use pinoox\component\Config;
-use pinoox\component\console;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Config;
+use Pinoox\Component\console;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class cliClear extends console implements CommandInterface

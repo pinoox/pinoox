@@ -1,8 +1,8 @@
 <?php
 
-namespace pinoox\component\kernel\listener;
+namespace Pinoox\Component\Kernel\Listener;
 
-use pinoox\component\kernel\event\ResponseEvent;
+use Pinoox\Component\Kernel\Event\ResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ContentLengthListener implements EventSubscriberInterface

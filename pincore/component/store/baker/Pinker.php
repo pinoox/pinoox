@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\store\baker;
+namespace Pinoox\Component\Store\Baker;
 
-use pinoox\component\Helpers\HelperAnnotations;
-use pinoox\component\Helpers\HelperObject;
-use pinoox\component\Helpers\Str;
+use Pinoox\Component\Helpers\HelperAnnotations;
+use Pinoox\Component\Helpers\HelperObject;
+use Pinoox\Component\Helpers\Str;
 
 /**
  * Class to manage Pinker data

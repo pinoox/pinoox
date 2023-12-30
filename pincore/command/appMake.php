@@ -1,11 +1,11 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class appMake extends Console implements CommandInterface
@@ -74,7 +74,7 @@ class appMake extends Console implements CommandInterface
         if ( is_dir($this->appPath) )
             self::error('Package name is exist!');
         $this->package = $this->argument('package_name');
-        $this->nameSpace = 'pinoox\app\\'.$this->argument('package_name').'\\';
+        $this->nameSpace = 'App\\'.$this->argument('package_name').'\\';
 
         try {
             if ($this->makeDefaultFolders()
@@ -192,7 +192,7 @@ class appMake extends Console implements CommandInterface
         $code = "<?php \n";
         $code .= $this->makeCopyWriteCode();
         $code .= $this->makeNameSpace('model');
-        $code .= "use pinoox\model\PinooxDatabase;\n\n";
+        $code .= "use Pinoox\Model\PinooxDatabase;\n\n";
         $code .= "class TestModel extends PinooxDatabase\n";
         $code .= "{\n\n";
         $code .= "\tpublic static function fetch_all()\n";
@@ -208,9 +208,9 @@ class appMake extends Console implements CommandInterface
         $code = "<?php \n";
         $code .= $this->makeCopyWriteCode();
         $code .= $this->makeNameSpace('controller');
-        $code .= "use pinoox\component\interfaces\ControllerInterface;\n";
-        $code .= "use pinoox\component\Response;\n";
-        $code .= "use pinoox\component\Template;\n\n";
+        $code .= "use Pinoox\Component\Interfaces\ControllerInterface;\n";
+        $code .= "use Pinoox\Component\Response;\n";
+        $code .= "use Pinoox\Component\Template;\n\n";
         $code .= "class MasterController implements ControllerInterface\n";
         $code .= "{\n\n";
         $code .= "\tprotected static \$template;\n\n";
@@ -230,7 +230,7 @@ class appMake extends Console implements CommandInterface
         $code2 = "<?php \n";
         $code2 .= $this->makeCopyWriteCode();
         $code2 .= $this->makeNameSpace('controller');
-        $code2 .= "use pinoox\portal\Config;\n\n";
+        $code2 .= "use Pinoox\Portal\Config;\n\n";
         $code2 .= "class MainController extends MasterController\n";
         $code2 .= "{\n\n";
         $code2 .= "\tpublic function _main()\n";

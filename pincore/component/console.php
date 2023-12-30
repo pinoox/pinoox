@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\package\AppBuilder;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Package\AppBuilder;
 use ReflectionClass;
-use pinoox\portal\Finder;
+use Pinoox\Portal\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
 class Console
@@ -737,7 +737,7 @@ class Console
                         $className = HelperString::lastDelete($className, '.php');
                         $result[] = [
                             'package_name' => $packageName,
-                            'class' => 'pinoox\app\\' . $packageName . '\command\\' . $className,
+                            'class' => 'App\\' . $packageName . '\command\\' . $className,
                             'file' => $commandFile->getRealPath()
                         ];
                     }
@@ -753,7 +753,7 @@ class Console
             $fileName = $file->getFilename();
             $result[] = [
                 'package_name' => '~',
-                'class' => 'pinoox\\command\\' . $folders . $baseName,
+                'class' => 'Pinoox\\Command\\' . $folders . $baseName,
                 'file' => $path . '/' . $fileName
             ];
         }
@@ -794,7 +794,7 @@ class Console
     {
         $this->cli = config('~cli');
         if (empty($packageName) && isset($this->cli['package']) && $this->cli['package'] != '~') {
-            $this->cli['namespace'] = 'pinoox\\app\\' . $this->cli['package'];
+            $this->cli['namespace'] = 'App\\' . $this->cli['package'];
 
             $this->success('Using cli config ');
             $this->info('`' . $this->cli['package'] . '`');
@@ -818,7 +818,7 @@ class Console
             $app = AppBuilder::init($package)->get();
             if (is_null($app)) $this->error(sprintf('Can not find app with name `%s`!', $package));
 
-            $namespace = "pinoox\\app\\" . $package . "\\";
+            $namespace = "App\\" . $package . "\\";
             $app_path = Dir::path('~apps/' . $package);
 
             return ['path' => $app_path, 'package' => $package, 'namespace' => $namespace];

@@ -1,12 +1,12 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class appBuilder extends Console implements CommandInterface

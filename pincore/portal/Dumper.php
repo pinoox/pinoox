@@ -12,22 +12,22 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static register()
- * @method static \pinoox\component\Dumper\Dumper ___()
+ * @method static \Pinoox\Component\Dumper\Dumper ___()
  *
- * @see \pinoox\component\Dumper\Dumper
+ * @see \Pinoox\Component\Dumper\Dumper
  */
 class Dumper extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\Dumper\Dumper::class)->setArguments([
+		self::__bind(\Pinoox\Component\Dumper\Dumper::class)->setArguments([
             Loader::basePath()
 		]);
 	}

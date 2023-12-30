@@ -1,6 +1,6 @@
 <?php
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

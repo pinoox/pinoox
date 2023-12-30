@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Http;
+namespace Pinoox\Component\Http;
 
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\router\Collection;
-use pinoox\component\router\Route;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Router\Collection;
+use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 
 class Request extends RequestSymfony

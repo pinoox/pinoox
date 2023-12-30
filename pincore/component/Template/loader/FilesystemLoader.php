@@ -11,12 +11,11 @@
  */
 
 
-namespace pinoox\component\template\loader;
+namespace Pinoox\Component\Template\Loader;
 
 
 use Symfony\Component\Templating\Storage\Storage;
 use Symfony\Component\Templating\TemplateReferenceInterface;
-use Twig\Error\LoaderError;
 use Twig\Loader\LoaderInterface as LoaderInterfaceTwig;
 use Symfony\Component\Templating\Loader\LoaderInterface as LoaderInterfaceSymfony;
 use Twig\Source;

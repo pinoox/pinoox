@@ -12,9 +12,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static copy(string $originFile, string $targetFile, bool $overwriteNewerFiles = false)

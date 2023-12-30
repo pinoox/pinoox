@@ -1,13 +1,13 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class makeTest extends Console implements CommandInterface
@@ -98,9 +98,9 @@ class makeTest extends Console implements CommandInterface
         if ( $this->package == '~' )
             $this->testPath = Dir::path('~tests');
         
-        $this->nameSpaceOfTestFolder =  'pinoox\app\\'.$this->package.'\\tests';
+        $this->nameSpaceOfTestFolder =  'App\\'.$this->package.'\\tests';
         if ( $this->package == '~' )
-            $this->nameSpaceOfTestFolder = 'pinoox\tests';
+            $this->nameSpaceOfTestFolder = 'Pinoox\Tests';
 
         $Test = explode('\\' , str_replace('/' , '\\' , $this->argument('test_case') ));
         $this->test = array_pop($Test);

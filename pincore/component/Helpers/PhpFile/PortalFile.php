@@ -11,17 +11,17 @@
  */
 
 
-namespace pinoox\component\Helpers\PhpFile;
+namespace Pinoox\Component\Helpers\PhpFile;
 
 use Nette\PhpGenerator\ClassLike;
 use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
-use pinoox\component\File;
-use pinoox\component\Helpers\Str;
-use pinoox\component\kernel\Container;
-use pinoox\component\source\Portal;
-use pinoox\portal\AppManager;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\AppManager;
 use Symfony\Component\Console\Input\InputInterface;
 use ReflectionFunction;
 use ReflectionMethod;
@@ -99,7 +99,7 @@ class PortalFile extends PhpFile
 
     private function buildNameSpace(): void
     {
-        $namespace = $this->app['namespace'] . '\\' . 'portal';
+        $namespace = $this->app['namespace'] . '\\' . 'Portal';
         if (!empty($this->subFolder)) {
             $namespace .= '\\' . $this->subFolder;
         }
@@ -113,7 +113,7 @@ class PortalFile extends PhpFile
 
     private function buildPortalFolder(): void
     {
-        $portalFolder = $this->app['path'] . 'portal';
+        $portalFolder = $this->app['path'] . 'Portal';
         if (!empty($this->subFolder)) {
             $portalFolder .= '/' . $this->subFolder;
         }

@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\Http;
+namespace Pinoox\Component\Http;
 
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Symfony\Component\HttpClient\HttpClient;

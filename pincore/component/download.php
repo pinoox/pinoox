@@ -10,9 +10,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\HelperHeader;
 
 /**
  * Download & fetch file

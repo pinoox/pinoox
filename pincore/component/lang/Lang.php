@@ -12,11 +12,11 @@
  */
 
 
-namespace pinoox\component\lang;
+namespace Pinoox\Component\Lang;
 
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\kernel\Exception;
-use pinoox\component\lang\source\LangSource;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Lang\Source\LangSource;
 
 class Lang
 {

@@ -9,11 +9,11 @@
  * @link http://www.erfanebrahimi.ir/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\command;
+namespace Pinoox\Command;
 
-use pinoox\component\Console;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 class help extends Console implements CommandInterface
 {

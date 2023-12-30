@@ -1,15 +1,15 @@
 <?php
 
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Console;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Lang;
-use pinoox\component\Validation;
-use pinoox\portal\Config;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Console;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Validation;
+use Pinoox\Portal\Config;
 
 
 class routerMake extends Console implements CommandInterface

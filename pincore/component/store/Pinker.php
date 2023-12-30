@@ -11,16 +11,16 @@
  */
 
 
-namespace pinoox\component\store;
+namespace Pinoox\Component\Store;
 
-use pinoox\component\Helpers\HelperAnnotations;
-use pinoox\component\File;
-use pinoox\component\Helpers\HelperObject;
-use pinoox\component\Helpers\Str;
+use Pinoox\Component\Helpers\HelperAnnotations;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperObject;
+use Pinoox\Component\Helpers\Str;
 
 /**
  * Pinoox Baker
- * @package pinoox\component\store
+ * @package Pinoox\Component\Store
  */
 class Pinker
 {

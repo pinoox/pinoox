@@ -10,13 +10,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\package\App;
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\HelperString;
-use pinoox\portal\Config;
+use Pinoox\Component\Package\App;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Portal\Config;
 
 class Template
 {

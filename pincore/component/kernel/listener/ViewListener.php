@@ -1,12 +1,12 @@
 <?php
 
-namespace pinoox\component\kernel\listener;
+namespace Pinoox\Component\Kernel\Listener;
 
-use pinoox\component\template\ViewInterface;
-use pinoox\portal\View;
+use Pinoox\Component\Template\ViewInterface;
+use Pinoox\Portal\View;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use pinoox\component\Http\JsonResponse;
-use pinoox\component\Http\Response;
+use Pinoox\Component\Http\JsonResponse;
+use Pinoox\Component\Http\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 

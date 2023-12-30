@@ -11,15 +11,15 @@
  */
 
 
-namespace pinoox\command\create;
+namespace Pinoox\Command\create;
 
 
 use JetBrains\PhpStorm\ArrayShape;
-use pinoox\component\Console;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Helpers\PhpFile\PortalFile;
-use pinoox\component\Helpers\Str;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\PhpFile\PortalFile;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 class CreatePortal extends console implements CommandInterface
 {
@@ -85,7 +85,7 @@ class CreatePortal extends console implements CommandInterface
         $folder = implode('\\', $parts);
         $className = ucfirst($portalName);
 
-        $basePath = $this->cli['path'] . '\\portal\\';
+        $basePath = $this->cli['path'] . '\\Portal\\';
         $basePath = !empty($folder) ? $basePath . $folder . '\\' : $basePath;
 
         $namespace = $this->cli['namespace'];

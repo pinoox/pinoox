@@ -1,13 +1,13 @@
 <?php
 
-namespace pinoox\command\migrate;
+namespace Pinoox\Command\migrate;
 
 
-use pinoox\component\console;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\migration\MigrationConfig;
-use pinoox\component\migration\MigrationQuery;
-use pinoox\component\migration\MigrationToolkit;
+use Pinoox\Component\console;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Migration\MigrationConfig;
+use Pinoox\Component\Migration\MigrationQuery;
+use Pinoox\Component\Migration\MigrationToolkit;
 
 
 class migrateStatus extends console implements CommandInterface

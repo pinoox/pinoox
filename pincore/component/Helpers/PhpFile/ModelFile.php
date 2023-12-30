@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\Helpers\PhpFile;
+namespace Pinoox\Component\Helpers\PhpFile;
 
-use pinoox\component\database\Model;
-use pinoox\component\File;
+use Pinoox\Component\Database\Model;
+use Pinoox\Component\File;
 
 class ModelFile extends PhpFile
 {

@@ -10,14 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\router;
+namespace Pinoox\Component\Router;
 
-use pinoox\component\Helpers\Str;
-use pinoox\portal\app\App;
+use Pinoox\Component\Helpers\Str;
 
 class Collection
 {
     public RouteCollection $routes;
+    private ControllerBuilder $controllerBuilder;
 
     public function __construct(
         public string       $path = '',
@@ -29,9 +29,11 @@ class Collection
         public array        $defaults = [],
         public array        $filters = [],
         public string       $name = '',
+        public array       $data = [],
     )
     {
 
+        $this->controllerBuilder = new ControllerBuilder($controller, 'App\\' . 'package' . '\\Controller');
         $this->controller = $this->buildController($controller);
         if (is_string($methods) && !empty($methods)) {
             $methods = Str::multiExplode(['|', ',', '-'], $methods);
@@ -45,6 +47,10 @@ class Collection
         return $this->routes;
     }
 
+    public function getData(): array
+    {
+        return $this->data;
+    }
 
     public function buildMethods($methods): array
     {
@@ -59,11 +65,7 @@ class Collection
 
     public function buildController($controller)
     {
-        if (is_string($controller) && !class_exists($controller) && !Str::firstHas($controller, 'pinoox')) {
-            $controller = 'pinoox\\app\\' . App::package() . '\\controller\\' . $controller;
-        }
-
-        return $controller;
+        return $this->controllerBuilder->controller($controller);
     }
 
     public function addRoute(Route $route)
@@ -73,31 +75,7 @@ class Collection
 
     public function buildAction($action)
     {
-        if (is_string($action) || is_array($action)) {
-            if (is_string($action))
-                $parts = Str::multiExplode(['@', '::', ':'], $action);
-            else
-                $parts = $action;
-
-            $countParts = count($parts);
-            if ($countParts == 1) {
-                $method = $parts[0];
-                if (is_callable($method)) {
-                    return $method;
-                } else if (!empty($this->controller)) {
-                    $class = $this->controller;
-                    return [$class, $parts[0]];
-                } else {
-                    return $this->buildController($method);
-                }
-            } else if ($countParts == 2) {
-                $class = $this->buildController($parts[0]);
-                $method = $parts[1];
-                return [$class, $method];
-            }
-        }
-
-        return $action;
+        return $this->controllerBuilder->action($action);
     }
 
     public function add(Route|Collection $input)
@@ -113,7 +91,6 @@ class Collection
     {
 //        if (!empty($collection->path))
 //            $collection->routes->addPrefix($collection->path);
-
         $this->routes->addCollection($collection->routes);
     }
 

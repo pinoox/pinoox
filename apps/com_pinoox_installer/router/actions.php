@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use pinoox\portal\View;
-use function pinoox\router\{action};
-use pinoox\app\com_pinoox_installer\controller\MainController;
-use pinoox\component\Helpers\HelperHeader;
+use Pinoox\Portal\View;
+use function Pinoox\Router\{action};
+use App\com_pinoox_installer\Controller\MainController;
+use Pinoox\Component\Helpers\HelperHeader;
 
 action('home', [MainController::class,'home']);
 action('pinooxjs', [MainController::class,'pinooxjs']);

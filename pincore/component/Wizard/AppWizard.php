@@ -10,12 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Wizard;
+namespace Pinoox\Component\Wizard;
 
 use PhpZip\Exception\ZipException;
-use pinoox\component\kernel\Exception;
-use pinoox\component\migration\Migrator;
-use pinoox\component\package\engine\EngineInterface;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Migration\Migrator;
 
 class AppWizard extends Wizard implements WizardInterface
 {

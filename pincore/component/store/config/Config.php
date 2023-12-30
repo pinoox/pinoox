@@ -11,11 +11,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\store\config;
+namespace Pinoox\Component\Store\Config;
 
-use pinoox\component\store\config\data\DataArray;
-use pinoox\component\store\config\strategy\ConfigStrategyInterface;
-use pinoox\component\store\baker;
+use Pinoox\Component\Store\Config\Data\DataArray;
+use Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface;
 
 class Config implements ConfigInterface
 {

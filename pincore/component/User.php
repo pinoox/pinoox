@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 use Illuminate\Database\Eloquent\Builder;
-use pinoox\portal\app\App;
-use pinoox\model\TokenModel;
-use pinoox\model\UserModel;
+use Pinoox\Portal\App\App;
+use Pinoox\Model\TokenModel;
+use Pinoox\Model\UserModel;
 
 class User
 {

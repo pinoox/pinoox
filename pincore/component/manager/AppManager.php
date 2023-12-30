@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\manager;
+namespace Pinoox\Component\Manager;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\package\AppBuilder;
-use pinoox\portal\Config;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Package\AppBuilder;
+use Pinoox\Portal\Config;
 use Symfony\Component\Finder\Finder;
 
 class AppManager
@@ -126,7 +126,7 @@ class AppManager
 
     private function getNamespace($app): string
     {
-        return 'pinoox\\app\\' . $app['package'];
+        return 'App\\' . $app['package'];
     }
 
     private function injectBasicParams(array &$array = null, string $package = null, string $path = null, string $migration = null, string $namespace = null): void

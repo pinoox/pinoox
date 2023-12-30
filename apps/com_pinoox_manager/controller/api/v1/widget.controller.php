@@ -9,13 +9,13 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\component\app\AppProvider;
-use pinoox\component\Date;
-use pinoox\component\File;
-use pinoox\component\Response;
-use pinoox\component\System;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Date;
+use Pinoox\Component\File;
+use Pinoox\Component\Response;
+use Pinoox\Component\System;
 
 class WidgetController extends LoginConfiguration
 {

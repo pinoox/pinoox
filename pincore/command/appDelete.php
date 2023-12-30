@@ -1,11 +1,11 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\Console;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Router;
+use App\com_pinoox_manager\Component\Wizard;
+use Pinoox\Component\Console;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Router;
 
 
 class appDelete extends Console implements CommandInterface

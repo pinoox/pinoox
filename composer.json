@@ -41,8 +41,8 @@
     },
     "autoload": {
         "psr-4": {
-            "pinoox\\": "pincore/",
-            "pinoox\\app\\": "apps/"
+            "Pinoox\\": "pincore/",
+            "App\\": "apps/"
         },
         "files": [
             "pincore/functions/base.php",
@@ -51,7 +51,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "pinoox\\test\\": "tests/"
+            "Pinoox\\Test\\": "tests/"
         }
     },
     "bin": [

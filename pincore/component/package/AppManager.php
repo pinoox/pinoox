@@ -11,13 +11,13 @@
  */
 
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 
-use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\router\Router;
-use pinoox\component\store\config\ConfigInterface;
+use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Router\Router;
+use Pinoox\Component\Store\Config\ConfigInterface;
 
 class AppManager
 {
@@ -33,9 +33,14 @@ class AppManager
         return $this->appEngine->stable($this->packageName);
     }
 
-    public function routes(string $path = ''): Router
+    public function router(string $path = ''): Router
     {
-        return $this->appEngine->routes($this->packageName, $path);
+        return $this->appEngine->router($this->packageName, $path);
+    }
+
+    public function getAllRouters(): array
+    {
+        return $this->appEngine->getAllRouters($this->packageName);
     }
 
     public function config(): ConfigInterface

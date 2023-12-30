@@ -1,6 +1,6 @@
 <?php
 
-namespace pinoox\component\kernel\event;
+namespace Pinoox\Component\Kernel\Event;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;

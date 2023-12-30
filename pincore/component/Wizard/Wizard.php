@@ -10,14 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\wizard;
+namespace Pinoox\Component\Wizard;
 
 use PhpZip\Exception\ZipEntryNotFoundException;
 use PhpZip\Exception\ZipException;
 use PhpZip\ZipFile;
-use pinoox\component\kernel\Exception;
-use pinoox\component\package\engine\EngineInterface;
-use pinoox\portal\Zip;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Portal\Zip;
 
 /**
  * Pinoox Wizard

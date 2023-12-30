@@ -12,19 +12,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\Path\reference\PathReference;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\source\Portal;
-use pinoox\component\store\baker\Pinker as ObjectPortal1;
+use Pinoox\Component\Path\Reference\PathReference;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Store\Baker\Pinker as ObjectPortal1;
 
 /**
- * @method static \pinoox\component\store\baker\Pinker create(string $mainFile = '', string $bakedFile = '', ?\pinoox\component\store\baker\FileHandlerInterface $fileHandler = NULL)
+ * @method static \Pinoox\Component\Store\Baker\Pinker create(string $mainFile = '', string $bakedFile = '', ?\Pinoox\Component\Store\Baker\FileHandlerInterface $fileHandler = NULL)
  * @method static array build($data, array $info = [])
- * @method static \pinoox\component\store\baker\Pinker ___()
+ * @method static \Pinoox\Component\Store\Baker\Pinker ___()
  *
- * @see \pinoox\component\store\baker\Pinker
+ * @see \Pinoox\Component\Store\Baker\Pinker
  */
 class Pinker extends Portal
 {

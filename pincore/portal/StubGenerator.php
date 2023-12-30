@@ -12,22 +12,22 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static StubGenerator generate(string $stubFileName, string $outputPath, array $data = [])
  * @method static string get(string $stubFileName, array $data = [])
- * @method static \pinoox\component\StubGenerator object()
+ * @method static \Pinoox\Component\StubGenerator object()
  *
- * @see \pinoox\component\StubGenerator
+ * @see \Pinoox\Component\StubGenerator
  */
 class StubGenerator extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\StubGenerator::class)->setArguments([self::getStubsPath()]);
+		self::__bind(\Pinoox\Component\StubGenerator::class)->setArguments([self::getStubsPath()]);
 	}
 
 

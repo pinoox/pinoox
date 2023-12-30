@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 use Closure;
 use Exception;
-use pinoox\component\Dir;
-use pinoox\component\kernel\Boot;
+use Pinoox\Component\Dir;
+use Pinoox\Component\Kernel\Boot;
 
 class App1
 {

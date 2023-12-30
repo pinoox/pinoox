@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\store;
+namespace Pinoox\Component\Store;
 
 use Symfony\Component\HttpFoundation\Session\Session as SessionSymfony;
 

@@ -11,13 +11,13 @@
  */
 
 
-namespace pinoox\component\router;
+namespace Pinoox\Component\Router;
 
-use pinoox\component\Helpers\Str;
+use Pinoox\Component\Helpers\Str;
 use Closure;
-use pinoox\component\Http\RedirectResponse;
-use pinoox\component\kernel\url\UrlGenerator;
-use pinoox\component\package\AppManager;
+use Pinoox\Component\Http\RedirectResponse;
+use Pinoox\Component\Kernel\Url\UrlGenerator;
+use Pinoox\Component\Package\AppManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\RequestContext;
 
@@ -32,27 +32,32 @@ class Router
     /**
      * @var Collection[]
      */
-    private array $collections = [];
+    public array $collections = [];
 
     /**
      * @var array
      */
     private array $actions = [];
 
+    /**
+     * @var array
+     */
+    private array $data = [];
+
     private AppManager $app;
     private UrlGeneratorInterface $urlGenerator;
 
-    private const FOR_ROUTE = 'route';
+    private RouteName $routeName;
 
-    /**
-     * all route names
-     *
-     * @var array
-     */
-    public array $names = [];
-
-    public function __construct(AppManager $app)
+    public function __construct(RouteName $routeName, AppManager $app, ?Collection $collection = null)
     {
+        $this->routeName = $routeName;
+        if (!empty($collection)) {
+            $this->current = 0;
+            $this->collections[0] = $collection;
+        } else {
+            $this->collection();
+        }
         $this->changeApp($app);
     }
 
@@ -93,21 +98,23 @@ class Router
      * @param array $defaults
      * @param array $filters
      */
-    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = []): void
+    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], array $data = [],
+    ): void
     {
         if (is_array($path)) {
             foreach ($path as $routeName => $p) {
-                $routeName = is_string($routeName) ? $name . $routeName : $name . $this->generateName($this->currentCollection());
+                $routeName = is_string($routeName) ? $name . $routeName : $name . $this->routeName->generate($this->currentCollection()->name);
                 $path = isset($p['path']) ? $p['path'] : $p;
                 $action = isset($p['action']) ? $p['action'] : $action;
                 $methods = isset($p['methods']) ? $p['methods'] : $methods;
                 $defaults = isset($p['defaults']) ? $p['defaults'] : $defaults;
                 $filters = isset($p['filters']) ? $p['filters'] : $filters;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters);
+                $data = isset($p['data']) ? $p['data'] : $data;
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $data);
             }
         } else {
             $name = $this->buildName($name);
-            $route = $this->names[$name] = new Route(
+            $route = new Route(
                 collection: $this->currentCollection(),
                 path: $path,
                 action: $action,
@@ -115,11 +122,17 @@ class Router
                 methods: $methods,
                 defaults: $defaults,
                 filters: $filters,
-                priority: count($this->names),
+                priority: $this->count(),
+                data: $this->buildData($data),
             );
 
             $this->currentCollection()->add($route);
         }
+    }
+
+    private function buildData(array $data = []): array
+    {
+        return !empty($data) ? $data : $this->data;
     }
 
     /**
@@ -161,8 +174,10 @@ class Router
      * @param array $defaults
      * @param array $filters
      * @param string $prefixName
+     * @param array $data
+     * @return Collection
      */
-    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = ''): void
+    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = []): Collection
     {
         $cast = $this->current;
         $prefixName = $this->buildPrefixNameCollection($prefixName);
@@ -182,6 +197,7 @@ class Router
             defaults: $defaults,
             filters: $filters,
             name: $prefixName,
+            data: $this->buildData($data),
         );
 
         $this->callRoutes($routes);
@@ -191,6 +207,8 @@ class Router
             $this->current = $collection->cast;
             $this->collections[$this->current]->add($collection);
         }
+
+        return $collection;
     }
 
     /**
@@ -209,6 +227,27 @@ class Router
         } else {
             $this->loadFiles($routes);
         }
+    }
+
+    public function build($path, $routes, array $data = []): Router
+    {
+        $this->data = $data;
+        $collection = $this->collection(
+            path: $path,
+            routes: $routes
+        );
+        $collection->cast = -1;
+        $this->data = [];
+        return new Router($this->routeName, $this->app, $collection);
+    }
+
+    /**
+     * @param string $key
+     * @return Collection|Collection[]
+     */
+    public function list(string $key = ''): Collection|array
+    {
+        return !empty($key) ? @$this->list[$key] : $this->list;
     }
 
     /**
@@ -356,29 +395,15 @@ class Router
     }
 
     /**
-     * generate Name
-     *
-     * @param Collection|null $collection
-     * @return string
-     */
-    public function generateName(?Collection $collection = null): string
-    {
-        $collection = !empty($collection) ? $collection : Router::currentCollection();
-        $prefix = $collection->name;
-        return $this->generateRandomName($prefix);
-    }
-
-    /**
      * build name for route
      *
      * @param string $name
      * @return string
      */
-    private function buildName(string $name): string
+    private function buildName(string $name = ''): string
     {
         $prefix = $this->currentCollection()->name;
-        $name = !empty($name) ? $name : self::generateRandomName($prefix);
-        return $prefix . $name;
+        return $this->routeName->generate($prefix, $name);
     }
 
     /**
@@ -388,21 +413,16 @@ class Router
      */
     public function all(): array
     {
-        return $this->names;
+        return $this->getMainCollection()->routes->all();
     }
 
     /**
-     * generate random name
+     * get all names
      *
-     * @param string $prefix
-     * @return string
+     * @return int
      */
-    public function generateRandomName(string $prefix = ''): string
+    public function count(): int
     {
-        $name = self::FOR_ROUTE . '_' . count($this->names);
-        if (isset($this->names[$prefix . $name])) {
-            $name = self::FOR_ROUTE . '_' . Str::generateLowRandom(8);
-        }
-        return $name;
+        return $this->getMainCollection()->routes->count();
     }
 }

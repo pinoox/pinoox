@@ -12,9 +12,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\kernel;
+namespace Pinoox\Portal\Kernel;
 
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 class Dispatcher extends Portal

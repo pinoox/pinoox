@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\template\parser;
+namespace Pinoox\Component\Template\Parser;
 
 
-use pinoox\component\Helpers\HelperString;
+use Pinoox\Component\Helpers\HelperString;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateReferenceInterface;

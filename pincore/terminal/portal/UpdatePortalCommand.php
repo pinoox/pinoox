@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\terminal\portal;
+namespace Pinoox\Terminal\Portal;
 
-use pinoox\component\Helpers\PhpFile\PortalFile;
-use pinoox\component\source\PortalManager;
-use pinoox\component\Terminal;
-use pinoox\portal\AppManager;
+use Pinoox\Component\Helpers\PhpFile\PortalFile;
+use Pinoox\Component\Source\PortalManager;
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\AppManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

@@ -12,14 +12,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
 use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Database\Query\Builder as ObjectPortal3;
 use Illuminate\Database\Schema\Builder as ObjectPortal1;
-use pinoox\component\kernel\Exception;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Source\Portal;
 use Closure;
 use Throwable;
 
@@ -38,9 +38,9 @@ use Throwable;
  * @method static setAsGlobal()
  * @method static getContainer()
  * @method static setContainer(\Illuminate\Contracts\Container\Container $container)
- * @method static \pinoox\component\database\DatabaseManager ___()
+ * @method static \Pinoox\Component\Database\DatabaseManager ___()
  *
- * @see \pinoox\component\database\DatabaseManager
+ * @see \Pinoox\Component\Database\DatabaseManager
  */
 class DB extends Portal
 {
@@ -49,7 +49,7 @@ class DB extends Portal
      */
     public static function __register(): void
     {
-        self::__bind(\pinoox\component\database\DatabaseManager::class)
+        self::__bind(\Pinoox\Component\Database\DatabaseManager::class)
             ->setArguments([self::getConfig()]);
     }
 

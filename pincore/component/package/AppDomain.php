@@ -9,11 +9,11 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Url;
-use pinoox\portal\Config;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Url;
+use Pinoox\Portal\Config;
 
 class AppDomain
 {

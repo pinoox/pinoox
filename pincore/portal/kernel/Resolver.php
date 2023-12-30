@@ -12,20 +12,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\kernel;
+namespace Pinoox\Portal\Kernel;
 
-use pinoox\component\kernel\Container;
-use pinoox\component\kernel\resolver\ContainerControllerResolver;
-use pinoox\component\kernel\resolver\ModelValueResolver;
-use pinoox\component\kernel\resolver\RouteValueResolver;
-use pinoox\component\source\Portal;
-use pinoox\portal\DB;
+use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Kernel\Resolver\ContainerControllerResolver;
+use Pinoox\Component\Kernel\Resolver\ModelValueResolver;
+use Pinoox\Component\Kernel\Resolver\RouteValueResolver;
+use Pinoox\Component\Source\Portal;
 use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\DefaultValueResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestAttributeValueResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\RequestValueResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\SessionValueResolver;
-use Symfony\Component\HttpKernel\Controller\ArgumentResolver\VariadicValueResolver;
+use Pinoox\Component\Kernel\Resolver\DefaultValueResolver;
+use Pinoox\Component\Kernel\Resolver\RequestAttributeValueResolver;
+use Pinoox\Component\Kernel\Resolver\RequestValueResolver;
+use Pinoox\Component\Kernel\Resolver\SessionValueResolver;
+use Pinoox\Component\Kernel\Resolver\VariadicValueResolver;
 
 class Resolver extends Portal
 {

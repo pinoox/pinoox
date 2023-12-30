@@ -12,23 +12,23 @@
  */
 
 
-namespace pinoox\app\com_pinoox_manager\component;
+namespace App\com_pinoox_manager\Component;
 
 
-use pinoox\component\Cache;
-use pinoox\portal\Config;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Lang;
-use pinoox\component\Router;
-use pinoox\component\Service;
-use pinoox\component\Url;
-use pinoox\component\User;
-use pinoox\model\TokenModel;
-use pinoox\model\UserModel;
-use pinoox\portal\Path;
-use pinoox\portal\Pinker;
-use pinoox\portal\Zip;
+use Pinoox\Component\Cache;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Router;
+use Pinoox\Component\Service;
+use Pinoox\Component\Url;
+use Pinoox\Component\User;
+use Pinoox\Model\TokenModel;
+use Pinoox\Model\UserModel;
+use Pinoox\Portal\Path;
+use Pinoox\Portal\Pinker;
+use Pinoox\Portal\Zip;
 
 class Wizard
 {

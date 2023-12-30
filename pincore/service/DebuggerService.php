@@ -9,14 +9,10 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\service;
+namespace Pinoox\Service;
 
-use pinoox\component\Dir;
-use pinoox\component\interfaces\ServiceInterface;
+use Pinoox\Component\Interfaces\ServiceInterface;
 use Symfony\Component\ErrorHandler\Debug;
-use Symfony\Component\ErrorHandler\DebugClassLoader;
-use Symfony\Component\ErrorHandler\ErrorHandler;
-use Symfony\Component\ErrorHandler\ErrorRenderer\HtmlErrorRenderer;
 
 class DebuggerService implements ServiceInterface
 {

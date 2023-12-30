@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\Http;
+namespace Pinoox\Component\Http;
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\Url;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseSymfony;
 
 class RedirectResponse extends RedirectResponseSymfony

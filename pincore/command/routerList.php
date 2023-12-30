@@ -1,11 +1,11 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
 
-use pinoox\portal\Config;
-use pinoox\component\Console;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Console;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class routerList extends Console implements CommandInterface

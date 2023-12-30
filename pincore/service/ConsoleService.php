@@ -9,9 +9,9 @@
  * @link http://www.erfanebrahimi.ir/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\service;
+namespace Pinoox\Service;
 
-use pinoox\component\interfaces\ServiceInterface;
+use Pinoox\Component\Interfaces\ServiceInterface;
 
 class ConsoleService implements ServiceInterface
 {

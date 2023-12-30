@@ -11,11 +11,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\terminal\wizard;
+namespace Pinoox\Terminal\Wizard;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\Terminal;
-use pinoox\portal\AppWizard;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\AppWizard;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

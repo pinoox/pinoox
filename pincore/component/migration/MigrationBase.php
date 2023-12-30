@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\migration;
+namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Migrations\Migration;
-use pinoox\portal\DB;
-use \Illuminate\Database\Schema\Builder;
+use Pinoox\Portal\DB;
+use Illuminate\Database\Schema\Builder;
 
 class MigrationBase extends Migration
 {

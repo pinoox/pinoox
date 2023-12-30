@@ -12,22 +12,22 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\package\AppRouter;
+use Pinoox\Component\Package\AppRouter;
 use Symfony\Component\HttpFoundation\Session\SessionInterface as ObjectPortal1;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
- * @method static \pinoox\component\router\Route|null route()
- * @method static \pinoox\component\router\Collection|null collection()
- * @method static \pinoox\component\Http\Request create(string $uri, string $method = 'GET', array $parameters = [], array $cookies = [], array $files = [], array $server = [], $content = NULL)
+ * @method static \Pinoox\Component\Router\Route|null route()
+ * @method static \Pinoox\Component\Router\Collection|null collection()
+ * @method static \Pinoox\Component\Http\Request create(string $uri, string $method = 'GET', array $parameters = [], array $cookies = [], array $files = [], array $server = [], $content = NULL)
  * @method static Request setBaseUrl(string $baseUrl)
  * @method static Request setBasePath(string $basePath)
  * @method static initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = NULL)
- * @method static \pinoox\component\Http\Request createFromGlobals()
+ * @method static \Pinoox\Component\Http\Request createFromGlobals()
  * @method static setFactory(?callable $callable)
- * @method static \pinoox\component\Http\Request duplicate(?array $query = NULL, ?array $request = NULL, ?array $attributes = NULL, ?array $cookies = NULL, ?array $files = NULL, ?array $server = NULL)
+ * @method static \Pinoox\Component\Http\Request duplicate(?array $query = NULL, ?array $request = NULL, ?array $attributes = NULL, ?array $cookies = NULL, ?array $files = NULL, ?array $server = NULL)
  * @method static overrideGlobals()
  * @method static setTrustedProxies(array $proxies, int $trustedHeaderSet)
  * @method static array getTrustedProxies()
@@ -96,18 +96,18 @@ use pinoox\component\source\Portal;
  * @method static bool isXmlHttpRequest()
  * @method static bool preferSafeContent()
  * @method static bool isFromTrustedProxy()
- * @method static \pinoox\component\Http\Request ___()
+ * @method static \Pinoox\Component\Http\Request ___()
  *
- * @see \pinoox\component\Http\Request
+ * @see \Pinoox\Component\Http\Request
  */
 class Request extends Portal
 {
-    private static \pinoox\component\Http\Request $defaultRequest;
+    private static \Pinoox\Component\Http\Request $defaultRequest;
 
 
     public static function __register(): void
     {
-        self::__bind(\pinoox\component\Http\Request::class);
+        self::__bind(\Pinoox\Component\Http\Request::class);
     }
 
 
@@ -147,9 +147,9 @@ class Request extends Portal
     /**
      * Returns the default instance of the Request object.
      *
-     * @return \pinoox\component\Http\Request The default Request object instance
+     * @return \Pinoox\Component\Http\Request The default Request object instance
      */
-    public static function getDefault(): \pinoox\component\Http\Request
+    public static function getDefault(): \Pinoox\Component\Http\Request
     {
         if (empty(self::$defaultRequest)) {
             $request = self::createFromGlobals();

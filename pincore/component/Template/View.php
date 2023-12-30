@@ -10,16 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\template;
+namespace Pinoox\Component\Template;
 
-use pinoox\component\Dir;
-use pinoox\component\package\App;
-use pinoox\component\template\engine\PhpEngine;
-use pinoox\component\template\engine\PhpTwigEngine;
-use pinoox\component\template\engine\TwigEngine;
-use pinoox\component\template\parser\TemplateNameParser;
-use pinoox\component\template\engine\DelegatingEngine;
-use pinoox\component\template\reference\TemplatePathReference;
+use Pinoox\Component\Template\Engine\PhpEngine;
+use Pinoox\Component\Template\Engine\PhpTwigEngine;
+use Pinoox\Component\Template\Engine\TwigEngine;
+use Pinoox\Component\Template\Parser\TemplateNameParser;
+use Pinoox\Component\Template\Engine\DelegatingEngine;
+use Pinoox\Component\Template\Reference\TemplatePathReference;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
 

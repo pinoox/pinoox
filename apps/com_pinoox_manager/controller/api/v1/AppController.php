@@ -10,18 +10,18 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\app\com_pinoox_manager\component\AppHelper;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Lang;
-use pinoox\component\Request as RequestData;
-use pinoox\component\Response;
-use pinoox\component\Uploader;
-use pinoox\portal\app\AppEngine;
-use pinoox\portal\Path;
+use App\com_pinoox_manager\Component\Wizard;
+use App\com_pinoox_manager\Component\AppHelper;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Request as RequestData;
+use Pinoox\Component\Response;
+use Pinoox\Component\Uploader;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\Path;
 
 class AppController extends LoginConfiguration
 {

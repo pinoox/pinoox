@@ -1,6 +1,6 @@
 <?php
 
-namespace pinoox\component\Dumper;
+namespace Pinoox\Component\Dumper;
 
 use Throwable;
 
@@ -38,7 +38,7 @@ trait ResolvesDumpSource
      * @var array<string, int>
      */
     protected static $adjustableTraces = [
-        'symfony/var-dumper/Resources/functions/dump.php' => 1,
+        'symfony/var-dumper/resources/functions/dump.php' => 1,
         'Illuminate/Collections/Traits/EnumeratesValues.php' => 4,
     ];
 

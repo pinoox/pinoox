@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\source;
+namespace Pinoox\Component\Source;
 
 
 class MethodBuilder

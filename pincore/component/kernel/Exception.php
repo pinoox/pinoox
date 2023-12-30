@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
 
 use Throwable;

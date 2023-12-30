@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\Str;
-use pinoox\portal\app\App;
-use pinoox\model\TokenModel;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Portal\App\App;
+use Pinoox\Model\TokenModel;
 
 class Token
 {

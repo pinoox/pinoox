@@ -10,9 +10,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperString;
+use Pinoox\Component\Helpers\HelperString;
 
 class ImageProcess
 {

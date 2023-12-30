@@ -1,8 +1,8 @@
 <?php
 
 use PHPUnit\Framework\MockObject\MockObject;
-use pinoox\component\store\config\Config;
-use pinoox\component\store\config\strategy\ConfigStrategyInterface;
+use Pinoox\Component\Store\Config\Config;
+use Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface;
 
 it('should adds, saves, and retrieves a configuration key-value pair', function () {
     // Arrange

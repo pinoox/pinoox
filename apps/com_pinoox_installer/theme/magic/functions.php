@@ -1,7 +1,7 @@
 <?php
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\File;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\File;
 
 function webpack_manifest($file = null)
 {

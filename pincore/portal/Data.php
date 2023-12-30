@@ -12,16 +12,16 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
 use JetBrains\PhpStorm\Pure;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 class Data extends Portal
 {
-    public static function data(mixed $data): \pinoox\component\Helpers\Data
+    public static function data(mixed $data): \Pinoox\Component\Helpers\Data
     {
-        return new \pinoox\component\Helpers\Data($data);
+        return new \Pinoox\Component\Helpers\Data($data);
     }
 
     /**

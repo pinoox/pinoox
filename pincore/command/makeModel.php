@@ -1,13 +1,13 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class makeModel extends Console implements CommandInterface
@@ -71,7 +71,7 @@ class makeModel extends Console implements CommandInterface
 
         $this->conterollerPath = Dir::path('~apps/' . $this->package.'/model');
 
-        $this->nameSpaceOfModelFolder =  'pinoox\app\\'.$this->package.'\\model';
+        $this->nameSpaceOfModelFolder =  'App\\'.$this->package.'\\Model';
 
         $Model = explode('\\' , str_replace('/' , '\\' , $this->argument('model') ));
         $this->conteroller = array_pop($Model);
@@ -81,12 +81,12 @@ class makeModel extends Console implements CommandInterface
         $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.ucfirst(strtolower($this->conteroller)) .'Model.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
-        if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){
+        if ( HelperString::firstHas(strtolower($extend),'Pinoox\\')){
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
             $this->use = implode('\\' , $extend);
         } elseif ( $extend == 'PinooxDatabase' ){
-            $this->use = 'pinoox\model\PinooxDatabase';
+            $this->use = 'Pinoox\Model\PinooxDatabase';
             $this->extend = 'PinooxDatabase';
         } elseif ( $this->option('extends') == null ){
             $this->use = null;

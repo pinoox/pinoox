@@ -1,10 +1,10 @@
 <?php
 
-namespace pinoox\command\migrate;
+namespace Pinoox\Command\migrate;
 
 
-use pinoox\component\console;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\console;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class migrateInit extends console implements CommandInterface

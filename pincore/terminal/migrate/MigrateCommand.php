@@ -11,10 +11,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\terminal\migrate;
+namespace Pinoox\Terminal\Migrate;
 
-use pinoox\component\migration\Migrator;
-use pinoox\component\Terminal;
+use Pinoox\Component\Migration\Migrator;
+use Pinoox\Component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

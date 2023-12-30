@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\package\config;
+namespace Pinoox\Component\Package\Config;
 
 
 interface ConfigInterface

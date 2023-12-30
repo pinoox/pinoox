@@ -12,22 +12,25 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\kernel;
+namespace Pinoox\Portal\Kernel;
 
+use pinoox\component\package\AppLayer;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\App\AppRouter;
 use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
-use pinoox\component\Helpers\Str;
-use pinoox\component\kernel\Container;
-use pinoox\component\kernel\ContainerBuilder;
-use pinoox\component\kernel\Kernel;
-use pinoox\component\kernel\event\ResponseEvent;
-use pinoox\component\source\Portal;
-use pinoox\portal\Path;
-use pinoox\portal\Router;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Kernel\ContainerBuilder;
+use Pinoox\Component\Kernel\Kernel;
+use Pinoox\Component\Kernel\Event\ResponseEvent;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\Path;
+use Pinoox\Portal\Router;
 
 /**
  * @method static ObjectPortal1 handleSubRequest(\Symfony\Component\HttpFoundation\Request $request)
@@ -38,81 +41,94 @@ use pinoox\portal\Router;
  * @method static \Symfony\Component\Routing\RequestContext ___context()
  * @method static \Symfony\Component\Routing\Matcher\UrlMatcher ___matcher()
  * @method static \Symfony\Component\Routing\Generator\UrlGenerator ___urlGenerator()
- * @method static \pinoox\component\kernel\Kernel ___()
+ * @method static \Pinoox\Component\Kernel\Kernel ___()
  *
- * @see \pinoox\component\kernel\Kernel
+ * @see \Pinoox\Component\Kernel\Kernel
  */
 class HttpKernel extends Portal
 {
-	public static function __register(): void
-	{
-		$routes = Router::getMainCollection()->routes;
-		self::setParams();
-		self::addEvents();
-		self::__bind(RequestStack::class, 'request_stack');
+    public static function __register(): void
+    {
+        self::setParams();
+        self::addEvents();
+        self::__bind(RequestStack::class, 'request_stack');
 
-		self::__bind(RequestContext::class, 'context');
+        self::__bind(RequestContext::class, 'context');
 
-		self::__bind(UrlMatcher::class, 'matcher')
-		    ->setArguments([$routes, self::__ref('context')]);
+        self::__bind(UrlMatcher::class, 'matcher')
+            ->setArguments([self::__ref('routes'), self::__ref('context')]);
 
-		self::__bind(UrlGenerator::class, 'url_generator')
-		    ->setArguments([$routes, self::__ref('context')]);
+        self::__bind(UrlGenerator::class, 'url_generator')
+            ->setArguments([self::__ref('routes'), self::__ref('context')]);
 
-		self::__bind(Kernel::class)
-		    ->setArguments([
-		        Dispatcher::__ref(),
-		        Resolver::__ref('controller'),
-		        self::__ref('request_stack'),
-		        Resolver::__ref('argument'),
-		    ]);
-	}
+        self::__bind(Kernel::class)
+            ->setArguments([
+                Dispatcher::__ref(),
+                Resolver::__ref('controller'),
+                self::__ref('request_stack'),
+                Resolver::__ref('argument'),
+            ]);
 
+        self::setRouteDefault();
+    }
 
-	private static function setParams(): void
-	{
-		self::__param('charset', 'UTF-8');
-	}
+    public static function setRouts(string $package, string $path): void
+    {
+        $router = AppEngine::router($package, $path);
+        self::__bind($router->getCollection()->routes, 'routes');
+    }
 
-
-	private static function addEvents(): void
-	{
-		self::__container()->addCompilerPass(new AddEventAliasesPass(
-		    [
-		        ResponseEvent::class => 'response',
-		    ]
-		));
-	}
+    public static function setRouteDefault(): void
+    {
+        $layer = AppRouter::find();
+        self::setRouts($layer->getPackageName(), $layer->getPath());
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'kernel';
-	}
+    private static function setParams(): void
+    {
+        self::__param('charset', 'UTF-8');
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    private static function addEvents(): void
+    {
+        self::__container()->addCompilerPass(new AddEventAliasesPass(
+            [
+                ResponseEvent::class => 'response',
+            ]
+        ));
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-			'terminateWithException'
-		];
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'kernel';
+    }
+
+
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
+
+
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'terminateWithException'
+        ];
+    }
 }

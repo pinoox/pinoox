@@ -12,12 +12,12 @@
  */
 
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 
 use mysql_xdevapi\Exception;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\HelperString;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\HelperString;
 
 class HttpRequest
 {

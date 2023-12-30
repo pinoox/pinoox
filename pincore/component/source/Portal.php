@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\source;
+namespace Pinoox\Component\Source;
 
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\kernel\Container;
-use pinoox\component\kernel\ContainerBuilder;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Kernel\ContainerBuilder;
 use SebastianBergmann\Type\ReflectionMapper;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -422,7 +422,7 @@ abstract class Portal
      */
     final public static function __container(): ContainerBuilder
     {
-        return Str::firstHas(static::class, 'pinoox\\app') ? Container::app() : Container::pincore();
+        return Str::firstHas(static::class, 'App') ? Container::app() : Container::pincore();
     }
 
     /**
@@ -483,6 +483,11 @@ abstract class Portal
         }
 
         return $ids;
+    }
+
+    final public static function __class(): ?string
+    {
+        return static::__definition()->getClass();
     }
 
     final public static function __getSubNameClasses(): array

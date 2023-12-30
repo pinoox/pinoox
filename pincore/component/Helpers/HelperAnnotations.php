@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 
 use Illuminate\Database\Eloquent\Builder;
-use pinoox\component\File;
+use Pinoox\Component\File;
 use ReflectionClass;
 
 class HelperAnnotations

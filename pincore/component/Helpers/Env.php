@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 
-use pinoox\component\store\config\data\DataManager;
-use pinoox\portal\FileSystem;
+use Pinoox\Component\Store\Config\Data\DataManager;
+use Pinoox\Portal\FileSystem;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\Templating\Storage\FileStorage;
 

@@ -12,7 +12,7 @@
  */
 
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 use InvalidArgumentException;
 

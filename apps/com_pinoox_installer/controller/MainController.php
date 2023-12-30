@@ -11,16 +11,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_installer\controller;
+namespace App\com_pinoox_installer\Controller;
 
 use Illuminate\Database\Eloquent\Builder;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\Str;
-use pinoox\component\kernel\controller\Controller;
-use pinoox\component\User;
-use pinoox\model\UserModel;
-use pinoox\portal\app\App;
-use pinoox\portal\View;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\Router\Route;
+use Pinoox\Component\User;
+use Pinoox\Model\UserModel;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\Router;
+use Pinoox\Portal\View;
 
 class MainController extends Controller
 {

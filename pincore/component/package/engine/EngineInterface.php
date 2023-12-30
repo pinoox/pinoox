@@ -11,13 +11,12 @@
  */
 
 
-namespace pinoox\component\package\engine;
+namespace Pinoox\Component\Package\Engine;
 
 
-use pinoox\component\Path\Manager\ManagerInterface;
-use pinoox\component\store\config\ConfigInterface;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\router\Router;
+use Pinoox\Component\Store\Config\ConfigInterface;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Router\Router;
 use RuntimeException;
 
 interface EngineInterface
@@ -35,10 +34,11 @@ interface EngineInterface
      * get routes.
      *
      * @param string|ReferenceInterface $packageName
+     * @param string $path
      * @return Router
      * @throws RuntimeException if the template cannot be rendered
      */
-    public function routes(string|ReferenceInterface $packageName): Router;
+    public function router(string|ReferenceInterface $packageName, string $path = ''): Router;
 
     /**
      * Returns true if the App exists.
@@ -72,5 +72,5 @@ interface EngineInterface
      * @param string $path
      * @return string
      */
-    public function path(string|ReferenceInterface $packageName,string $path = ''): string;
+    public function path(string|ReferenceInterface $packageName, string $path = ''): string;
 }

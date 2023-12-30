@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\kernel\listener;
+namespace Pinoox\Component\Kernel\Listener;
 
 
-use pinoox\component\Http\Response;
-use pinoox\component\kernel\Exception;
+use Pinoox\Component\Http\Response;
+use Pinoox\Component\Kernel\Exception;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
@@ -33,7 +33,7 @@ class ExceptionListener implements EventSubscriberInterface
 
         $msg = null;
         if (!($this->controllerResult instanceof Response))
-            $msg = sprintf('The controller must return a "pinoox\component\Http\Response" object but it returned %s.', $this->varToString($this->controllerResult));
+            $msg = sprintf('The controller must return a "Pinoox\Component\Http\Response" object but it returned %s.', $this->varToString($this->controllerResult));
         else if (!$event->hasResponse())
             $msg = 'Did you forget to add a return statement somewhere in your controller?';
 

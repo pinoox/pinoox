@@ -12,13 +12,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
 use PhpZip\Model\ZipEntry as ObjectPortal1;
 use PhpZip\Model\ZipEntryMatcher as ObjectPortal2;
 use PhpZip\ZipFile;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal3;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static ZipFile openFile(string $filename, array $options = [])

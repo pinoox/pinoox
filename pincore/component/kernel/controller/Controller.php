@@ -1,18 +1,17 @@
 <?php
 
 
-namespace pinoox\component\kernel\controller;
+namespace Pinoox\Component\Kernel\Controller;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Http\Request;
-use pinoox\portal\app\App;
-use pinoox\component\router\Collection;
-use pinoox\portal\Router;
-use pinoox\component\template\ViewInterface;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Http\Request;
+use Pinoox\Portal\App\App;
+use Pinoox\Component\Router\Collection;
+use Pinoox\Portal\Router;
 use Psr\Container\ContainerInterface;
-use pinoox\component\Http\RedirectResponse;
-use pinoox\component\Http\JsonResponse;
-use pinoox\component\Http\Response;
+use Pinoox\Component\Http\RedirectResponse;
+use Pinoox\Component\Http\JsonResponse;
+use Pinoox\Component\Http\Response;
 use Symfony\Component\DependencyInjection\Exception\BadMethodCallException;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;

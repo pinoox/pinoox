@@ -12,13 +12,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\Http\Response;
-use pinoox\component\source\Portal;
-use pinoox\component\template\View as ObjectPortal1;
-use pinoox\component\template\reference\TemplatePathReference as ObjectPortal2;
-use pinoox\portal\app\App;
+use Pinoox\Component\Http\Response;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Template\View as ObjectPortal1;
+use Pinoox\Component\Template\Reference\TemplatePathReference as ObjectPortal2;
+use Pinoox\Portal\App\App;
 
 /**
  * @method static setView(array|string $folders, string $pathTheme)
@@ -33,9 +33,9 @@ use pinoox\portal\app\App;
  * @method static View ready(string $name = '', array $parameters = [])
  * @method static string getContentReady()
  * @method static ObjectPortal2 path()
- * @method static \pinoox\component\template\View ___()
+ * @method static \Pinoox\Component\Template\View ___()
  *
- * @see \pinoox\component\template\View
+ * @see \Pinoox\Component\Template\View
  */
 class View extends Portal
 {

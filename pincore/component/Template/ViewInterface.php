@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\template;
+namespace Pinoox\Component\Template;
 
 use RuntimeException;
 

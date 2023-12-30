@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Wizard;
+namespace Pinoox\Component\Wizard;
 
 use PhpZip\Exception\ZipException;
-use pinoox\component\kernel\Exception;
+use Pinoox\Component\Kernel\Exception;
 
 class TemplateWizard extends Wizard implements WizardInterface
 {

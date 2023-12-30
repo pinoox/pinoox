@@ -11,17 +11,16 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\terminal\migrate;
+namespace Pinoox\Terminal\Migrate;
 
-use pinoox\component\Terminal;
-use pinoox\portal\AppManager;
-use pinoox\portal\MigrationToolkit;
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\AppManager;
+use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use function pinoox\router\action;
 
 #[AsCommand(
     name: 'migrate:status',

@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\package\loader;
+namespace Pinoox\Component\Package\Loader;
 
 
 interface LoaderInterface

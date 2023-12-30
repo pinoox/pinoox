@@ -1,8 +1,8 @@
 <?php
 
-namespace pinoox\component\Dumper;
+namespace Pinoox\Component\Dumper;
 
-use pinoox\component\Dumper\ResolvesDumpSource;
+use Pinoox\Component\Dumper\ResolvesDumpSource;
 use Symfony\Component\Console\Output\ConsoleOutput;
 use Symfony\Component\VarDumper\Caster\ReflectionCaster;
 use Symfony\Component\VarDumper\Cloner\Data;

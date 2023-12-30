@@ -11,13 +11,13 @@
  */
 
 
-namespace pinoox\command\portal;
+namespace Pinoox\Command\Portal;
 
 
-use pinoox\component\Console;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Helpers\PhpFile\PortalFile;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\PhpFile\PortalFile;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 class PortalUpdate extends console implements CommandInterface
 {
@@ -79,6 +79,6 @@ class PortalUpdate extends console implements CommandInterface
 
     private function getPath(string $portalName): string
     {
-        return $this->cli['path'] . '\\portal\\' . ucfirst($portalName) . '.php';
+        return $this->cli['path'] . '\\Portal\\' . ucfirst($portalName) . '.php';
     }
 }

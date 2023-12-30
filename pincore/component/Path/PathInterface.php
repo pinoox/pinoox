@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\Path;
+namespace Pinoox\Component\Path;
 
 
-use pinoox\component\Path\reference\ReferenceInterface;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
 
 interface PathInterface
 {

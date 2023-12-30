@@ -10,15 +10,15 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\component;
+namespace App\com_pinoox_manager\Component;
 
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Router;
-use pinoox\component\Url;
-use pinoox\portal\app\App;
-use pinoox\portal\app\AppEngine;
-use pinoox\portal\Config;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Router;
+use Pinoox\Component\Url;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\Config;
 
 class AppHelper
 {

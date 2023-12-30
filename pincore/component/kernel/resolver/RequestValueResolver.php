@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\kernel\resolver;
+namespace Pinoox\Component\Kernel\Resolver;
 
 
-use pinoox\component\Http\Request;
+use Pinoox\Component\Http\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
 /**
@@ -27,7 +27,8 @@ final class RequestValueResolver implements ArgumentValueResolverInterface
      */
     public function supports(Request $request, ArgumentMetadata $argument): bool
     {
-        return Request::class === $argument->getType() || is_subclass_of($argument->getType(), Request::class);
+        $class = $argument->getType();
+        return Request::class === $class || is_subclass_of($class, Request::class);
     }
 
     /**

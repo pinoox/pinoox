@@ -1,17 +1,17 @@
 <?php
 
-namespace pinoox\terminal\migrate;
+namespace Pinoox\Terminal\Migrate;
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\Terminal;
-use pinoox\portal\AppManager;
-use pinoox\portal\StubGenerator;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\AppManager;
+use Pinoox\Portal\StubGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use pinoox\portal\MigrationToolkit;
+use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 

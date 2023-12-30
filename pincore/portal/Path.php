@@ -12,30 +12,30 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\Path\Path as ObjectPortal1;
-use pinoox\component\Path\parser\PathParser;
-use pinoox\component\Path\reference\PathReference;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\kernel\Loader;
-use pinoox\component\source\Portal;
-use pinoox\portal\app\App;
-use pinoox\portal\app\AppEngine;
+use Pinoox\Component\Path\Path as ObjectPortal1;
+use Pinoox\Component\Path\Parser\PathParser;
+use Pinoox\Component\Path\Reference\PathReference;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
 
 /**
  * @method static string|null app(?string $packageName = NULL)
- * @method static string get(\pinoox\component\Path\reference\ReferenceInterface|string $path = '', string $package = '')
- * @method static \pinoox\component\Path\Path set($key, $value)
+ * @method static string get(\Pinoox\Component\Path\Reference\ReferenceInterface|string $path = '', string $package = '')
+ * @method static \Pinoox\Component\Path\Path set($key, $value)
  * @method static ReferenceInterface parse(string $name)
- * @method static string prefixName(\pinoox\component\Path\reference\ReferenceInterface|string $path, string $prefix)
- * @method static string prefix(\pinoox\component\Path\reference\ReferenceInterface|string $path, string $prefix)
- * @method static ReferenceInterface prefixReference(\pinoox\component\Path\reference\ReferenceInterface|string $path, string $prefix)
- * @method static ReferenceInterface reference(\pinoox\component\Path\reference\ReferenceInterface|string $path)
- * @method static \pinoox\component\Path\parser\PathParser ___parser()
- * @method static \pinoox\component\Path\Path ___()
+ * @method static string prefixName(\Pinoox\Component\Path\Reference\ReferenceInterface|string $path, string $prefix)
+ * @method static string prefix(\Pinoox\Component\Path\Reference\ReferenceInterface|string $path, string $prefix)
+ * @method static ReferenceInterface prefixReference(\Pinoox\Component\Path\Reference\ReferenceInterface|string $path, string $prefix)
+ * @method static ReferenceInterface reference(\Pinoox\Component\Path\Reference\ReferenceInterface|string $path)
+ * @method static \Pinoox\Component\Path\Parser\PathParser ___parser()
+ * @method static \Pinoox\Component\Path\Path ___()
  *
- * @see \pinoox\component\Path\Path
+ * @see \Pinoox\Component\Path\Path
  */
 class Path extends Portal
 {

@@ -12,7 +12,7 @@
  */
 
 
-namespace pinoox\component\lang\source;
+namespace Pinoox\Component\Lang\Source;
 
 class FileLangSource extends LangSource
 {

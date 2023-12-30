@@ -12,16 +12,15 @@
  */
 
 
-namespace pinoox\component\migration;
+namespace Pinoox\Component\Migration;
 
-use pinoox\component\kernel\Exception;
-use pinoox\portal\AppManager;
-use pinoox\portal\MigrationToolkit;
-use ReflectionClass;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Portal\AppManager;
+use Pinoox\Portal\MigrationToolkit;
 
 /**
  * Class Migrator
- * @package pinoox\terminal\migrate
+ * @package Pinoox\Terminal\Migrate
  */
 class Migrator
 {

@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\template\engine;
+namespace Pinoox\Component\Template\Engine;
 
 use Exception;
-use pinoox\component\Dir;
-use pinoox\component\File;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
 use Symfony\Component\Templating\EngineInterface;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReferenceInterface;

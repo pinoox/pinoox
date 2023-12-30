@@ -12,23 +12,23 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
 
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static array getApps()
  * @method static mixed getApp(string $package)
- * @method static \pinoox\component\manager\AppManager ___()
+ * @method static \Pinoox\Component\Manager\AppManager ___()
  *
- * @see \pinoox\component\manager\AppManager
+ * @see \Pinoox\Component\Manager\AppManager
  */
 class AppManager extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\manager\AppManager::class);
+		self::__bind(\Pinoox\Component\Manager\AppManager::class);
 	}
 
 	/**

@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\router;
+namespace Pinoox\Component\Router;
 
 final class RouteMethod
 {

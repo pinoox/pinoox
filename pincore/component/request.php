@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Http\Http;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Http\Http;
 use ReflectionException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;

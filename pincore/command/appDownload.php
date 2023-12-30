@@ -1,18 +1,18 @@
 <?php
 
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\portal\Config;
-use pinoox\component\Console;
-use pinoox\component\Download;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\HttpRequest;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Request;
-use pinoox\component\Response;
-use pinoox\component\Url;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Console;
+use Pinoox\Component\Download;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\HttpRequest;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Request;
+use Pinoox\Component\Response;
+use Pinoox\Component\Url;
 
 
 class appDownload extends Console implements CommandInterface

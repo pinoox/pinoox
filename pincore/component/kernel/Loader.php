@@ -10,17 +10,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
 use Composer\Autoload\ClassLoader;
-use pinoox\component\package\engine\AppEngine;
-use pinoox\component\Path\Manager\PathManager;
-use pinoox\portal\app\App;
-use pinoox\portal\Config;
-use pinoox\component\Service;
-use pinoox\portal\Env;
-use pinoox\portal\Dumper;
-use pinoox\portal\Router;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Service;
+use Pinoox\Portal\Env;
+use Pinoox\Portal\Dumper;
 use Symfony\Component\ErrorHandler\Debug;
 
 class Loader

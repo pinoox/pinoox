@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\kernel\controller;
+namespace Pinoox\Component\Kernel\Controller;
 
 
-use pinoox\portal\kernel\HttpKernel;
+use Pinoox\Portal\Kernel\HttpKernel;
 use Psr\Container\ContainerInterface;
 use Psr\Link\LinkInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;

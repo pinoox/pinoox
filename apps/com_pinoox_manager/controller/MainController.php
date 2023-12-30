@@ -10,14 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller;
+namespace App\com_pinoox_manager\Controller;
 
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\component\Helpers\Str;
-use pinoox\component\kernel\controller\Controller;
-use pinoox\component\Router;
-use pinoox\component\User;
-use pinoox\portal\View;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\Router;
+use Pinoox\Component\User;
+use Pinoox\Portal\View;
 
 class MainController extends Controller
 {

@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\kernel\exception;
+namespace Pinoox\Component\Package\Exception;
 
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 

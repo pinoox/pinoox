@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\package\AppManager;
-use pinoox\portal\app\AppEngine;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Package\AppManager;
+use Pinoox\Portal\App\AppEngine;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
@@ -66,13 +66,13 @@ class Terminal
         $path = Str::ds($path);
         if (!Str::lastHas($path, '/'))
             $path .= '/';
-        if (!is_dir($path . 'terminal'))
+        if (!is_dir($path . 'Terminal'))
             return;
         $finder = new Finder();
-        $finder->in($path . 'terminal')
+        $finder->in($path . 'Terminal')
             ->files()
             ->filter(static function (SplFileInfo $file) {
-                return $file->isDir() || \preg_match('/\Command.(php)$/', $file->getPathname());
+                return $file->isDir() || \preg_match('/Command.(php)$/', $file->getPathname());
             });
 
         /**
@@ -80,7 +80,7 @@ class Terminal
          */
         foreach ($finder as $f) {
             $loc = $f->getPath();
-            $namespace = !empty($package) ? "pinoox" . '\\' . 'app' . '\\' . $package . '\\' : "pinoox" . '\\';
+            $namespace = !empty($package) ? "App\\" . $package . '\\' : "Pinoox" . '\\';
             $namespace = $namespace . str_replace($path, '', $loc) . '\\';
             $namespace = str_replace('/', '\\', $namespace);
             $this->commands[] = [

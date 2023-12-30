@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\component\Notification;
-use pinoox\component\Date;
-use pinoox\component\Request;
-use pinoox\component\Response;
+use App\com_pinoox_manager\Component\Notification;
+use Pinoox\Component\Date;
+use Pinoox\Component\Request;
+use Pinoox\Component\Response;
 
 class NotificationController extends LoginConfiguration
 {

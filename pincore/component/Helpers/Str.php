@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 class Str
 {

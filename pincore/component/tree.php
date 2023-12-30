@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 /**
  * This component help you to generate tree and nested structure by give dataset and specific index
  *
- * @package pinoox\component
+ * @package Pinoox\Component
  *
  */
 class Tree

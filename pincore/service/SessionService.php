@@ -10,12 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
     
-namespace pinoox\service;
+namespace Pinoox\Service;
 
-use pinoox\portal\Config;
-use pinoox\component\interfaces\ServiceInterface;
-use pinoox\component\Session;
-use pinoox\model\PincoreModel;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Interfaces\ServiceInterface;
+use Pinoox\Model\PincoreModel;
 
 class SessionService implements ServiceInterface
 {

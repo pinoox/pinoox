@@ -1,10 +1,10 @@
 <?php
 
 
-namespace pinoox\router;
+namespace Pinoox\Router;
 
 use Closure;
-use pinoox\portal\Router;
+use Pinoox\Portal\Router;
 
 /**
  * add route

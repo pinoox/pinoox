@@ -1,6 +1,6 @@
 <?php
 
-namespace pinoox\component\store\baker;
+namespace Pinoox\Component\Store\Baker;
 
 interface FileHandlerInterface
 {

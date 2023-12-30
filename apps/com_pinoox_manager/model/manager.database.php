@@ -10,9 +10,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
  
-namespace pinoox\app\com_pinoox_manager\model;
+namespace App\com_pinoox_manager\Model;
 
-use pinoox\model\PinooxDatabase;
+use Pinoox\Model\PinooxDatabase;
 
 class ManagerDatabase extends PinooxDatabase
 {

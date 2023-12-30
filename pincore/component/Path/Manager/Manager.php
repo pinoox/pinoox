@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\Path\Manager;
+namespace Pinoox\Component\Path\Manager;
 
 use Symfony\Component\Filesystem\Path;
 

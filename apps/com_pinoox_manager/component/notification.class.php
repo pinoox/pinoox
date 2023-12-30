@@ -11,12 +11,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\component;
+namespace App\com_pinoox_manager\Component;
 
-use pinoox\app\com_pinoox_manager\model\NotificationModel;
-use pinoox\component\HelperString;
-use pinoox\component\MagicTrait;
-use pinoox\component\Router;
+use App\com_pinoox_manager\Model\NotificationModel;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\MagicTrait;
+use Pinoox\Component\Router;
 
 class Notification
 {

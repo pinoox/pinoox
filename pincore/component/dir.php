@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\kernel\Loader;
-use pinoox\portal\app\App       ;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Portal\App\App       ;
 
 class Dir
 {

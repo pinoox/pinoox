@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\kernel\resolver;
+namespace Pinoox\Component\Kernel\Resolver;
 
 use Symfony\Component\HttpKernel\Controller\ControllerResolver as ControllerResolverSymfony;
 

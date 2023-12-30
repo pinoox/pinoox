@@ -10,17 +10,17 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Config;
-use pinoox\component\Download;
-use pinoox\component\HelperHeader;
-use pinoox\component\Lang;
-use pinoox\component\Request;
-use pinoox\component\Response;
-use pinoox\component\Url;
+use App\com_pinoox_manager\Component\Wizard;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Config;
+use Pinoox\Component\Download;
+use Pinoox\Component\HelperHeader;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Request;
+use Pinoox\Component\Response;
+use Pinoox\Component\Url;
 
 class MarketController extends LoginConfiguration
 {

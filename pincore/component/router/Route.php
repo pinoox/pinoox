@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\router;
+namespace Pinoox\Component\Router;
 
 use Closure;
 use PhpParser\Node\Stmt\Else_;
-use pinoox\component\Helpers\Str;
-use pinoox\component\package\App;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Package\App;
 
 class Route
 {
@@ -28,8 +28,10 @@ class Route
         private string|array         $methods = [],
         private array                $defaults = [],
         private array                $filters = [],
-        private int                $priority = 0,
-        private string               $prefixName = ''
+        private int                  $priority = 0,
+        private string               $prefixName = '',
+        public array                 $data = [],
+
     )
     {
         if ($this->path === '*') {
@@ -62,6 +64,11 @@ class Route
         $route->setMethods($this->methods);
         $route->setRequirements($this->filters);
         return $route;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
     }
 
     public function getPriority(): int

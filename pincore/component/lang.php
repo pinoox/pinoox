@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\portal\app\App;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Portal\App\App;
 
 class Lang
 {

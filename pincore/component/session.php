@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\Helpers\HelperHeader;
-use pinoox\portal\app\App;
-use pinoox\model\SessionModel;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Helpers\HelperHeader;
+use Pinoox\Portal\App\App;
+use Pinoox\Model\SessionModel;
 
 class Session
 {

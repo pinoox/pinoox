@@ -10,15 +10,15 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\component\Notification;
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\Cache;
-use pinoox\component\Config;
-use pinoox\component\Download;
-use pinoox\component\Lang;
-use pinoox\component\Response;
+use App\com_pinoox_manager\Component\Notification;
+use App\com_pinoox_manager\Component\Wizard;
+use Pinoox\Component\Cache;
+use Pinoox\Component\Config;
+use Pinoox\Component\Download;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Response;
 
 class UpdateController extends LoginConfiguration
 {

@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\store\config\data;
+namespace Pinoox\Component\Store\Config\Data;
 
 /**
  * Represents a data structure that allows nested key-value pairs and provides various operations for manipulation.

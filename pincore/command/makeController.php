@@ -1,12 +1,12 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class makeController extends Console implements CommandInterface
@@ -70,7 +70,7 @@ class makeController extends Console implements CommandInterface
 
         $this->conterollerPath = Dir::path('~apps/' . $this->package.'/controller');
 
-        $this->nameSpaceOfControllerFolder =  'pinoox\app\\'.$this->package.'\\controller';
+        $this->nameSpaceOfControllerFolder =  'App\\'.$this->package.'\\Controller';
 
         $controller = explode('\\' , str_replace('/' , '\\' , $this->argument('controller') ));
         $this->conteroller = array_pop($controller);
@@ -80,7 +80,7 @@ class makeController extends Console implements CommandInterface
         $this->conterollerPath = $this->conterollerPath . ( ( count($controller) > 0 ) ? '/'.implode('/' , $controller) : "" ) . '/'.$this->conteroller .'Controller.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
-        if ( HelperString::firstHas(strtolower($extend),'pinoox\\')){
+        if ( HelperString::firstHas(strtolower($extend),'Pinoox\\')){
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
             $this->use = implode('\\' , $extend);

@@ -11,7 +11,7 @@
  * 
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 use ArrayAccess;
 use Exception;

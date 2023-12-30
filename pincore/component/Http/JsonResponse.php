@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Http;
+namespace Pinoox\Component\Http;
 
 use Symfony\Component\HttpFoundation\JsonResponse as JsonResponseSymfony;
 

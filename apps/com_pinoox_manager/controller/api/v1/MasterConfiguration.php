@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\component\kernel\controller\Controller;
-use pinoox\component\User;
+use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\User;
 
 class MasterConfiguration extends Controller
 {

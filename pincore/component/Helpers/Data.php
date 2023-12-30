@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 
 class Data

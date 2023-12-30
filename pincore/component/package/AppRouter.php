@@ -10,14 +10,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 use Exception;
-use pinoox\component\Helpers\Str;
-use pinoox\component\package\engine\AppEngine;
-use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\store\config\ConfigInterface;
-use pinoox\component\Url;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Store\Config\ConfigInterface;
+use Pinoox\Component\Url;
 
 
 class AppRouter

@@ -9,13 +9,13 @@
  * @link http://www.erfanebrahimi.ir/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\command;
+namespace Pinoox\Command;
 
-use pinoox\component\Console;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 class makeCommand extends Console implements CommandInterface
 {
@@ -52,7 +52,7 @@ class makeCommand extends Console implements CommandInterface
                 $this->path = Dir::path('~apps/'.$this->argument('app_name').'/command/'.$this->argument('name').'.php' ) ;
                 if ( ! is_file($this->path)){
                     $this->app = $this->argument('app_name') ;
-                    $this->nameSpace = 'pinoox\app\\'.$this->argument('app_name') .'\command' ;
+                    $this->nameSpace = 'App\\'.$this->argument('app_name') .'\command' ;
                     $this->name = $this->argument('name') ;
                 } else {
                     $this->error(sprintf('Same command as name "%s" exist in "%s" application!' ,$this->argument('name') , $this->argument('app_name') ));
@@ -63,7 +63,7 @@ class makeCommand extends Console implements CommandInterface
         } else {
             $this->path = Dir::path('~pincore/command/'.$this->argument('name').'.php' ) ;
             if ( ! is_file($this->path)){
-                $this->nameSpace = 'pinoox\command' ;
+                $this->nameSpace = 'Pinoox\Command' ;
                 $this->name = $this->argument('name') ;
             } else {
                 $this->error(sprintf('Same command as name "%s" exist in Pincore!' ,$this->argument('name') ));
@@ -73,8 +73,8 @@ class makeCommand extends Console implements CommandInterface
     private function getPhpCode(){
         $code = "<?php\n";
         $code .= sprintf("namespace %s;\n\n\n" , $this->nameSpace);
-        $code .= "use pinoox\component\console;\n" ;
-        $code .= "use pinoox\component\interfaces\CommandInterface;\n\n\n" ;
+        $code .= "use Pinoox\Component\console;\n" ;
+        $code .= "use Pinoox\Component\Interfaces\CommandInterface;\n\n\n" ;
         $code .= sprintf("class %s extends console implements CommandInterface\n{\n\n", $this->name) ;
         $code .= "\t/**\n\t* The console command name.\n\t*\n\t* @var string\n\t*/\n" ;
         $code .= sprintf("\t".'protected $signature = "%s";'."\n\n", $this->option('sign')) ;

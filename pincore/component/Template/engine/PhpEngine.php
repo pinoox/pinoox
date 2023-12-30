@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\template\engine;
+namespace Pinoox\Component\Template\Engine;
 
 use Symfony\Component\Templating\Helper\SlotsHelper;
 use Symfony\Component\Templating\TemplateNameParserInterface;

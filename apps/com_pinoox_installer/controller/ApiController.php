@@ -11,24 +11,24 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_installer\controller;
+namespace App\com_pinoox_installer\Controller;
 
-use pinoox\component\Dir;
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\kernel\controller\Controller;
-use pinoox\component\Lang;
-use pinoox\component\Http\Request;
-use pinoox\component\migration\Migrator;
-use pinoox\component\Security;
-use pinoox\component\System;
-use pinoox\component\Validation;
-use pinoox\component\Request as RequestData;
-use pinoox\model\UserModel;
-use pinoox\portal\app\App;
-use pinoox\portal\app\AppEngine;
-use pinoox\portal\app\AppRouter;
-use pinoox\portal\Config;
-use pinoox\portal\DB;
+use Pinoox\Component\Dir;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Migration\Migrator;
+use Pinoox\Component\Security;
+use Pinoox\Component\System;
+use Pinoox\Component\Validation;
+use Pinoox\Component\Request as RequestData;
+use Pinoox\Model\UserModel;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\App\AppRouter;
+use Pinoox\Portal\Config;
+use Pinoox\Portal\DB;
 
 class ApiController extends Controller
 {

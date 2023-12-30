@@ -12,9 +12,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\model;
+namespace Pinoox\Model;
 
-use pinoox\component\database\Model;
+use Pinoox\Component\Database\Model;
 
 class UserModel extends Model
 {

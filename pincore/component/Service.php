@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\portal\app\App;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Portal\App\App;
 
 class Service
 {
@@ -135,10 +135,10 @@ class Service
     {
         if (HelperString::firstHas($service, '~') || self::$app === '~') {
             $service = HelperString::firstDelete($service, '~');
-            $namespace = "pinoox\\service\\";
+            $namespace = "Pinoox\\Service\\";
         } else {
             $app = (empty(self::$app)) ? App::package() : self::$app;
-            $namespace = "pinoox\\app\\" . $app . "\\service\\";
+            $namespace = "App\\" . $app . "\\Service\\";
         }
 
         $services = HelperString::multiExplode(['\\', '>', '/', '.'], $service);

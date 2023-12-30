@@ -12,10 +12,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static mixed get(?string $key = NULL, mixed $default = NULL)
@@ -23,15 +23,15 @@ use pinoox\component\source\Portal;
  * @method static Env remove(string $key)
  * @method static Env restore()
  * @method static Env register()
- * @method static \pinoox\component\Helpers\Env ___()
+ * @method static \Pinoox\Component\Helpers\Env ___()
  *
- * @see \pinoox\component\Helpers\Env
+ * @see \Pinoox\Component\Helpers\Env
  */
 class Env extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\Helpers\Env::class)->setArguments([
+		self::__bind(\Pinoox\Component\Helpers\Env::class)->setArguments([
             Loader::basePath()
 		]);
 	}

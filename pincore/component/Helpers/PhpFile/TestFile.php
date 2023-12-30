@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\component\Helpers\PhpFile;
+namespace Pinoox\Component\Helpers\PhpFile;
 
-namespace pinoox\component\Helpers\PhpFile;
+namespace Pinoox\Component\Helpers\PhpFile;
 
-use pinoox\component\File;
+use Pinoox\Component\File;
 
 class TestFile extends PhpFile
 {

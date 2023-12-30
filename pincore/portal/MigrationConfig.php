@@ -12,19 +12,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\migration\MigrationConfig as ObjectPortal1;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Migration\MigrationConfig as ObjectPortal1;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static ObjectPortal1 load(string $path, string $package)
  * @method static bool isPrepareDB()
  * @method static getLastError()
  * @method static ?array getErrors()
- * @method static \pinoox\component\migration\MigrationConfig ___()
+ * @method static \Pinoox\Component\Migration\MigrationConfig ___()
  *
- * @see \pinoox\component\migration\MigrationConfig
+ * @see \Pinoox\Component\Migration\MigrationConfig
  */
 class MigrationConfig extends Portal
 {

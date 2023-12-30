@@ -11,7 +11,7 @@
  * @copyright  pinoox
  */
 
-namespace pinoox\component\database;
+namespace Pinoox\Component\Database;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 

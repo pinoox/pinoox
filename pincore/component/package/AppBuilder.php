@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 use Exception;
-use pinoox\component\Helpers\HelperArray;
-use pinoox\portal\Config;
-use pinoox\portal\Pinker;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Portal\Config;
+use Pinoox\Portal\Pinker;
 
 class AppBuilder
 {

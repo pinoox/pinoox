@@ -10,19 +10,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\Http\Request;
-use pinoox\component\Lang;
-use pinoox\component\store\Session;
-use pinoox\component\Url;
-use pinoox\portal\Config;
-use pinoox\portal\kernel\HttpKernel;
-use pinoox\portal\Path;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Store\Session;
+use Pinoox\Component\Url;
+use Pinoox\Portal\Config;
+use Pinoox\Portal\Kernel\HttpKernel;
+use Pinoox\Portal\Path;
 use Symfony\Component\HttpFoundation\Response;
-use pinoox\portal\Router;
-use pinoox\portal\app\App;
+use Pinoox\Portal\Router;
+use Pinoox\Portal\App\App;
 
 class Boot
 {

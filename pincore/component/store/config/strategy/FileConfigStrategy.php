@@ -11,11 +11,10 @@
  */
 
 
-namespace pinoox\component\store\config\strategy;
+namespace Pinoox\Component\Store\Config\Strategy;
 
-use pinoox\component\store\config\data\DataManager;
-use pinoox\component\store\config\data\DataInterface;
-use pinoox\component\store\baker\Pinker;
+use Pinoox\Component\Store\Config\Data\DataManager;
+use Pinoox\Component\Store\Baker\Pinker;
 
 class FileConfigStrategy implements ConfigStrategyInterface
 {

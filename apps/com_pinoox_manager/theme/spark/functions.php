@@ -11,9 +11,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
     
-use pinoox\component\Helpers\HelperArray;
-use pinoox\component\Helpers\Str;
-use pinoox\component\File;
+use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\File;
 function convertToJavascript($array)
 {
     echo HelperArray::convertToObjectJavascript($array);

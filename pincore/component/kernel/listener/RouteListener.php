@@ -1,18 +1,11 @@
 <?php
 
-namespace pinoox\component\kernel\listener;
+namespace Pinoox\Component\Kernel\Listener;
 
-use pinoox\component\Dir;
-use pinoox\component\Http\Request;
-use pinoox\component\template\View;
-use pinoox\portal\Path;
-use Symfony\Component\Asset\Context\RequestStackContext;
-use Symfony\Component\Asset\Package;
-use Symfony\Component\Asset\PathPackage;
-use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
-use Symfony\Component\Asset\VersionStrategy\StaticVersionStrategy;
+use Pinoox\Component\Template\View;
+use Pinoox\Portal\Path;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use pinoox\component\Http\Response;
+use Pinoox\Component\Http\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;

@@ -12,18 +12,18 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\lang\source\FileLangSource;
-use pinoox\component\Path\reference\PathReference;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Lang\ource\FileLangSource;
+use Pinoox\Component\Path\Reference\PathReference;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Source\Portal;
 
 /**
- * @method static \pinoox\component\lang\Lang create(\pinoox\component\lang\source\LangSource $source)
- * @method static \pinoox\component\lang\Lang ___()
+ * @method static \Pinoox\Component\Lang\Lang create(\Pinoox\Component\Lang\Source\LangSource $source)
+ * @method static \Pinoox\Component\Lang\Lang ___()
  *
- * @see \pinoox\component\lang\Lang
+ * @see \Pinoox\Component\Lang\Lang
  */
 class Lang extends Portal
 {
@@ -36,7 +36,7 @@ class Lang extends Portal
 
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\lang\Lang::class);
+		self::__bind(\Pinoox\Component\Lang\Lang::class);
 	}
 
 
@@ -44,15 +44,15 @@ class Lang extends Portal
 	 * Set file for pinoox baker
 	 *
 	 * @param string|ReferenceInterface $fileName
-	 * @return \pinoox\component\lang\Lang
+	 * @return \Pinoox\Component\Lang\Lang
 	 */
-	public static function name(string|ReferenceInterface $fileName): \pinoox\component\lang\Lang
+	public static function name(string|ReferenceInterface $fileName): \Pinoox\Component\Lang\Lang
 	{
 		return self::initFileConfig($fileName);
 	}
 
 
-	private static function initFileConfig(string $fileName): \pinoox\component\lang\Lang
+	private static function initFileConfig(string $fileName): \Pinoox\Component\Lang\Lang
 	{
 		if (empty(self::$tmp[$fileName])) {
 		    $reference = Path::reference($fileName);

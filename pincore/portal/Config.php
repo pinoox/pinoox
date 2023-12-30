@@ -12,21 +12,21 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\File;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\source\Portal;
-use pinoox\component\store\config\Config as ObjectPortal1;
-use pinoox\component\store\config\data\DataManager;
-use pinoox\component\store\config\strategy\FileConfigStrategy;
+use Pinoox\Component\File;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Store\Config\Config as ObjectPortal1;
+use Pinoox\Component\Store\Config\Data\DataManager;
+use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 
 /**
- * @method static \pinoox\component\store\config\Config create(\pinoox\component\store\config\strategy\ConfigStrategyInterface $strategy)
- * @method static \pinoox\component\store\config\strategy\FileConfigStrategy ___strategy()
- * @method static \pinoox\component\store\config\Config ___()
+ * @method static \Pinoox\Component\Store\Config\Config create(\Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface $strategy)
+ * @method static \Pinoox\Component\Store\Config\Strategy\FileConfigStrategy ___strategy()
+ * @method static \Pinoox\Component\Store\Config\Config ___()
  *
- * @see \pinoox\component\store\config\Config
+ * @see \Pinoox\Component\Store\Config\Config
  */
 class Config extends Portal
 {

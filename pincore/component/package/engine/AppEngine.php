@@ -11,26 +11,26 @@
  */
 
 
-namespace pinoox\component\package\engine;
+namespace Pinoox\Component\Package\Engine;
 
 
-use pinoox\component\package\AppManager;
-use pinoox\component\package\loader\ArrayLoader;
-use pinoox\component\package\loader\ChainLoader;
-use pinoox\component\package\loader\LoaderInterface;
-use pinoox\component\package\loader\PackageLoader;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\Path\Manager\PathManager;
-use pinoox\component\router\Router;
-use pinoox\component\store\config\Config;
-use pinoox\component\store\config\strategy\FileConfigStrategy;
-use pinoox\component\store\baker\Pinker;
+use Pinoox\Component\Package\AppManager;
+use Pinoox\Component\Package\Loader\ArrayLoader;
+use Pinoox\Component\Package\Loader\ChainLoader;
+use Pinoox\Component\Package\Loader\LoaderInterface;
+use Pinoox\Component\Package\Loader\PackageLoader;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Path\Manager\PathManager;
+use Pinoox\Component\Router\Router;
+use Pinoox\Component\Store\Config\Config;
+use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
+use Pinoox\Component\Store\Baker\Pinker;
 use Exception;
-use pinoox\portal\app\App;
+use Pinoox\Portal\App\App;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\SplFileInfo;
-use pinoox\component\store\config\ConfigInterface;
+use Pinoox\Component\Store\Config\ConfigInterface;
 
 class AppEngine implements EngineInterface
 {
@@ -51,7 +51,7 @@ class AppEngine implements EngineInterface
      */
     private array $appConfig;
     /**
-     * @var Router[]
+     * @var Router[][]
      */
     private array $router;
 
@@ -88,16 +88,30 @@ class AppEngine implements EngineInterface
         return $enable === true;
     }
 
-    public function routes(ReferenceInterface|string $packageName, string $path = ''): Router
+    public function getAllRouters(ReferenceInterface|string $packageName): array
     {
         $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
-        $key = $packageName . ':' . $path;
-        if (empty($this->router[$key])) {
-            $this->router[$key] = App::meeting($packageName, function () {
-                return \pinoox\portal\Router::___();
-            }, $path);
+        return !empty($this->router[$packageName]) ? $this->router[$packageName] : [];
+    }
+
+    private function buildPath(string $path)
+    {
+        $path = array_filter(explode('/', $path));
+        $path = implode('/', $path);
+        return !empty($path) ? '/'.$path : '/';
+    }
+
+    public function router(ReferenceInterface|string $packageName, string $path = '/'): Router
+    {
+        $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
+        $path = $this->buildPath($path);
+        $routes = $this->config($packageName)->get('router.routes');
+        if (empty($this->router[$packageName][$path])) {
+            $this->router[$packageName][$path] = \Pinoox\Portal\Router::build($path, $routes, [
+                'package' => $packageName,
+            ]);
         }
-        return $this->router[$key];
+        return $this->router[$packageName][$path];
     }
 
     public function manager(ReferenceInterface|string $packageName): AppManager

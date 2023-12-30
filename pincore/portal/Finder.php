@@ -12,10 +12,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
 use Iterator as ObjectPortal1;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static \Symfony\Component\Finder\Finder create()

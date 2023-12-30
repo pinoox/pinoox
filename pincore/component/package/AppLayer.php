@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 
 class AppLayer

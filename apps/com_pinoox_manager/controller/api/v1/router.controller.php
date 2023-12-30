@@ -10,14 +10,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Config;
-use pinoox\component\HelperString;
-use pinoox\component\Request;
-use pinoox\component\Response;
-use pinoox\component\Validation;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Config;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\Request;
+use Pinoox\Component\Response;
+use Pinoox\Component\Validation;
 
 class RouterController extends LoginConfiguration
 {

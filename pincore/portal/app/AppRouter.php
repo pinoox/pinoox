@@ -12,14 +12,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\app;
+namespace Pinoox\Portal\App;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\package\AppLayer as ObjectPortal1;
-use pinoox\component\source\Portal;
-use pinoox\component\store\config\strategy\FileConfigStrategy;
-use pinoox\portal\Config;
-use pinoox\portal\Pinker;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Package\AppLayer as ObjectPortal1;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
+use Pinoox\Portal\Config;
+use Pinoox\Portal\Pinker;
 
 /**
  * @method static setDefault($packageName)
@@ -33,9 +33,9 @@ use pinoox\portal\Pinker;
  * @method static array|null getPackage(string $packageName)
  * @method static bool exists(string $url)
  * @method static bool existsPackage(string $packageName)
- * @method static \pinoox\component\package\AppRouter ___()
+ * @method static \Pinoox\Component\Package\AppRouter ___()
  *
- * @see \pinoox\component\package\AppRouter
+ * @see \Pinoox\Component\Package\AppRouter
  */
 class AppRouter extends Portal
 {
@@ -45,7 +45,7 @@ class AppRouter extends Portal
 		$file = 'config/app/router.config.php';
         $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
 		$config = Config::create($fileStrategy);
-		self::__bind(\pinoox\component\package\AppRouter::class)->setArguments([
+		self::__bind(\Pinoox\Component\Package\AppRouter::class)->setArguments([
 		    $config,
 		    AppEngine::__ref(),
 		]);

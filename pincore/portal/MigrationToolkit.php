@@ -12,10 +12,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\migration\MigrationToolkit as ObjectPortal1;
-use pinoox\component\source\Portal;
+use Pinoox\Component\Migration\MigrationToolkit as ObjectPortal1;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static ObjectPortal1 appPath($val)
@@ -28,9 +28,9 @@ use pinoox\component\source\Portal;
  * @method static string generateMigrationFileName($modelName)
  * @method static getErrors($end = true)
  * @method static bool isSuccess()
- * @method static \pinoox\component\migration\MigrationToolkit object()
+ * @method static \Pinoox\Component\Migration\MigrationToolkit object()
  *
- * @see \pinoox\component\migration\MigrationToolkit
+ * @see \Pinoox\Component\Migration\MigrationToolkit
  */
 class MigrationToolkit extends Portal
 {

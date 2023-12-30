@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\package;
+namespace Pinoox\Component\Package;
 
 use Closure;
 use Exception;
-use pinoox\component\store\config\ConfigInterface;
-use pinoox\component\package\engine\AppEngine;
+use Pinoox\Component\Store\Config\ConfigInterface;
+use Pinoox\Component\Package\Engine\AppEngine;
 
 class App
 {

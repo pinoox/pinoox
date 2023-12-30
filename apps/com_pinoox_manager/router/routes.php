@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use pinoox\component\Http\RedirectResponse;
-use function pinoox\router\{route, collection, get};
-use pinoox\app\com_pinoox_installer\controller\ApiController;
-use pinoox\component\Helpers\Str;
+use Pinoox\Component\Http\RedirectResponse;
+use function Pinoox\Router\{route, collection, get};
+use App\com_pinoox_installer\Controller\ApiController;
+use Pinoox\Component\Helpers\Str;
 
 route(
     path: '/',

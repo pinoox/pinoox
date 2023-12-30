@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 use Closure;
-use pinoox\component\package\App;
-use pinoox\component\Validation;
+use Pinoox\Component\Package\App;
+use Pinoox\Component\Validation;
 use ReflectionException;
 
 class HelperArray

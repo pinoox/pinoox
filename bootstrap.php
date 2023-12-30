@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use pinoox\component\kernel\Loader;
+use Pinoox\Component\Kernel\Loader;
 
 define('PINOOX_START', microtime(true));
 define('PINOOX_CORE_PATH', __DIR__ . '/pincore/');

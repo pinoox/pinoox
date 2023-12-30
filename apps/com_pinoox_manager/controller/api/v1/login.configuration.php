@@ -9,9 +9,9 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\component\User;
+use Pinoox\Component\User;
 
 class LoginConfiguration extends MasterConfiguration
 {

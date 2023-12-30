@@ -1,9 +1,9 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\component\Console;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\Console;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class applist extends Console implements CommandInterface

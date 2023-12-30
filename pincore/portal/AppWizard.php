@@ -12,10 +12,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\source\Portal;
-use pinoox\component\wizard\Wizard as ObjectPortal1;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Wizard\Wizard as ObjectPortal1;
 
 /**
  * @method static type(string $type)
@@ -28,15 +28,15 @@ use pinoox\component\wizard\Wizard as ObjectPortal1;
  * @method static mixed getErrors(bool $last = false)
  * @method static array getMeta()
  * @method static ObjectPortal1 force(bool $val = true)
- * @method static \pinoox\component\wizard\AppWizard object()
+ * @method static \Pinoox\Component\Wizard\AppWizard object()
  *
- * @see \pinoox\component\wizard\AppWizard
+ * @see \Pinoox\Component\Wizard\AppWizard
  */
 class AppWizard extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\wizard\AppWizard::class);
+		self::__bind(\Pinoox\Component\Wizard\AppWizard::class);
 	}
 
 

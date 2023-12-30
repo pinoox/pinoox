@@ -10,11 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\migration;
+namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Capsule\Manager;
-use pinoox\component\kernel\Exception;
-use pinoox\portal\DB;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Portal\DB;
 use Symfony\Component\Finder\Finder;
 
 class MigrationToolkit

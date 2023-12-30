@@ -11,11 +11,11 @@
  */
 
 
-namespace pinoox\service;
+namespace Pinoox\Service;
 
 
-use pinoox\component\interfaces\ServiceInterface;
-use pinoox\component\kernel\Boot;
+use Pinoox\Component\Interfaces\ServiceInterface;
+use Pinoox\Component\Kernel\Boot;
 
 class BootService implements ServiceInterface
 {

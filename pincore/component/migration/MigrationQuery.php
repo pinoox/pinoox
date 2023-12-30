@@ -10,9 +10,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\migration;
+namespace Pinoox\Component\Migration;
 
-use pinoox\model\MigrationModel;
+use Pinoox\Model\MigrationModel;
 
 class MigrationQuery
 {

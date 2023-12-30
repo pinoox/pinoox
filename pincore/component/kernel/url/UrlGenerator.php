@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\kernel\url;
+namespace Pinoox\Component\Kernel\Url;
 
 use Symfony\Component\Routing\Generator\UrlGenerator as UrlGeneratorSymfony;
 use Symfony\Component\Routing\RouteCollection;

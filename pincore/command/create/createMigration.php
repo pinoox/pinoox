@@ -1,15 +1,15 @@
 <?php
 
-namespace pinoox\command\create;
+namespace Pinoox\Command\create;
 
-use pinoox\component\console;
-use pinoox\component\File;
-use pinoox\component\Helpers\PhpFile\MigrationFile;
-use pinoox\component\Helpers\Str;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\migration\MigrationToolkit;
-use pinoox\component\migration\MigrationConfig as Config;
-use pinoox\portal\MigrationConfig;
+use Pinoox\Component\console;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\PhpFile\MigrationFile;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Migration\MigrationToolkit;
+use Pinoox\Component\Migration\MigrationConfig as Config;
+use Pinoox\Portal\MigrationConfig;
 
 
 class createMigration extends console implements CommandInterface

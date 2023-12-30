@@ -11,10 +11,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\terminal\test;
+namespace Pinoox\Terminal\Test;
 
-use pinoox\component\Helpers\PhpFile\TestFile;
-use pinoox\component\Terminal;
+use Pinoox\Component\Helpers\PhpFile\TestFile;
+use Pinoox\Component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

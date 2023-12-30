@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\package\loader;
+namespace Pinoox\Component\Package\Loader;
 
 
-use pinoox\component\Validation;
+use Pinoox\Component\Validation;
 
 final class PackageLoader implements LoaderInterface
 {

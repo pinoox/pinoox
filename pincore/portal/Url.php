@@ -12,24 +12,24 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal;
+namespace Pinoox\Portal;
 
-use pinoox\component\Helpers\Url as ObjectPortal1;
-use pinoox\component\Path\parser\UrlParser;
-use pinoox\component\source\Portal;
-use pinoox\portal\app\AppEngine;
+use Pinoox\Component\Helpers\Url as ObjectPortal1;
+use Pinoox\Component\Path\Parser\UrlParser;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\AppEngine;
 
 /**
  * @method static ObjectPortal1 set($key, $value)
  * @method static string|null app(?string $packageName = NULL)
  * @method static string replaceToSlash(string $url, array|string $search = array (  0 => '\\',  1 => '>',))
- * @method static string prefix(\pinoox\component\Path\reference\ReferenceInterface|string $url, string $prefix)
- * @method static string get(\pinoox\component\Path\reference\ReferenceInterface|string $url = '')
- * @method static string prefixName(\pinoox\component\Path\reference\ReferenceInterface|string $url, string $prefix)
- * @method static \pinoox\component\Path\parser\UrlParser ___parser()
- * @method static \pinoox\component\Helpers\Url ___()
+ * @method static string prefix(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url, string $prefix)
+ * @method static string get(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url = '')
+ * @method static string prefixName(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url, string $prefix)
+ * @method static \Pinoox\Component\Path\Parser\UrlParser ___parser()
+ * @method static \Pinoox\Component\Helpers\Url ___()
  *
- * @see \pinoox\component\Helpers\Url
+ * @see \Pinoox\Component\Helpers\Url
  */
 class Url extends Portal
 {

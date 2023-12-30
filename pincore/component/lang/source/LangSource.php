@@ -11,12 +11,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\lang\source;
+namespace Pinoox\Component\Lang\Source;
 
 
 /**
  * The Abstract Class defines the contract for loading and saving language data from different sources.
- * @package pinoox\component\lang\source
+ * @package Pinoox\Component\Lang\Source
  */
 abstract class LangSource
 {

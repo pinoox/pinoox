@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function pinoox\router\{route};
+use function Pinoox\Router\{route};
 
 route(
     path: '/',

@@ -12,39 +12,34 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\app;
+namespace Pinoox\Portal\App;
 
-use Closure;
-use Exception;
-use pinoox\component\kernel\Boot;
-use pinoox\component\package\AppLayer;
-use pinoox\component\package\AppLayer as ObjectPortal1;
-use pinoox\component\source\Portal;
-use pinoox\portal\View;
+use Pinoox\Component\Package\AppLayer;
+use Pinoox\Component\Source\Portal;
 
 /**
  * @method static string|null package()
  * @method static AppLayer current()
  * @method static string path()
- * @method static setLayer(\pinoox\component\package\AppLayer $appLayer)
+ * @method static setLayer(\Pinoox\Component\Package\AppLayer $appLayer)
  * @method static mixed meeting(string $packageName, \Closure $closure, string $path = '')
  * @method static setPackageName(string $package)
  * @method static setPath(string $path = '')
  * @method static bool exists(string $packageName)
  * @method static bool stable(string $packageName)
  * @method static mixed get(?string $value = NULL)
- * @method static \pinoox\component\store\config\ConfigInterface|null set(string $key, mixed $value)
- * @method static \pinoox\component\store\config\ConfigInterface|null add(string $key, mixed $value)
- * @method static \pinoox\component\store\config\ConfigInterface|null save()
- * @method static \pinoox\component\package\App ___()
+ * @method static \Pinoox\Component\Store\Config\ConfigInterface|null set(string $key, mixed $value)
+ * @method static \Pinoox\Component\Store\Config\ConfigInterface|null add(string $key, mixed $value)
+ * @method static \Pinoox\Component\Store\Config\ConfigInterface|null save()
+ * @method static \Pinoox\Component\Package\App ___()
  *
- * @see \pinoox\component\package\App
+ * @see \Pinoox\Component\Package\App
  */
 class App extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\pinoox\component\package\App::class)->setArguments([
+		self::__bind(\Pinoox\Component\Package\App::class)->setArguments([
 		    AppRouter::find(),
 		    AppEngine::__ref(),
 		]);

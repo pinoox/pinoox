@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
 use JetBrains\PhpStorm\NoReturn;
 use Symfony\Component\Console\Command\Command;

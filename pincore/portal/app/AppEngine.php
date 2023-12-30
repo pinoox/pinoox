@@ -12,31 +12,31 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\app;
+namespace Pinoox\Portal\App;
 
-use pinoox\component\kernel\Loader;
-use pinoox\component\package\AppManager;
-use pinoox\component\Path\Manager\ManagerInterface;
-use pinoox\component\router\Router as ObjectPortal2;
-use pinoox\component\source\Portal;
-use pinoox\component\store\config\Config as ObjectPortal1;
-use pinoox\component\store\config\strategy\FileConfigStrategy;
-use pinoox\portal\Config;
-use pinoox\portal\Pinker;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Package\AppManager;
+use Pinoox\Component\Path\Manager\ManagerInterface;
+use Pinoox\Component\Router\Router as ObjectPortal2;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Store\Config\Config as ObjectPortal1;
+use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal3;
+use Pinoox\Portal\Pinker;
 
 /**
- * @method static bool stable(string $packageName)
- * @method static ObjectPortal2 routes(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
- * @method static ObjectPortal1 config(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
- * @method static bool exists(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
- * @method static AppManager manager(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
- * @method static AppEngine add($packageName, $path)
- * @method static ManagerInterface path(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
- * @method static bool supports(\pinoox\component\Path\reference\ReferenceInterface|string $packageName)
+ * @method static bool stable(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static array getAllRouters(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static ObjectPortal2 router(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName, string $path = '/')
+ * @method static AppManager manager(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static ObjectPortal3 config(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static bool exists(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static AppEngine add(string $packageName, string $path)
+ * @method static string path(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName, string $path = '')
+ * @method static bool supports(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static array all()
- * @method static \pinoox\component\package\engine\AppEngine ___()
+ * @method static \Pinoox\Component\Package\Engine\AppEngine ___()
  *
- * @see \pinoox\component\package\engine\AppEngine
+ * @see \Pinoox\Component\Package\Engine\AppEngine
  */
 class AppEngine extends Portal
 {
@@ -52,13 +52,13 @@ class AppEngine extends Portal
 		$pathApps = Loader::basePath() . '/apps';
 		$pathConfig = 'config/app/source.config.php';
 		$appConfig = Pinker::path($pathConfig,Loader::basePath() . '/pincore');
-        $defaultData = $appConfig->pickup()?? [];
-		self::__bind(\pinoox\component\package\engine\AppEngine::class)
+		$defaultData = $appConfig->pickup()?? [];
+		self::__bind(\Pinoox\Component\Package\Engine\AppEngine::class)
 		    ->setArguments([
 		        $pathApps,
 		        self::file,
 		        Pinker::folder,
-                $defaultData,
+		        $defaultData,
 		    ]);
 	}
 

@@ -1,17 +1,17 @@
 <?php
 
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
-use pinoox\app\com_pinoox_manager\component\Notification;
-use pinoox\portal\Config;
-use pinoox\component\Console;
-use pinoox\component\Helpers\HelperString;
-use pinoox\component\HttpRequest;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\Lang;
-use pinoox\component\Request;
-use pinoox\component\Url;
+use App\com_pinoox_manager\Component\Notification;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Console;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\HttpRequest;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Request;
+use Pinoox\Component\Url;
 use Symfony\Component\HttpClient\HttpClient;
 
 

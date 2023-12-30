@@ -1,12 +1,12 @@
 <?php
-namespace pinoox\command;
+namespace Pinoox\Command;
 
 
 use PHPUnit\TextUI\Command;
-use pinoox\app\com_pinoox_manager\controller\AppHelper;
-use pinoox\component\Console;
-use pinoox\component\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use App\com_pinoox_manager\Controller\AppHelper;
+use Pinoox\Component\Console;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class unitTest extends Console implements CommandInterface

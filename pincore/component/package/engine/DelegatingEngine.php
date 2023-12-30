@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\package\engine;
+namespace Pinoox\Component\Package\Engine;
 
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\store\config\Config;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Store\Config\Config;
 
 class DelegatingEngine implements EngineInterface
 {

@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component;
+namespace Pinoox\Component;
 
-use pinoox\boot\Loader;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Helpers\HelperString;
-use pinoox\portal\Config;
+use Pinoox\Boot\Loader;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Portal\Config;
 use ReflectionClass;
 use ReflectionMethod;
 
@@ -537,7 +537,7 @@ class Router
     private static function generateControllerClass($controllerName)
     {
         $folderController = !empty(self::$folderController) ? self::$folderController . '\\' : null;
-        $namespace = "pinoox\\app\\" . self::getApp() . "\\controller\\" . $folderController;
+        $namespace = "App\\" . self::getApp() . "\\Controller\\" . $folderController;
         $controllerName = str_replace('/', '\\', $controllerName);
         return $namespace . $controllerName;
     }

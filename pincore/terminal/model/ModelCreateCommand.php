@@ -1,11 +1,11 @@
 <?php
 
-namespace pinoox\terminal\model;
+namespace Pinoox\Terminal\Model;
 
-use pinoox\component\Helpers\PhpFile\ModelFile;
-use pinoox\component\Helpers\Str;
-use pinoox\component\Terminal;
-use pinoox\portal\AppManager;
+use Pinoox\Component\Helpers\PhpFile\ModelFile;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\AppManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

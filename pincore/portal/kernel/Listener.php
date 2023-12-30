@@ -12,13 +12,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\portal\kernel;
+namespace Pinoox\Portal\Kernel;
 
-use pinoox\component\kernel\listener\ActionRoutesManageListener;
-use pinoox\component\kernel\listener\RouteListener;
-use pinoox\component\kernel\listener\ViewListener;
-use pinoox\component\source\Portal;
-use pinoox\controller\ErrorController;
+use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
+use Pinoox\Component\Kernel\Listener\RouteListener;
+use Pinoox\Component\Kernel\Listener\ViewListener;
+use Pinoox\Component\Source\Portal;
+use Pinoox\Controller\ErrorController;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;

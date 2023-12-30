@@ -11,12 +11,12 @@
  */
 
 
-namespace pinoox\component\Path\parser;
+namespace Pinoox\Component\Path\Parser;
 
 
-use pinoox\component\Helpers\Str;
-use pinoox\component\Path\reference\PathReference;
-use pinoox\component\Path\reference\ReferenceInterface;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Path\Reference\PathReference;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
 
 class PathParser implements ParserInterface
 {

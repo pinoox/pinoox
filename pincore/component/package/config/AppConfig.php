@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\package\config;
+namespace Pinoox\Component\Package\Config;
 
 
-use pinoox\component\store\config\Config;
+use Pinoox\Component\Store\Config\Config;
 
 class AppConfig implements ConfigInterface
 {

@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
 use Composer\Autoload\ClassLoader;
 
@@ -52,7 +52,7 @@ class LoaderManager
      */
     private function callConstruct($className)
     {
-        if (!str_starts_with($className, 'pinoox'))
+        if (!str_contains($className, 'Portal\\'))
             return;
 
         $reflectionClass = new \ReflectionClass($className);

@@ -1,16 +1,16 @@
 <?php
 
-namespace pinoox\command\migrate;
+namespace Pinoox\Command\migrate;
 
 
-use pinoox\component\console;
-use pinoox\component\interfaces\CommandInterface;
-use pinoox\component\package\App;
-use pinoox\portal\DB;
-use pinoox\portal\MigrationConfig;
-use \pinoox\component\migration\MigrationConfig as MigConf;
-use pinoox\component\migration\MigrationQuery;
-use pinoox\component\migration\MigrationToolkit;
+use Pinoox\Component\console;
+use Pinoox\Component\Interfaces\CommandInterface;
+use Pinoox\Component\Package\App;
+use Pinoox\Portal\DB;
+use Pinoox\Portal\MigrationConfig;
+use \Pinoox\Component\Migration\MigrationConfig as MigConf;
+use Pinoox\Component\Migration\MigrationQuery;
+use Pinoox\Component\Migration\MigrationToolkit;
 
 
 class migrateRun extends console implements CommandInterface

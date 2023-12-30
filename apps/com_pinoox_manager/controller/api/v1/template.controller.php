@@ -10,16 +10,16 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\app\AppProvider;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\Lang;
-use pinoox\component\Response;
-use pinoox\component\Url;
+use App\com_pinoox_manager\Component\Wizard;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Lang;
+use Pinoox\Component\Response;
+use Pinoox\Component\Url;
 
 class TemplateController extends LoginConfiguration
 {

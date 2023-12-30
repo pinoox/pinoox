@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function pinoox\router\{get,post};
+use function Pinoox\Router\{get,post};
 
 //get(
 //    path: '/changeLang/{lang}',

@@ -11,9 +11,9 @@
  */
 
 
-namespace pinoox\component\kernel;
+namespace Pinoox\Component\Kernel;
 
-use pinoox\portal\app\App;
+use Pinoox\Portal\App\App;
 use Symfony\Component\DependencyInjection\Reference;
 
 class Container

@@ -11,10 +11,10 @@
  * @copyright  pinoox
  */
 
-namespace pinoox\component\migration;
+namespace Pinoox\Component\Migration;
 
-use pinoox\component\kernel\Exception;
-use pinoox\portal\DB;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Portal\DB;
 
 class MigrationConfig
 {
@@ -37,7 +37,7 @@ class MigrationConfig
         if ($this->package == 'pincore') {
             $this->namespace = 'pinoox' . $this->folders;
         } else {
-            $this->namespace = 'pinoox\\app\\' . $this->package . $this->folders;
+            $this->namespace = 'App\\' . $this->package . $this->folders;
         }
 
         //check database

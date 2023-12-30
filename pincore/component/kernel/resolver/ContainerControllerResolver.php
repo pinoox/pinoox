@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\kernel\resolver;
+namespace Pinoox\Component\Kernel\Resolver;
 
 
-use pinoox\component\kernel\controller\Controller;
+use Pinoox\Component\Kernel\Controller\Controller;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\HttpKernel\Controller\ContainerControllerResolver as ContainerControllerResolverSymfony;
 

@@ -12,9 +12,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\model;
+namespace Pinoox\Model;
 
-use pinoox\component\Database\Model;
+use Pinoox\Component\Database\Model;
 
 class FileModel extends Model
 {

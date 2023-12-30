@@ -11,10 +11,10 @@
  */
 
 
-namespace pinoox\component\template\reference;
+namespace Pinoox\Component\Template\Reference;
 
 
-use pinoox\component\Helpers\Str;
+use Pinoox\Component\Helpers\Str;
 
 class TemplatePathReference
 {

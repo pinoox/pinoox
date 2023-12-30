@@ -1,15 +1,15 @@
 <?php
 
-namespace pinoox\command\create;
+namespace Pinoox\Command\create;
 
 
 use mysql_xdevapi\Exception;
-use pinoox\component\ClassBuilder;
-use pinoox\component\console;
-use pinoox\component\File;
-use pinoox\component\Helpers\Str;
-use pinoox\component\HelperString;
-use pinoox\component\interfaces\CommandInterface;
+use Pinoox\Component\ClassBuilder;
+use Pinoox\Component\console;
+use Pinoox\Component\File;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\Interfaces\CommandInterface;
 
 
 class createModel extends console implements CommandInterface
@@ -80,14 +80,14 @@ class createModel extends console implements CommandInterface
 
     private function setPath()
     {
-        $this->modelPath = $this->cli['path'] . '\\model\\' . ucfirst($this->model) . '.php';
+        $this->modelPath = $this->cli['path'] . '\\Model\\' . ucfirst($this->model) . '.php';
     }
 
     private function setExtend()
     {
         $extend = $this->option('extends');
         if (strtolower($extend) == 'model') {
-            $this->use = 'pinoox\component\database\Model';
+            $this->use = 'Pinoox\Component\Database\Model';
             $this->extend = 'Model';
         }
     }
@@ -104,7 +104,7 @@ class createModel extends console implements CommandInterface
         try {
             $builder = ClassBuilder::init($this->model)
                 ->extends($this->extend)
-                ->namespace($this->cli['namespace'] . '\model')
+                ->namespace($this->cli['namespace'] . '\Model')
                 ->use($this->use)
                 ->build()
                 ->export($this->modelPath);

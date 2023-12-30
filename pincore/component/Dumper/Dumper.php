@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\Dumper;
+namespace Pinoox\Component\Dumper;
 
 
 class Dumper

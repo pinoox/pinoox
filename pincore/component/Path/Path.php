@@ -11,14 +11,14 @@
  */
 
 
-namespace pinoox\component\Path;
+namespace Pinoox\Component\Path;
 
-use pinoox\component\package\AppLayer;
-use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\Path\parser\PathParser;
-use pinoox\component\Path\reference\PathReference;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\Path\Manager\PathManager;
+use Pinoox\Component\Package\AppLayer;
+use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Path\Parser\PathParser;
+use Pinoox\Component\Path\Reference\PathReference;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Path\Manager\PathManager;
 
 class Path implements PathInterface
 {

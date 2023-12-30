@@ -11,13 +11,13 @@
  */
 
 
-namespace pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 
-use pinoox\component\package\engine\EngineInterface;
-use pinoox\component\Path\parser\UrlParser;
-use pinoox\component\Path\reference\ReferenceInterface;
-use pinoox\component\Path\reference\UrlReference;
+use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Path\Parser\UrlParser;
+use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Path\Reference\UrlReference;
 
 class Url
 {

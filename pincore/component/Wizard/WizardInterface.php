@@ -11,7 +11,7 @@
  */
 
 
-namespace pinoox\component\Wizard;
+namespace Pinoox\Component\Wizard;
 
 interface WizardInterface
 {

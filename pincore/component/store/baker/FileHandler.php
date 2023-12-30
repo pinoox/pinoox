@@ -12,10 +12,10 @@
  */
 
 
-namespace pinoox\component\store\baker;
+namespace Pinoox\Component\Store\Baker;
 
 
-use pinoox\component\File;
+use Pinoox\Component\File;
 
 /**
  * Class to handle file operations

@@ -10,10 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\service;
+namespace Pinoox\Service;
 
-use pinoox\component\interfaces\ServiceInterface;
-use pinoox\portal\DB;
+use Pinoox\Component\Interfaces\ServiceInterface;
+use Pinoox\Portal\DB;
 
 class DatabaseService implements ServiceInterface
 {

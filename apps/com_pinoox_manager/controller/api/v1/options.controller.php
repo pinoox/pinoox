@@ -10,12 +10,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\component\app\AppProvider;
-use pinoox\component\Config;
-use pinoox\component\Dir;
-use pinoox\component\Response;
+use Pinoox\Component\app\AppProvider;
+use Pinoox\Component\Config;
+use Pinoox\Component\Dir;
+use Pinoox\Component\Response;
 
 class OptionsController extends LoginConfiguration
 {

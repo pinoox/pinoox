@@ -11,15 +11,15 @@
  */
 
 
-namespace pinoox\app\com_pinoox_manager\controller\api\v1;
+namespace App\com_pinoox_manager\Controller\api\v1;
 
-use pinoox\portal\Config;
-use pinoox\component\Helpers\Str;
-use pinoox\component\HttpRequest;
-use pinoox\component\Request as RequestData;
-use pinoox\component\Response;
-use pinoox\component\Url;
-use pinoox\component\Validation;
+use Pinoox\Portal\Config;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\HttpRequest;
+use Pinoox\Component\Request as RequestData;
+use Pinoox\Component\Response;
+use Pinoox\Component\Url;
+use Pinoox\Component\Validation;
 
 class AccountController extends LoginConfiguration
 {
