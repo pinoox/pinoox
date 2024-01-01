@@ -98,7 +98,7 @@ class AppEngine implements EngineInterface
     {
         $path = array_filter(explode('/', $path));
         $path = implode('/', $path);
-        return !empty($path) ? '/'.$path : '/';
+        return !empty($path) ? '/' . $path : '/';
     }
 
     public function router(ReferenceInterface|string $packageName, string $path = '/'): Router
@@ -109,7 +109,8 @@ class AppEngine implements EngineInterface
         if (empty($this->router[$packageName][$path])) {
             $this->router[$packageName][$path] = \Pinoox\Portal\Router::build($path, $routes, [
                 'package' => $packageName,
-            ]);
+                'path' => $path,
+            ], $this->manager($packageName));
         }
         return $this->router[$packageName][$path];
     }

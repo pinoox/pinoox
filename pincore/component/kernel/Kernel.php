@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Exception;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class Kernel extends HttpKernel
 {
@@ -16,6 +17,6 @@ class Kernel extends HttpKernel
      */
     public function handleSubRequest(Request $request): Response
     {
-        return parent::handle($request, self::SUB_REQUEST,false);
+        return static::handle($request, static::SUB_REQUEST,false);
     }
 }

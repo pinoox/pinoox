@@ -229,7 +229,7 @@ class Router
         }
     }
 
-    public function build($path, $routes, array $data = []): Router
+    public function build($path, $routes, array $data = [],?AppManager $app = null): Router
     {
         $this->data = $data;
         $collection = $this->collection(
@@ -238,7 +238,8 @@ class Router
         );
         $collection->cast = -1;
         $this->data = [];
-        return new Router($this->routeName, $this->app, $collection);
+        $app = !empty($app)? $app : $this->app;
+        return new Router($this->routeName, $app, $collection);
     }
 
     /**

@@ -35,7 +35,7 @@ use Pinoox\Portal\Router as ObjectPortal2;
  * @method static mixed buildAction(mixed $action, ?int $indexCollection = NULL)
  * @method static mixed getAction(string $name)
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [])
- * @method static ObjectPortal3 build($path, $routes, array $data = [])
+ * @method static ObjectPortal3 build($path, $routes, array $data = [], ?\Pinoox\Component\Package\AppManager $app = NULL)
  * @method static \Pinoox\Component\Router\Collection|array list(string $key = '')
  * @method static Router action(string $name, \Closure|array|string $action)
  * @method static Collection currentCollection()
@@ -65,17 +65,9 @@ class Router extends Portal
 		self::__bind(RouteName::class, 'name');
 
 		$manager = AppEngine::manager( App::package());
-		$routes = $manager->config()->get('router.routes');
 		self::__bind(ObjectPortal3::class)
 		    ->setArgument('routeName',static::__ref('name'))
 		    ->setArgument('app',$manager);
-
-		$route1 = self::build(
-		    '/',
-		    $routes,
-		);
-
-
 
 		self::defaultRoutes();
 	}

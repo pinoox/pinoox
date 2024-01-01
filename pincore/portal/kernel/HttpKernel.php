@@ -14,23 +14,18 @@
 
 namespace Pinoox\Portal\Kernel;
 
-use pinoox\component\package\AppLayer;
+use Pinoox\Component\Router\RouteCollection;
+use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\App\AppRouter;
 use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\RequestContext;
-use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Kernel\Container;
-use Pinoox\Component\Kernel\ContainerBuilder;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\Event\ResponseEvent;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\Path;
-use Pinoox\Portal\Router;
 
 /**
  * @method static ObjectPortal1 handleSubRequest(\Symfony\Component\HttpFoundation\Request $request)
@@ -72,18 +67,27 @@ class HttpKernel extends Portal
         self::setRouteDefault();
     }
 
-    public static function setRouts(string $package, string $path): void
+    public static function set(string $package, string $path): void
     {
         $router = AppEngine::router($package, $path);
-        self::__bind($router->getCollection()->routes, 'routes');
+        self::setRouts($router->getCollection()->routes);
+    }
+
+    public static function setRouts(RouteCollection $routes): void
+    {
+        self::__bind($routes, 'routes');
     }
 
     public static function setRouteDefault(): void
     {
-        $layer = AppRouter::find();
-        self::setRouts($layer->getPackageName(), $layer->getPath());
+        self::setRouts(App::routeCollection());
     }
 
+    public static function get(string $package, string $path): Kernel
+    {
+        self::set($package, $path);
+        return self::___();
+    }
 
     private static function setParams(): void
     {

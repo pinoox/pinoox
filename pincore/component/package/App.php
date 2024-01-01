@@ -14,6 +14,9 @@ namespace Pinoox\Component\Package;
 
 use Closure;
 use Exception;
+use Pinoox\Component\Router\Collection;
+use Pinoox\Component\Router\RouteCollection;
+use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
 
@@ -40,6 +43,16 @@ class App
     }
 
     /**
+     * Get the package name of the current application
+     *
+     * @return string|null
+     */
+    public function route(): ?string
+    {
+        return $this->appLayer?->getPath();
+    }
+
+    /**
      * Get App stake
      *
      * @return AppLayer
@@ -47,16 +60,6 @@ class App
     public function current(): AppLayer
     {
         return $this->appLayer;
-    }
-
-    /**
-     * Get the URL of the current application
-     *
-     * @return string
-     */
-    public function path(): string
-    {
-        return $this->appLayer?->getPath();
     }
 
     /**
@@ -82,7 +85,7 @@ class App
         if (!$this->exists($packageName))
             throw new Exception('package `' . $packageName . '` not found!');
 
-        $mainLayer = new AppLayer($this->path(), $this->package());
+        $mainLayer = new AppLayer($this->appLayer->getPath(), $this->appLayer->getPackageName());
 
         $this->setLayer(new AppLayer($path, $packageName));
         if (!is_callable($closure))
@@ -94,31 +97,6 @@ class App
 
         return $result;
     }
-
-    /**
-     * Set the package name of the current application
-     *
-     * @param string $package
-     * @throws Exception
-     */
-    public function setPackageName(string $package)
-    {
-        if (!self::exists($package))
-            throw new Exception('package `' . $package . '` not found!');
-
-        $this->appLayer?->setPackageName($package);
-    }
-
-    /**
-     * Set the URL of the current application
-     *
-     * @param string $path
-     */
-    public function setPath(string $path = '')
-    {
-        $this->appLayer?->setPath($path);
-    }
-
 
     /**
      * App exists
@@ -218,6 +196,34 @@ class App
 
         $this->config->save();
         return $this->config;
+    }
+
+    public function manager(): AppManager
+    {
+        return $this->appEngine->manager($this->package());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function path(string $path = ''): string
+    {
+        return $this->appEngine->path($this->package(), $path);
+    }
+
+    public function router(): Router
+    {
+        return $this->appEngine->router($this->package(), $this->route());
+    }
+
+    public function routeCollection(): RouteCollection
+    {
+        return $this->router()->getCollection()->routes;
+    }
+
+    public function collection(): Collection
+    {
+        return $this->router()->getCollection();
     }
 }
 
