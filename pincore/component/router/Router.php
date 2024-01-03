@@ -13,12 +13,12 @@
 
 namespace Pinoox\Component\Router;
 
-use Pinoox\Component\Helpers\Str;
 use Closure;
-use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
 use Pinoox\Component\Package\AppManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 
 class Router
@@ -47,6 +47,8 @@ class Router
     private AppManager $app;
     private UrlGeneratorInterface $urlGenerator;
 
+    private UrlMatcherInterface $urlMatcher;
+
     private RouteName $routeName;
 
     public function __construct(RouteName $routeName, AppManager $app, ?Collection $collection = null)
@@ -69,15 +71,23 @@ class Router
     public function path(string $name, array $params = []): string
     {
         if (empty($this->urlGenerator))
-            $this->urlGenerator = new UrlGenerator($this->getMainCollection()->routes, RequestContext::fromUri(''));
+            $this->urlGenerator = new UrlGenerator($this->getCollection()->routes, RequestContext::fromUri(''));
 
         return $this->urlGenerator->generate($name, $params);
+    }
+
+    public function match(string $path): array
+    {
+        if (empty($this->urlMatcher))
+            $this->urlMatcher = new UrlMatcher($this->getCollection()->routes, RequestContext::fromUri(''));
+
+        return $this->urlMatcher->match($path);
     }
 
     public function getAllPath(): array
     {
         $paths = [];
-        $routes = $this->getMainCollection()->routes->all();
+        $routes = $this->getCollection()->routes->all();
         /**
          * @var RouteCapsule $route
          */
@@ -221,7 +231,7 @@ class Router
             return;
 
         if ($routes instanceof Router) {
-            $this->getMainCollection()->add($routes->getMainCollection());
+            $this->getCollection()->add($routes->getCollection());
         } else if (is_callable($routes)) {
             $routes($this);
         } else {
@@ -229,16 +239,21 @@ class Router
         }
     }
 
-    public function build($path, $routes, array $data = [],?AppManager $app = null): Router
+    public function build($path, $routes, array $data = [], ?AppManager $app = null): Router
     {
         $this->data = $data;
+        $currentApp = $this->app;
+        $app = !empty($app) ? $app : $this->app;
+
+        $this->app = $app;
         $collection = $this->collection(
             path: $path,
             routes: $routes
         );
+        $this->app = $currentApp;
+
         $collection->cast = -1;
         $this->data = [];
-        $app = !empty($app)? $app : $this->app;
         return new Router($this->routeName, $app, $collection);
     }
 
@@ -386,16 +401,6 @@ class Router
     }
 
     /**
-     * get the main Collection
-     *
-     * @return Collection
-     */
-    public function getMainCollection(): Collection
-    {
-        return $this->collections[0];
-    }
-
-    /**
      * build name for route
      *
      * @param string $name
@@ -414,7 +419,7 @@ class Router
      */
     public function all(): array
     {
-        return $this->getMainCollection()->routes->all();
+        return $this->getCollection()->routes->all();
     }
 
     /**
@@ -424,6 +429,6 @@ class Router
      */
     public function count(): int
     {
-        return $this->getMainCollection()->routes->count();
+        return $this->getCollection()->routes->count();
     }
 }

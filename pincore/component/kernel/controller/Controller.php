@@ -7,6 +7,7 @@ use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\App\App;
 use Pinoox\Component\Router\Collection;
+use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Router;
 use Psr\Container\ContainerInterface;
 use Pinoox\Component\Http\RedirectResponse;
@@ -77,21 +78,30 @@ abstract class Controller
 
     /**
      * Forwards the request to another controller.
-     * @param string|array|Closure $action
+     * @param string|array|Closure|null $action
      * @param array $attributes
      * @param array $query
      * @return Response
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function forward(string|array|Closure $action, array $attributes = [], array $query = []): Response
+    protected function forward(string|array|Closure|null $action = null, array $attributes = [], array $query = []): Response
     {
-        $request = $this->container->get('request_stack')->getCurrentRequest();
+        $request = HttpKernel::___requestStack()->getCurrentRequest();
         $subRequest = $request->duplicate($query, null, null);
         $subRequest->collection()->controller = get_called_class();
-        $attributes['_controller'] = $this->buildValueAction($subRequest, $action);
+        if(!empty($action))
+        {
+            $attributes['_controller'] = $this->buildValueAction($subRequest, $action);
+        }
         $subRequest->attributes->add($attributes);
         return $this->container->get('kernel')->handleSubRequest($subRequest);
+    }
+
+    protected function connect(string $path = null)
+    {
+        $attributes = App::router()->match($path);
+        return $this->forward(null,$attributes);
     }
 
     private function buildValueAction(Request $request, $controller)
@@ -114,7 +124,7 @@ abstract class Controller
         if ($request->attributes->has('_router'))
             return $request->attributes->get('_router')->getCollection();
         else
-            return Router::getMainCollection();
+            return Router::getCollection();
     }
 
     protected function response(?string $content = '', int $status = 200, array $headers = []): Response

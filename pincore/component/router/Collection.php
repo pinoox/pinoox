@@ -13,6 +13,7 @@
 namespace Pinoox\Component\Router;
 
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Portal\App\App;
 
 class Collection
 {
@@ -29,11 +30,12 @@ class Collection
         public array        $defaults = [],
         public array        $filters = [],
         public string       $name = '',
-        public array       $data = [],
+        public array        $data = [],
     )
     {
 
-        $this->controllerBuilder = new ControllerBuilder($controller, 'App\\' . 'package' . '\\Controller');
+        $package = $data['package'] ?? App::package();
+        $this->controllerBuilder = new ControllerBuilder($controller, 'App\\' . $package . '\\Controller');
         $this->controller = $this->buildController($controller);
         if (is_string($methods) && !empty($methods)) {
             $methods = Str::multiExplode(['|', ',', '-'], $methods);

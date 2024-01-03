@@ -54,7 +54,7 @@ class Boot
 
     private static function setRoute()
     {
-        $router = Router::getMainCollection();
+        $router = Router::getCollection();
     }
 
     public static function handle(?Request $request = null)

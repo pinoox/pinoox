@@ -22,14 +22,12 @@ use Pinoox\Component\Package\Engine\AppEngine;
 
 class App
 {
-    private ConfigInterface $config;
 
     public function __construct(
         private AppLayer  $appLayer,
         private AppEngine $appEngine,
     )
     {
-        $this->config = $this->appEngine->config($this->package());
     }
 
     /**
@@ -120,7 +118,7 @@ class App
 
         if ($this->exists($packageName)) {
             try {
-                $enable = (bool)$this->config->get('enable');
+                $enable = (bool)$this->get('enable');
             } catch (Exception $e) {
             }
         }
@@ -142,7 +140,7 @@ class App
             return null;
 
         try {
-            return $this->config->get($value);
+            return $this->config()->get($value);
         } catch (Exception $e) {
         }
 
@@ -154,7 +152,8 @@ class App
      *
      * @param string $key
      * @param mixed $value
-     * @return Config|null
+     * @return ConfigInterface|null
+     * @throws Exception
      */
     public function set(string $key, mixed $value): ?ConfigInterface
     {
@@ -162,8 +161,8 @@ class App
         if (empty($packageName))
             return null;
 
-        $this->config->set($key, $value);
-        return $this->config;
+        $this->config()->set($key, $value);
+        return $this->config();
     }
 
     /**
@@ -171,7 +170,8 @@ class App
      *
      * @param string $key
      * @param mixed $value
-     * @return Config|null
+     * @return ConfigInterface|null
+     * @throws Exception
      */
     public function add(string $key, mixed $value): ?ConfigInterface
     {
@@ -179,14 +179,15 @@ class App
         if (empty($packageName))
             return null;
 
-        $this->config->add($key, $value);
-        return $this->config;
+        $this->config()->add($key, $value);
+        return $this->config();
     }
 
     /**
      * Set data in config current app
      *
-     * @return Config|null
+     * @return ConfigInterface|null
+     * @throws Exception
      */
     public function save(): ?ConfigInterface
     {
@@ -194,13 +195,20 @@ class App
         if (empty($packageName))
             return null;
 
-        $this->config->save();
-        return $this->config;
+        return $this->config()->save();
     }
 
     public function manager(): AppManager
     {
         return $this->appEngine->manager($this->package());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function config(): ConfigInterface
+    {
+        return $this->appEngine->config($this->package());
     }
 
     /**

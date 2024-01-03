@@ -78,7 +78,7 @@ class ActionRoutesManageListener implements EventSubscriberInterface
         if ($event->getRequest()->attributes->has('_router'))
             return $event->getRequest()->attributes->get('_router')->getCollection();
         else
-            return Router::getMainCollection();
+            return Router::getCollection();
     }
 
     private function buildCollectionAction(RequestEvent $event)

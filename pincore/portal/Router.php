@@ -17,19 +17,17 @@ namespace Pinoox\Portal;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Router\Collection;
-use Pinoox\Component\Router\Collection as ObjectPortal1;
 use Pinoox\Component\Router\Route;
-use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Router\RouteName;
 use Pinoox\Component\Router\Router as ObjectPortal3;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Router as ObjectPortal2;
 
 /**
  * @method static string path(string $name, array $params = [])
+ * @method static array match(string $path)
  * @method static array getAllPath()
  * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [], array $data = [])
  * @method static mixed buildAction(mixed $action, ?int $indexCollection = NULL)
@@ -40,7 +38,6 @@ use Pinoox\Portal\Router as ObjectPortal2;
  * @method static Router action(string $name, \Closure|array|string $action)
  * @method static Collection currentCollection()
  * @method static \Pinoox\Component\Router\Collection|null getCollection($index = 0)
- * @method static Collection getMainCollection()
  * @method static array all()
  * @method static int count()
  * @method static ObjectPortal2 get(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
@@ -70,14 +67,6 @@ class Router extends Portal
 		    ->setArgument('app',$manager);
 
 		self::defaultRoutes();
-	}
-
-
-	protected static function callMethod(string $method, array $args): mixed
-	{
-		if (!static::__has())
-		    static::__register();
-		return parent::callMethod($method, $args);
 	}
 
 
@@ -132,7 +121,7 @@ class Router extends Portal
 
 	private static function defaultRoutes(): void
 	{
-		$pathCollection = self::getMainCollection()->path;
+		$pathCollection = self::getCollection()->path;
 		$paths = ['/{slash_remover}/'];
 		if (!empty($pathCollection) && $pathCollection !== '/')
 		    $paths[] = '//';
