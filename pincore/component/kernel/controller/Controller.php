@@ -85,23 +85,30 @@ abstract class Controller
      * @throws ContainerExceptionInterface
      * @throws NotFoundExceptionInterface
      */
-    protected function forward(string|array|Closure|null $action = null, array $attributes = [], array $query = []): Response
+    protected function forward(string|array|Closure|null $action = null, array $attributes = [], array $query = [])
     {
-        $request = HttpKernel::___requestStack()->getCurrentRequest();
-        $subRequest = $request->duplicate($query, null, null);
-        $subRequest->collection()->controller = get_called_class();
-        if(!empty($action))
-        {
+        $request = $this->container->get('kernel.request_stack')->getCurrentRequest();
+        $subRequest = $request->duplicate($query);
+        if (!empty($action)) {
+            $subRequest->collection()->controller = get_called_class();
             $attributes['_controller'] = $this->buildValueAction($subRequest, $action);
         }
         $subRequest->attributes->add($attributes);
         return $this->container->get('kernel')->handleSubRequest($subRequest);
     }
 
-    protected function connect(string $path = null)
+    protected function forwardByPath($path = '')
     {
-        $attributes = App::router()->match($path);
-        return $this->forward(null,$attributes);
+        $request = $this->container->get('kernel.request_stack')->getCurrentRequest();
+        $attributes = App::router()->match($path, $request);
+        return $this->forward(null, $attributes);
+    }
+
+    protected function forwardByRequest(?Request $request = null)
+    {
+        $request = !empty($request) ? $request : $this->container->get('kernel.request_stack')->getCurrentRequest();
+        $attributes = App::router()->matchRequest($request);
+        return $this->forward(null, $attributes);
     }
 
     private function buildValueAction(Request $request, $controller)

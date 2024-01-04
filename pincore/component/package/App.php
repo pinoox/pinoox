@@ -22,12 +22,14 @@ use Pinoox\Component\Package\Engine\AppEngine;
 
 class App
 {
+    private AppLayer $appLayer;
 
     public function __construct(
-        private AppLayer  $appLayer,
+        private AppRouter $appRouter,
         private AppEngine $appEngine,
     )
     {
+        $this->appLayer = $this->appRouter->find();
     }
 
     /**
@@ -65,7 +67,7 @@ class App
      *
      * @param AppLayer $appLayer
      */
-    public function setLayer(AppLayer $appLayer)
+    public function setLayer(AppLayer $appLayer): void
     {
         $this->appLayer->setPath($appLayer->getPath());
         $this->appLayer->setPackageName($appLayer->getPackageName());
@@ -232,6 +234,14 @@ class App
     public function collection(): Collection
     {
         return $this->router()->getCollection();
+    }
+
+    /**
+     * @return AppRouter
+     */
+    public function getAppRouter(): AppRouter
+    {
+        return $this->appRouter;
     }
 }
 

@@ -14,6 +14,9 @@
 namespace Pinoox\Component\Router;
 
 use Closure;
+use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Http\RedirectResponse;
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
 use Pinoox\Component\Package\AppManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -51,7 +54,7 @@ class Router
 
     private RouteName $routeName;
 
-    public function __construct(RouteName $routeName, AppManager $app, ?Collection $collection = null)
+    public function __construct(RouteName $routeName, AppManager $app, ?Collection $collection = null, bool $isDefault = true)
     {
         $this->routeName = $routeName;
         if (!empty($collection)) {
@@ -61,6 +64,9 @@ class Router
             $this->collection();
         }
         $this->changeApp($app);
+
+        if ($isDefault)
+            $this->defaultRoutes();
     }
 
     private function changeApp(AppManager $app): void
@@ -68,20 +74,45 @@ class Router
         $this->app = $app;
     }
 
-    public function path(string $name, array $params = []): string
+    public function getUrlGenerator(?RequestContext $context = null): UrlGeneratorInterface
     {
-        if (empty($this->urlGenerator))
+        if (empty($this->urlGenerator)) {
+            $context = !empty($context) ? $context : RequestContext::fromUri('');
             $this->urlGenerator = new UrlGenerator($this->getCollection()->routes, RequestContext::fromUri(''));
+        }
 
-        return $this->urlGenerator->generate($name, $params);
+        return $this->urlGenerator;
     }
 
-    public function match(string $path): array
+    public function path(string $name, array $params = [], ?Request $request = null): string
     {
-        if (empty($this->urlMatcher))
-            $this->urlMatcher = new UrlMatcher($this->getCollection()->routes, RequestContext::fromUri(''));
+        return $this->getUrlGenerator(
+            $request?->getContext()
+        )->generate($name, $params);
+    }
 
-        return $this->urlMatcher->match($path);
+    public function getUrlMatcher(?RequestContext $context = null): UrlMatcherInterface
+    {
+        if (empty($this->urlMatcher)) {
+            $context = !empty($context) ? $context : RequestContext::fromUri('');
+            $this->urlMatcher = new UrlMatcher($this->getCollection()->routes, $context);
+        }
+
+        return $this->urlMatcher;
+    }
+
+    public function match(string $path, ?Request $request = null): array
+    {
+        return $this->getUrlMatcher(
+            $request?->getContext()
+        )->match($path);
+    }
+
+    public function matchRequest(Request $request): array
+    {
+        return $this->getUrlMatcher(
+            $request->getContext()
+        )->matchRequest($request);
     }
 
     public function getAllPath(): array
@@ -239,6 +270,13 @@ class Router
         }
     }
 
+    public function canonicalizePath(string $path): string
+    {
+        $path = array_filter(explode('/', $path));
+        $path = implode('/', $path);
+        return !empty($path) ? '/' . $path : '/';
+    }
+
     public function build($path, $routes, array $data = [], ?AppManager $app = null): Router
     {
         $this->data = $data;
@@ -255,15 +293,6 @@ class Router
         $collection->cast = -1;
         $this->data = [];
         return new Router($this->routeName, $app, $collection);
-    }
-
-    /**
-     * @param string $key
-     * @return Collection|Collection[]
-     */
-    public function list(string $key = ''): Collection|array
-    {
-        return !empty($key) ? @$this->list[$key] : $this->list;
     }
 
     /**
@@ -430,5 +459,21 @@ class Router
     public function count(): int
     {
         return $this->getCollection()->routes->count();
+    }
+
+    private function defaultRoutes(): void
+    {
+        $this->add(
+            path: ['/{slash_remover}/'],
+            action: function (Route $route, $slash_remover = '') {
+                $base = Str::lastDelete($route->getCollection()->path, '/');
+                $slug = $base . '/' . $slash_remover;
+                $slug = Str::lastDelete($slug, '/');
+                return new RedirectResponse('~' . $slug, 301);
+            },
+            filters: [
+                'slash_remover' => '.+/'
+            ]
+        );
     }
 }

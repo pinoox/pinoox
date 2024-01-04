@@ -64,7 +64,6 @@ class CreatePortal extends console implements CommandInterface
         $this->createPortal($portalName, $serviceName, $this->cli['package']);
     }
 
-
     private function createPortal(string $portalName, string $serviceName, string $packageName): void
     {
         list(
@@ -80,7 +79,7 @@ class CreatePortal extends console implements CommandInterface
 
     #[ArrayShape(['path' => "string", 'className' => "string", 'namespace' => "mixed|string"])] private function getStructure(string $portalName): array
     {
-        $parts = Str::multiExplode(['/', '>','\\'], $portalName);
+        $parts = Str::multiExplode(['/', '>', '\\'], $portalName);
         $portalName = array_pop($parts);
         $folder = implode('\\', $parts);
         $className = ucfirst($portalName);
@@ -92,7 +91,7 @@ class CreatePortal extends console implements CommandInterface
         $namespace = !empty($folder) ? $namespace . '\\' . $folder : $namespace;
 
         $pathFile = $basePath . $className . '.php';
-        return ['path' => $pathFile, 'className' => $className, 'namespace' => $namespace];
+        return ['path' => $pathFile, 'className' => $className, 'namespace' => $this->buildNamespace($namespace)];
     }
 
     private function setPackageName()

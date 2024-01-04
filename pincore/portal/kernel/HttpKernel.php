@@ -83,17 +83,10 @@ class HttpKernel extends Portal
         self::setRouts(App::routeCollection());
     }
 
-    public static function get(string $package, string $path): Kernel
-    {
-        self::set($package, $path);
-        return self::___();
-    }
-
     private static function setParams(): void
     {
         self::__param('charset', 'UTF-8');
     }
-
 
     private static function addEvents(): void
     {

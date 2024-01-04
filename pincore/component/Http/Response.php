@@ -32,4 +32,5 @@ class Response extends ResponseSymfony
     {
         $this->headers->set('Content-Type', $contentType);
     }
+
 }

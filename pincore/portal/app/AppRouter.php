@@ -14,9 +14,11 @@
 
 namespace Pinoox\Portal\App;
 
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Package\AppLayer as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal2;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Pinker;
@@ -33,6 +35,9 @@ use Pinoox\Portal\Pinker;
  * @method static array|null getPackage(string $packageName)
  * @method static bool exists(string $url)
  * @method static bool existsPackage(string $packageName)
+ * @method static Request getRequest()
+ * @method static AppRouter setRequest(\Pinoox\Component\Http\Request $request)
+ * @method static ObjectPortal2 config()
  * @method static \Pinoox\Component\Package\AppRouter ___()
  *
  * @see \Pinoox\Component\Package\AppRouter
@@ -43,11 +48,12 @@ class AppRouter extends Portal
 	{
 		$path = Loader::basePath().'/pincore';
 		$file = 'config/app/router.config.php';
-        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
+		$fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
 		$config = Config::create($fileStrategy);
 		self::__bind(\Pinoox\Component\Package\AppRouter::class)->setArguments([
 		    $config,
 		    AppEngine::__ref(),
+		    Request::take()
 		]);
 	}
 
@@ -78,6 +84,8 @@ class AppRouter extends Portal
 	 */
 	public static function __callback(): array
 	{
-		return [];
+		return [
+			'setRequest'
+		];
 	}
 }

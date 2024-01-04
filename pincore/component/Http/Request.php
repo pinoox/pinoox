@@ -16,9 +16,12 @@ use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
+use Symfony\Component\Routing\RequestContext;
 
 class Request extends RequestSymfony
 {
+
+    private RequestContext $context;
 
     /**
      * get current Route
@@ -94,5 +97,21 @@ class Request extends RequestSymfony
     public static function take(): static
     {
         return static::createFromGlobals();
+    }
+
+    public function getContext(): RequestContext
+    {
+        if (empty($this->context)) {
+            $this->context = new RequestContext();
+            $this->context->setBaseUrl($this->getBaseUrl());
+            $this->context->setPathInfo($this->getPathInfo());
+            $this->context->setMethod($this->getMethod());
+            $this->context->setHost($this->getHost());
+            $this->context->setScheme($this->getScheme());
+            $this->context->setHttpPort($this->isSecure() || null === $this->getPort() ? 80 : $this->getPort());
+            $this->context->setHttpsPort($this->isSecure() && null !== $this->getPort() ? $this->getPort() : 443);
+            $this->context->setQueryString($this->server->get('QUERY_STRING', ''));
+        }
+        return $this->context;
     }
 }

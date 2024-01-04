@@ -103,7 +103,13 @@ class PortalFile extends PhpFile
         if (!empty($this->subFolder)) {
             $namespace .= '\\' . $this->subFolder;
         }
-        $this->namespace = $namespace;
+
+        $parts = explode('\\', $namespace);
+        foreach ($parts as $key => $part) {
+            $parts[$key] = ucfirst($part);
+        }
+
+        $this->namespace = implode('\\', $parts);
     }
 
     private function buildPortalName(): void

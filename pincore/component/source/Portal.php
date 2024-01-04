@@ -307,6 +307,7 @@ abstract class Portal
             try {
                 return $container->get($name);
             } catch (\Exception $e) {
+                throw new \RuntimeException($e->getMessage());
             }
         }
 

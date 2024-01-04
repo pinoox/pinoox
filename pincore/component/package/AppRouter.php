@@ -14,6 +14,7 @@ namespace Pinoox\Component\Package;
 
 use Exception;
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Url;
@@ -23,8 +24,9 @@ class AppRouter
 {
 
     public function __construct(
-        private ConfigInterface    $appRouteConfig,
-        private EngineInterface $appEngine
+        private ConfigInterface $appRouteConfig,
+        private EngineInterface $appEngine,
+        private Request         $request
     )
     {
     }
@@ -37,6 +39,20 @@ class AppRouter
     public function setDefault($packageName)
     {
         $this->set('*', $packageName);
+    }
+
+    private function parts(?string $index = null): string
+    {
+        $parts = $this->request->getPathInfo();
+
+        if (!is_null($index)) {
+            $partsArr = explode('/', $parts);
+            if ($index == 'first') return reset($partsArr);
+            if ($index == 'last') return end($partsArr);
+
+            return $partsArr[$index] ?? '';
+        }
+        return $parts;
     }
 
     /**
@@ -58,8 +74,7 @@ class AppRouter
         }
 
         // set app current
-        $url = empty($url) ? Url::parts() : $url;
-
+        $url = empty($url) ? $this->parts() : $url;
         $parts = !empty($url) ? Str::explodeDropping('/', $url) : [];
         foreach ($parts as $part) {
             $part = '/' . $part;
@@ -194,5 +209,29 @@ class AppRouter
     public function existsPackage(string $packageName): bool
     {
         return !empty($this->getPackage($packageName));
+    }
+
+    /**
+     * @return Request
+     */
+    public function getRequest(): Request
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function setRequest(Request $request): void
+    {
+        $this->request = $request;
+    }
+
+    /**
+     * @return ConfigInterface
+     */
+    public function config(): ConfigInterface
+    {
+        return $this->appRouteConfig;
     }
 }

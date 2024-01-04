@@ -19,6 +19,7 @@ use Pinoox\Component\Kernel\Listener\RouteListener;
 use Pinoox\Component\Kernel\Listener\ViewListener;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Controller\ErrorController;
+use Pinoox\Portal\App\App;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
 use Symfony\Component\HttpKernel\EventListener\RouterListener;
@@ -30,12 +31,12 @@ class Listener extends Portal
         self::__bind(RouterListener::class, 'router')
             ->setArgument('matcher', HttpKernel::__ref('matcher'))
             ->setArgument('requestStack', HttpKernel::__ref('request_stack'))
-            ->setArgument('context', null)
+            ->setArgument('context', HttpKernel::__ref('context'))
             ->setArgument('logger', null)
             ->setArgument('projectDir', null)
             ->setArgument('debug', false);
 
-        self::__bind(RouteListener::class, 'route');
+        self::__bind(RouteListener::class, 'routeEmpty');
         self::__bind(ViewListener::class, 'view');
 
         self::__bind(ActionRoutesManageListener::class, 'controller');

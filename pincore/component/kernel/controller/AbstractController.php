@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Kernel\Controller;
 
 
+use Pinoox\Portal\App\App;
 use Pinoox\Portal\Kernel\HttpKernel;
 use Psr\Container\ContainerInterface;
 use Psr\Link\LinkInterface;
@@ -119,7 +120,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
      */
     protected function forward(string $controller, array $path = [], array $query = []): Response
     {
-        $request = HttpKernel::__instance('request_stack')->getCurrentRequest();
+        $request = App::__instance('request_stack')->getCurrentRequest();
         $path['_controller'] = $controller;
         $subRequest = $request->duplicate($query, null, $path);
 
@@ -183,7 +184,7 @@ abstract class AbstractController implements ServiceSubscriberInterface
     protected function addFlash(string $type, mixed $message): void
     {
         try {
-            $session = HttpKernel::__instance('request_stack')->getSession();
+            $session = App::__instance('request_stack')->getSession();
         } catch (SessionNotFoundException $e) {
             throw new \LogicException('You cannot use the addFlash method if sessions are disabled. Enable them in "config/packages/framework.yaml".', 0, $e);
         }

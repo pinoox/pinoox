@@ -14,27 +14,29 @@
 
 namespace Pinoox\Portal;
 
-use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Router\Collection;
-use Pinoox\Component\Router\Route;
 use Pinoox\Component\Router\RouteName;
 use Pinoox\Component\Router\Router as ObjectPortal3;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Router as ObjectPortal2;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface as ObjectPortal1;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
 
 /**
- * @method static string path(string $name, array $params = [])
- * @method static array match(string $path)
+ * @method static ObjectPortal1 getUrlGenerator(?\Symfony\Component\Routing\RequestContext $context = NULL)
+ * @method static string path(string $name, array $params = [], ?\Pinoox\Component\Http\Request $request = NULL)
+ * @method static ObjectPortal4 getUrlMatcher(?\Symfony\Component\Routing\RequestContext $context = NULL)
+ * @method static array match(string $path, ?\Pinoox\Component\Http\Request $request = NULL)
+ * @method static array matchRequest(\Pinoox\Component\Http\Request $request)
  * @method static array getAllPath()
  * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [], array $data = [])
  * @method static mixed buildAction(mixed $action, ?int $indexCollection = NULL)
  * @method static mixed getAction(string $name)
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [])
+ * @method static string canonicalizePath(string $path)
  * @method static ObjectPortal3 build($path, $routes, array $data = [], ?\Pinoox\Component\Package\AppManager $app = NULL)
- * @method static \Pinoox\Component\Router\Collection|array list(string $key = '')
  * @method static Router action(string $name, \Closure|array|string $action)
  * @method static Collection currentCollection()
  * @method static \Pinoox\Component\Router\Collection|null getCollection($index = 0)
@@ -65,8 +67,6 @@ class Router extends Portal
 		self::__bind(ObjectPortal3::class)
 		    ->setArgument('routeName',static::__ref('name'))
 		    ->setArgument('app',$manager);
-
-		self::defaultRoutes();
 	}
 
 
@@ -116,26 +116,5 @@ class Router extends Portal
 		    'add',
 		    'action'
 		];
-	}
-
-
-	private static function defaultRoutes(): void
-	{
-		$pathCollection = self::getCollection()->path;
-		$paths = ['/{slash_remover}/'];
-		if (!empty($pathCollection) && $pathCollection !== '/')
-		    $paths[] = '//';
-
-		self::add(
-		    path: $paths,
-		    action: function (Route $route, $slash_remover = '') {
-		        $slug = $route->getCollection()->path . '/' . $slash_remover;
-		        $slug = Str::lastDelete($slug, '/');
-		        return new RedirectResponse('~' . $slug, 301);
-		    },
-		    filters: [
-		        'slash_remover' => '.+/'
-		    ]
-		);
 	}
 }
