@@ -20,22 +20,22 @@ use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
+use Pinoox\Portal\View;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppProvider
 {
     private array $lock = [];
-    private bool $isLockMain = false;
 
     public function __construct(
-        private readonly App         $app,
-        private readonly ClassLoader $classLoader,
-        private readonly Kernel      $httpKernel
+        private readonly App $app,
+        public Kernel        $httpKernel
     )
     {
     }
 
-    private function loader()
+    private function loader(): void
     {
         $appLoaders = $this->app->get('loader');
         $classMap = [];
@@ -47,7 +47,12 @@ class AppProvider
             }
         }
 
-        $this->classLoader->addClassMap($classMap);
+        $this->getClassLoader()->addClassMap($classMap);
+    }
+
+    private function getClassLoader(): ClassLoader
+    {
+        return $this->app->classLoader;
     }
 
     private function isLock(): bool
@@ -65,7 +70,7 @@ class AppProvider
 
     public function getRequest(): Request
     {
-        return $this->app->getAppRouter()->getRequest();
+        return $this->app->getRequest();
     }
 
     public function getApp(): App
@@ -76,13 +81,17 @@ class AppProvider
     /**
      * @throws Exception
      */
-    public function run(): void
+    public function run(string $package = '', string $path = '/'): void
     {
-        if (!$this->isLockMain) {
+        if (!empty($package)) {
+            $this->app->meeting($package, function () {
+                $this->getRequest()->attributes = new ParameterBag();
+                $this->run();
+            }, $path);
+        } else {
             $response = $this->handle($this->getRequest());
             $response->send();
             $this->terminate($this->getRequest(), $response);
-            $this->isLockMain = true;
         }
     }
 
@@ -92,7 +101,7 @@ class AppProvider
     public function meetingHandle(string $package, string $path, ?Request $request = null, array $attributes = [])
     {
         return $this->app->meeting($package, function () use ($request) {
-            $request = !empty($request) ? $request : $this->request;
+            $request = !empty($request) ? $request : $this->getRequest();
             $subRequest = $request->duplicate();
             if (empty($attributes))
                 $attributes = $this->app->router()->matchRequest($request);
@@ -107,7 +116,7 @@ class AppProvider
     public function handle(?Request $request = null, int $type = HttpKernelInterface::MAIN_REQUEST): Response
     {
         $this->prerequisite();
-        $request = !empty($request) ? $request : $this->request;
+        $request = !empty($request) ? $request : $this->getRequest();
         $response = $this->getKernel()->handle($request, $type);
         return new Response($response->getContent(), $response->getStatusCode(), $response->headers->all());
     }
@@ -117,7 +126,7 @@ class AppProvider
      */
     public function handleByRoute(string $package, ?Request $request = null)
     {
-        $request = !empty($request) ? $request : $this->request;
+        $request = !empty($request) ? $request : $this->getRequest();
         $route = $request->attributes->get('_router');
         $path = '/';
         if (!empty($route)) {

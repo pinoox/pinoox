@@ -20,6 +20,7 @@ use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
 use Pinoox\Component\Package\AppManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
@@ -40,7 +41,7 @@ class Router
     /**
      * @var array
      */
-    private array $actions = [];
+    public array $actions = [];
 
     /**
      * @var array
@@ -91,7 +92,7 @@ class Router
         )->generate($name, $params);
     }
 
-    public function getUrlMatcher(?RequestContext $context = null): UrlMatcherInterface
+    public function getUrlMatcher(?RequestContext $context = null): UrlMatcherInterface|RequestMatcherInterface
     {
         if (empty($this->urlMatcher)) {
             $context = !empty($context) ? $context : RequestContext::fromUri('');
@@ -292,7 +293,9 @@ class Router
 
         $collection->cast = -1;
         $this->data = [];
-        return new Router($this->routeName, $app, $collection);
+        $router = new Router($this->routeName, $app, $collection);
+        $router->actions = $this->actions;
+        return $router;
     }
 
     /**

@@ -43,20 +43,14 @@ class View extends Portal
     {
         // theme names
         $folders = App::get('theme');
+
         // base path
         $pathTheme = Path::get(App::get('path-theme'));
 
         self::__bind(ObjectPortal1::class)->setArguments([
             $folders,
-            $pathTheme
+            $pathTheme,
         ]);
-    }
-
-    protected static function callMethod(string $method, array $args): mixed
-    {
-        if (!self::__has())
-            static::__register();
-        return parent::callMethod($method, $args);
     }
 
     public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
@@ -74,9 +68,13 @@ class View extends Portal
      */
     public static function __name(): string
     {
-        return !empty(App::package()) ? 'view.' . App::package() : 'view';
+        return 'view';
     }
 
+    public static function __app(): string
+    {
+        return App::package();
+    }
 
     /**
      * Get exclude method names.

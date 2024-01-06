@@ -38,15 +38,19 @@ use Pinoox\Portal\Kernel\HttpKernel;
  */
 class AppProvider extends Portal
 {
+
+    /**
+     * @var HttpKernel[]
+     */
+    private static array $httpKernels = [];
+
     public static function __register(): void
     {
         self::__bind(\Pinoox\Component\Package\AppProvider::class)->setArguments([
             App::__ref(),
-            Loader::composer(),
             HttpKernel::__ref()
         ]);
     }
-
 
     /**
      * Get the registered name of the component.
@@ -56,7 +60,6 @@ class AppProvider extends Portal
     {
         return 'app.provider';
     }
-
 
     /**
      * Get exclude method names .

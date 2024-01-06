@@ -13,7 +13,6 @@
 
 namespace Pinoox\Component\Path;
 
-use Pinoox\Component\Package\AppLayer;
 use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Path\Parser\PathParser;
 use Pinoox\Component\Path\Reference\PathReference;
@@ -31,7 +30,7 @@ class Path implements PathInterface
         private readonly string          $basePath,
         private readonly PathParser      $parser,
         private readonly EngineInterface $appEngine,
-        private readonly AppLayer        $appLayer
+        private string        $package
     )
     {
     }
@@ -45,7 +44,7 @@ class Path implements PathInterface
      */
     public function app(?string $packageName = null): ?string
     {
-        $packageName = !is_null($packageName) ? $packageName : $this->appLayer->getPackageName();
+        $packageName = !is_null($packageName) ? $packageName : $this->package;
         try {
             return $this->appEngine->path($packageName);
         } catch (\Exception $e) {
@@ -89,7 +88,7 @@ class Path implements PathInterface
     private function getManager(?string $packageName = null): PathManager
     {
         $pathManager = new PathManager();
-        $currentPackage = $this->appLayer->getPackageName();
+        $currentPackage = $this->package;
         if ($packageName === '~') {
             $pathManager->setBasePath($this->basePath);
         } else if (is_null($packageName) && $currentPackage && $this->appEngine->exists($currentPackage)) {

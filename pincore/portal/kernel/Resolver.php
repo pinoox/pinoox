@@ -15,6 +15,7 @@
 namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Kernel\Resolver\AppValueResolver;
 use Pinoox\Component\Kernel\Resolver\ContainerControllerResolver;
 use Pinoox\Component\Kernel\Resolver\ModelValueResolver;
 use Pinoox\Component\Kernel\Resolver\RouteValueResolver;
@@ -37,6 +38,7 @@ class Resolver extends Portal
         $resolvers = [
             new RequestAttributeValueResolver(),
             new RequestValueResolver(),
+            new AppValueResolver(),
             new RouteValueResolver(),
             new SessionValueResolver(),
             new ModelValueResolver(),

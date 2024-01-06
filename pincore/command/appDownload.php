@@ -95,7 +95,7 @@ class appDownload extends Console implements CommandInterface
 
         $this->warning('Login to pinoox server. please wait!');
         $this->newLine();
-        Config::app('com_pinoox_manager');
+        Config::__app('com_pinoox_manager');
         $token = $this->login();
         $reTry = true;
         while ($token == false and $reTry) {

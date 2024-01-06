@@ -38,6 +38,7 @@ class Route
             $this->path = '{parameters}';
             $filters['parameters'] = '.*';
             $this->path = $this->getPath('');
+            $this->priority = -99;
         } else {
             $this->path = $this->getPath('/');
         }

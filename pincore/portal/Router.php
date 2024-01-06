@@ -59,62 +59,59 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
  */
 class Router extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(RouteName::class, 'name');
+    public static function __register(): void
+    {
+        self::__bind(RouteName::class, 'name');
 
-		$manager = AppEngine::manager( App::package());
-		self::__bind(ObjectPortal3::class)
-		    ->setArgument('routeName',static::__ref('name'))
-		    ->setArgument('app',$manager);
-	}
+        self::__bind(ObjectPortal3::class)
+            ->setArgument('routeName', static::__ref('name'))
+            ->setArgument('app', App::manager());
+    }
 
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'router';
+    }
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'router';
-	}
-
-
-	public static function __replace(): array
-	{
-		return [
-		    'get|post|put|patch|delete|options|head|purge|trace|connect' => function (
-		        array|string          $path,
-		        \Closure|array|string $action = '',
-		        string                $name = '',
-		        array                 $defaults = [],
-		        array                 $filters = []
-		    ): Router {
-		        return self::add($path, $action, $name, self::$__method, $defaults, $filters);
-		    },
-		];
-	}
+    public static function __replace(): array
+    {
+        return [
+            'get|post|put|patch|delete|options|head|purge|trace|connect' => function (
+                array|string          $path,
+                \Closure|array|string $action = '',
+                string                $name = '',
+                array                 $defaults = [],
+                array                 $filters = []
+            ): Router {
+                return self::add($path, $action, $name, self::$__method, $defaults, $filters);
+            },
+        ];
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'add',
-		    'action'
-		];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'add',
+            'action'
+        ];
+    }
 }

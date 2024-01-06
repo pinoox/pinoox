@@ -27,6 +27,7 @@ abstract class Portal
     protected static array $__history = [];
     protected static string $__method = '';
     protected static array $__args = [];
+    protected static array $__watcher = [];
     protected static array $__subNameClasses = [];
 
     /*
@@ -174,7 +175,7 @@ abstract class Portal
         if (empty($instance) || self::checkMethodHasExclude($method) || !self::checkMethodHasInclude($method)) {
             throw new \RuntimeException('' . static::__id() . ' Portal root has not been set.');
         }
-
+        self::callWatch($method, $args);
         self::$__method = $method;
 
         $isCallBack = false;
@@ -194,6 +195,20 @@ abstract class Portal
         self::addHistory($method, $args, $result, $isCallBack);
 
         return $isCallBack ? new static() : $result;
+    }
+
+    final public static function __watch(string $method, \Closure $func)
+    {
+        static::$__watcher[$method][] = $func;
+    }
+
+    private static function callWatch($method, array $parameters)
+    {
+        if (isset(static::$__watcher[$method])) {
+            foreach (static::$__watcher[$method] as $func) {
+                $func(...$parameters);
+            }
+        }
     }
 
     private static function callSubClasses(string $method, array $args): mixed
@@ -301,17 +316,33 @@ abstract class Portal
      */
     final public static function __instance(?string $name = null): ?object
     {
+        $result = null;
         $name = static::__id($name);
-        $container = self::__container();
+        $container = static::__container();
+        static::__before($name);
+
+        if (static::__app() !== '~' && !$container->has($name))
+            static::__register();
+
         if (!empty($name) && $container->has($name)) {
             try {
-                return $container->get($name);
+                $result = $container->get($name);
             } catch (\Exception $e) {
                 throw new \RuntimeException($e->getMessage());
             }
         }
 
-        return null;
+        static::__after($name, $result);
+
+        return $result;
+    }
+
+    public static function __before(string $name)
+    {
+    }
+
+    public static function __after(string $name, $obj)
+    {
     }
 
     /**
@@ -467,7 +498,16 @@ abstract class Portal
      */
     final public static function __id(?string $name = null): string
     {
-        return !empty($name) ? static::__name() . '.' . $name : static::__name();
+        $name = !empty($name) ? static::__name() . '.' . $name : static::__name();
+        if (static::__app() !== '~')
+            $name = static::__app() . '.' . $name;
+
+        return $name;
+    }
+
+    public static function __app(): string
+    {
+        return '~';
     }
 
     /**

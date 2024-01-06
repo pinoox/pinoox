@@ -29,9 +29,9 @@ class Listener extends Portal
     public static function __register(): void
     {
         self::__bind(RouterListener::class, 'router')
-            ->setArgument('matcher', HttpKernel::__ref('matcher'))
+            ->setArgument('matcher', App::__ref())
             ->setArgument('requestStack', HttpKernel::__ref('request_stack'))
-            ->setArgument('context', HttpKernel::__ref('context'))
+            ->setArgument('context', App::__ref('context'))
             ->setArgument('logger', null)
             ->setArgument('projectDir', null)
             ->setArgument('debug', false);

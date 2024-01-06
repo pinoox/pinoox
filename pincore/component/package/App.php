@@ -13,20 +13,28 @@
 namespace Pinoox\Component\Package;
 
 use Closure;
+use Composer\Autoload\ClassLoader;
 use Exception;
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
+use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
+use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 
-class App
+class App implements UrlMatcherInterface, RequestMatcherInterface
 {
     private AppLayer $appLayer;
 
     public function __construct(
-        private AppRouter $appRouter,
-        private AppEngine $appEngine,
+        private readonly AppRouter  $appRouter,
+        public readonly AppEngine   $appEngine,
+        public RequestContext       $context,
+        public readonly ClassLoader $classLoader,
     )
     {
         $this->appLayer = $this->appRouter->find();
@@ -231,6 +239,22 @@ class App
         return $this->router()->getCollection()->routes;
     }
 
+    public function getUrlMatcher(?RequestContext $context = null): UrlMatcherInterface|RequestMatcherInterface
+    {
+        return $this->router()->getUrlMatcher($context);
+    }
+
+    public function match(string $pathinfo, ?Request $request = null): array
+    {
+        return $this->router()->match($pathinfo, $request);
+    }
+
+    public function matchRequest(Request|RequestSymfony $request): array
+    {
+        return $this->router()->matchRequest($request);
+
+    }
+
     public function collection(): Collection
     {
         return $this->router()->getCollection();
@@ -242,6 +266,33 @@ class App
     public function getAppRouter(): AppRouter
     {
         return $this->appRouter;
+    }
+
+    /**
+     * @return RequestContext
+     */
+    public function getContext(): RequestContext
+    {
+        return $this->context;
+    }
+
+    /**
+     * @param RequestContext $context
+     */
+    public function setContext(RequestContext $context): void
+    {
+        $this->context = $context;
+    }
+
+    public function getRequest(): Request
+    {
+        return $this->getAppRouter()->getRequest();
+    }
+
+    public function addPackage(string $packageName, string $path): void
+    {
+        $this->classLoader->addPsr4('App\\' . $packageName . '\\', $path);
+        $this->appEngine->add($packageName, $path);
     }
 }
 

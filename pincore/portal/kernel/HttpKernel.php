@@ -50,12 +50,6 @@ class HttpKernel extends Portal
 
         self::__bind(RequestContext::class, 'context');
 
-        self::__bind(UrlMatcher::class, 'matcher')
-            ->setArguments([self::__ref('routes'), self::__ref('context')]);
-
-        self::__bind(UrlGenerator::class, 'url_generator')
-            ->setArguments([self::__ref('routes'), self::__ref('context')]);
-
         self::__bind(Kernel::class)
             ->setArguments([
                 Dispatcher::__ref(),

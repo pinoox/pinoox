@@ -39,58 +39,62 @@ use Pinoox\Portal\App\AppEngine;
  */
 class Path extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(PathParser::class, 'parser');
+    public static function __register(): void
+    {
+        self::__bind(PathParser::class, 'parser');
 
-		self::__bind(ObjectPortal1::class)
-		    ->setArgument('basePath', Loader::basePath())
-		    ->setArgument('parser', self::__ref('parser'))
-		    ->setArgument('appEngine', AppEngine::__instance())
-		    ->setArgument('appLayer', App::current());
-	}
+        self::__bind(ObjectPortal1::class)
+            ->setArgument('basePath', Loader::basePath())
+            ->setArgument('parser', self::__ref('parser'))
+            ->setArgument('appEngine', AppEngine::__instance())
+            ->setArgument('package', App::package());
+    }
 
+    public static function __app(): string
+    {
+        return App::package();
+    }
 
-	public static function createPath(string|ReferenceInterface $fileName, string $default = 'pincore'): string
-	{
-		$reference = self::reference($fileName);
-		$pathMain = $reference->getPackageName() === '~' ? $default . '/' . $reference->getPath() : $reference->getPath();
+    public static function createPath(string|ReferenceInterface $fileName, string $default = 'pincore'): string
+    {
+        $reference = self::reference($fileName);
+        $pathMain = $reference->getPackageName() === '~' ? $default . '/' . $reference->getPath() : $reference->getPath();
 
-		$reference = PathReference::create(
-		    $reference->getPackageName(),
-		    $pathMain,
-		);
+        $reference = PathReference::create(
+            $reference->getPackageName(),
+            $pathMain,
+        );
 
-		return self::get($reference);
-	}
-
-
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'path';
-	}
+        return self::get($reference);
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'path';
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
+
+
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [];
+    }
 }

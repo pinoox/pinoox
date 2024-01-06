@@ -18,6 +18,7 @@ use Pinoox\Component\Template\Engine\TwigEngine;
 use Pinoox\Component\Template\Parser\TemplateNameParser;
 use Pinoox\Component\Template\Engine\DelegatingEngine;
 use Pinoox\Component\Template\Reference\TemplatePathReference;
+use Pinoox\Portal\App\App;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
 
@@ -198,6 +199,7 @@ class View implements ViewInterface
      */
     public function render(string $name, array $parameters = []): string
     {
+       // dump($name);
         if ($this->existsFile($name))
             return $this->renderFile($name, $parameters);
 

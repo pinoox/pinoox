@@ -22,8 +22,6 @@ use Pinoox\Portal\App\AppRouter;
 
 class Boot
 {
-    public static Closure $next;
-
     public function build()
     {
         if (empty(AppRouter::getRequest()->getHost())) {
@@ -36,6 +34,7 @@ class Boot
     public static function handle(?Request $request = null)
     {
         Lang::change(App::get('lang'));
+       // AppProvider::run();
         AppProvider::run();
     }
 }

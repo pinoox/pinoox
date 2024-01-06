@@ -13,6 +13,7 @@
 namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Portal\App\App       ;
 
@@ -93,6 +94,7 @@ class Dir
             }
             $path = self::ds($path);
             $path = HelperString::firstDelete($path,'/');
+            $result = Str::lastDelete($result,'/');
             $result = $result .'/'. $path;
 
         }
