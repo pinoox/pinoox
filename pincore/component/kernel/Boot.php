@@ -22,19 +22,9 @@ use Pinoox\Portal\App\AppRouter;
 
 class Boot
 {
-    public function build()
-    {
-        if (empty(AppRouter::getRequest()->getHost())) {
-            (new Terminal())->run();
-        } else {
-            Boot::handle();
-        }
-    }
-
-    public static function handle(?Request $request = null)
+    public function build(): void
     {
         Lang::change(App::get('lang'));
-       // AppProvider::run();
-        AppProvider::run();
+        AppProvider::boot();
     }
 }

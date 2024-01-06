@@ -48,8 +48,6 @@ class HttpKernel extends Portal
         self::addEvents();
         self::__bind(RequestStack::class, 'request_stack');
 
-        self::__bind(RequestContext::class, 'context');
-
         self::__bind(Kernel::class)
             ->setArguments([
                 Dispatcher::__ref(),

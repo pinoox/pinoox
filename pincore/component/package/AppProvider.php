@@ -20,6 +20,7 @@ use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
+use pinoox\component\kernel\Terminal;
 use Pinoox\Portal\View;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -30,7 +31,8 @@ class AppProvider
 
     public function __construct(
         private readonly App $app,
-        public Kernel        $httpKernel
+        public Kernel        $httpKernel,
+        public Terminal      $terminal,
     )
     {
     }
@@ -60,12 +62,30 @@ class AppProvider
         return isset($this->lock[$this->app->package()]) ? $this->lock[$this->app->package()] : false;
     }
 
+    private function lock(): void
+    {
+        $this->lock[$this->app->package()] = true;
+    }
+
+    /**
+     * @throws Exception
+     */
     public function prerequisite(): void
     {
         if (!$this->isLock()) {
-            $this->lock[$this->app->package()] = true;
+            $this->lock();
+            $this->loadComposer($this->app->path());
             $this->loader();
         }
+    }
+
+    private function loadComposer($dir): ?ClassLoader
+    {
+        $composer = null;
+        if (is_file($file = $dir . '/vendor/autoload.php'))
+            $composer = require $file;
+
+        return $composer;
     }
 
     public function getRequest(): Request
@@ -143,5 +163,17 @@ class AppProvider
     public function terminate(Request $request, \Pinoox\Component\Http\Response $response): void
     {
         $this->getKernel()->terminate($request, $response);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function boot(): void
+    {
+        if (empty($this->getRequest()->getHost())) {
+            $this->terminal->run();
+        } else {
+            $this->run();
+        }
     }
 }

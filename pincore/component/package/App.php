@@ -289,10 +289,10 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         return $this->getAppRouter()->getRequest();
     }
 
-    public function addPackage(string $packageName, string $path): void
+    public function addPackage(string $packageName, string $dir): void
     {
-        $this->classLoader->addPsr4('App\\' . $packageName . '\\', $path);
-        $this->appEngine->add($packageName, $path);
+        $this->classLoader->addPsr4('App\\' . $packageName . '\\', $dir);
+        $this->appEngine->add($packageName, $dir);
     }
 }
 

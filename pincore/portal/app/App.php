@@ -43,8 +43,8 @@ use Symfony\Component\Routing\RequestContext;
  * @method static string path(string $path = '')
  * @method static ObjectPortal2 router()
  * @method static ObjectPortal3 routeCollection()
- * @method static \Symfony\Component\Routing\Matcher\RequestMatcherInterface|\Symfony\Component\Routing\Matcher\UrlMatcherInterface getUrlMatcher(?Symfony\Component\Routing\RequestContext $context = NULL)
- * @method static array match(string $pathinfo, ?Pinoox\Component\Http\Request $request = NULL)
+ * @method static \Symfony\Component\Routing\Matcher\RequestMatcherInterface|\Symfony\Component\Routing\Matcher\UrlMatcherInterface getUrlMatcher(?\Symfony\Component\Routing\RequestContext $context = NULL)
+ * @method static array match(string $pathinfo, ?\Pinoox\Component\Http\Request $request = NULL)
  * @method static array matchRequest(\Pinoox\Component\Http\Request|\Symfony\Component\HttpFoundation\Request $request)
  * @method static ObjectPortal4 collection()
  * @method static ObjectPortal6 getAppRouter()
@@ -53,6 +53,7 @@ use Symfony\Component\Routing\RequestContext;
  * @method static ObjectPortal7 getRequest()
  * @method static App addPackage(string $packageName, string $path)
  * @method static \Symfony\Component\Routing\RequestContext ___context()
+ * @method static \Pinoox\Component\Package\AppRouter ___router()
  * @method static \Pinoox\Component\Package\App ___()
  *
  * @see \Pinoox\Component\Package\App
