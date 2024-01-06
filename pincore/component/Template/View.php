@@ -199,7 +199,6 @@ class View implements ViewInterface
      */
     public function render(string $name, array $parameters = []): string
     {
-       // dump($name);
         if ($this->existsFile($name))
             return $this->renderFile($name, $parameters);
 
