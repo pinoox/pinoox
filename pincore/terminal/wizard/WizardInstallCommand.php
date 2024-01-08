@@ -49,7 +49,7 @@ class WizardInstallCommand extends Terminal
         $migration = $input->getOption('migration')  ?? null;
 
         $package = str_replace('.pin', '', $package);
-        $pin = Loader::basePath() .'/'. $package . '.pin';
+        $pin = Loader::getBasePath() .'/'. $package . '.pin';
 
         if (!file_exists($pin)) {
             $this->error('package file not found: "' . $pin . '"');

@@ -116,7 +116,7 @@ class Url
                 $link = Str::firstDelete($link, Dir::path());
                 $link = Str::firstDelete($link, self::app());
             } else {
-                $link = Str::firstDelete($link, Loader::basePath());
+                $link = Str::firstDelete($link, Loader::getBasePath());
                 $link = Str::firstDelete($link, self::site());
             }
 

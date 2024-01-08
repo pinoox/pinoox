@@ -19,8 +19,12 @@ use Pinoox\Component\Http\Response as ObjectPortal2;
 use Pinoox\Component\Kernel\Kernel as ObjectPortal3;
 use Pinoox\Component\Package\App as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\DB;
+use Pinoox\Portal\Dumper;
+use Pinoox\Portal\Env;
 use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Kernel\Terminal;
+use Symfony\Component\ErrorHandler\Debug;
 
 /**
  * @method static AppProvider prerequisite()
@@ -39,19 +43,23 @@ use Pinoox\Portal\Kernel\Terminal;
  */
 class AppProvider extends Portal
 {
-	/** @var HttpKernel[] */
-	private static array $httpKernels = [];
-
-
-	public static function __register(): void
+    public static function __register(): void
 	{
 		self::__bind(\Pinoox\Component\Package\AppProvider::class)->setArguments([
 		    App::__ref(),
 		    HttpKernel::__ref(),
 		    Terminal::__ref(),
 		]);
+
+        self::require();
 	}
 
+    private static function require(): void
+    {
+        Dumper::register();
+        Debug::enable();
+        Env::register();
+    }
 
 	/**
 	 * Get the registered name of the component.
@@ -60,27 +68,5 @@ class AppProvider extends Portal
 	public static function __name(): string
 	{
 		return 'app.provider';
-	}
-
-
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
-
-
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'run'
-		];
 	}
 }

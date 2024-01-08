@@ -16,6 +16,7 @@ use Closure;
 use Composer\Autoload\ClassLoader;
 use Exception;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Router\Router;
@@ -219,6 +220,14 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
     public function config(): ConfigInterface
     {
         return $this->appEngine->config($this->package());
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function lang(): Lang
+    {
+        return $this->appEngine->lang($this->package());
     }
 
     /**

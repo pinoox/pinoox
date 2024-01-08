@@ -20,7 +20,10 @@ use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
+use Pinoox\Component\Kernel\Loader;
 use pinoox\component\kernel\Terminal;
+use Pinoox\Component\Service;
+use Pinoox\Portal\Config;
 use Pinoox\Portal\View;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -52,6 +55,14 @@ class AppProvider
         $this->getClassLoader()->addClassMap($classMap);
     }
 
+    private function loadServices(): void
+    {
+        $services = $this->app->get('service');
+        foreach ($services as $service) {
+            Service::run($service);
+        }
+    }
+
     private function getClassLoader(): ClassLoader
     {
         return $this->app->classLoader;
@@ -76,6 +87,7 @@ class AppProvider
             $this->lock();
             $this->loadComposer($this->app->path());
             $this->loader();
+            $this->loadServices();
         }
     }
 
@@ -168,8 +180,16 @@ class AppProvider
     /**
      * @throws Exception
      */
-    public function boot(): void
+    public function boot(?ClassLoader $classLoader = null, string $dir = ''): void
     {
+        $keyLoader = null;
+
+
+       // dd($classLoader->getPrefixes());
+//        if(empty($dir))
+//            $dir = $classLoader->getFallbackDirs()
+      //  Loader::setComposer($classLoader);
+      //  dd();
         if (empty($this->getRequest()->getHost())) {
             $this->terminal->run();
         } else {

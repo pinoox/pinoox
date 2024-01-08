@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Package;
 
 
+use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Path\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
@@ -46,6 +47,11 @@ class AppManager
     public function config(): ConfigInterface
     {
         return $this->appEngine->config($this->packageName);
+    }
+
+    public function lang(): Lang
+    {
+        return $this->appEngine->lang($this->packageName);
     }
 
     public function exists(): bool

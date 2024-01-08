@@ -70,7 +70,7 @@ class WizardListCommand extends Terminal
     private function fetchPinFiles(): array
     {
         $finder = new Finder();
-        $path = Loader::basePath() . self::PATH;
+        $path = Loader::getBasePath() . self::PATH;
         $finder->files()->in($path)->name('*.pin');
 
         $files = [];

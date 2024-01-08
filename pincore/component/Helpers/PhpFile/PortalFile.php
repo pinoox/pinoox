@@ -225,7 +225,7 @@ class PortalFile extends PhpFile
         foreach ($classes as $class) {
             $portalName = $namespace->getName() . '\\' . $class->getName();
             if ($class->getName() === $this->getClassname()) {
-                $serviceName = call_user_func([$portalName, '__name']);
+                $serviceName = call_user_func([$portalName, '__id']);
                 $class->setComment('');
                 $this->addCommentMethods($class, $namespaceItems[0], $serviceName);
             }

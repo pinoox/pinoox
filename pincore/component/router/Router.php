@@ -18,7 +18,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
-use Pinoox\Component\Package\AppManager;
+use Pinoox\Component\Package\App;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -48,14 +48,14 @@ class Router
      */
     private array $data = [];
 
-    private AppManager $app;
+    private App $app;
     private UrlGeneratorInterface $urlGenerator;
 
     private UrlMatcherInterface $urlMatcher;
 
     private RouteName $routeName;
 
-    public function __construct(RouteName $routeName, AppManager $app, ?Collection $collection = null, bool $isDefault = true)
+    public function __construct(RouteName $routeName, App $app, ?Collection $collection = null, bool $isDefault = true)
     {
         $this->routeName = $routeName;
         if (!empty($collection)) {
@@ -70,7 +70,7 @@ class Router
             $this->defaultRoutes();
     }
 
-    private function changeApp(AppManager $app): void
+    private function changeApp(App $app): void
     {
         $this->app = $app;
     }
@@ -278,22 +278,18 @@ class Router
         return !empty($path) ? '/' . $path : '/';
     }
 
-    public function build($path, $routes, array $data = [], ?AppManager $app = null): Router
+    public function build($path, $routes, array $data = []): Router
     {
         $this->data = $data;
-        $currentApp = $this->app;
-        $app = !empty($app) ? $app : $this->app;
 
-        $this->app = $app;
         $collection = $this->collection(
             path: $path,
             routes: $routes
         );
-        $this->app = $currentApp;
 
         $collection->cast = -1;
         $this->data = [];
-        $router = new Router($this->routeName, $app, $collection);
+        $router = new Router($this->routeName, $this->app, $collection);
         $router->actions = $this->actions;
         return $router;
     }

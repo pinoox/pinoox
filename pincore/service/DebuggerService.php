@@ -19,7 +19,6 @@ class DebuggerService implements ServiceInterface
 
     public function _run()
     {
-        Debug::enable();
     }
 
     public function _stop()

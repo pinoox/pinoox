@@ -44,7 +44,7 @@ class Path extends Portal
         self::__bind(PathParser::class, 'parser');
 
         self::__bind(ObjectPortal1::class)
-            ->setArgument('basePath', Loader::basePath())
+            ->setArgument('basePath', Loader::getBasePath())
             ->setArgument('parser', self::__ref('parser'))
             ->setArgument('appEngine', AppEngine::__instance())
             ->setArgument('package', App::package());

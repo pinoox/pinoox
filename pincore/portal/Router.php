@@ -65,7 +65,7 @@ class Router extends Portal
 
         self::__bind(ObjectPortal3::class)
             ->setArgument('routeName', static::__ref('name'))
-            ->setArgument('app', App::manager());
+            ->setArgument('app', App::__ref());
     }
 
     /**

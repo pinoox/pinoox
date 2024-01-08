@@ -71,7 +71,7 @@ class Dir
      */
     public static function path($path = null, $app = null)
     {
-        $result = Loader::basePath();
+        $result = Loader::getBasePath();
 
         $isBase = false;
 
@@ -89,7 +89,7 @@ class Dir
                 $path = HelperString::firstDelete($path, self::app());
                 $path = HelperString::firstDelete($path, Url::app());
             } else {
-                $path = HelperString::firstDelete($path, Loader::basePath());
+                $path = HelperString::firstDelete($path, Loader::getBasePath());
                 $path = HelperString::firstDelete($path, Url::site());
             }
             $path = self::ds($path);
@@ -109,7 +109,7 @@ class Dir
      */
     private static function app()
     {
-        return self::ds(Loader::basePath() .'/'. Router::app_folder . '/' . App::package() . '/');
+        return self::ds(Loader::getBasePath() .'/'. Router::app_folder . '/' . App::package() . '/');
     }
 
     /**

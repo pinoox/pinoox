@@ -14,8 +14,11 @@
 
 namespace Pinoox\Portal\App;
 
+use Composer\Autoload\ClassLoader;
 use Pinoox\Component\Http\Request as ObjectPortal7;
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Kernel\LoaderManager;
+use Pinoox\Component\Lang\Lang as ObjectPortal8;
 use Pinoox\Component\Package\AppLayer;
 use Pinoox\Component\Package\AppManager as ObjectPortal1;
 use Pinoox\Component\Package\AppRouter as ObjectPortal6;
@@ -24,6 +27,7 @@ use Pinoox\Component\Router\RouteCollection as ObjectPortal3;
 use Pinoox\Component\Router\Router as ObjectPortal2;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal5;
+use Pinoox\Portal\Lang;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -40,6 +44,7 @@ use Symfony\Component\Routing\RequestContext;
  * @method static \Pinoox\Component\Store\Config\ConfigInterface|null save()
  * @method static ObjectPortal1 manager()
  * @method static ObjectPortal5 config()
+ * @method static ObjectPortal8 lang()
  * @method static string path(string $path = '')
  * @method static ObjectPortal2 router()
  * @method static ObjectPortal3 routeCollection()
@@ -51,7 +56,7 @@ use Symfony\Component\Routing\RequestContext;
  * @method static RequestContext getContext()
  * @method static App setContext(\Symfony\Component\Routing\RequestContext $context)
  * @method static ObjectPortal7 getRequest()
- * @method static App addPackage(string $packageName, string $path)
+ * @method static App addPackage(string $packageName, string $dir)
  * @method static \Symfony\Component\Routing\RequestContext ___context()
  * @method static \Pinoox\Component\Package\AppRouter ___router()
  * @method static \Pinoox\Component\Package\App ___()
@@ -68,10 +73,14 @@ class App extends Portal
 		    AppRouter::__ref(),
 		    AppEngine::__ref(),
 		    self::__ref('context'),
-		    Loader::composer(),
+		    Loader::getClassLoader(),
 		]);
-	}
 
+		self::__watch('set', function ($key, $value) {
+		    if ($key === 'lang')
+		        Lang::locale($value);
+		});
+	}
 
 	/**
 	 * Get the registered name of the component.

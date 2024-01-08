@@ -14,9 +14,12 @@
 namespace Pinoox\Component\Source;
 
 
+use Composer\Autoload\ClassLoader;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\ContainerBuilder;
+use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Kernel\LoaderManager;
 use SebastianBergmann\Type\ReflectionMapper;
 use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
@@ -29,6 +32,9 @@ abstract class Portal
     protected static array $__args = [];
     protected static array $__watcher = [];
     protected static array $__subNameClasses = [];
+    protected static ClassLoader $__classLoader;
+    protected static string $__vendorDir;
+    protected static string $__baseDir;
 
     /*
     public function __get(string $name)
@@ -199,13 +205,13 @@ abstract class Portal
 
     final public static function __watch(string $method, \Closure $func)
     {
-        static::$__watcher[$method][] = $func;
+        static::$__watcher[static::__id()][$method][] = $func;
     }
 
     private static function callWatch($method, array $parameters)
     {
-        if (isset(static::$__watcher[$method])) {
-            foreach (static::$__watcher[$method] as $func) {
+        if (isset(static::$__watcher[static::__id()][$method])) {
+            foreach (static::$__watcher[static::__id()][$method] as $func) {
                 $func(...$parameters);
             }
         }
@@ -316,12 +322,13 @@ abstract class Portal
      */
     final public static function __instance(?string $name = null): ?object
     {
+        self::initClassLoader();
         $result = null;
         $name = static::__id($name);
         $container = static::__container();
         static::__before($name);
 
-        if (static::__app() !== '~' && !$container->has($name))
+        if (!$container->has($name))
             static::__register();
 
         if (!empty($name) && $container->has($name)) {
@@ -540,5 +547,41 @@ abstract class Portal
         }
 
         return $names;
+    }
+
+    protected static function __classLoader(): ?ClassLoader
+    {
+        return null;
+    }
+
+    private static function initClassLoader(): void
+    {
+        if (!empty(static::$__classLoader))
+            return;
+
+        $loaders = ClassLoader::getRegisteredLoaders();
+        $vendorDir = array_key_first(ClassLoader::getRegisteredLoaders());
+        $classLoader = $loaders[$vendorDir];
+
+        if (empty(static::$__classLoader)) {
+            static::$__classLoader = $classLoader;
+            static::$__vendorDir = $vendorDir;
+            static::$__baseDir = dirname($vendorDir);
+            Loader::setBasePath(static::$__baseDir);
+            Loader::setClassLoader(static::$__classLoader);
+        }
+
+        self::manageRegisters();
+    }
+
+    private static function getClassLoader(): ClassLoader
+    {
+        $classLoader = static::__classLoader();
+        return !empty($classLoader) ? $classLoader : array_values(ClassLoader::getRegisteredLoaders())[0];
+    }
+
+    private static function manageRegisters()
+    {
+        new LoaderManager(static::$__classLoader);
     }
 }

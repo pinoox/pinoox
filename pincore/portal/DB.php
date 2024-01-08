@@ -51,6 +51,8 @@ class DB extends Portal
     {
         self::__bind(\Pinoox\Component\Database\DatabaseManager::class)
             ->setArguments([self::getConfig()]);
+
+        DB::getConnection();
     }
 
 

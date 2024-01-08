@@ -41,7 +41,7 @@ class AppManager
 
     public function __construct()
     {
-        $this->basePath = Loader::basePath() . '/apps/';
+        $this->basePath = Loader::getBasePath() . '/apps/';
     }
 
     public function getApps(): array

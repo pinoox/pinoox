@@ -38,8 +38,8 @@ trait ResolvesDumpSource
      * @var array<string, int>
      */
     protected static $adjustableTraces = [
-        'symfony/var-dumper/resources/functions/dump.php' => 1,
-        'Illuminate/Collections/Traits/EnumeratesValues.php' => 4,
+        'symfony/var-dumper/Resources/functions/dump.php' => 1,
+        'Symfony\Component\VarDumper\VarDumper' => 0,
     ];
 
     /**
@@ -69,7 +69,7 @@ trait ResolvesDumpSource
         $sourceKey = null;
 
         foreach ($trace as $traceKey => $traceFile) {
-            if (! isset($traceFile['file'])) {
+            if (!isset($traceFile['file'])) {
                 continue;
             }
 
@@ -82,9 +82,14 @@ trait ResolvesDumpSource
                     $sourceKey = $traceKey + $key;
                     break;
                 }
+
+                if (isset($traceFile['class']) && $traceFile['class'] === $name) {
+                    $sourceKey = $traceKey + $key;
+                    break;
+                }
             }
 
-            if (! is_null($sourceKey)) {
+            if (!is_null($sourceKey)) {
                 break;
             }
         }
@@ -112,8 +117,8 @@ trait ResolvesDumpSource
     /**
      * Resolve the source href, if possible.
      *
-     * @param  string  $file
-     * @param  int|null  $line
+     * @param string $file
+     * @param int|null $line
      * @return string|null
      */
     protected function resolveSourceHref($file, $line)
@@ -124,7 +129,7 @@ trait ResolvesDumpSource
             // ..
         }
 
-        if (! isset($editor)) {
+        if (!isset($editor)) {
             return;
         }
 
@@ -148,7 +153,7 @@ trait ResolvesDumpSource
     /**
      * Set the resolver that resolves the source of the dump call.
      *
-     * @param  (callable(): (array{0: string, 1: string, 2: int|null}|null))|null  $callable
+     * @param (callable(): (array{0: string, 1: string, 2: int|null}|null))|null $callable
      * @return void
      */
     public static function resolveDumpSourceUsing($callable)

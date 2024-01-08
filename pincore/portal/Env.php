@@ -32,7 +32,7 @@ class Env extends Portal
 	public static function __register(): void
 	{
 		self::__bind(\Pinoox\Component\Helpers\Env::class)->setArguments([
-            Loader::basePath()
+            Loader::getBasePath()
 		]);
 	}
 

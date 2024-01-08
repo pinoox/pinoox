@@ -99,17 +99,6 @@ class LoaderManager
     }
 
     /**
-     * Proxy all method calls to Composer loader
-     *
-     * @param string $name
-     * @param mixed $arguments
-     */
-    public function __call($name, $arguments)
-    {
-        call_user_func_array([$this->loader, $name], $arguments);
-    }
-
-    /**
      * Loads the given class or interface and invokes static constructor on it
      *
      * @param string $className The name of the class

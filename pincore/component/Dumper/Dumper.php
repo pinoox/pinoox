@@ -16,10 +16,14 @@ namespace Pinoox\Component\Dumper;
 
 class Dumper
 {
+    private string $basePath;
+
     public function __construct(
-        private string $basePath = ''
+        string $basePath = ''
     )
-    {}
+    {
+        $this->basePath = str_replace(['/', '\\'], '/', $basePath);
+    }
 
     public function register()
     {

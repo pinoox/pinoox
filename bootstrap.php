@@ -11,6 +11,7 @@
  */
 
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Portal\App\AppProvider;
 
 define('PINOOX_START', microtime(true));
 define('PINOOX_CORE_PATH', __DIR__ . '/pincore/');
@@ -30,4 +31,4 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 
 
 $composer = require __DIR__ . '/vendor/autoload.php';
-Loader::boot($composer,__DIR__);
+AppProvider::boot();

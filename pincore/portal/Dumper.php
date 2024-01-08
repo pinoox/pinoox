@@ -28,7 +28,7 @@ class Dumper extends Portal
 	public static function __register(): void
 	{
 		self::__bind(\Pinoox\Component\Dumper\Dumper::class)->setArguments([
-            Loader::basePath()
+           Loader::getBasePath()
 		]);
 	}
 
