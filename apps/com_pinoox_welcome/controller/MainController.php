@@ -14,12 +14,6 @@
 namespace App\com_pinoox_welcome\Controller;
 
 use Pinoox\Component\Kernel\Controller\Controller;
-use Pinoox\Component\Package\AppLayer;
-use Pinoox\Component\Router\Route;
-use Pinoox\Portal\App\App;
-use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\App\AppProvider;
-use pinoox\portal\Path;
 use Pinoox\Portal\View;
 
 class MainController extends Controller

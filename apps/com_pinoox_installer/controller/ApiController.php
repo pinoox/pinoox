@@ -13,10 +13,8 @@
 
 namespace App\com_pinoox_installer\Controller;
 
-use Pinoox\Component\Dir;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Kernel\Controller\Controller;
-use Pinoox\Component\Lang;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Security;
@@ -28,17 +26,14 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
-use Pinoox\Portal\DB;
 
 class ApiController extends Controller
 {
     public function changeLang($lang): array
     {
         $lang = strtolower($lang);
-        App::set('lang', $lang);
         App::set('lang', $lang)
             ->save();
-        Lang::change($lang);
         return $this->getLang();
     }
 
