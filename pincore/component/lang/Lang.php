@@ -26,7 +26,7 @@ class Lang
 
     public function __construct(?LangSource $source = null)
     {
-        if(!empty($source))
+        if (!empty($source))
             $this->create($source);
     }
 
@@ -51,27 +51,24 @@ class Lang
     /**
      * @param string $key
      * @param array $replacements
-     * @return mixed
+     * @return string|array
      * @throws Exception
      */
-    public function get(string $key, array $replacements = []): string
+    public function get(string $key, array $replacements = []): string|array
     {
         $this->langArray = $this->source->get($key);
         $value = $this->getValue();
-
         if (empty($value) && !empty($this->source->getFallback())) {
-
             $this->source->setLocale($this->source->getFallback());
             $this->langArray = $this->source->get($key);
             $value = $this->getValue();
-
         }
 
         if (!$value) {
             throw new Exception('The key is not found in the language: ' . $key);
         }
 
-        return $this->replace($value, $replacements);
+        return is_array($value) ? $value : $this->replace($value, $replacements);
     }
 
     /**
@@ -98,6 +95,11 @@ class Lang
     public function setFallback($lang): void
     {
         $this->source->setFallback($lang);
+    }
+
+    public function getFallback($lang): ?string
+    {
+        return $this->source->getFallback($lang);
     }
 
     private function replace(string $value, array $replacements): string
@@ -134,13 +136,33 @@ class Lang
     /**
      * @throws Exception
      */
-    private function getValue(): ?string
+    private function getValue(): string|array|null
     {
         if ($this->langArray === null) {
             throw new Exception('The language array is not set.');
         }
 
-        return HelperArray::getNestedValue($this->langArray, $this->source->getKey());
+        return $this->getNestedValue($this->langArray, $this->source->getKey());
+    }
+
+    public function getNestedValue(array $array, string $key)
+    {
+        if (empty($key))
+            return $array;
+
+        $keys = explode('.', $key);
+        $value = $array;
+
+        foreach ($keys as $nestedKey) {
+
+            if (isset($value[$nestedKey])) {
+                $value = $value[$nestedKey];
+            } else {
+                return null;
+            }
+        }
+
+        return $value;
     }
 
 }

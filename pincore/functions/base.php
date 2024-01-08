@@ -15,7 +15,7 @@ use Pinoox\Component\Kernel\ContainerBuilder;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Path;
-use Pinoox\Component\Lang;
+use Pinoox\Portal\Lang;
 use Pinoox\Component\Service;
 use Pinoox\Component\Url;
 use Pinoox\Component\Helpers\Str;
@@ -84,7 +84,7 @@ if (!function_exists('lang')) {
         $args = func_get_args();
         $first = array_shift($args);
 
-        $result = Lang::replace($first, $args);
+        $result = Lang::get($first, $args);
 
         echo !is_array($result) ? $result : Str::encodeJson($result);
     }
@@ -96,7 +96,7 @@ if (!function_exists('rlang')) {
         $args = func_get_args();
         $first = array_shift($args);
 
-        return Lang::replace($first, $args);
+        return Lang::get($first, $args);
     }
 }
 

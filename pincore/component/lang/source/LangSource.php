@@ -101,8 +101,9 @@ abstract class LangSource
     protected function extractKey(string $str): void
     {
         $parts = explode('.', $str);
-        $this->setFilename($parts[0] ?? null);
-        $this->setKey(str_replace($this->getFilename() . '.', '', $str));
+        $filename = array_shift($parts);
+        $this->setFilename($filename ?? null);
+        $this->setKey(implode('.', $parts));
     }
 
 }
