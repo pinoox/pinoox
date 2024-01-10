@@ -57,6 +57,7 @@ class Path implements PathInterface
      * Get path
      *
      * @param string|ReferenceInterface $path
+     * @param string $package
      * @return string
      * @throws \Exception
      */
@@ -81,22 +82,16 @@ class Path implements PathInterface
         return $this;
     }
 
-
-    /**
-     * @throws \Exception
-     */
     private function getManager(?string $packageName = null): PathManager
     {
         $pathManager = new PathManager();
         $currentPackage = $this->package;
         if ($packageName === '~') {
             $pathManager->setBasePath($this->basePath);
-        } else if (is_null($packageName) && $currentPackage && $this->appEngine->exists($currentPackage)) {
-            $pathManager->setBasePath($this->appEngine->path($currentPackage));
-        } else if ($packageName && $this->appEngine->exists($packageName)) {
+        }  else if ($packageName && $this->appEngine->exists($packageName)) {
             $pathManager->setBasePath($this->appEngine->path($packageName));
         } else {
-            throw new \Exception('file not found!');
+            $pathManager->setBasePath($this->appEngine->path($currentPackage));
         }
 
         return $pathManager;

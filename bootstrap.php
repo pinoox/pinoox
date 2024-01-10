@@ -30,5 +30,5 @@ define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
 */
 
 
-$composer = require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 AppProvider::boot();

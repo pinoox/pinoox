@@ -72,9 +72,9 @@ if (!function_exists('furl')) {
 }
 
 if (!function_exists('path')) {
-    function path($path = null, $app = null)
+    function path($path = '', $package = '')
     {
-        return Path::get($path, $app);
+        return Path::get($path, $package);
     }
 }
 
