@@ -44,17 +44,24 @@ use Throwable;
  */
 class DB extends Portal
 {
+    public static function __register(): void
+    {
+        self::__bind(\Pinoox\Component\Database\DatabaseManager::class);
+    }
+
     /**
      * @throws Exception
      */
-    public static function __register(): void
+    public static function boot(): void
     {
-        self::__bind(\Pinoox\Component\Database\DatabaseManager::class)
-            ->setArguments([self::getConfig()]);
-
-        DB::getConnection();
+        $config = self::getConfig();
+        // add default connection
+        self::addConnection($config);
+        //Make this Capsule instance available globally.
+        self::setAsGlobal();
+        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+        self::bootEloquent();
     }
-
 
     /**
      * @throws Exception
