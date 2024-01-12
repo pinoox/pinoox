@@ -19,6 +19,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Lang;
 use Pinoox\Portal\View;
 
@@ -31,13 +32,6 @@ class MainController extends Controller
 
     public function home()
     {
-        $username = 'yoosef';
-        $user = UserModel::where(function (Builder $builder) use($username){
-            $builder->where('email',$username)->orWhere('username',$username);
-        });
-        $user = $user->first();
-        $user->makeHidden('password');
-
         return View::render('index');
     }
 
