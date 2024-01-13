@@ -47,7 +47,7 @@ class Loader
         self::setClassLoader($classLoader);
     }
 
-    public static function init(): void
+    public static function init(string $baseDir = ''): void
     {
         if (!empty(self::getClassLoader()))
             return;
@@ -56,7 +56,8 @@ class Loader
         $vendorDir = array_key_first(ClassLoader::getRegisteredLoaders());
         $classLoader = $loaders[$vendorDir];
 
-        self::set($classLoader, dirname($vendorDir));
+        $baseDir = !empty($baseDir) ? $baseDir : dirname($vendorDir);
+        self::set($classLoader, $baseDir);
     }
 
     private static function manageRegisters(): void

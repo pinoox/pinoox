@@ -300,8 +300,24 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
 
     public function addPackage(string $packageName, string $dir): void
     {
-        $this->classLoader->addPsr4('App\\' . $packageName . '\\', $dir);
+        $this->autoloader($packageName, $dir);
         $this->appEngine->add($packageName, $dir);
+    }
+
+    private function autoloader($packageName, $dir): void
+    {
+        $namespace = 'App\\' . $packageName . '\\';
+        $this->classLoader->addPsr4($namespace, $dir);
+        spl_autoload_register(function ($class) use ($namespace, $dir) {
+            if (str_starts_with($class, $namespace)) {
+                $class = str_replace($namespace, '', $class);
+                $filename = str_replace('\\', '/', $class) . '.php';
+                $filePath = $dir . '/' . $filename;
+                if (file_exists($filePath)) {
+                    require $filePath;
+                }
+            }
+        });
     }
 }
 

@@ -60,7 +60,7 @@ class AppProvider
     private function loadServices(): void
     {
         $services = $this->app->get('service');
-        if(empty($services))
+        if (empty($services))
             return;
         foreach ($services as $service) {
             Service::run($service);
@@ -184,8 +184,14 @@ class AppProvider
     /**
      * @throws Exception
      */
-    public function boot(?ClassLoader $classLoader = null, string $dir = ''): void
+    public function boot(string $package = ''): void
     {
+        if (!empty($package)) {
+            $dir = dirname(get_included_files()[0]);
+            $this->app->addPackage($package, $dir);
+            $this->app->setLayer(new AppLayer('/', $package));
+        }
+
         if (empty($this->getRequest()->getHost())) {
             $this->terminal->run();
         } else {
