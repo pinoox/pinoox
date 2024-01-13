@@ -322,7 +322,7 @@ abstract class Portal
      */
     final public static function __instance(?string $name = null): ?object
     {
-        self::initClassLoader();
+        Loader::init();
         $result = null;
         $name = static::__id($name);
         $container = static::__container();
@@ -547,41 +547,5 @@ abstract class Portal
         }
 
         return $names;
-    }
-
-    protected static function __classLoader(): ?ClassLoader
-    {
-        return null;
-    }
-
-    private static function initClassLoader(): void
-    {
-        if (!empty(static::$__classLoader))
-            return;
-
-        $loaders = ClassLoader::getRegisteredLoaders();
-        $vendorDir = array_key_first(ClassLoader::getRegisteredLoaders());
-        $classLoader = $loaders[$vendorDir];
-
-        if (empty(static::$__classLoader)) {
-            static::$__classLoader = $classLoader;
-            static::$__vendorDir = $vendorDir;
-            static::$__baseDir = dirname($vendorDir);
-            Loader::setBasePath(static::$__baseDir);
-            Loader::setClassLoader(static::$__classLoader);
-        }
-
-        self::manageRegisters();
-    }
-
-    private static function getClassLoader(): ClassLoader
-    {
-        $classLoader = static::__classLoader();
-        return !empty($classLoader) ? $classLoader : array_values(ClassLoader::getRegisteredLoaders())[0];
-    }
-
-    private static function manageRegisters()
-    {
-        new LoaderManager(static::$__classLoader);
     }
 }

@@ -43,6 +43,8 @@ class AppProvider
     private function loader(): void
     {
         $appLoaders = $this->app->get('loader');
+        if (empty($appLoaders))
+            return;
         $classMap = [];
         foreach ($appLoaders as $classname => $path) {
             if (HelperString::firstHas($classname, '@')) {
@@ -58,6 +60,8 @@ class AppProvider
     private function loadServices(): void
     {
         $services = $this->app->get('service');
+        if(empty($services))
+            return;
         foreach ($services as $service) {
             Service::run($service);
         }
@@ -182,14 +186,6 @@ class AppProvider
      */
     public function boot(?ClassLoader $classLoader = null, string $dir = ''): void
     {
-        $keyLoader = null;
-
-
-       // dd($classLoader->getPrefixes());
-//        if(empty($dir))
-//            $dir = $classLoader->getFallbackDirs()
-      //  Loader::setComposer($classLoader);
-      //  dd();
         if (empty($this->getRequest()->getHost())) {
             $this->terminal->run();
         } else {

@@ -23,43 +23,50 @@ class LoaderManager
 
 {
     const method = '__register';
+    const classes = [
+        'Portal\\'
+    ];
 
     /**
      * Wrapped Composer object
      *
      * @var ClassLoader
      */
-    private $loader;
+    private ClassLoader $loader;
 
     /**
      * Parameters to pass into constructors
      *
      * @var array
      */
-    private $params = [];
+    private array $params = [];
 
     /**
      * Parameters to pass into constructors of specified class
      *
      * @var array
      */
-    private $classParams = [];
+    private array $classParams = [];
 
     /**
      * Call static constructor for class if exists
      *
      * @param string $className
+     * @throws \ReflectionException
      */
-    private function callConstruct($className)
+    private function callConstruct(string $className): void
     {
-        if (!str_contains($className, 'Portal\\'))
+        $classes = array_filter(self::classes, function ($class) use ($className) {
+            return str_contains($className, $class);
+        });
+
+        if (empty($classes))
             return;
 
         $reflectionClass = new \ReflectionClass($className);
         if ($reflectionClass->hasMethod(self::method)) {
             $reflectionMethod = $reflectionClass->getMethod(self::method);
             if ($reflectionMethod->isStatic() && $reflectionMethod->getDeclaringClass()->getName() === $className) {
-                $reflectionMethod->setAccessible(true);
                 $reflectionParams = $reflectionMethod->getParameters();
                 if (count($reflectionParams) > 0) {
                     if (isset($this->classParams[$className])) {
@@ -80,7 +87,7 @@ class LoaderManager
      * @param ClassLoader $loader Composer loader object
      * @param array $params Additional parameters to pass into constructors, like DI container, etc
      */
-    public function __construct(ClassLoader $loader, $params = [])
+    public function __construct(ClassLoader $loader, array $params = [])
     {
         $this->loader = $loader;
         $this->params = $params;
@@ -103,8 +110,9 @@ class LoaderManager
      *
      * @param string $className The name of the class
      * @return bool|null True if loaded, null otherwise
+     * @throws \ReflectionException
      */
-    public function loadClass($className)
+    public function loadClass($className): ?bool
     {
         $result = $this->loader->loadClass($className);
         if ($result === true) {
@@ -121,15 +129,16 @@ class LoaderManager
      * @param string $className
      * @param array $params
      */
-    public function setClassParameters($className, $params)
+    public function setClassParameters($className, $params): void
     {
         $this->classParams[$className] = $params;
     }
 
     /**
      * Call static constructors on previously loaded classes
+     * @throws \ReflectionException
      */
-    public function processLoadedClasses()
+    public function processLoadedClasses(): void
     {
         $classes = get_declared_classes();
         foreach ($classes as $className) {
