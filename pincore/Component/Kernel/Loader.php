@@ -16,6 +16,7 @@ use Composer\Autoload\ClassLoader;
 
 class Loader
 {
+    private static ?LoaderManager $manager = null;
     private static ?ClassLoader $classLoader = null;
     private static ?string $basePath = null;
 
@@ -32,6 +33,7 @@ class Loader
     public static function setClassLoader(ClassLoader $classLoader): void
     {
         self::$classLoader = $classLoader;
+        self::manageRegisters();
     }
 
     public static function getClassLoader(): ?ClassLoader
@@ -54,14 +56,14 @@ class Loader
         $vendorDir = array_key_first(ClassLoader::getRegisteredLoaders());
         $classLoader = $loaders[$vendorDir];
 
-        self::setBasePath(dirname($vendorDir));
-        self::setClassLoader($classLoader);
-
-        self::manageRegisters();
+        self::set($classLoader, dirname($vendorDir));
     }
 
-    private static function manageRegisters()
+    private static function manageRegisters(): void
     {
-        new LoaderManager(self::$classLoader);
+        if (empty(self::$manager)) {
+            self::$manager = new LoaderManager(self::$classLoader);
+
+        }
     }
 }
