@@ -139,9 +139,10 @@ class Router
      * @param string|array $methods
      * @param array $defaults
      * @param array $filters
+     * @param int|null $property
      * @param array $data
      */
-    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], array $data = [],
+    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [],
     ): void
     {
         if (is_array($path)) {
@@ -153,7 +154,8 @@ class Router
                 $defaults = $p['defaults'] ?? $defaults;
                 $filters = $p['filters'] ?? $filters;
                 $data = $p['data'] ?? $data;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $data);
+                $property = $p['property'] ?? $property;
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters,$property, $data);
             }
         } else {
             $name = $this->buildName($name);
@@ -165,7 +167,7 @@ class Router
                 methods: $methods,
                 defaults: $defaults,
                 filters: $filters,
-                priority: $this->count(),
+                priority: is_null($property) ? $this->count() : $property,
                 data: $this->buildData($data),
             );
 

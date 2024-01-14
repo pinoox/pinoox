@@ -31,7 +31,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
  * @method static array match(string $path, ?\Pinoox\Component\Http\Request $request = NULL)
  * @method static array matchRequest(\Pinoox\Component\Http\Request $request)
  * @method static array getAllPath()
- * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [], array $data = [])
+ * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
  * @method static mixed buildAction(mixed $action, ?int $indexCollection = NULL)
  * @method static mixed getAction(string $name)
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [])
@@ -42,16 +42,16 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
  * @method static \Pinoox\Component\Router\Collection|null getCollection($index = 0)
  * @method static array all()
  * @method static int count()
- * @method static ObjectPortal2 get(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 post(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 put(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 patch(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 delete(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 options(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 head(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 purge(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 trace(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
- * @method static ObjectPortal2 connect(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [])
+ * @method static ObjectPortal2 get(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 post(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 put(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 patch(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 delete(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 options(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 head(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 purge(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 trace(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
+ * @method static ObjectPortal2 connect(array|string $path, \Closure|array|string $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [])
  * @method static \Pinoox\Component\Router\RouteName ___name()
  * @method static \Pinoox\Component\Router\Router ___()
  *
@@ -85,9 +85,11 @@ class Router extends Portal
                 \Closure|array|string $action = '',
                 string                $name = '',
                 array                 $defaults = [],
-                array                 $filters = []
+                array                 $filters = [],
+                ?int                  $property = null,
+                array                 $data = []
             ): Router {
-                return self::add($path, $action, $name, self::$__method, $defaults, $filters);
+                return self::add($path, $action, $name, self::$__method, $defaults, $filters,$property,$data);
             },
         ];
     }
