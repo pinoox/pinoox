@@ -32,7 +32,7 @@ use Symfony\Component\Routing\RequestContext;
 
 /**
  * @method static string|null package()
- * @method static string|null route()
+ * @method static string|null pathRoute()
  * @method static AppLayer current()
  * @method static App setLayer(\Pinoox\Component\Package\AppLayer $appLayer)
  * @method static mixed meeting(string $packageName, \Closure $closure, string $path = '')

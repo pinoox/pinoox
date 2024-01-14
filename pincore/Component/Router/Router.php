@@ -139,6 +139,7 @@ class Router
      * @param string|array $methods
      * @param array $defaults
      * @param array $filters
+     * @param array $data
      */
     public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], array $data = [],
     ): void
@@ -146,12 +147,12 @@ class Router
         if (is_array($path)) {
             foreach ($path as $routeName => $p) {
                 $routeName = is_string($routeName) ? $name . $routeName : $name . $this->routeName->generate($this->currentCollection()->name);
-                $path = isset($p['path']) ? $p['path'] : $p;
-                $action = isset($p['action']) ? $p['action'] : $action;
-                $methods = isset($p['methods']) ? $p['methods'] : $methods;
-                $defaults = isset($p['defaults']) ? $p['defaults'] : $defaults;
-                $filters = isset($p['filters']) ? $p['filters'] : $filters;
-                $data = isset($p['data']) ? $p['data'] : $data;
+                $path = $p['path'] ?? $p;
+                $action = $p['action'] ?? $action;
+                $methods = $p['methods'] ?? $methods;
+                $defaults = $p['defaults'] ?? $defaults;
+                $filters = $p['filters'] ?? $filters;
+                $data = $p['data'] ?? $data;
                 $this->add($path, $action, $routeName, $methods, $defaults, $filters, $data);
             }
         } else {
@@ -462,8 +463,13 @@ class Router
 
     private function defaultRoutes(): void
     {
+        $paths = ['/{slash_remover}/'];
+        $pathRoute = $this->app->pathRoute();
+        if (!empty($pathRoute) && $pathRoute !== '/')
+            $paths[] = '//';
+
         $this->add(
-            path: ['/{slash_remover}/'],
+            path: $paths,
             action: function (Route $route, $slash_remover = '') {
                 $base = Str::lastDelete($route->getCollection()->path, '/');
                 $slug = $base . '/' . $slash_remover;

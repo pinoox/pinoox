@@ -56,7 +56,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
      *
      * @return string|null
      */
-    public function route(): ?string
+    public function pathRoute(): ?string
     {
         return $this->appLayer?->getPath();
     }
@@ -240,7 +240,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
 
     public function router(): Router
     {
-        return $this->appEngine->router($this->package(), $this->route());
+        return $this->appEngine->router($this->package(), $this->pathRoute());
     }
 
     public function routeCollection(): RouteCollection

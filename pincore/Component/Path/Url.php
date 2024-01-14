@@ -103,7 +103,7 @@ class Url implements UrlInterface
 
     public function app(bool $isFullBase = true): string
     {
-        $route = Str::firstDelete($this->app->route(), '/');
+        $route = Str::firstDelete($this->app->pathRoute(), '/');
         if ($isFullBase)
             return !empty($route) ? $this->site() . '/' . $route : $this->site();
         else

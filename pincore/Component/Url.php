@@ -79,7 +79,7 @@ class Url
 
     public static function appKey()
     {
-        return str::firstDelete(App::route(),'/');
+        return str::firstDelete(App::pathRoute(),'/');
     }
 
     public static function isHttps()
