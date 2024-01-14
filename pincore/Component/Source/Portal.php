@@ -179,7 +179,7 @@ abstract class Portal
         $instance = static::__instance();
 
         if (empty($instance) || self::checkMethodHasExclude($method) || !self::checkMethodHasInclude($method)) {
-            throw new \RuntimeException('' . static::__id() . ' Portal root has not been set.');
+            throw new \RuntimeException( static::__id() . ' Portal root has not been set.');
         }
         self::callWatch($method, $args);
         self::$__method = $method;
