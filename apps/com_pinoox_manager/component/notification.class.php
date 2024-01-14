@@ -56,7 +56,7 @@ class Notification
             'title' => $title,
             'message' => $message,
             'action_key' => $action_key,
-            'action_data' => (is_array($action_data)) ? HelperString::encodeJson($action_data) : $action_data,
+            'action_data' => (is_array($action_data)) ? Str::encodeJson($action_data) : $action_data,
             'status' => NotificationModel::pending,
             'app' => self::getApp(),
             'push_date' => time() + $time,

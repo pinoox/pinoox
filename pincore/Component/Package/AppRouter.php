@@ -17,7 +17,6 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Store\Config\ConfigInterface;
-use Pinoox\Component\Url;
 
 
 class AppRouter

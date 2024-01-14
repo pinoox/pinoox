@@ -12,7 +12,7 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Portal\App\App;
 
 class Service
@@ -133,15 +133,15 @@ class Service
      */
     private static function createServiceName($service)
     {
-        if (HelperString::firstHas($service, '~') || self::$app === '~') {
-            $service = HelperString::firstDelete($service, '~');
+        if (Str::firstHas($service, '~') || self::$app === '~') {
+            $service = Str::firstDelete($service, '~');
             $namespace = "Pinoox\\Service\\";
         } else {
             $app = (empty(self::$app)) ? App::package() : self::$app;
             $namespace = "App\\" . $app . "\\Service\\";
         }
 
-        $services = HelperString::multiExplode(['\\', '>', '/', '.'], $service);
+        $services = Str::multiExplode(['\\', '>', '/', '.'], $service);
         $serviceName = array_pop($services);
         $services[] = ucfirst($serviceName) . 'Service';
         $classname = implode('\\', $services);

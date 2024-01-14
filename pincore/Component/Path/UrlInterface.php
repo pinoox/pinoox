@@ -11,16 +11,9 @@
  */
 
 
-namespace Pinoox\Component\Router;
+namespace Pinoox\Component\Path;
 
-use Pinoox\Component\Helpers\Str;
-use Symfony\Component\Routing\Route as RouteSymfony;
-
-class RouteCapsule extends RouteSymfony
+interface UrlInterface
 {
-    public function setPath(string $pattern): static
-    {
-        $pattern = Str::lastDelete($pattern,'/');
-        return parent::setPath($pattern);
-    }
+    public function get(string $path = ''): string;
 }

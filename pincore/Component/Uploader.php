@@ -12,7 +12,7 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Model\FileModel;
 
@@ -206,7 +206,7 @@ class Uploader extends Upload
 
     protected function save($result)
     {
-        $result['dir_file'] = HelperString::firstDelete($result['dir_file'], Loader::getBasePath());
+        $result['dir_file'] = Str::firstDelete($result['dir_file'], Loader::getBasePath());
         $result['dir_file'] = str_replace('\\', '/', $result['dir_file']);
 
         if (isset($this->option['insert'])) {
@@ -322,8 +322,8 @@ class Uploader extends Upload
             $sizes = [$sizes];
 
             foreach ($sizes as $size) {
-                $size = HelperString::lastDelete($size,'f');
-                $file = HelperString::replaceData($path, [
+                $size = Str::lastDelete($size,'f');
+                $file = Str::replaceData($path, [
                     'name' => $file_info['name'],
                     'ext' => $file_info['ext'],
                     'filename' => $file_info['filename'],

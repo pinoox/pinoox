@@ -13,7 +13,7 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Portal\App\App;
 use Pinoox\Component\Router\Route;
 use Pinoox\Portal\Router;
@@ -61,8 +61,8 @@ class ActionRoutesManageListener implements EventSubscriberInterface
     private function buildValueAction(RequestEvent $event, $controller)
     {
         $action = $controller;
-        if (is_string($controller) && HelperString::firstHas($controller, '@')) {
-            $controller = HelperString::firstDelete($controller, '@');
+        if (is_string($controller) && Str::firstHas($controller, '@')) {
+            $controller = Str::firstDelete($controller, '@');
             if ($controller = Router::getAction($controller)) {
                 $action = $controller;
             } else {

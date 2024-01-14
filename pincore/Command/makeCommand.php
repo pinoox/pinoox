@@ -11,10 +11,8 @@
  */
 namespace Pinoox\Command;
 
-use Pinoox\Component\Console;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 class makeCommand extends Console implements CommandInterface

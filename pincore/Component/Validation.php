@@ -14,9 +14,10 @@ namespace Pinoox\Component;
 
 use Closure;
 use Pinoox\Component\Helpers\HelperArray;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use ReflectionClass;
 use ReflectionMethod;
+use Pinoox\Portal\Lang;
 
 /**
  * Validation Help you to check validity of input data in a simple way
@@ -261,7 +262,7 @@ class Validation
         $method = self::getMethodName($ruleName);
 
         //check for exist parameters
-        if (HelperString::has($method, ':')) {
+        if (Str::has($method, ':')) {
             $parts = explode(':', $method);
             $method = isset($parts[0]) ? $parts[0] : null;
             $params = isset($parts[1]) ? $parts[1] : array();
@@ -296,8 +297,8 @@ class Validation
         self::$isNot = false;
         $ruleName = trim($ruleName);
 
-        if (HelperString::firstHas($ruleName, '!')) {
-            $ruleName = HelperString::firstDelete($ruleName, '!');
+        if (Str::firstHas($ruleName, '!')) {
+            $ruleName = Str::firstDelete($ruleName, '!');
             self::$isNot = true;
         }
 
@@ -389,7 +390,7 @@ class Validation
             //use custom message if have been set
             $message = self::customizeMessage();
             if ($message === false || is_null($message)) {
-                $message = HelperString::replaceData($err, $dataToStr);
+                $message = Str::replaceData($err, $dataToStr);
             }
 
             self::$errors[self::$currentKey][] = $message;
@@ -791,7 +792,7 @@ class Validation
         $key = str_replace($operator, '', $field);
         $title2 = $key;
         $checkField = $key;
-        if (HelperString::firstHas($key, '[') && HelperString::lastHas($key, ']')) {
+        if (Str::firstHas($key, '[') && Str::lastHas($key, ']')) {
             $key = str_replace(['[', ']'], '', $key);
             $values = HelperArray::detachByPattern($key, self::$inputs);
             $checkField = isset($values['values'][0]) ? $values['values'][0] : null;

@@ -22,12 +22,11 @@ use Pinoox\Component\File;
 use Pinoox\Component\Lang;
 use Pinoox\Component\Router;
 use Pinoox\Component\Service;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 use Pinoox\Component\User;
 use Pinoox\Model\TokenModel;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\Path;
-use Pinoox\Portal\Pinker;
 use Pinoox\Portal\Zip;
 
 class Wizard
@@ -75,9 +74,9 @@ class Wizard
         $app = Config::file($configFile);
         $iconPath = $app->icon;
 
-        $icon = Url::file('resources/default.png');
+        $icon = Url::path('resources/default.png');
         if (!empty($iconPath)) {
-            $iconFile = Path::get($dir . '>' . $app->icon);
+            $iconFile = Path::get($dir . '/' . $app->icon);
             if (!is_file($iconFile)) {
                 Zip::openFile($pinFile)->extractTo($dir,[
                     $iconFile
@@ -85,7 +84,7 @@ class Wizard
             }
 
             if (is_file($iconFile))
-                $icon = Url::file($dir . '>' . $app->icon);
+                $icon = Url::path($dir . '/' . $app->icon);
         }
 
         return [
@@ -180,7 +179,7 @@ class Wizard
         self::setApp($packageName);
         Cache::app($packageName);
         Service::app($packageName);
-        Service::run('app>' . $state);
+        Service::run('app/' . $state);
         Router::setApp($current);
     }
 
@@ -292,11 +291,11 @@ class Wizard
         Cache::clean('version');
         Cache::get('version');
         Config::bake('~pinoox');
-        Service::run('~core>update');
+        Service::run('~core/update');
 
         Cache::app('com_pinoox_manager');
         Service::app('com_pinoox_manager');
-        Service::run('app>update');
+        Service::run('app/update');
     }
 
     public static function app_state($package_name)
@@ -318,13 +317,13 @@ class Wizard
 
     public static function is_downloaded($package_name)
     {
-        $file = Dir::path('downloads>apps>' . $package_name . '.pin');
+        $file = Dir::path('downloads/apps/' . $package_name . '.pin');
         return (!empty($file) && file_exists($file));
     }
 
     public static function get_downloaded($package_name)
     {
-        return Dir::path('downloads>apps>' . $package_name . '.pin');
+        return Dir::path('downloads/apps/' . $package_name . '.pin');
     }
 
     public static function template_state($package_name, $uid)
@@ -341,24 +340,24 @@ class Wizard
 
     public static function is_installed_template($package_name, $uid)
     {
-        $file = Dir::path("~apps>$package_name>theme>$uid");
+        $file = Dir::path("~apps/$package_name/theme/$uid");
         return (!empty($file) && file_exists($file));
     }
 
     public static function is_downloaded_template($uid)
     {
-        $file = Dir::path("downloads>templates>$uid.pin");
+        $file = Dir::path("downloads/templates/$uid.pin");
         return (!empty($file) && file_exists($file));
     }
 
     public static function get_downloaded_template($uid)
     {
-        return Dir::path("downloads>templates>$uid.pin");
+        return Dir::path("downloads/templates/$uid.pin");
     }
 
     public static function installTemplate($file, $packageName, $meta)
     {
-        if (Zip::extract($file, path("~apps>$packageName>theme>" . $meta['name']))) {
+        if (Zip::extract($file, path("~apps/$packageName/theme/" . $meta['name']))) {
             File::remove_file($file);
             return true;
         }
@@ -368,13 +367,13 @@ class Wizard
 
     public static function deleteTemplate($packageName, $folderName)
     {
-        $templatePath = path('~apps/' . $packageName . '>theme>' . $folderName);
+        $templatePath = path('~apps/' . $packageName . '/theme/' . $folderName);
         File::remove($templatePath);
     }
 
     public static function checkTemplateFolderName($packageName, $templateFolderName)
     {
-        $file = path("~apps>$packageName>theme>" . $templateFolderName);
+        $file = path("~apps/$packageName/theme/" . $templateFolderName);
         return file_exists($file);
     }
 
@@ -394,7 +393,7 @@ class Wizard
         $meta = json_decode(file_get_contents($metaFile), true);
         $coverPath = @$meta['cover'];
 
-        $cover = Url::file('resources/theme.jpg');
+        $cover = Url::path('resources/theme.jpg');
         if (!empty($coverPath)) {
             $coverFile = Dir::path($dir . '>' . $coverPath);
             if (!is_file($coverFile)) {
@@ -403,7 +402,7 @@ class Wizard
             }
 
             if (is_file($coverFile))
-                $cover = Url::file($dir . '>' . $coverPath);
+                $cover = Url::path($dir . '/' . $coverPath);
         }
 
         if (empty($meta['title'])) {

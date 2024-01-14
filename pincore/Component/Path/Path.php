@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Path;
 
 use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Path\Parser\ParserInterface;
 use Pinoox\Component\Path\Parser\PathParser;
 use Pinoox\Component\Path\Reference\PathReference;
 use Pinoox\Component\Path\Reference\ReferenceInterface;
@@ -28,7 +29,7 @@ class Path implements PathInterface
 
     public function __construct(
         private readonly string          $basePath,
-        private readonly PathParser      $parser,
+        private readonly ParserInterface      $parser,
         private readonly EngineInterface $appEngine,
         private string        $package
     )
@@ -100,16 +101,6 @@ class Path implements PathInterface
     public function parse(string $name): ReferenceInterface
     {
         return $this->parser->parse($name);
-    }
-
-    /**
-     * Get path app
-     *
-     * @return string
-     */
-    private function base(): string
-    {
-        return $this->basePath;
     }
 
     public function prefixName(string|ReferenceInterface $path, string $prefix): string

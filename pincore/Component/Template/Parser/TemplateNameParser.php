@@ -14,7 +14,7 @@
 namespace Pinoox\Component\Template\Parser;
 
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Symfony\Component\Templating\TemplateNameParserInterface;
 use Symfony\Component\Templating\TemplateReference;
 use Symfony\Component\Templating\TemplateReferenceInterface;
@@ -37,7 +37,7 @@ class TemplateNameParser implements TemplateNameParserInterface
             return $name;
         }
 
-        if (HelperString::lastHas($name, '.' . self::TWIG_PHP)) {
+        if (Str::lastHas($name, '.' . self::TWIG_PHP)) {
             $engine = self::TWIG_PHP;
         } else if (false !== $pos = strrpos($name, '.')) {
             $engine = substr($name, $pos + 1);

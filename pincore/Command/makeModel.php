@@ -2,11 +2,9 @@
 namespace Pinoox\Command;
 
 
-use App\com_pinoox_manager\Controller\AppHelper;
-use Pinoox\Component\Console;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 
@@ -81,7 +79,7 @@ class makeModel extends Console implements CommandInterface
         $this->conterollerPath = $this->conterollerPath . ( ( count($Model) > 0 ) ? '/'.implode('/' , $Model) : "" ) . '/'.ucfirst(strtolower($this->conteroller)) .'Model.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
-        if ( HelperString::firstHas(strtolower($extend),'Pinoox\\')){
+        if ( Str::firstHas(strtolower($extend),'Pinoox\\')){
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
             $this->use = implode('\\' , $extend);

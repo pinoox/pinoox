@@ -12,7 +12,7 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 
 class Upload
 {
@@ -896,7 +896,7 @@ class Upload
         }
         $filename = $name;
         $convert = strtolower($this->convert);
-        $filename = HelperString::get_unique_string($filename, $convert, $this->prefix, $this->postfix, null, $dir, $type);
+        $filename = Str::get_unique_string($filename, $convert, $this->prefix, $this->postfix, null, $dir, $type);
         $filename .= "." . $type;
         return $filename;
     }
@@ -1049,12 +1049,12 @@ class Upload
     private function saveThumb($filename, $name, $ext, $size, $path)
     {
         $isFix = false;
-        if (HelperString::lastHas($size, 'f')) {
+        if (Str::lastHas($size, 'f')) {
             $isFix = true;
-            $size = HelperString::lastDelete($size, 'f');
+            $size = Str::lastDelete($size, 'f');
         }
 
-        $new_filename = HelperString::replaceData($path, [
+        $new_filename = Str::replaceData($path, [
             'name' => $name,
             'ext' => $ext,
             'filename' => $filename,

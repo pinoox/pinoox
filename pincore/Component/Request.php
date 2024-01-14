@@ -13,7 +13,7 @@
 namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\HelperArray;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Http;
 use ReflectionException;
 use Symfony\Component\HttpClient\HttpClient;
@@ -83,7 +83,7 @@ class Request
      */
     private static function getJson()
     {
-        if (empty(self::$json)) self::$json = HelperString::decodeJson(self::getData());
+        if (empty(self::$json)) self::$json = Str::decodeJson(self::getData());
         return self::$json;
     }
 

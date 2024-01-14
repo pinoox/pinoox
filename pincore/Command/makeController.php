@@ -2,10 +2,8 @@
 namespace Pinoox\Command;
 
 
-use Pinoox\Component\Console;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 
@@ -80,7 +78,7 @@ class makeController extends Console implements CommandInterface
         $this->conterollerPath = $this->conterollerPath . ( ( count($controller) > 0 ) ? '/'.implode('/' , $controller) : "" ) . '/'.$this->conteroller .'Controller.php';
 
         $extend = str_replace('/' , '\\' ,  $this->option('extends'));
-        if ( HelperString::firstHas(strtolower($extend),'Pinoox\\')){
+        if ( Str::firstHas(strtolower($extend),'Pinoox\\')){
             $extend =  explode('\\' ,$extend );
             $this->extend = end($extend);
             $this->use = implode('\\' , $extend);

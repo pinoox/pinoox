@@ -14,63 +14,71 @@
 
 namespace Pinoox\Portal;
 
-use Pinoox\Component\Helpers\Url as ObjectPortal1;
-use Pinoox\Component\Path\Parser\UrlParser;
+use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppProvider;
+use Pinoox\Portal\App\AppRouter;
 
 /**
- * @method static ObjectPortal1 set($key, $value)
- * @method static string|null app(?string $packageName = NULL)
- * @method static string replaceToSlash(string $url, array|string $search = array (  0 => '\\',  1 => '>',))
- * @method static string prefix(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url, string $prefix)
- * @method static string get(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url = '')
- * @method static string prefixName(\Pinoox\Component\Path\Reference\ReferenceInterface|string $url, string $prefix)
- * @method static \Pinoox\Component\Path\Parser\UrlParser ___parser()
- * @method static \Pinoox\Component\Helpers\Url ___()
+ * @method static string host()
+ * @method static string httpHost()
+ * @method static string scheme()
+ * @method static string port()
+ * @method static string scriptName()
+ * @method static string method()
+ * @method static string realMethod()
+ * @method static string clientIp()
+ * @method static array clientIps()
+ * @method static string base()
+ * @method static string params()
+ * @method static array parameters()
+ * @method static string site(bool $isFullBase = true)
+ * @method static app(bool $isFullBase = true)
+ * @method static string get(string $path = '', bool $isFullBase = true)
+ * @method static string loc(string $path = '', bool $isFullBase = true)
+ * @method static string path(string $path = '', bool $isFullBase = true)
+ * @method static \Pinoox\Component\Path\Url ___()
  *
- * @see \Pinoox\Component\Helpers\Url
+ * @see \Pinoox\Component\Path\Url
  */
 class Url extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(UrlParser::class, 'parser')
-		    ->setArguments(['com_pinoox_test']);
+    public static function __register(): void
+    {
+        self::__bind(\Pinoox\Component\Path\Url::class)
+            ->setArgument('app', App::__ref())
+            ->setArgument('request', AppProvider::getRequest())
+            ->setArgument('appRouter', AppRouter::__ref())
+            ->setArgument('basePath', Loader::getBasePath());
+    }
 
-		self::__bind(ObjectPortal1::class)
-		    ->setArgument('parser', self::__ref('parser'))
-		    ->setArgument('appEngine', AppEngine::__instance())
-		    ->setArgument('baseUrl', null);
-	}
-
-
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'url';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'url';
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [];
+    }
 }

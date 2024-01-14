@@ -11,8 +11,7 @@
  */
 namespace Pinoox\Command;
 
-use Pinoox\Component\Console;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 class help extends Console implements CommandInterface
@@ -80,7 +79,7 @@ class help extends Console implements CommandInterface
             foreach ($commands['arguments'] as $arg ) {
                 $arg[0] = isset($arg[0]) ? $arg[0] : $arg;
                 $this->success('  ' . $arg[0]);
-                $this->info(str_repeat(" ", $width - HelperString::width($arg[0])) . (isset($arg[2]) ? $arg[2] : ""));
+                $this->info(str_repeat(" ", $width - Str::width($arg[0])) . (isset($arg[2]) ? $arg[2] : ""));
                 if ( isset($arg[3] ) and $arg[3] )
                     $this->warning('  [ default: "'.$arg[3].'"]');
                 $this->newLine();
@@ -97,11 +96,11 @@ class help extends Console implements CommandInterface
             foreach ($commands['Options'] as $arg ) {
                 $arg[0] = isset($arg[0]) ? $arg[0] : $arg;
                 if ( isset($arg[1]) and $arg[1] != "" )
-                    $this->success(str_repeat(" ", $width  - HelperString::width($arg[1]) ) .'--' . $arg[1].', ' );
+                    $this->success(str_repeat(" ", $width  - Str::width($arg[1]) ) .'--' . $arg[1].', ' );
                 else
                     $this->success(str_repeat(" ", $width  + 4));
                 $this->success( '--'.$arg[0]);
-                $this->info(str_repeat(" ", $width2 - HelperString::width($arg[0]) + 2) . (isset($arg[2]) ? $arg[2] : ""));
+                $this->info(str_repeat(" ", $width2 - Str::width($arg[0]) + 2) . (isset($arg[2]) ? $arg[2] : ""));
                 if ( isset($arg[3]) and $arg[3] )
                     $this->warning('  [ default: "'.$arg[3].'"]');
                 $this->newLine();
@@ -114,7 +113,7 @@ class help extends Console implements CommandInterface
         $commands = $this->getListCommand();
         $routeCommand = [];
         foreach ($commands as $index => $command ){
-            if ( ! HelperString::has( $command['signature'] , ':')){
+            if ( ! Str::has( $command['signature'] , ':')){
                 $routeCommand[] = $command;
                 unset($commands[$index]);
             }
@@ -127,7 +126,7 @@ class help extends Console implements CommandInterface
         $width = $this->getColumnWidth(array_column(array_merge($commands,$routeCommand) , 'signature' ));
         foreach ($routeCommand as $command ){
             $this->success('  ' . $command['signature']);
-            $this->info(str_repeat(" ", $width - HelperString::width($command['signature']) ) . $command['description']);
+            $this->info(str_repeat(" ", $width - Str::width($command['signature']) ) . $command['description']);
             $this->newLine();
         }
         $keys = array_column($commands, 'signature');
@@ -140,7 +139,7 @@ class help extends Console implements CommandInterface
                 $this->newLine();
             }
             $this->success('  ' . $command['signature']);
-            $this->info(str_repeat(" ", $width - HelperString::width($command['signature']) ) . $command['description']);
+            $this->info(str_repeat(" ", $width - Str::width($command['signature']) ) . $command['description']);
             $this->newLine();
         }
         $this->newLine();

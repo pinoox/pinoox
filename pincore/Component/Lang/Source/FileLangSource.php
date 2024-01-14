@@ -25,22 +25,20 @@ class FileLangSource extends LangSource
         $this->setPath($path);
     }
 
-    public function load(): ?string
-    {
-        return $this->getLocalePath();
-    }
-
-    public function get(string $key): array
+    public function get(string $key): mixed
     {
         return $this->getArrayFromFile($key);
     }
 
-    public function getArrayFromFile($key): array
+    public function getArrayFromFile($key): mixed
     {
         $this->extractKey($key);
         $file = $this->getLocalePath() . $this->getFilename() . $this->ext;
-        return is_file($file) ? include $file : [];
+        return is_file($file) ? $this->loadFile($file) : [];
     }
 
-
+    private function loadFile($file): mixed
+    {
+        return include $file;
+    }
 }

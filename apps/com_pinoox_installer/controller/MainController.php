@@ -13,14 +13,10 @@
 
 namespace App\com_pinoox_installer\Controller;
 
-use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Controller\Controller;
-use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\DB;
-use Pinoox\Portal\Lang;
 use Pinoox\Portal\View;
 
 class MainController extends Controller

@@ -15,9 +15,8 @@
 namespace Pinoox\Component;
 
 
-use mysql_xdevapi\Exception;
 use Pinoox\Component\Helpers\HelperHeader;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 
 class HttpRequest
 {
@@ -279,7 +278,7 @@ class HttpRequest
             $result = $this->sendContents();
         }
 
-        $result = ($result && $raw === self::json) ? HelperString::decodeJson($result) : $result;
+        $result = ($result && $raw === self::json) ? Str::decodeJson($result) : $result;
 
         return $result;
     }
@@ -384,7 +383,7 @@ class HttpRequest
     {
         $type = isset($this->options['type']) ? $this->options['type'] : self::json;
         if ($type === self::json)
-            return HelperString::encodeJson($this->params);
+            return Str::encodeJson($this->params);
         else if ($type === self::form)
             return http_build_query($this->params);
         else

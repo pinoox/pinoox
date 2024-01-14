@@ -15,10 +15,8 @@ namespace Pinoox\Command\create;
 
 
 use JetBrains\PhpStorm\ArrayShape;
-use Pinoox\Component\Console;
-use Pinoox\Component\Helpers\HelperString;
-use Pinoox\Component\Helpers\PhpFile\PortalFile;
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Helpers\PhpFile\PortalFile;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 class CreatePortal extends console implements CommandInterface
@@ -58,7 +56,7 @@ class CreatePortal extends console implements CommandInterface
     public function handle()
     {
         $this->setPackageName();
-        $portalName = HelperString::toCamelCase($this->argument('PortalName'));
+        $portalName = Str::toCamelCase($this->argument('PortalName'));
         $serviceName = $this->option('service');
         $serviceName = !empty($serviceName) ? $serviceName : lcfirst($portalName);
         $this->createPortal($portalName, $serviceName, $this->cli['package']);

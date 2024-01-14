@@ -20,7 +20,7 @@ use Pinoox\Component\HelperHeader;
 use Pinoox\Component\Lang;
 use Pinoox\Component\Request;
 use Pinoox\Component\Response;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 
 class MarketController extends LoginConfiguration
 {

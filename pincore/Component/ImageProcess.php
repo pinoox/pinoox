@@ -12,7 +12,7 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 
 class ImageProcess
 {
@@ -397,7 +397,7 @@ class ImageProcess
 
         // get location for new image
         $img_save = (empty($img_save)) ? $image : $img_save;
-        $img_save = HelperString::deleteExt($img_save, 3, 4);
+        $img_save = Str::deleteExt($img_save, 3, 4);
         $img_save = $img_save . '.' . $convert_type;
         $getImage = imagecreatefromstring(file_get_contents($image));
 

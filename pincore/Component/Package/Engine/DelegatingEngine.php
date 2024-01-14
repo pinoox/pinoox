@@ -13,7 +13,9 @@
 
 namespace Pinoox\Component\Package\Engine;
 
+use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\Config;
 
 class DelegatingEngine implements EngineInterface
@@ -76,8 +78,23 @@ class DelegatingEngine implements EngineInterface
         $this->engines[] = $engine;
     }
 
-    public function path(ReferenceInterface|string $packageName): string
+    public function path(ReferenceInterface|string $packageName, string $path = ''): string
     {
         $this->getEngine($packageName)->path($packageName);
+    }
+
+    public function lang(ReferenceInterface|string $packageName): Lang
+    {
+        $this->getEngine($packageName)->lang($packageName);
+    }
+
+    public function router(ReferenceInterface|string $packageName, string $path = ''): Router
+    {
+        $this->getEngine($packageName)->router($packageName);
+    }
+
+    public function stable(ReferenceInterface|string $packageName): bool
+    {
+        $this->getEngine($packageName)->stable($packageName);
     }
 }

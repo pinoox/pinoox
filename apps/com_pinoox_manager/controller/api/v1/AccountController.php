@@ -17,8 +17,7 @@ use Pinoox\Portal\Config;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\HttpRequest;
 use Pinoox\Component\Request as RequestData;
-use Pinoox\Component\Response;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 use Pinoox\Component\Validation;
 
 class AccountController extends LoginConfiguration

@@ -3,11 +3,10 @@
 
 namespace Pinoox\Component\Kernel\Controller;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\App\App;
 use Pinoox\Component\Router\Collection;
-use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Router;
 use Psr\Container\ContainerInterface;
 use Pinoox\Component\Http\RedirectResponse;
@@ -114,8 +113,8 @@ abstract class Controller
     private function buildValueAction(Request $request, $controller)
     {
         $action = $controller;
-        if (is_string($controller) && HelperString::firstHas($controller, '@')) {
-            $controller = HelperString::firstDelete($controller, '@');
+        if (is_string($controller) && Str::firstHas($controller, '@')) {
+            $controller = Str::firstDelete($controller, '@');
             if ($controller = Router::getAction($controller)) {
                 $action = $controller;
             } else {

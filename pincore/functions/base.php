@@ -17,23 +17,23 @@ use Pinoox\Portal\Config;
 use Pinoox\Portal\Path;
 use Pinoox\Portal\Lang;
 use Pinoox\Component\Service;
-use Pinoox\Component\Url;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Portal\View;
 use Pinoox\Component\File;
 use Pinoox\Portal\Env;
 use Pinoox\Portal\Pinker;
+use Pinoox\Portal\Url;
 
 if (!function_exists('url')) {
-    function url($link = null)
+    function url(string $link = ''): string
     {
-        return Url::link($link);
+        return Url::get($link);
     }
 }
 
 if (!function_exists('assets')) {
-    function assets($link = '', $isPath = false)
+    function assets(string $link = '', bool $isPath = false): string
     {
         $path = View::path()->assets($link);
         return $isPath ? $path : furl($path);
@@ -65,9 +65,9 @@ if (!function_exists('vite')) {
 }
 
 if (!function_exists('furl')) {
-    function furl($path = null)
+    function furl(string $path = ''): string
     {
-        return Url::file($path);
+        return Url::path($path);
     }
 }
 

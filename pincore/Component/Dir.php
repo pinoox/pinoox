@@ -12,10 +12,10 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Loader;
-use Pinoox\Portal\App\App       ;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\Url;
 
 class Dir
 {
@@ -76,24 +76,24 @@ class Dir
         $isBase = false;
 
         $path = self::ds($path);
-        if ($app !== '~' && !HelperString::firstHas($path, '~')) {
+        if ($app !== '~' && !Str::firstHas($path, '~')) {
             $packageName = is_null($app) ? App::package() : $app;
             $result .= '/'.Router::app_folder .'/'. $packageName .'/';
         } else {
             $isBase = true;
-            $path = HelperString::firstDelete($path, '~');
+            $path = Str::firstDelete($path, '~');
         }
 
         if (!is_null($path)) {
             if (!$isBase) {
-                $path = HelperString::firstDelete($path, self::app());
-                $path = HelperString::firstDelete($path, Url::app());
+                $path = Str::firstDelete($path, self::app());
+                $path = Str::firstDelete($path, Url::app());
             } else {
-                $path = HelperString::firstDelete($path, Loader::getBasePath());
-                $path = HelperString::firstDelete($path, Url::site());
+                $path = Str::firstDelete($path, Loader::getBasePath());
+                $path = Str::firstDelete($path, Url::site());
             }
             $path = self::ds($path);
-            $path = HelperString::firstDelete($path,'/');
+            $path = Str::firstDelete($path,'/');
             $result = Str::lastDelete($result,'/');
             $result = $result .'/'. $path;
 
@@ -138,13 +138,13 @@ class Dir
         $filename = $name . '.'.$ext;
         $fix = false;
 
-        if (HelperString::lastHas($thumbSize, 'f')) {
+        if (Str::lastHas($thumbSize, 'f')) {
             $fix = true;
-            $thumbSize = HelperString::lastDelete($thumbSize, 'f');
+            $thumbSize = Str::lastDelete($thumbSize, 'f');
         }
 
 
-        $dirThumb = HelperString::replaceData($path,[
+        $dirThumb = Str::replaceData($path,[
             'name' => $name,
             'size' => $thumbSize,
             'ext' => $ext,

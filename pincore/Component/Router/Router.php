@@ -79,7 +79,7 @@ class Router
     {
         if (empty($this->urlGenerator)) {
             $context = !empty($context) ? $context : RequestContext::fromUri('');
-            $this->urlGenerator = new UrlGenerator($this->getCollection()->routes, RequestContext::fromUri(''));
+            $this->urlGenerator = new UrlGenerator($this->getCollection()->routes, $context);
         }
 
         return $this->urlGenerator;

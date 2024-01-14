@@ -12,7 +12,7 @@
 
 namespace Pinoox\Component;
 
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 
 class File
 {
@@ -247,7 +247,7 @@ class File
         if (is_file($file)) {
             $size = self::convert_size(filesize($file), 'B', $unitSize);
             if ($format != null)
-                return HelperString::format($size, $format);
+                return Str::format($size, $format);
             return $size;
         }
         return 0;
@@ -484,7 +484,7 @@ class File
         }
 
         if (isset($lang[$unit]))
-            $result = HelperString::replaceData($lang[$unit], $size);
+            $result = Str::replaceData($lang[$unit], $size);
         else
             $result = $size . " " . $unit;
 

@@ -43,7 +43,7 @@ class UpdateService implements ServiceInterface
                 ]
             );
 
-            return HelperString::decodeJson($data);
+            return Str::decodeJson($data);
         },(5*24));
     }
 

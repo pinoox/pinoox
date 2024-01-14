@@ -7,13 +7,8 @@ use Pinoox\Portal\Config;
 use Pinoox\Component\Console;
 use Pinoox\Component\Download;
 use Pinoox\Component\Helpers\HelperHeader;
-use Pinoox\Component\Helpers\HelperString;
 use Pinoox\Component\HttpRequest;
 use Pinoox\Component\Interfaces\CommandInterface;
-use Pinoox\Component\Request;
-use Pinoox\Component\Response;
-use Pinoox\Component\Url;
-
 
 class appDownload extends Console implements CommandInterface
 {

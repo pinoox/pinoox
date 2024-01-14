@@ -19,7 +19,7 @@ use Pinoox\Component\app\AppProvider;
 use Pinoox\Component\Request;
 use Pinoox\Component\Response;
 use Pinoox\Component\Uploader;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 use Pinoox\Component\User;
 use Pinoox\Component\Validation;
 use Pinoox\Model\PinooxDatabase;

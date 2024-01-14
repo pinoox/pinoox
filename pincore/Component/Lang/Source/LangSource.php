@@ -29,12 +29,6 @@ abstract class LangSource
     abstract public function __construct(string $path, string $locale);
 
     /**
-     * Load data from a source.
-     * @return mixed
-     */
-    abstract public function load(): mixed;
-
-    /**
      * Get language array by key
      *
      * @param string $key

@@ -121,7 +121,7 @@ class unitTest extends Console implements CommandInterface
                 require_once $this->option('prepend');
             }
             foreach ( $_SERVER['argv'] as $index => $argv ) {
-                if ( HelperString::firstHas($argv , '--prepend=') ){
+                if ( Str::firstHas($argv , '--prepend=') ){
                     unset($_SERVER['argv'] [$index]);
                     break;
                 }
@@ -131,7 +131,7 @@ class unitTest extends Console implements CommandInterface
             $_SERVER['argv'][] = '--printer=NunoMaduro\\Collision\\Adapters\\Phpunit\\Printer';
         elseif ( $this->option('printer') == "default")
             foreach ( $_SERVER['argv'] as $index => $argv ) {
-                if ( HelperString::firstHas($argv , '--printer=') ){
+                if ( Str::firstHas($argv , '--printer=') ){
                     unset($_SERVER['argv'] [$index]);
                     break;
                 }

@@ -15,7 +15,7 @@ namespace App\com_pinoox_manager\Component;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
 use Pinoox\Component\Router;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
@@ -32,7 +32,7 @@ class AppHelper
     {
         $path = Dir::path('~apps/');
         $folders = File::get_dir_folders($path);
-        $icon_default = Url::file('resources/default.png');
+        $icon_default = Url::path('resources/default.png');
         $app = App::package();
 
         $result = [];
@@ -77,7 +77,7 @@ class AppHelper
                 'developer' => $app->get('developer'),
                 'open' => $app->get('open'),
                 'sys_app' => $app->get('sys-app'),
-                'icon' => Url::check(Url::file($app->get('icon'), $package_key), $icon_default),
+                'icon' => Url::check(Url::path($app->get('icon'), $package_key), $icon_default),
                 'routes' => self::fetch_all_aliases_by_package_name($package_key),
                 'build' => $app->get('build')
             ];
@@ -100,7 +100,7 @@ class AppHelper
 
     public static function fetch_by_package_name($packageName)
     {
-        $icon_default = Url::file('resources/default.png');
+        $icon_default = Url::path('resources/default.png');
         $app = AppEngine::config($packageName);
         $result = null;
         if (Router::existApp($packageName)) {

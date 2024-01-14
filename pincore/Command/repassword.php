@@ -2,9 +2,7 @@
 namespace Pinoox\Command;
 
 
-use App\com_pinoox_manager\Controller\AppHelper;
-use Pinoox\Component\Console;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Interfaces\CommandInterface;
 use Pinoox\Model\UserModel;
 
@@ -92,7 +90,7 @@ class repassword extends Console implements CommandInterface
         }
 		$password = $this->option('password');
         if ( $password == 'Pinoox random string!' )
-            $password = HelperString::generateRandom();
+            $password = Str::generateRandom();
 
         UserModel::update_password($user['user_id'],$password , null , $packageSelected );
         $result = UserModel::fetch_by_password($user['user_id'],$password );

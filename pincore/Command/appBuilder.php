@@ -2,10 +2,9 @@
 namespace Pinoox\Command;
 
 
-use Pinoox\Component\Console;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Interfaces\CommandInterface;
 
 
@@ -336,7 +335,7 @@ class appBuilder extends Console implements CommandInterface
 
         $currentPath = ltrim($currentPath, '/');
         $mask = str_replace('\\' , '/' , trim($mask) );
-        $mask = HelperString::lastDelete($mask , '/');
+        $mask = Str::lastDelete($mask , '/');
         $mask = ltrim( $mask, '/');
 
         if ($mask === '*') {

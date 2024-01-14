@@ -21,7 +21,7 @@ use Pinoox\Component\Lang\Source\LangSource;
 class Lang
 {
 
-    private ?array $langArray;
+    private mixed $langArray;
     private LangSource $source;
 
     public function __construct(?LangSource $source = null)
@@ -33,14 +33,8 @@ class Lang
     public function create(LangSource $source): static
     {
         $this->source = $source;
-        $this->load();
 
         return $this;
-    }
-
-    public function load(): void
-    {
-        $this->source->load();
     }
 
     public function locale($locale): void
@@ -54,7 +48,7 @@ class Lang
      * @return string|array
      * @throws Exception
      */
-    public function get(string $key, array $replacements = []): string|array
+    public function get(string $key, array $replacements = []): mixed
     {
         $this->langArray = $this->source->get($key);
         $value = $this->getValue();
@@ -136,16 +130,15 @@ class Lang
     /**
      * @throws Exception
      */
-    private function getValue(): string|array|null
+    private function getValue(): mixed
     {
         if ($this->langArray === null) {
             throw new Exception('The language array is not set.');
         }
-
         return $this->getNestedValue($this->langArray, $this->source->getKey());
     }
 
-    public function getNestedValue(array $array, string $key)
+    public function getNestedValue(mixed $array, string $key)
     {
         if (empty($key))
             return $array;

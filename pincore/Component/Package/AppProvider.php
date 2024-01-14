@@ -16,7 +16,7 @@ namespace Pinoox\Component\Package;
 
 use Composer\Autoload\ClassLoader;
 use Exception;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
@@ -47,7 +47,7 @@ class AppProvider
             return;
         $classMap = [];
         foreach ($appLoaders as $classname => $path) {
-            if (HelperString::firstHas($classname, '@')) {
+            if (Str::firstHas($classname, '@')) {
                 require_once $this->app->path($path);
             } else {
                 $classMap[$classname] = $path;

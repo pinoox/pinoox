@@ -40,7 +40,7 @@ class RouterController extends LoginConfiguration
     {
         $alias = Request::inputOne('alias');
         $routes = Config::get('~app');
-        if (empty($alias) || HelperString::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
+        if (empty($alias) || Str::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
             Response::json(rlang('setting>router.write_correct_url'), false);
 
         if (isset($routes[$alias]))

@@ -3,11 +3,8 @@
 namespace Pinoox\Command;
 
 
-use App\com_pinoox_manager\Controller\AppHelper;
-use Pinoox\Component\Console;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Interfaces\CommandInterface;
-use Pinoox\Component\Lang;
 use Pinoox\Component\Validation;
 use Pinoox\Portal\Config;
 
@@ -72,7 +69,7 @@ class routerMake extends Console implements CommandInterface
     public function add($alias)
     {
         $routes = Config::name('~app')->get();
-        if (empty($alias) || HelperString::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
+        if (empty($alias) || Str::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
             return [rlang('setting>router.write_correct_url'), false];
 
         if (isset($routes[$alias]))

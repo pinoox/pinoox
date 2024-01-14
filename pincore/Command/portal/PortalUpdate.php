@@ -14,8 +14,7 @@
 namespace Pinoox\Command\Portal;
 
 
-use Pinoox\Component\Console;
-use Pinoox\Component\Helpers\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Helpers\PhpFile\PortalFile;
 use Pinoox\Component\Interfaces\CommandInterface;
 
@@ -55,7 +54,7 @@ class PortalUpdate extends console implements CommandInterface
     public function handle()
     {
         $this->setPackageName();
-        $portalName = HelperString::toCamelCase($this->argument('PortalName'));
+        $portalName = Str::toCamelCase($this->argument('PortalName'));
         $this->registerPortal($portalName,$this->cli['package']);
     }
 
