@@ -36,7 +36,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
  * @method static mixed getAction(string $name)
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [])
  * @method static string canonicalizePath(string $path)
- * @method static ObjectPortal3 build($path, $routes, array $data = [], ?\Pinoox\Component\Package\AppManager $app = NULL)
+ * @method static ObjectPortal3 build($path, $routes, array $data = [])
  * @method static Router action(string $name, \Closure|array|string $action)
  * @method static Collection currentCollection()
  * @method static \Pinoox\Component\Router\Collection|null getCollection($index = 0)

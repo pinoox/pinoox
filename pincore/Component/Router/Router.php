@@ -57,22 +57,18 @@ class Router
 
     public function __construct(RouteName $routeName, App $app, ?Collection $collection = null, bool $isDefault = true)
     {
+        $this->app = $app;
         $this->routeName = $routeName;
+
         if (!empty($collection)) {
             $this->current = 0;
             $this->collections[0] = $collection;
         } else {
             $this->collection();
         }
-        $this->changeApp($app);
 
         if ($isDefault)
             $this->defaultRoutes();
-    }
-
-    private function changeApp(App $app): void
-    {
-        $this->app = $app;
     }
 
     public function getUrlGenerator(?RequestContext $context = null): UrlGeneratorInterface
@@ -155,7 +151,7 @@ class Router
                 $filters = $p['filters'] ?? $filters;
                 $data = $p['data'] ?? $data;
                 $property = $p['property'] ?? $property;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters,$property, $data);
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data);
             }
         } else {
             $name = $this->buildName($name);
@@ -243,6 +239,7 @@ class Router
             filters: $filters,
             name: $prefixName,
             data: $this->buildData($data),
+            prefixController: 'App\\' . $this->app->package() . '\\Controller',
         );
 
         $this->callRoutes($routes);

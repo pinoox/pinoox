@@ -114,10 +114,7 @@ class AppEngine implements EngineInterface
         $path = $this->buildPath($path);
         $routes = $this->config($packageName)->get('router.routes');
         if (empty($this->router[$packageName][$path])) {
-            $this->router[$packageName][$path] = \Pinoox\Portal\Router::build($path, $routes, [
-                'package' => $packageName,
-                'path' => $path,
-            ], $this->manager($packageName));
+            $this->router[$packageName][$path] = \Pinoox\Portal\Router::build($path, $routes);
         }
         return $this->router[$packageName][$path];
     }

@@ -31,11 +31,11 @@ class Collection
         public array        $filters = [],
         public string       $name = '',
         public array        $data = [],
+        public string       $prefixController = '',
     )
     {
 
-        $package = $data['package'] ?? App::package();
-        $this->controllerBuilder = new ControllerBuilder($controller, 'App\\' . $package . '\\Controller');
+        $this->controllerBuilder = new ControllerBuilder($controller, $this->prefixController);
         $this->controller = $this->buildController($controller);
         if (is_string($methods) && !empty($methods)) {
             $methods = Str::multiExplode(['|', ',', '-'], $methods);
