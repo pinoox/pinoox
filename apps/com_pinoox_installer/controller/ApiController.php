@@ -19,8 +19,6 @@ use Pinoox\Component\Http\Request;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Security;
 use Pinoox\Component\System;
-use Pinoox\Component\Validation;
-use Pinoox\Component\Request as RequestData;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
@@ -64,7 +62,7 @@ class ApiController extends Controller
 
     public function checkDB(Request $request)
     {
-        $data = RequestData::input('host,database,username,password,prefix', '', '!empty');
+        $data = $request->json('host,database,username,password,prefix', '', '!empty');
 
         if ($this->checkConnect($data)) {
             return $this->message('connect', true);
@@ -112,7 +110,7 @@ class ApiController extends Controller
 
     public function setup(Request $request)
     {
-        $inputs = RequestData::input('user,db', [], '!empty');
+        $inputs = $request->input('user,db', [], '!empty');
         $user = HelperArray::parseParams($inputs['user'], 'fname,lname,username,password,email', null, '!empty');
         $db = HelperArray::parseParams($inputs['db'], 'host,database,username,password,prefix', null, '!empty');
 

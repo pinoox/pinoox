@@ -18,11 +18,48 @@ use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\Route;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
 use Pinoox\Component\Validation\Validation;
+use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\Routing\RequestContext;
 
 class Request extends RequestSymfony
 {
+    public InputBag $json;
+
+    public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
+    {
+        parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->initJsonData();
+    }
+
+    public function value(string $key, mixed $default = null, string $validation = ''): mixed
+    {
+        return HelperArray::parseParam(
+            $this->all(),
+            $key,
+            $default,
+            $validation
+        );
+    }
+
+    public function get(string|array $keys, mixed $default = null, string $validation = ''): array
+    {
+        return HelperArray::parseParams(
+            $this->all(),
+            $keys,
+            $default,
+            $validation
+        );
+    }
+
+    private function initJsonData(): void
+    {
+        $data = [];
+        if (!empty($this->getContent()))
+            $data = $this->toArray();
+
+        $this->json = new InputBag($data);
+    }
 
     private RequestContext $context;
     private ValidationFactory $validation;
@@ -77,10 +114,10 @@ class Request extends RequestSymfony
         $this->basePath = $basePath;
     }
 
-    public function json($keys, $default = null, $validation = null, $removeNull = false)
+    public function query($keys, $default = null, $validation = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
-            $this->toArray(),
+            $this->query->all(),
             $keys,
             $default,
             $validation,
@@ -88,10 +125,74 @@ class Request extends RequestSymfony
         );
     }
 
-    public function jsonOne($key, $default = null, $validation = null)
+    public function queryOne($key, $default = null, $validation = null): mixed
     {
         return HelperArray::parseParam(
-            $this->toArray(),
+            $this->query->all(),
+            $key,
+            $default,
+            $validation,
+        );
+    }
+
+    public function request($keys, $default = null, $validation = null, $removeNull = false): array
+    {
+        return HelperArray::parseParams(
+            $this->request->all(),
+            $keys,
+            $default,
+            $validation,
+            $removeNull
+        );
+    }
+
+    public function requestOne($key, $default = null, $validation = null): mixed
+    {
+        return HelperArray::parseParam(
+            $this->json->all(),
+            $key,
+            $default,
+            $validation,
+        );
+    }
+
+    public function attributes($keys, $default = null, $validation = null, $removeNull = false): array
+    {
+        return HelperArray::parseParams(
+            $this->attributes->all(),
+            $keys,
+            $default,
+            $validation,
+            $removeNull
+        );
+    }
+
+    public function attributesOne($key, $default = null, $validation = null) : mixed
+    {
+        return HelperArray::parseParam(
+            $this->attributes->all(),
+            $key,
+            $default,
+            $validation,
+        );
+    }
+
+
+    public function json($keys, $default = null, $validation = null, $removeNull = false): array
+    {
+        return HelperArray::parseParams(
+            $this->json->all(),
+            $keys,
+            $default,
+            $validation,
+            $removeNull
+        );
+    }
+
+    public function jsonOne($key, $default = null, $validation = null)  : mixed
+    {
+        return HelperArray::parseParam(
+            $this->json->all(),
             $key,
             $default,
             $validation,
@@ -131,13 +232,11 @@ class Request extends RequestSymfony
 
     public function all(): array
     {
-        $body = [];
-        if (!empty($this->getContent()))
-            $body = $this->toArray();
         return array_replace(
-            $body,
+            $this->attributes->all(),
             $this->request->all(),
-            $this->query->all()
+            $this->query->all(),
+            $this->json->all(),
         );
     }
 
