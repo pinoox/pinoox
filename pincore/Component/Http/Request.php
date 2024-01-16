@@ -17,6 +17,7 @@ use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\Route;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
+use Pinoox\Component\Validation\Validation;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\Routing\RequestContext;
 
@@ -114,13 +115,18 @@ class Request extends RequestSymfony
 
     public function validate(array $rules, array $data = [])
     {
+        return $this->validate($data, $rules)->validate();
+    }
+
+    public function validation(array $rules, array $data = []): Validation
+    {
         if (empty($data)) {
             $data = HelperArray::parseParams(
                 $this->all(),
                 array_keys($rules),
             );
         }
-        return $this->getValidation()->make($data, $rules)->validate();
+        return $this->getValidation()->make($data, $rules);
     }
 
     public function all(): array
