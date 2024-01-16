@@ -78,7 +78,7 @@ class App extends Portal
 
 		self::__watch('set', function ($key, $value) {
 		    if ($key === 'lang')
-		        Lang::locale($value);
+		        Lang::setLocale($value);
 		});
 	}
 

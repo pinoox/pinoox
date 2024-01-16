@@ -14,7 +14,7 @@
 namespace Pinoox\Component\Http;
 
 use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Url;
+use Pinoox\Portal\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse as RedirectResponseSymfony;
 
 class RedirectResponse extends RedirectResponseSymfony
@@ -22,10 +22,10 @@ class RedirectResponse extends RedirectResponseSymfony
     public function setTargetUrl(string $url): static
     {
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            $base = Url::link('^');
+            $base = Url::get('^');
             if (Str::firstHas($url, $base))
                 $url = Str::firstDelete($url, $base);
-            $url = Url::link($url);
+            $url = Url::get($url);
         }
         return parent::setTargetUrl($url);
     }

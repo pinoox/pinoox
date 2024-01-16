@@ -79,24 +79,17 @@ if (!function_exists('path')) {
 }
 
 if (!function_exists('lang')) {
-    function lang($var)
+    function lang($key, array $replace = [], $locale = NULL, $fallback = true)
     {
-        $args = func_get_args();
-        $first = array_shift($args);
-
-        $result = Lang::get($first, $args);
-
+        $result = Lang::get($key, $replace, $locale , $fallback);
         echo !is_array($result) ? $result : Str::encodeJson($result);
     }
 }
 
 if (!function_exists('rlang')) {
-    function rlang($var)
+    function rlang($key, array $replace = [], $locale = NULL, $fallback = true)
     {
-        $args = func_get_args();
-        $first = array_shift($args);
-
-        return Lang::get($first, $args);
+        return Lang::get($key, $replace, $locale , $fallback);
     }
 }
 
