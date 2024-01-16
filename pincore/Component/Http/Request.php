@@ -13,8 +13,10 @@
 namespace Pinoox\Component\Http;
 
 use Pinoox\Component\Helpers\HelperArray;
+use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\Route;
+use Pinoox\Component\Validation\Factory as ValidationFactory;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\Routing\RequestContext;
 
@@ -22,6 +24,7 @@ class Request extends RequestSymfony
 {
 
     private RequestContext $context;
+    private ValidationFactory $validation;
 
     /**
      * get current Route
@@ -97,6 +100,39 @@ class Request extends RequestSymfony
     public static function take(): static
     {
         return static::createFromGlobals();
+    }
+
+    public function setValidation(ValidationFactory $validation): void
+    {
+        $this->validation = $validation;
+    }
+
+    public function getValidation(): ValidationFactory
+    {
+        return $this->validation;
+    }
+
+    public function validate(array $rules, array $data = [])
+    {
+        if (empty($data)) {
+            $data = HelperArray::parseParams(
+                $this->all(),
+                array_keys($rules),
+            );
+        }
+        return $this->getValidation()->make($data, $rules)->validate();
+    }
+
+    public function all(): array
+    {
+        $body = [];
+        if (!empty($this->getContent()))
+            $body = $this->toArray();
+        return array_replace(
+            $body,
+            $this->request->all(),
+            $this->query->all()
+        );
     }
 
     public function getContext(): RequestContext

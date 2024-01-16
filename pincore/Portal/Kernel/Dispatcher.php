@@ -35,6 +35,7 @@ class Dispatcher extends Portal
     public static function __register(): void
     {
         self::__bind(EventDispatcher::class)
+            ->addMethodCall('addSubscriber', [Listener::__ref('request')])
             ->addMethodCall('addSubscriber', [Listener::__ref('router')])
             ->addMethodCall('addSubscriber', [Listener::__ref('routeEmpty')])
             ->addMethodCall('addSubscriber', [Listener::__ref('response')])

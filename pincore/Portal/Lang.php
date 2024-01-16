@@ -70,6 +70,8 @@ class Lang extends Portal
 
         self::__bind(Translator::class)->setArguments([
             self::__ref('loader'),
+            App::get('lang')
+        ])->addMethodCall('setFallback', [
             self::locale
         ]);
     }
