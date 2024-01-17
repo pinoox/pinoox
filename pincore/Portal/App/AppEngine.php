@@ -17,10 +17,8 @@ namespace Pinoox\Portal\App;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Lang\Lang as ObjectPortal4;
 use Pinoox\Component\Package\AppManager;
-use Pinoox\Component\Path\Manager\ManagerInterface;
 use Pinoox\Component\Router\Router as ObjectPortal2;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Component\Store\Config\Config as ObjectPortal1;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal3;
 use Pinoox\Portal\Pinker;
 
@@ -46,21 +44,12 @@ class AppEngine extends Portal
 
 	public static function __register(): void
 	{
-		//        $path = PINOOX_PATH.'pincore';
-		//        $file = 'config/app/router.config.php';
-		//        $fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
-		//        $config = Config::create($fileStrategy);
-		//
 		$pathApps = Loader::getBasePath() . '/apps';
-		$pathConfig = 'config/app/source.config.php';
-		$appConfig = Pinker::path($pathConfig,Loader::getBasePath() . '/pincore');
-		$defaultData = $appConfig->pickup()?? [];
 		self::__bind(\Pinoox\Component\Package\Engine\AppEngine::class)
 		    ->setArguments([
 		        $pathApps,
 		        self::file,
 		        Pinker::folder,
-		        $defaultData,
 		    ]);
 	}
 

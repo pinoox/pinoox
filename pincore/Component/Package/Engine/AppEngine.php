@@ -61,6 +61,7 @@ class AppEngine implements EngineInterface
      * @var Router[][]
      */
     private array $router;
+    private array $defaultData = [];
 
     /**
      * AppEngine constructor.
@@ -70,15 +71,25 @@ class AppEngine implements EngineInterface
      * @param string $appFile
      * @param string $folderPinker
      */
-    public function __construct(private string $pathApp, private string $appFile, private string $folderPinker, private array $defaultData = [])
+    public function __construct(private string $pathApp, private string $appFile, private string $folderPinker, ?array $defaultData = null)
     {
         $this->arrayLoader = new ArrayLoader($appFile);
         $this->packageLoader = new PackageLoader($appFile, $pathApp);
+        $this->initDefaultData($defaultData);
 
         $this->loader = new ChainLoader([
             $this->arrayLoader,
             $this->packageLoader,
         ]);
+    }
+
+    private function initDefaultData(?array $data): void
+    {
+        if (is_null($data)) {
+            $data = include __DIR__ . '/../data/source.php';
+        }
+
+        $this->defaultData = $data;
     }
 
     public function stable(string|ReferenceInterface $packageName): bool
