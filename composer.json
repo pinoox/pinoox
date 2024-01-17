@@ -24,6 +24,7 @@
         "nelexa/zip": "^4.0",
         "nette/php-generator": "^4.1",
         "symfony/asset": "^6.2",
+        "symfony/console": "^6.0",
         "symfony/dependency-injection": "^6.0",
         "symfony/dotenv": "^6.3",
         "symfony/error-handler": "^6.0",
@@ -59,7 +60,6 @@
         "pinoox"
     ],
     "require-dev": {
-        "nunomaduro/collision": "^5",
         "nikic/php-parser": "^4.15",
         "pestphp/pest": "^1.23"
     },
