@@ -95,6 +95,11 @@ class View implements ViewInterface
             ->addFunctionsFile($functions);
     }
 
+    public function changeTheme(string|array $folders)
+    {
+        $this->setView($folders,$this->pathTheme);
+    }
+
     private function addCustomFunctions(string|array $folders, string $pathTheme)
     {
         if (is_array($folders)) {

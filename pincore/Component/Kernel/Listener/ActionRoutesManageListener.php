@@ -61,12 +61,25 @@ class ActionRoutesManageListener implements EventSubscriberInterface
     private function buildValueAction(RequestEvent $event, $controller)
     {
         $action = $controller;
-        if (is_string($controller) && Str::firstHas($controller, '@')) {
-            $controller = Str::firstDelete($controller, '@');
-            if ($controller = Router::getAction($controller)) {
+        if (is_string($controller)) {
+
+            /**
+             * @var Route $route
+             */
+            $route = $event->getRequest()->attributes->get('_router');
+
+            $actionName = null;
+
+            if (Str::firstHas($controller, '&')) {
+                $controller = Str::firstDelete($controller, '&');
+                $prefix = $route->getCollection()->name;
+                $actionName = $prefix . $controller;
+            } else if (Str::firstHas($controller, '@')) {
+                $actionName = Str::firstDelete($controller, '@');
+            }
+
+            if (!empty($actionName) && $controller = App::router()->getAction($actionName)) {
                 $action = $controller;
-            } else {
-                throw new BadMethodCallException('"' . $action . '" action method is not found in ' . App::package() . ' app');
             }
         }
 
@@ -78,7 +91,7 @@ class ActionRoutesManageListener implements EventSubscriberInterface
         if ($event->getRequest()->attributes->has('_router'))
             return $event->getRequest()->attributes->get('_router')->getCollection();
         else
-            return Router::getCollection();
+            return App::router()->getCollection();
     }
 
     private function buildCollectionAction(RequestEvent $event)
@@ -90,7 +103,7 @@ class ActionRoutesManageListener implements EventSubscriberInterface
             $request->attributes->set('_controller', $action);
             $request->attributes->remove('_action_collection');
             $event->getRequest()->attributes->remove('_action_collection');
-            $response = $event->getKernel()->handleSubRequest($request);
+            $response = $event->getKernel()->handle($request,-1);
             $response->send();
         }
     }

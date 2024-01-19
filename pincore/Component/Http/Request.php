@@ -67,11 +67,11 @@ class Request extends RequestSymfony
     /**
      * get current Route
      *
-     * @return Route|null
+     * @return array|null
      */
-    public function route(): Route|null
+    public function route(): ?\Pinoox\Component\Router\Route
     {
-        return @$this->get('_router');
+        return @$this->attributes->get('_router');
     }
 
     /**

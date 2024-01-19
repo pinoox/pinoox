@@ -420,7 +420,10 @@ class HelperArray
                     $data[$cleanKey] = $array[$cleanKey];
                 } else {
                     $value = isset($array[$cleanKey]) && !is_null($array[$cleanKey]) ? $array[$cleanKey] : $cleanDefault;
-                    $value = $isHtml ? $value : htmlspecialchars(stripslashes($value));
+                    if (!is_object($value))
+                    {
+                        $value = $isHtml ? $value : htmlspecialchars(stripslashes($value));
+                    }
                     $data[$cleanKey] = $value;
                     if (!empty($validation)) {
                         if (!Validation::checkOne($data[$cleanKey], $validation))
@@ -574,7 +577,7 @@ class HelperArray
     {
         $keys = explode('.', $key);
         $value = $array;
- 
+
         foreach ($keys as $nestedKey) {
 
             if (isset($value[$nestedKey])) {

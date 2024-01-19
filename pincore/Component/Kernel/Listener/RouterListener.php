@@ -17,8 +17,6 @@ use Pinoox\Component\Package\App;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\EventListener\RouterListener as RouterListenerSymfony;
-use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
-use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 
 class RouterListener extends RouterListenerSymfony

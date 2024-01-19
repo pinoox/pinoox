@@ -16,8 +16,15 @@ class ViewListener implements EventSubscriberInterface
     {
         $response = $event->getControllerResult();
 
+        if ($event->getRequestType() === -1) {
+            if (empty($response) || is_bool($response))
+                $response = '';
+        }
+
         if (is_string($response)) {
             $event->setResponse(new Response($response));
+        } else if (is_bool($response)) {
+            $event->setResponse(new Response($response? 'true' : 'false'));
         } else if (is_numeric($response)) {
             $event->setResponse(new Response(strval($response)));
         } else if (is_array($response)) {

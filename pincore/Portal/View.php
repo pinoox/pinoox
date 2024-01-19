@@ -16,12 +16,13 @@ namespace Pinoox\Portal;
 
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Component\Template\View as ObjectPortal1;
 use Pinoox\Component\Template\Reference\TemplatePathReference as ObjectPortal2;
+use Pinoox\Component\Template\View as ObjectPortal1;
 use Pinoox\Portal\App\App;
 
 /**
- * @method static setView(array|string $folders, string $pathTheme)
+ * @method static View setView(array|string $folders, string $pathTheme)
+ * @method static changeTheme(array|string $folders)
  * @method static string renderFile(string $name, array $parameters = [])
  * @method static bool existsFile(string $name)
  * @method static bool exists(string $name)
@@ -39,62 +40,66 @@ use Pinoox\Portal\App\App;
  */
 class View extends Portal
 {
-    public static function __register(): void
-    {
-        // theme names
-        $folders = App::get('theme');
+	public static function __register(): void
+	{
+		// theme names
+		$folders = App::get('theme');
 
-        // base path
-        $pathTheme = Path::get(App::get('path-theme'));
+		// base path
+		$pathTheme = Path::get(App::get('path-theme'));
 
-        self::__bind(ObjectPortal1::class)->setArguments([
-            $folders,
-            $pathTheme,
-        ]);
-    }
-
-    public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
-    {
-        $content = self::render($name, $parameters);
-        $response = new Response($content);
-        if (!empty($contentType))
-            $response->addContentType($contentType);
-        return $response;
-    }
-
-    /**
-     * Get the registered name of the component.
-     * @return string
-     */
-    public static function __name(): string
-    {
-        return 'view';
-    }
-
-    public static function __app(): string
-    {
-        return App::package();
-    }
-
-    /**
-     * Get exclude method names.
-     * @return string[]
-     */
-    public static function __exclude(): array
-    {
-        return [];
-    }
+		self::__bind(ObjectPortal1::class)->setArguments([
+		    $folders,
+		    $pathTheme,
+		]);
+	}
 
 
-    /**
-     * Get method names for callback object.
-     * @return string[]
-     */
-    public static function __callback(): array
-    {
-        return [
-            'set',
-            'ready'
-        ];
-    }
+	public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
+	{
+		$content = self::render($name, $parameters);
+		$response = new Response($content);
+		if (!empty($contentType))
+		    $response->addContentType($contentType);
+		return $response;
+	}
+
+
+	/**
+	 * Get the registered name of the component.
+	 * @return string
+	 */
+	public static function __name(): string
+	{
+		return 'view';
+	}
+
+
+	public static function __app(): string
+	{
+		return App::package();
+	}
+
+
+	/**
+	 * Get exclude method names.
+	 * @return string[]
+	 */
+	public static function __exclude(): array
+	{
+		return [];
+	}
+
+
+	/**
+	 * Get method names for callback object.
+	 * @return string[]
+	 */
+	public static function __callback(): array
+	{
+		return [
+		    'set',
+		    'ready'
+		];
+	}
 }
