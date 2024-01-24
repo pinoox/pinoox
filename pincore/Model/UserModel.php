@@ -15,6 +15,10 @@
 namespace Pinoox\Model;
 
 use Pinoox\Component\Database\Model;
+use Pinoox\Component\Date;
+use Pinoox\Component\Token;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\Url;
 
 class UserModel extends Model
 {
@@ -27,4 +31,12 @@ class UserModel extends Model
     public $incrementing = false;
     public $primaryKey = 'user_id';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            $user->app = App::package();
+        });
+    }
 }

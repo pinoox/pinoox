@@ -73,6 +73,11 @@ class Url implements UrlInterface
         return $this->request->getClientIp();
     }
 
+    public function userAgent(): ?string
+    {
+        return $this->request->server->get('HTTP_USER_AGENT');
+    }
+
     public function clientIps(): array
     {
         return $this->request->getClientIps();

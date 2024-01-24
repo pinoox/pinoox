@@ -19,33 +19,39 @@ use Pinoox\Component\Date;
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Token;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\Url;
 
 class TokenModel extends Model
 {
     const CREATED_AT = 'insert_date';
     const UPDATED_AT = null;
     public $incrementing = false;
-    public $primaryKey = 'user_id';
+    protected $primaryKey = ['app', 'token_key'];
     protected $table = 'pincore_token';
 
-    public static function delete_all_expired()
-    {
-        $now = Date::g('Y-m-d H:i:s');
-        return self::where('expiration_date','<',$now)->delete();
-    }
+    protected $fillable = [
+        'token_key',
+        'token_name',
+        'token_data',
+        'user_id',
+        'remote_url',
+    ];
 
-    public static function insert(array $attributes)
+    protected $casts = [
+        'token_data' => 'json',
+    ];
+
+    protected static function boot()
     {
-        self::create([
-            'token_key' => $attributes['token_key'],
-            'token_data' => Str::encodeJson($attributes['token_data']),
-            'token_name' => isset($attributes['token_name']) ? $attributes['token_name'] : null,
-            'app' => Token::getApp(),
-            'user_id' => isset($attributes['user_id']) ? $attributes['user_id'] : null,
-            'ip' => HelperHeader::getIP(),
-            'user_agent' => HelperHeader::getUserAgent(),
-            'insert_date' => Date::g('Y-m-d H:i:s'),
-            'expiration_date' => Date::g('Y-m-d H:i:s', time() + Token::$lifeTime),
-        ]);
+        parent::boot();
+
+        static::creating(function ($token) {
+            $token->app = $token->app ?? App::package();
+            $token->ip = $token->ip ?? Url::clientIp();
+            $token->user_agent = $token->user_agent?? Url::userAgent();
+            $token->insert_date = Date::g('Y-m-d H:i:s');
+            $token->expiration_date = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
+        });
     }
 }

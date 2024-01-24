@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
+use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Template\ViewInterface;
 use Pinoox\Portal\View;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -22,9 +23,13 @@ class ViewListener implements EventSubscriberInterface
         }
 
         if (is_string($response)) {
-            $event->setResponse(new Response($response));
+            if (filter_var($response, FILTER_VALIDATE_URL)) {
+                $event->setResponse(new RedirectResponse($response));
+            } else {
+                $event->setResponse(new Response($response));
+            }
         } else if (is_bool($response)) {
-            $event->setResponse(new Response($response? 'true' : 'false'));
+            $event->setResponse(new Response($response ? 'true' : 'false'));
         } else if (is_numeric($response)) {
             $event->setResponse(new Response(strval($response)));
         } else if (is_array($response)) {

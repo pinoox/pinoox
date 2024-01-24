@@ -12,10 +12,13 @@
 
 namespace Pinoox\Component;
 
+use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Portal\App\App;
 use Pinoox\Model\TokenModel;
 use Pinoox\Model\UserModel;
+use Firebase\JWT\JWT;
+use Pinoox\Portal\Lang;
 
 class User
 {
@@ -75,12 +78,11 @@ class User
             return false;
         }
 
-        $user = UserModel::where('app',self::getApp());
-        $user->where(function (Builder $query) use($username){
-            $query->where('email',$username)->$query->orWhere('username',$username);
+        $user = UserModel::where('app', self::getApp());
+        $user->where(function (Builder $query) use ($username) {
+            $query->where('email', $username)->orWhere('username', $username);
         });
-        if ($isActive)
-        {
+        if ($isActive) {
             $user->where('status', UserModel::active);
         }
         $user = $user->first();
@@ -141,12 +143,12 @@ class User
         if (is_null($token)) {
             $header = apache_request_headers();
             $token = @$header['Authorization'];
-            $token = empty($token)? @$header['authorization'] : $token;
+            $token = empty($token) ? @$header['authorization'] : $token;
             if (empty($token))
                 return false;
         }
         try {
-            $payload = JWT::decode($token, self::$secret_key, array('HS256'));
+            $payload = JWT::decode($token,new Key(self::$secret_key,'HS256'));
             $token_key = $payload->pinoox_user;
 
             return $token_key;
@@ -179,7 +181,7 @@ class User
                 $payloadArray = [
                     'pinoox_user' => $token_key,
                 ];
-                self::$login_key = JWT::encode($payloadArray, self::$secret_key);
+                self::$login_key = JWT::encode($payloadArray, self::$secret_key,'HS256');
                 break;
             case self::SESSION:
                 Session::lifeTime(999999999);
@@ -215,9 +217,9 @@ class User
         $token = self::getToken();
         $user_id = @$token['user_id'];
         if ($user_id && empty(self::$user)) {
-            $user = UserModel::where('app',self::getApp())
-            ->where('user_id',$user_id)
-            ->first();
+            $user = UserModel::where('app', self::getApp())
+                ->where('user_id', $user_id)
+                ->first();
             if ($user && $user->status == UserModel::active) {
                 $user->makeHidden('password');
                 self::$user = $user->toArray();
@@ -238,24 +240,11 @@ class User
         }
     }
 
-    public static function logout($link = null, $isRedirect = true, $rawLink = false)
+    public static function logout(): void
     {
         if (self::isLoggedIn()) {
-
             self::removeToken();
-            if ($rawLink)
-                Response::redirect($link);
-            else if ($isRedirect && isset($_SERVER['HTTP_REFERER']))
-                Response::redirect($_SERVER['HTTP_REFERER']);
-        } else {
-            if ($rawLink)
-                Response::redirect($link);
-
-            if (empty($link))
-                $link = 'account/login';
-            if ($isRedirect) Response::redirect(Url::app() . $link);
         }
-
     }
 
     private static function removeToken()

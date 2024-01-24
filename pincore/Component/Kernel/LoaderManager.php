@@ -13,6 +13,7 @@
 namespace Pinoox\Component\Kernel;
 
 use Composer\Autoload\ClassLoader;
+use Pinoox\Component\Database\Model;
 
 /**
  * Class LoaderManager
@@ -24,7 +25,8 @@ class LoaderManager
 {
     const method = '__register';
     const classes = [
-        'Portal\\'
+        'Portal\\',
+        'Pinoox\Component\Kernel\BootInterface'
     ];
 
     /**
@@ -57,7 +59,7 @@ class LoaderManager
     private function callConstruct(string $className): void
     {
         $classes = array_filter(self::classes, function ($class) use ($className) {
-            return str_contains($className, $class);
+            return ($className !== $class) && (str_contains($className, $class) || is_subclass_of($className, $class));
         });
 
         if (empty($classes))
