@@ -14,6 +14,7 @@
 
 namespace Pinoox\Portal\Kernel;
 
+use App\com_pinoox_welcome\Service\TestService;
 use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
@@ -31,7 +32,7 @@ use Pinoox\Component\Source\Portal;
  * @method static ObjectPortal1 handleSubRequest(\Symfony\Component\HttpFoundation\Request $request)
  * @method static ObjectPortal1 handle(\Symfony\Component\HttpFoundation\Request $request, int $type = 1, bool $catch = true)
  * @method static terminate(\Symfony\Component\HttpFoundation\Request $request, \Symfony\Component\HttpFoundation\Response $response)
- * @method static HttpKernel terminateWithException(\Throwable $exception, ?Symfony\Component\HttpFoundation\Request $request = NULL)
+ * @method static HttpKernel terminateWithException(\Throwable $exception, ?\Symfony\Component\HttpFoundation\Request $request = NULL)
  * @method static \Symfony\Component\HttpFoundation\RequestStack ___requestStack()
  * @method static \Symfony\Component\Routing\RequestContext ___context()
  * @method static \Symfony\Component\Routing\Matcher\UrlMatcher ___matcher()
@@ -54,6 +55,8 @@ class HttpKernel extends Portal
                 Resolver::__ref('controller'),
                 self::__ref('request_stack'),
                 Resolver::__ref('argument'),
+            ])->addMethodCall('setServiceManager', [
+                ServiceManager::__ref(),
             ]);
 
         self::setRouteDefault();

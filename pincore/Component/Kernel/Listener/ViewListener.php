@@ -3,6 +3,7 @@
 namespace Pinoox\Component\Kernel\Listener;
 
 use Pinoox\Component\Http\RedirectResponse;
+use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Template\ViewInterface;
 use Pinoox\Portal\View;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -43,6 +44,6 @@ class ViewListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return [KernelEvents::VIEW => ['onView']];
+        return [KernelEvents::VIEW => ['onView'], Kernel::HANDLE_AFTER => ['onView']];
     }
 }

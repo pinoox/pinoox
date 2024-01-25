@@ -15,8 +15,9 @@
 namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
+use Pinoox\Component\Kernel\Listener\MiddlewareListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
-use Pinoox\Component\Kernel\Listener\RouteListener;
+use Pinoox\Component\Kernel\Listener\RouteEmptyListener;
 use Pinoox\Component\Kernel\Listener\ViewListener;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Controller\ErrorController;
@@ -24,7 +25,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\Validation;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
-use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Pinoox\Component\Kernel\listener\RouterListener;
 
 class Listener extends Portal
 {
@@ -38,7 +39,7 @@ class Listener extends Portal
             ->setArgument('projectDir', null)
             ->setArgument('debug', false);
 
-        self::__bind(RouteListener::class, 'routeEmpty');
+        self::__bind(RouteEmptyListener::class, 'routeEmpty');
         self::__bind(ViewListener::class, 'view');
         self::__bind(RequestListener::class, 'request')->setArguments([
             Validation::__ref(),

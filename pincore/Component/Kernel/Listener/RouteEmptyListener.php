@@ -11,7 +11,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Exception\NoConfigurationException;
 
-class RouteListener implements EventSubscriberInterface
+class RouteEmptyListener implements EventSubscriberInterface
 {
     public function onKernelException(ExceptionEvent $event)
     {
