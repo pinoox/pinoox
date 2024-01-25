@@ -15,6 +15,7 @@
 namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\App;
 use Symfony\Component\HttpKernel\Event\RequestEvent as ObjectPortal1;
 
 /**
@@ -33,9 +34,18 @@ class ServiceManager extends Portal
 {
 	public static function __register(): void
 	{
-		self::__bind(\Pinoox\Component\Kernel\Service\ServiceManager::class);
+        $services = App::get('service');
+        $services = !empty($services) && is_array($services)? $services : [];
+		self::__bind(\Pinoox\Component\Kernel\Service\ServiceManager::class)->setArguments([
+            $services
+        ]);
 	}
 
+
+    public static function __app(): string
+    {
+        return App::package();
+    }
 
 	/**
 	 * Get the registered name of the component.

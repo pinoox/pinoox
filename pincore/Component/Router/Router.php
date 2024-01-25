@@ -137,9 +137,9 @@ class Router
      * @param array $filters
      * @param int|null $property
      * @param array $data
+     * @param array $services
      */
-    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [],
-    ): void
+    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [],array $services = []): void
     {
         if (is_array($path)) {
             foreach ($path as $routeName => $p) {
@@ -151,7 +151,8 @@ class Router
                 $filters = $p['filters'] ?? $filters;
                 $data = $p['data'] ?? $data;
                 $property = $p['property'] ?? $property;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data);
+                $services = $p['services'] ?? $services;
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data,$services);
             }
         } else {
             $name = $this->buildName($name);
@@ -165,6 +166,7 @@ class Router
                 filters: $filters,
                 priority: is_null($property) ? $this->count() : $property,
                 data: $this->buildData($data),
+                services: $services,
             );
 
             $this->currentCollection()->add($route);
@@ -216,13 +218,15 @@ class Router
      * @param array $filters
      * @param string $prefixName
      * @param array $data
+     * @param array $services
      * @return Collection
      */
-    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = []): Collection
+    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [],array $services = []): Collection
     {
         $cast = $this->current;
         $prefixName = $this->buildPrefixNameCollection($prefixName);
         $defaults = $this->buildDefaultsCollection($defaults);
+        $services = $this->buildServicesCollection($services);
         $filters = $this->buildFiltersCollection($filters);
         $controller = $this->buildControllerCollection($controller);
         $prefixPath = $this->buildPrefixPathCollection($path);
@@ -240,6 +244,7 @@ class Router
             name: $prefixName,
             data: $this->buildData($data),
             prefixController: 'App\\' . $this->app->package() . '\\Controller',
+            services: $services,
         );
 
         $this->callRoutes($routes);
@@ -386,6 +391,20 @@ class Router
             $defaults = array_merge($this->currentCollection()->defaults, $defaults);
         }
         return $defaults;
+    }
+
+    /**
+     * build prefix name for collection
+     *
+     * @param array $services
+     * @return array
+     */
+    private function buildServicesCollection(array $services): array
+    {
+        if ($this->current > -1) {
+            $services = array_unique(array_merge($this->currentCollection()->services, $services));
+        }
+        return $services;
     }
 
     /**

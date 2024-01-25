@@ -71,7 +71,7 @@ class ServiceManager
 
     public function addServices(array $services): void
     {
-        $this->services = array_merge($services, $this->services);
+        $this->services = array_unique(array_merge($services, $this->services));
     }
 
     /**

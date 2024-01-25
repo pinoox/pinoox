@@ -4,6 +4,7 @@ namespace Pinoox\Component\Kernel;
 
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Service\ServiceManager;
+use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ResponseSymfony;
@@ -36,7 +37,8 @@ class Kernel extends HttpKernel
         };
 
         if ($this->serviceManager !== null) {
-            $this->serviceManager-> setRequestEvent($event);
+            $this->addRouteServices($request);
+            $this->serviceManager->setRequestEvent($event);
             $response = $this->serviceManager->handle($request, $next);
             if (!($response instanceof ResponseSymfony)) {
                 $event = new ViewEvent($this, $request, $type, $response);
@@ -48,6 +50,13 @@ class Kernel extends HttpKernel
         }
 
         return $response;
+    }
+
+    private function addRouteServices(Request $request) : void
+    {
+        $router = $request->attributes->get('_router');
+        $services = !empty($router) && ($router instanceof Route)? $router->services : [];
+        $this->serviceManager->addServices($services);
     }
 
     /**

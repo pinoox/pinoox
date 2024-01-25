@@ -31,6 +31,7 @@ class Route
         private int                  $priority = 0,
         private string               $prefixName = '',
         public array                 $data = [],
+        public array                 $services = [],
 
     )
     {
@@ -47,6 +48,7 @@ class Route
         $this->name = $this->buildName($name);
         $this->defaults = array_merge($this->collection->defaults, $defaults);
         $this->filters = array_merge($this->collection->filters, $filters);
+        $this->services = array_unique(array_merge($this->collection->services,$services));
         $this->defaults['_controller'] = $action;
         $actionCollection = $this->collection->action;
         if (!empty($actionCollection)) {
@@ -90,6 +92,7 @@ class Route
     }
 
     /**
+     * @param string $separator
      * @return string
      */
     public function getPath(string $separator = '/'): string

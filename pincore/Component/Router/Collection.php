@@ -32,6 +32,7 @@ class Collection
         public string       $name = '',
         public array        $data = [],
         public string       $prefixController = '',
+        public array        $services = [],
     )
     {
 
