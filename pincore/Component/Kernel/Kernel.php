@@ -2,7 +2,6 @@
 
 namespace Pinoox\Component\Kernel;
 
-use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Service\ServiceManager;
 use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +12,6 @@ use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Exception;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\HttpKernel\KernelEvents;
 
 class Kernel extends HttpKernel
 {

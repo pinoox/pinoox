@@ -26,6 +26,10 @@ use Symfony\Component\HttpKernel\Event\RequestEvent as ObjectPortal1;
  * @method static ServiceManager addServices(array $services)
  * @method static ObjectPortal1 getRequestEvent()
  * @method static ServiceManager setRequestEvent(\Symfony\Component\HttpKernel\Event\RequestEvent $requestEvent)
+ * @method static array getAlias()
+ * @method static ServiceManager setAlias(array $alias)
+ * @method static ServiceManager addAliases(array $aliases)
+ * @method static getAliasNestedValue(string $key)
  * @method static \Pinoox\Component\Kernel\Service\ServiceManager ___()
  *
  * @see \Pinoox\Component\Kernel\Service\ServiceManager
@@ -34,18 +38,20 @@ class ServiceManager extends Portal
 {
 	public static function __register(): void
 	{
-        $services = App::get('service');
-        $services = !empty($services) && is_array($services)? $services : [];
+		$services = App::get('service');
+		$services = !empty($services) && is_array($services) ? $services : [];
 		self::__bind(\Pinoox\Component\Kernel\Service\ServiceManager::class)->setArguments([
-            $services
-        ]);
+		    $services,
+		    App::aliases()
+		]);
 	}
 
 
-    public static function __app(): string
-    {
-        return App::package();
-    }
+	public static function __app(): string
+	{
+		return App::package();
+	}
+
 
 	/**
 	 * Get the registered name of the component.
@@ -74,9 +80,9 @@ class ServiceManager extends Portal
 	public static function __callback(): array
 	{
 		return [
-			'setServices',
-			'addService',
-			'addServices'
+		    'setServices',
+		    'addService',
+		    'addServices'
 		];
 	}
 }

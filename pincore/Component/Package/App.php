@@ -319,5 +319,16 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
             }
         });
     }
+
+    public function aliases(): array
+    {
+        $aliases = $this->config()->get('alias');
+        return !empty($aliases) && is_array($aliases) ? $aliases : [];
+    }
+
+    public function alias(string $name): mixed
+    {
+        return $this->get('alias.' . $name);
+    }
 }
 

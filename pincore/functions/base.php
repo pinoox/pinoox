@@ -40,6 +40,13 @@ if (!function_exists('assets')) {
     }
 }
 
+if (!function_exists('alias')) {
+    function alias(?string $key = null): mixed
+    {
+        return !empty($key) ? App::alias($key) : App::aliases();
+    }
+}
+
 if (!function_exists('vite')) {
     function vite($name = null, $fileManifest = 'dist/manifest.json')
     {
@@ -81,7 +88,7 @@ if (!function_exists('path')) {
 if (!function_exists('lang')) {
     function lang($key, array $replace = [], $locale = NULL, $fallback = true)
     {
-        $result = Lang::get($key, $replace, $locale , $fallback);
+        $result = Lang::get($key, $replace, $locale, $fallback);
         echo !is_array($result) ? $result : Str::encodeJson($result);
     }
 }
@@ -89,7 +96,7 @@ if (!function_exists('lang')) {
 if (!function_exists('rlang')) {
     function rlang($key, array $replace = [], $locale = NULL, $fallback = true)
     {
-        return Lang::get($key, $replace, $locale , $fallback);
+        return Lang::get($key, $replace, $locale, $fallback);
     }
 }
 

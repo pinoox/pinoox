@@ -56,7 +56,7 @@ class Service implements ServiceInterface
             exit;
     }
 
-    public function response(Request $request, \Closure $next): mixed
+    final public function response(Request $request, \Closure $next): mixed
     {
         $this->before($request);
         $this->levelCheck();

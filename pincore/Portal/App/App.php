@@ -57,6 +57,8 @@ use Symfony\Component\Routing\RequestContext;
  * @method static App setContext(\Symfony\Component\Routing\RequestContext $context)
  * @method static ObjectPortal7 getRequest()
  * @method static App addPackage(string $packageName, string $dir)
+ * @method static array aliases()
+ * @method static mixed alias(string $name)
  * @method static \Symfony\Component\Routing\RequestContext ___context()
  * @method static \Pinoox\Component\Package\AppRouter ___router()
  * @method static \Pinoox\Component\Package\App ___()
@@ -81,6 +83,7 @@ class App extends Portal
 		        Lang::setLocale($value);
 		});
 	}
+
 
 	/**
 	 * Get the registered name of the component.
