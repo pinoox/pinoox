@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function Pinoox\Router\{route,get};
+use function Pinoox\Router\{get};
 
 get(
     path: '/',
@@ -22,15 +22,7 @@ get(
     action: '@pinooxjs',
 );
 
-
-
-route(
-    path: '/test/{path}',
-    action: 'MainController:test',
-    defaults: [
-        'path' => ''
-    ],
-    filters: [
-        'path' => '.*'
-    ],
+get(
+    path: '*',
+    action: fn() => redirect(url('/')),
 );

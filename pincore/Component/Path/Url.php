@@ -93,6 +93,11 @@ class Url implements UrlInterface
         return $this->request->getPathInfo();
     }
 
+    public function route($name, $parameters = []): string
+    {
+        return $this->get($this->app->router()->path($name, $parameters));
+    }
+
     public function parameters(): array
     {
         return array_filter(explode('/', $this->params()));

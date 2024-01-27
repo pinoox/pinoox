@@ -33,6 +33,7 @@ use Pinoox\Portal\App\AppRouter;
  * @method static array clientIps()
  * @method static string base()
  * @method static string params()
+ * @method static string route($name, $parameters = [])
  * @method static array parameters()
  * @method static string site(bool $isFullBase = true)
  * @method static string app(bool $isFullBase = true)

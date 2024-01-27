@@ -11,6 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Kernel\ContainerBuilder;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
@@ -217,5 +218,12 @@ if (!function_exists('_env')) {
             return Env::get($key);
         else
             Env::set($key, $value);
+    }
+}
+
+if (!function_exists('redirect')) {
+    function redirect(string $url, int $status = 302): RedirectResponse
+    {
+        return new RedirectResponse($url, $status);
     }
 }
