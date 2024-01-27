@@ -36,7 +36,10 @@ class Kernel extends HttpKernel
             $event = new RequestEvent($this, $request, $type);
             $this->dispatcher->dispatch($event, self::HANDLE_BEFORE);
         } catch (\Throwable $e) {
-            return $this->handleThrowable($e,$request,$type);
+            if (false === $catch) {
+                throw $e;
+            }
+            return $this->handleThrowable($e, $request, $type);
         }
 
 
@@ -60,10 +63,10 @@ class Kernel extends HttpKernel
         return $response;
     }
 
-    private function addRouteServices(Request $request) : void
+    private function addRouteServices(Request $request): void
     {
         $router = $request->attributes->get('_router');
-        $services = !empty($router) && ($router instanceof Route)? $router->services : [];
+        $services = !empty($router) && ($router instanceof Route) ? $router->services : [];
         $this->serviceManager->addServices($services);
     }
 

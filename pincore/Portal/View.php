@@ -55,12 +55,14 @@ class View extends Portal
 	}
 
 
-	public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
+	public static function response(string $name, array $parameters = [], ?string $contentType = null,?string $charset = null): Response
 	{
 		$content = self::render($name, $parameters);
 		$response = new Response($content);
 		if (!empty($contentType))
 		    $response->addContentType($contentType);
+        if (!empty($charset))
+		    $response->setCharset($charset);
 		return $response;
 	}
 
