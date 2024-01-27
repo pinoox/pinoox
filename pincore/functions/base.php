@@ -17,7 +17,6 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Path;
 use Pinoox\Portal\Lang;
-use Pinoox\Component\Service;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Portal\View;
@@ -25,6 +24,7 @@ use Pinoox\Component\File;
 use Pinoox\Portal\Env;
 use Pinoox\Portal\Pinker;
 use Pinoox\Portal\Url;
+use Pinoox\Component\Http\Response;
 
 if (!function_exists('url')) {
     function url(string $link = ''): string
@@ -124,13 +124,6 @@ if (!function_exists('config')) {
     }
 }
 
-if (!function_exists('service')) {
-    function service($service)
-    {
-        return Service::run($service);
-    }
-}
-
 if (!function_exists('app')) {
     function app($key = null)
     {
@@ -225,5 +218,12 @@ if (!function_exists('redirect')) {
     function redirect(string $url, int $status = 302): RedirectResponse
     {
         return new RedirectResponse($url, $status);
+    }
+}
+
+if (!function_exists('response')) {
+    function response(?string $content = '', int $status = 200, array $headers = []): Response
+    {
+        return new Response($content, $status, $headers);
     }
 }

@@ -16,6 +16,7 @@ namespace App\com_pinoox_installer\Controller;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Security;
 use Pinoox\Component\System;
@@ -24,6 +25,8 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
+use Pinoox\Portal\Lang;
+use Pinoox\Portal\Validation;
 
 class ApiController extends Controller
 {
@@ -110,11 +113,19 @@ class ApiController extends Controller
 
     public function setup(Request $request)
     {
-        $inputs = $request->input('user,db', [], '!empty');
+        $validation = $request->validation([
+            'user.fname' => 'required|min:3',
+            'user.lname' => 'required|min:3',
+            'user.email' => 'required|email',
+            'user.username' => 'required|alpha_dash:ascii|min:3',
+            'user.password' => 'required|min:6',
+        ]);
+
+        return $this->message($validation->errors(), false);
         $user = HelperArray::parseParams($inputs['user'], 'fname,lname,username,password,email', null, '!empty');
         $db = HelperArray::parseParams($inputs['db'], 'host,database,username,password,prefix', null, '!empty');
 
-        $valid = Validation::check($user, [
+        $valid = Validation::validate($user, [
             'fname' => ['required|length:>2', rlang('user.name')],
             'lname' => ['required|length:>2', rlang('user.family_name')],
             'email' => ['required|email', rlang('user.email')],

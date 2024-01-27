@@ -18,6 +18,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Service\Service;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\Lang;
 use Pinoox\Portal\View;
 
 class BootService extends Service

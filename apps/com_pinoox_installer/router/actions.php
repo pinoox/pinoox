@@ -17,5 +17,5 @@ use Pinoox\Component\Helpers\HelperHeader;
 
 action('home', [MainController::class, 'home']);
 action('pinooxjs', function () {
-    return View::response('pinoox', [], 'application/javascript', 'UTF-8');
+    return View::jsResponse('pinoox');
 });

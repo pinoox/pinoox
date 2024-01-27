@@ -13,14 +13,12 @@
 namespace Pinoox\Component\Http;
 
 use Pinoox\Component\Helpers\HelperArray;
-use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Router\Collection;
-use Pinoox\Component\Router\Route;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
-use Pinoox\Component\Validation\Validation;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\Routing\RequestContext;
+use Illuminate\Validation\Validator;
 
 class Request extends RequestSymfony
 {
@@ -114,88 +112,80 @@ class Request extends RequestSymfony
         $this->basePath = $basePath;
     }
 
-    public function query($keys, $default = null, $validation = null, $removeNull = false): array
+    public function query($keys, $default = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
             $this->query->all(),
             $keys,
             $default,
-            $validation,
             $removeNull
         );
     }
 
-    public function queryOne($key, $default = null, $validation = null): mixed
+    public function queryOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
             $this->query->all(),
             $key,
             $default,
-            $validation,
         );
     }
 
-    public function request($keys, $default = null, $validation = null, $removeNull = false): array
+    public function request($keys, $default = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
             $this->request->all(),
             $keys,
             $default,
-            $validation,
             $removeNull
         );
     }
 
-    public function requestOne($key, $default = null, $validation = null): mixed
+    public function requestOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
             $this->json->all(),
             $key,
             $default,
-            $validation,
         );
     }
 
-    public function attributes($keys, $default = null, $validation = null, $removeNull = false): array
+    public function attributes($keys, $default = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
             $this->attributes->all(),
             $keys,
             $default,
-            $validation,
             $removeNull
         );
     }
 
-    public function attributesOne($key, $default = null, $validation = null) : mixed
+    public function attributesOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
             $this->attributes->all(),
             $key,
             $default,
-            $validation,
         );
     }
 
 
-    public function json($keys, $default = null, $validation = null, $removeNull = false): array
+    public function json($keys, $default = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
             $this->json->all(),
             $keys,
             $default,
-            $validation,
             $removeNull
         );
     }
 
-    public function jsonOne($key, $default = null, $validation = null)  : mixed
+    public function jsonOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
             $this->json->all(),
             $key,
             $default,
-            $validation,
         );
     }
 
@@ -214,12 +204,12 @@ class Request extends RequestSymfony
         return $this->validation;
     }
 
-    public function validate(array $rules, array $data = [])
+    public function validate(array $rules, array $data = [], array $messages = [], array $attributes = [])
     {
-        return $this->validate($data, $rules)->validate();
+        return $this->validation($rules, $data, $messages, $attributes)->validate();
     }
 
-    public function validation(array $rules, array $data = []): Validation
+    public function validation(array $rules, array $data = [], array $messages = [], array $attributes = []): Validator
     {
         if (empty($data)) {
             $data = HelperArray::parseParams(
@@ -227,17 +217,18 @@ class Request extends RequestSymfony
                 array_keys($rules),
             );
         }
-        return $this->getValidation()->make($data, $rules);
+
+        return $this->getValidation()->make($data, $rules, $messages, $attributes);
     }
 
     public function all(): array
     {
-        return array_replace(
-            $this->attributes->all(),
-            $this->request->all(),
-            $this->query->all(),
-            $this->json->all(),
-        );
+        return [
+            ...$this->attributes->all(),
+            ...$this->request->all(),
+            ...$this->query->all(),
+            ...$this->json->all(),
+        ];
     }
 
     public function getContext(): RequestContext
