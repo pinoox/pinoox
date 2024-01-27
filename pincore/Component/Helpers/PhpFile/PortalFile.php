@@ -20,8 +20,9 @@ use Nette\PhpGenerator\PhpNamespace;
 use Pinoox\Component\File;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container;
+use Pinoox\Component\Path\Path;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\AppManager;
+use Pinoox\Portal\App\AppEngine;
 use Symfony\Component\Console\Input\InputInterface;
 use ReflectionFunction;
 use ReflectionMethod;
@@ -91,15 +92,11 @@ class PortalFile extends PhpFile
     private function buildPackage($input): void
     {
         $this->package = $input->getOption('package');
-        $package = $input->getOption('package');
-        $this->app = AppManager::getApp($package);
-
-        $this->package = $this->app['package'];
     }
 
     private function buildNameSpace(): void
     {
-        $namespace = $this->app['namespace'] . '\\' . 'Portal';
+        $namespace = 'Pinoox\\Portal';
         if (!empty($this->subFolder)) {
             $namespace .= '\\' . $this->subFolder;
         }
@@ -118,8 +115,8 @@ class PortalFile extends PhpFile
     }
 
     private function buildPortalFolder(): void
-    {
-        $portalFolder = $this->app['path'] . 'Portal';
+    { 
+        $portalFolder = path('~pincore/Portal');
         if (!empty($this->subFolder)) {
             $portalFolder .= '/' . $this->subFolder;
         }

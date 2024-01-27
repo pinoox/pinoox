@@ -15,7 +15,7 @@
 namespace Pinoox\Component\Migration;
 
 use Pinoox\Component\Kernel\Exception;
-use Pinoox\Portal\AppManager;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\MigrationToolkit;
 
 /**
@@ -51,23 +51,27 @@ class Migrator
     }
 
     /**
+     * @throws \Exception
+     */
+    public function init(): string
+    {
+        $this->toolkit = MigrationToolkit::package('pincore')->action('init')->load();
+
+        if (!$this->toolkit->isSuccess()) {
+            throw new \Exception($this->toolkit->getErrors());
+        }
+
+        return $this->migrate();
+    }
+
+    /**
      * Initialize the migration process.
      * @throws \Exception When there's an error during the initialization process.
      */
     public function run(): string
     {
-        try {
-            $this->app = AppManager::getApp($this->package);
-        } catch (Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-
-        $this->toolkit = MigrationToolkit::appPath($this->app['path'])
-            ->migrationPath($this->app['migration'])
-            ->package($this->app['package'])
-            ->namespace($this->app['namespace'])
-            ->action($this->action)
-            ->load();
+        $this->app = AppEngine::config($this->package)->get();
+        $this->toolkit = MigrationToolkit::package($this->app['package'])->action($this->action)->load();
 
         if (!$this->toolkit->isSuccess()) {
             throw new \Exception($this->toolkit->getErrors());

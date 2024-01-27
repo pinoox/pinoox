@@ -14,8 +14,8 @@
 namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppManager;
 use Pinoox\Component\Migration\MigrationQuery;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -57,16 +57,7 @@ class MigrateRollbackCommand extends Terminal
 
     private function init()
     {
-        try {
-            $this->app = AppManager::getApp($this->package);
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-        }
-
-        $this->toolkit = MigrationToolkit::appPath($this->app['path'])
-            ->migrationPath($this->app['migration'])
-            ->package($this->app['package'])
-            ->namespace($this->app['namespace'])
+        $this->toolkit = MigrationToolkit::package($this->package)
             ->action('rollback')
             ->load();
 
@@ -84,7 +75,7 @@ class MigrateRollbackCommand extends Terminal
             $this->stop();
         }
 
-        $batch = MigrationQuery::fetchLatestBatch($this->app['package']);
+        $batch = MigrationQuery::fetchLatestBatch($this->package);
 
         foreach ($migrations as $m) {
 

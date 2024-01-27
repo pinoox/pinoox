@@ -15,7 +15,6 @@ namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,18 +27,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateInitCommand extends Terminal
 {
 
-    private $pincore = null;
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $this->pincore = AppManager::getApp('pincore');
-
-        $migrator = new Migrator($this->pincore['package'], 'init');
+        $migrator = new Migrator('pincore', 'init');
+        $result = $migrator->init();
 
         try {
-            $result = $migrator->run();
+            $result = $migrator->init();
             $this->success($result);
         } catch (\Exception $e) {
             $this->error($e->getMessage());

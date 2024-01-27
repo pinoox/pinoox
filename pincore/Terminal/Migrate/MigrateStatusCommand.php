@@ -14,7 +14,6 @@
 namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppManager;
 use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,8 +28,6 @@ use Symfony\Component\Console\Output\OutputInterface;
 class MigrateStatusCommand extends Terminal
 {
     private string $package;
-
-    private array $app;
 
     /**
      * @var MigrationToolkit
@@ -56,12 +53,8 @@ class MigrateStatusCommand extends Terminal
 
     private function init()
     {
-        $this->app = AppManager::getApp( $this->package);
 
-        $this->toolkit = MigrationToolkit::appPath($this->app['path'])
-            ->migrationPath($this->app['migration'])
-            ->package($this->app['package'])
-            ->namespace($this->app['namespace'])
+        $this->toolkit = MigrationToolkit::package($this->package)
             ->action('status')
             ->load();
 
@@ -84,7 +77,7 @@ class MigrateStatusCommand extends Terminal
        $this->table(['Migration', 'Batch', 'Status'], $this->getRows($migrations));
     }
 
-    private function getRows($migrations)
+    private function getRows($migrations): array
     {
         $rows = [];
         foreach ($migrations as $m) {
