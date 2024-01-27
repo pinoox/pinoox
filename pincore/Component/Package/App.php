@@ -22,6 +22,7 @@ use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
+use Pinoox\Component\Translator\Translator;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
@@ -225,7 +226,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
     /**
      * @throws Exception
      */
-    public function lang(): Lang
+    public function lang(): Translator
     {
         return $this->appEngine->lang($this->package());
     }

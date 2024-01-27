@@ -55,8 +55,6 @@ class Validation extends Portal
         ])->addMethodCall('setPresenceVerifier', [
             self::__ref('verifier'),
         ]);
-
-        self::getTranslator()->setLocale('fa');
     }
 
 
