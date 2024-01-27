@@ -84,7 +84,7 @@
         methods: {
             next() {
                 this.isLoading = true;
-                this.$http.post(this.URL.API + 'checkDB/', this.params).then((json) => {
+                this.$http.post(this.URL.API + 'checkDB', this.params).then((json) => {
                     this.isLoading = false;
 
                     if (json.data.status) {

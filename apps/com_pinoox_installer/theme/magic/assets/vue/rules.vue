@@ -75,7 +75,7 @@ we are always striving to make Pinoox safer and more stable by providing continu
         created() {
             this.$emit('update:steps', []);
             this.$parent.isLoading = true;
-            this.$http.get(this.URL.API + 'agreement/').then((response) => {
+            this.$http.get(this.URL.API + 'agreement').then((response) => {
                 this.$parent.isLoading = false;
                 this.agreement = response.data;
             });

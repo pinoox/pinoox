@@ -1,20 +1,25 @@
 # Pinoox
-apps
-!apps/com_pinoox_manager/*
-!apps/com_pinoox_welcome/*
-!apps/com_pinoox_installer/*
-!apps/com_pinoox_market/*
-upload
-uploads
-cache
-temp
-downloads
 pinker
-*.pin
 
 # IntelliJ IDEA
 .idea
+.vscode
 
 # Node Js
 node_modules
 package-lock.json
+
+# Composer
+/vendor
+/composer.lock
+
+# PHPUnit
+.phpunit.result.cache
+
+# MacOS
+.DS_Store
+
+apps/
+!apps/com_pinoox_installer/
+!apps/com_pinoox_manager/
+!apps/com_pinoox_welcome/

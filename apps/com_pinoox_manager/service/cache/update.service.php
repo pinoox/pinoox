@@ -9,16 +9,16 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace pinoox\app\com_pinoox_manager\service\cache;
+namespace App\com_pinoox_manager\Service\cache;
 
-use pinoox\component\Cache;
-use pinoox\component\Config;
-use pinoox\component\Download;
-use pinoox\component\HelperString;
-use pinoox\component\HttpRequest;
-use pinoox\component\interfaces\ServiceInterface;
-use pinoox\component\Request;
-use pinoox\component\Url;
+use Pinoox\Component\Cache;
+use Pinoox\Component\Config;
+use Pinoox\Component\Download;
+use Pinoox\Component\HelperString;
+use Pinoox\Component\HttpRequest;
+use Pinoox\Component\Interfaces\ServiceInterface;
+use Pinoox\Component\Request;
+use Pinoox\Component\Url;
 
 class UpdateService implements ServiceInterface
 {
@@ -43,7 +43,7 @@ class UpdateService implements ServiceInterface
                 ]
             );
 
-            return HelperString::decodeJson($data);
+            return Str::decodeJson($data);
         },(5*24));
     }
 

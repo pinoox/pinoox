@@ -1,0 +1,187 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+
+body {
+    line-height: 1;
+}
+
+ol, ul {
+    list-style: none;
+}
+
+blockquote, q {
+    quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+body {
+    background: rgb(48, 50, 63);
+    background: linear-gradient(90deg, rgba(48, 50, 63, 1) 0%, rgb(56, 60, 87) 100%);
+    font-family: sans-serif;
+}
+
+.app {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    color: #3e8ad6;
+}
+
+.page {
+    width: 100%;
+    display: grid;
+    grid-template-rows: 70vh 30vh;
+}
+
+.page__message {
+    text-align: center;
+    font-size: 14px;
+    background: #fff;
+    border-radius: 10px;
+    width: 90%;
+    height: 93%;
+    margin: auto;
+    max-width: 2000px;
+}
+
+.image {
+    padding: 2rem;
+}
+
+.image img {
+    width: 96px;
+}
+
+.title {
+    font-size: 2.2em;
+    font-weight: 600;
+    line-height: 1.1;
+    color: #75819f;
+}
+
+.title > h2 {
+    font-size: 2em;
+}
+
+.text {
+    max-width: 500px;
+    margin: 2rem auto;
+}
+
+.text > .path {
+    background: rgba(62, 138, 214, 0.15);
+    padding: 1rem;
+    display: inline-block;
+    border-radius: 2rem;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 2rem;
+    font-size: 1.3em;
+    letter-spacing: 2px;
+}
+
+.description {
+    font-size: 1.3em;
+    color: #666;
+}
+
+.page__help {
+    height: 100%;
+    width: 100%;
+
+}
+
+.page__help-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.content-item {
+    padding: 2rem 0;
+    color: #3e8ad6;
+    text-align: center;
+    width: 100%;
+}
+
+.content-item .links {
+    padding: 1rem 0;
+}
+
+.content-item .caption {
+    font-weight: bold;
+    font-size: 1.5em;
+    color: #5e8aa3;
+}
+
+.content-item .links a {
+    color: #8b94a9;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+.content-item .links a:hover {
+    color: #3aa4f5;
+    text-decoration: underline;
+}
+
+@media only screen and (max-width: 768px) {
+    .page__message {
+        width: 90%;
+        max-width: 90%;
+        font-size: 12px;
+
+    }
+
+    .text {
+        padding: 0 2rem;
+    }
+
+    .text > .path {
+        width: auto;
+        margin-bottom: 1rem;
+    }
+
+    .page__help-content {
+        flex-direction: column;
+    }
+}

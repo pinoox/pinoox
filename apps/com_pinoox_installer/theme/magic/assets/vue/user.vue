@@ -100,7 +100,7 @@
         methods: {
             next() {
                 this.isLoading = true;
-                this.$http.post(this.URL.API + 'setup/', {
+                this.$http.post(this.URL.API + 'setup', {
                     db: this.db,
                     user: this.user,
                 }).then((json) => {
@@ -109,7 +109,7 @@
                         setTimeout(()=>{
                             this.isLoading = false;
                             this._redirect(this.URL.SITE);
-                        },1000);
+                        },3000);
                     } else {
                         this.isLoading = false;
                         this.err = json.data.result;

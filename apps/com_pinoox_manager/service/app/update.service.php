@@ -12,16 +12,16 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace pinoox\app\com_pinoox_manager\service\app;
+namespace App\com_pinoox_manager\Service\app;
 
-use pinoox\app\com_pinoox_manager\component\Wizard;
-use pinoox\component\Config;
-use pinoox\component\Dir;
-use pinoox\component\File;
-use pinoox\component\interfaces\ServiceInterface;
-use pinoox\component\User;
-use pinoox\model\PinooxDatabase;
-use pinoox\model\UserModel;
+use App\com_pinoox_manager\Component\Wizard;
+use Pinoox\Component\Config;
+use Pinoox\Component\Dir;
+use Pinoox\Component\File;
+use Pinoox\Component\Interfaces\ServiceInterface;
+use Pinoox\Component\User;
+use Pinoox\Model\PinooxDatabase;
+use Pinoox\Model\UserModel;
 
 class UpdateService implements ServiceInterface
 {
