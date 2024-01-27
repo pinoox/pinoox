@@ -2,16 +2,21 @@
 
 namespace Pinoox\Component\Kernel;
 
+use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Service\ServiceManager;
 use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ResponseSymfony;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\HttpKernel;
 use Exception;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class Kernel extends HttpKernel
 {
@@ -27,8 +32,13 @@ class Kernel extends HttpKernel
 
     public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): ResponseSymfony
     {
-        $event = new RequestEvent($this, $request, $type);
-        $this->dispatcher->dispatch($event, self::HANDLE_BEFORE);
+        try {
+            $event = new RequestEvent($this, $request, $type);
+            $this->dispatcher->dispatch($event, self::HANDLE_BEFORE);
+        } catch (\Throwable $e) {
+            return $this->handleThrowable($e,$request,$type);
+        }
+
 
         $next = function ($request) use ($type, $catch) {
             return parent::handle($request, $type, $catch);
@@ -74,4 +84,30 @@ class Kernel extends HttpKernel
     {
         return $this->requestStack;
     }
+
+    private function handleThrowable(\Throwable $e, Request $request, int $type): \Symfony\Component\HttpFoundation\Response
+    {
+        $event = new ExceptionEvent($this, $request, $type, $e);
+        $this->dispatcher->dispatch($event, KernelEvents::EXCEPTION);
+
+        // a listener might have replaced the exception
+        $e = $event->getThrowable();
+
+        $response = $event->getResponse();
+
+        // the developer asked for a specific status code
+        if (!$event->isAllowingCustomResponseCode() && !$response->isClientError() && !$response->isServerError() && !$response->isRedirect()) {
+            // ensure that we actually have an error response
+            if ($e instanceof HttpExceptionInterface) {
+                // keep the HTTP status code and headers
+                $response->setStatusCode($e->getStatusCode());
+                $response->headers->add($e->getHeaders());
+            } else {
+                $response->setStatusCode(500);
+            }
+        }
+
+        return $response;
+    }
+
 }

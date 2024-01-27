@@ -17,7 +17,7 @@ namespace Pinoox\Component\Kernel\Service;
 use Pinoox\Component\Http\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class Service implements ServiceInterface
+abstract class Service implements ServiceInterface
 {
 
     protected ?RequestEvent $event;
