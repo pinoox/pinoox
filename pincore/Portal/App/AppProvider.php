@@ -59,7 +59,7 @@ class AppProvider extends Portal
         Dumper::register();
         Debug::enable();
         Env::register();
-        DB::boot();
+        DB::register();
     }
 
 	/**

@@ -20,6 +20,7 @@ use Illuminate\Events\Dispatcher;
 use Illuminate\Container\Container;
 use Illuminate\Database\Query\Builder as ObjectPortal3;
 use Illuminate\Database\Schema\Builder as ObjectPortal1;
+use mysqli;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Source\Portal;
 use Closure;
@@ -54,8 +55,9 @@ class DB extends Portal
     /**
      * @throws Exception
      */
-    public static function boot(): void
+    public static function register(): void
     {
+
         $config = self::getConfig();
         // add default connection
         self::addConnection($config);
