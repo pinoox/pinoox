@@ -10,29 +10,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function Pinoox\Router\{get,post};
+use function Pinoox\Router\{post, action};
 
-//get(
-//    path: '/changeLang/{lang}',
-//    action: 'changeLang',
-//);
-//
-//get(
-//    path: '/agreement',
-//    action: 'agreement',
-//);
-//
-//post(
-//    path: '/checkDB',
-//    action: 'checkDB',
-//);
-//
-//get(
-//    path: '/checkPrerequisites/{type}',
-//    action: 'checkPrerequisites',
-//);
-//
-//post(
-//    path: '/setup',
-//    action: 'setup',
-//);
+action('login', [\App\com_pinoox_manager\Controller\AuthController::class, 'login']);
+
+post(
+    path: '/user/login',
+    action: '&login',
+);

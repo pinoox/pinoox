@@ -15,7 +15,6 @@ namespace Pinoox\Component\Package\Engine;
 
 
 use Pinoox\Component\Lang\Lang;
-use Pinoox\Component\Lang\Source\FileLangSource;
 use Pinoox\Component\Package\AppManager;
 use Pinoox\Component\Package\Loader\ArrayLoader;
 use Pinoox\Component\Package\Loader\ChainLoader;
@@ -28,6 +27,8 @@ use Pinoox\Component\Store\Config\Config;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Component\Store\Baker\Pinker;
 use Exception;
+use Pinoox\Component\Translator\loader\FileLoader;
+use Pinoox\Component\Translator\Translator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;
 use Symfony\Component\Finder\SplFileInfo;
@@ -143,15 +144,16 @@ class AppEngine implements EngineInterface
     /**
      * @throws Exception
      */
-    public function lang(ReferenceInterface|string $packageName): Lang
+    public function lang(ReferenceInterface|string $packageName): Translator
     {
         $packageName = is_string($packageName) ? $packageName : $packageName->getPackageName();
 
         if (empty($this->appLang[$packageName])) {
+
             $path = $this->path($packageName, 'lang');
             $locale = $this->config($packageName)->get('lang');
-            $fileLangSource = new FileLangSource($path, $locale);
-            $this->appLang[$packageName] = new Lang($fileLangSource);
+            $loader = new FileLoader($path, '.lang');
+            $this->appLang[$packageName] = new Translator($loader, $locale);
         }
 
         return $this->appLang[$packageName];

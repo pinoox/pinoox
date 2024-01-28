@@ -23,37 +23,6 @@ use Pinoox\Component\Validation;
 class AccountController extends LoginConfiguration
 {
 
-    public function login()
-    {
-        $form = RequestData::input('email,password', null, '!empty');
-
-        $valid = Validation::check($form, [
-            'email' => ['required', rlang('user.username_or_email')],
-            'password' => ['required', rlang('user.password')],
-        ]);
-
-        if ($valid->isFail())
-            Response::json($valid->first(), false);
-
-        $form['remote_url'] = Url::site();
-
-        $data = RequestData::sendPost(
-            'https://www.pinoox.com/api/manager/v1/account/login',
-            $form,
-            [
-                'type' => HttpRequest::form,
-                'timeout' => 8000
-            ]
-        );
-        $array = json_decode($data, true);
-        if ($array['status']) {
-            Config::name('connect')
-                ->set('token_key', $array['result']['token'])
-                ->save();
-        }
-
-        return $data;
-    }
 
     public function getPinooxAuth()
     {

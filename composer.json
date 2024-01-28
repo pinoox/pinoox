@@ -21,6 +21,7 @@
         "doctrine/dbal": "^3.5",
         "illuminate/database": "^10.40",
         "illuminate/events": "^10.42",
+        "illuminate/hashing": "^10.42",
         "illuminate/validation": "^10.40",
         "nelexa/zip": "^4.0",
         "nette/php-generator": "^4.1",

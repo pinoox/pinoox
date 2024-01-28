@@ -15,6 +15,7 @@ namespace Pinoox\Component\Kernel;
 
 use Pinoox\Portal\App\App;
 use Symfony\Component\DependencyInjection\Reference;
+use Illuminate\Container\Container as ContainerIlluminate;
 
 class Container
 {
@@ -22,6 +23,8 @@ class Container
 
     /** @var ContainerBuilder[] */
     private static array $containers;
+
+    private static ContainerIlluminate $containerIlluminate;
 
     /**
      * Open a container
@@ -64,17 +67,24 @@ class Container
      *
      * @return ContainerBuilder
      */
-    public static function pincore() : ContainerBuilder
+    public static function pincore(): ContainerBuilder
     {
         return self::open(self::pincore);
     }
 
-    public static function app(?string $packageName = null) : ContainerBuilder
+    public static function app(?string $packageName = null): ContainerBuilder
     {
-        $packageName = empty($packageName)? App::package() : $packageName;
-        if($packageName === '~')
+        $packageName = empty($packageName) ? App::package() : $packageName;
+        if ($packageName === '~')
             return self::pincore();
         else
             return self::open($packageName);
+    }
+
+    public static function Illuminate(): ContainerIlluminate
+    {
+        if (empty(self::$containerIlluminate))
+            self::$containerIlluminate = new ContainerIlluminate();
+        return self::$containerIlluminate;
     }
 }

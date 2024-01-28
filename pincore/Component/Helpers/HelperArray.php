@@ -344,16 +344,8 @@ class HelperArray
 
     /**
      * Parse params an array
-     *
-     * @param array $array
-     * @param array|string $keys
-     * @param array|string|mixed|null $default
-     * @param string|null $validation
-     * @param bool $removeNull
-     * @return array
-     * @throws ReflectionException
      */
-    public static function parseParams($array, $keys, $default = null, $validation = null, $removeNull = false)
+    public static function parseParams($array, $keys, $default = null, $removeNull = false)
     {
         $data = [];
         if ($keys == '*') $keys = (!empty($array) && is_array($array)) ? array_keys($array) : $array;
@@ -373,10 +365,6 @@ class HelperArray
                     } else {
                         $value = isset($array[$key]) && !is_null($array[$key]) ? $array[$key] : $val;
                         $data[$key] = is_array($value) || $isHtml ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
-                        if (!empty($validation)) {
-                            if (!Validation::checkOne($data[$key], $validation))
-                                $data[$key] = $val;
-                        }
                     }
                 } else {
                     $isHtml = Str::has($val, '!') ? true : false;
@@ -390,10 +378,6 @@ class HelperArray
                     } else {
                         $value = isset($array[$val]) && !is_null($array[$val]) ? $array[$val] : $default;
                         $data[$val] = $isHtml || is_array($value) ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
-                        if (!empty($validation)) {
-                            if (!Validation::checkOne($data[$val], $validation))
-                                $data[$val] = $default;
-                        }
                     }
 
                 }
@@ -425,10 +409,6 @@ class HelperArray
                         $value = $isHtml ? $value : htmlspecialchars(stripslashes($value));
                     }
                     $data[$cleanKey] = $value;
-                    if (!empty($validation)) {
-                        if (!Validation::checkOne($data[$cleanKey], $validation))
-                            $data[$cleanKey] = $cleanDefault;
-                    }
                 }
             }
             return $data;
@@ -437,26 +417,14 @@ class HelperArray
 
     /**
      * Parse one param an array
-     *
-     * @param array $array
-     * @param string|array $key
-     * @param array|string|null $default
-     * @param string|null $validation
-     * @return array|mixed|string|null
-     * @throws ReflectionException
      */
-    public static function parseParam($array, $key, $default = null, $validation = null)
+    public static function parseParam($array, $key, $default = null)
     {
         $isHtml = Str::has($key, '!') ? true : false;
         $key = is_string($key) ? str_replace('!', '', $key) : $key;
         $value = isset($array[$key]) && !is_null($array[$key]) ? $array[$key] : $default;
         $value = $isHtml || is_array($value) ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
 
-
-        if (!empty($validation)) {
-            if (!Validation::checkOne($value, $validation))
-                $value = $default;
-        }
 
         return $value;
     }

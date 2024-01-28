@@ -21,7 +21,7 @@ class Validation extends Validator
     public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $attributes = [])
     {
         parent::__construct($translator, $data, $rules, $messages, $attributes);
-        $messages = array_merge($messages,$this->getDefaultMessages());
+        $messages = array_merge($this->getDefaultMessages(), $messages);
         $this->setCustomMessages($messages);
     }
 

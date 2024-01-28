@@ -18,6 +18,7 @@ use Pinoox\Component\Database\Model;
 use Pinoox\Component\Date;
 use Pinoox\Component\Token;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 
 class UserModel extends Model
@@ -31,12 +32,32 @@ class UserModel extends Model
     public $incrementing = false;
     public $primaryKey = 'user_id';
 
+    protected $fillable = [
+        'session_id',
+        'avatar_id',
+        'app',
+        'fname',
+        'lname',
+        'username',
+        'password',
+        'email',
+        'status',
+    ];
+
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($user) {
-            $user->app = App::package();
+            $user->app = $user->app ?: App::package();
+            $user->status = $user->status ?: self::active;
+            $user->password =  Hash::make($user->password);
         });
     }
+
+    public function avatar(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
+    }
+
 }
