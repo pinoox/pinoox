@@ -31,13 +31,14 @@ class MigrationToolkit
      * @var string
      */
     private string $package;
+    private string $tableName;
 
     /**
      * path of migration files
      * @var string
      */
     private string $migrationPath;
-    private string $tableName;
+
     private string $migrationName;
 
     private string $migrationFolder = 'migrations';
@@ -81,12 +82,17 @@ class MigrationToolkit
         return $this;
     }
 
+    /**
+     * @throws \Exception
+     */
     public function load(): self
     {
+        
         $this->findMigrationPath();
         $migrations = $this->loadFiles();
 
         if (empty($migrations)) return $this;
+
         if ($this->action != 'create' && $this->action != 'init' && $this->isExistsMigrationTable()) {
             $migrations = $this->syncWithDB($migrations);
         }
@@ -123,11 +129,13 @@ class MigrationToolkit
         return MigrationQuery::fetchAllByBatch($batch, $this->package);
     }
 
-    private function isExistsMigrationTable(): bool
+    /**
+     * @throws \Exception
+     */
+    public function isExistsMigrationTable(): bool
     {
         $isExists = $this->schema->hasTable('pincore_migration');
         if (!$isExists) {
-            $this->setError('Migration table not exists. First of all init migration table');
             return false;
         }
         return true;
@@ -138,7 +146,7 @@ class MigrationToolkit
         if (!file_exists($this->migrationPath)) {
             mkdir($this->migrationPath, 0755, true);
         }
-
+        
         $files = [];
         $finder = new Finder();
         $finder->in($this->migrationPath)->files();
@@ -165,7 +173,7 @@ class MigrationToolkit
         usort($files, function ($a, $b) {
             return strcmp($a['timestamp'], $b['timestamp']);
         });
-
+        
         return $files;
     }
 
@@ -182,10 +190,11 @@ class MigrationToolkit
         return $this->migrations;
     }
 
-    public function getMigrationPath(): string
+    public function filePath(): string
     {
-        return $this->migrationPath;
+        return $this->migrationPath . '/' . $this->migrationName;
     }
+
 
     public function generateMigrationFileName($modelName): void
     {
@@ -210,16 +219,6 @@ class MigrationToolkit
         return $this->tableName;
     }
 
-    public function filePath(): string
-    {
-        return $this->migrationPath . '/' . $this->migrationName;
-    }
-
-    public function getMigrationName(): string
-    {
-        return $this->migrationName;
-    }
-
     private function snakeCase($string): string
     {
         // Replace spaces and underscores with dashes
@@ -237,9 +236,24 @@ class MigrationToolkit
         return basename($file, '.php');
     }
 
+
     private function findMigrationPath(): void
     {
-        $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
+        if ($this->package == 'pincore')
+            $this->migrationPath = path('~pincore') . '/Database/' . $this->migrationFolder;
+        else
+            $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
+    }
+
+
+    public function getMigrationPath(): string
+    {
+        return $this->migrationPath;
+    }
+
+    public function getMigrationName(): string
+    {
+        return $this->migrationName;
     }
 
     public function getErrors($end = true)
@@ -260,15 +274,6 @@ class MigrationToolkit
         $this->errors[] = $err;
     }
 
-    private function loadMigrationClass($classFile): bool
-    {
-        if (!file_exists($classFile)) return false;
-
-        require_once $classFile;
-
-        return true;
-    }
-
     private function syncWithDB($migrations): array
     {
         if (empty($migrations)) return [];
@@ -285,4 +290,5 @@ class MigrationToolkit
             return $m;
         }, $migrations);
     }
+
 }
