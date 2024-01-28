@@ -178,22 +178,24 @@ class ApiController extends Controller
             ->set('development', $data)
             ->save();
 
-        $migrator = new Migrator('pincore');
         try {
+            $initializer = new Migrator('pincore','init');
+            $initializer->init();
+
+            $migrator = new Migrator('pincore','run');
             $migrator->run();
         } catch (\Exception $e) {
+            return $this->message(rlang('install.err_insert_tables'),false);
         }
 
-
-        $user = new UserModel();
-        $user->app = 'pincore';
-        $user->fname = $u['fname'];
-        $user->lname = $u['lname'];
-        $user->username = $u['username'];
-        $user->password = Security::passHash($u['password']);
-        $user->email = $u['email'];
-        $user->status = UserModel::active;
-        return $user->save();
+        return UserModel::create([
+            'app' => 'pincore',
+            'fname' =>  $u['fname'],
+            'lname' => $u['lname'],
+            'username' => $u['username'],
+            'password' => $u['password'],
+            'email' => $u['email'],
+        ]);
     }
 
     private function message($result, $status)

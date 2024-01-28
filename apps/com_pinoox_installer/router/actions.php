@@ -15,7 +15,5 @@ use function Pinoox\Router\{action};
 use App\com_pinoox_installer\Controller\MainController;
 use Pinoox\Component\Helpers\HelperHeader;
 
-action('home', [MainController::class, 'home']);
-action('pinooxjs', function () {
-    return View::jsResponse('pinoox');
-});
+action('home', fn() => View::render('index'));
+action('pinooxjs', fn() => View::jsResponse('pinoox'));
