@@ -166,11 +166,11 @@ if (!function_exists('view')) {
      *
      * @param string $name
      * @param array $parameters
-     * @return View
+     * @return \Pinoox\Component\Template\View
      */
-    function view(string $name = '', array $parameters = []): View
+    function view(string $name = '', array $parameters = []): \Pinoox\Component\Template\View
     {
-        return View::ready($name, $parameters);
+        return View::___()->ready($name, $parameters);
     }
 }
 

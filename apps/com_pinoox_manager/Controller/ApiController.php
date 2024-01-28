@@ -10,11 +10,16 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function Pinoox\Router\{post, action};
 
-action('login', [\App\com_pinoox_manager\Controller\AuthController::class, 'login']);
+namespace App\com_pinoox_manager\Controller;
 
-post(
-    path: '/user/login',
-    action: '&login',
-);
+
+use Pinoox\Component\Kernel\Controller\Controller;
+
+class ApiController extends Controller
+{
+    protected function message(mixed $result, bool $status): array
+    {
+        return ["status" => $status, "result" => $result];
+    }
+}
