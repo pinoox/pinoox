@@ -2,18 +2,6 @@
 
 
 return [
-
-    /*
-    |--------------------------------------------------------------------------
-    | Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines contain the default error messages used by
-    | the validator class. Some of these rules have multiple versions such
-    | as the size rules. Feel free to tweak each of these messages here.
-    |
-    */
-
     "accepted" => ":attribute باید پذیرفته شده باشد.",
     'accepted_if' => 'هنگامی که :other، :value است باید با :attribute توافق کنید.',
     "active_url" => "آدرس :attribute معتبر نیست",
@@ -149,81 +137,17 @@ return [
     'ulid' => ':attribute باید یک فرمت درست ULID باشد.',
     'uuid' => ':attribute باید یک فرمت درست UUID باشد.',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Language Lines
-    |--------------------------------------------------------------------------
-    |
-    | Here you may specify custom validation messages for attributes using the
-    | convention "attribute.rule" to name the lines. This makes it quick to
-    | specify a specific custom language line for a given attribute rule.
-    |
-    */
-
     'custom' => [
         'attribute-name' => [
             'rule-name' => 'custom-message',
         ],
     ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Custom Validation Attributes
-    |--------------------------------------------------------------------------
-    |
-    | The following language lines are used to swap attribute place-holders
-    | with something more reader friendly such as E-Mail Address instead
-    | of "email". This simply helps us make messages a little cleaner.
-    |
-    */
     'attributes' => [
-        "name" => "نام",
-        "username" => "نام کاربری",
-        "email" => "پست الکترونیکی",
-        "first_name" => "نام",
-        "last_name" => "نام خانوادگی",
-        "family" => "نام خانوادگی",
-        "password" => "رمز عبور",
-        "password_confirmation" => "تاییدیه ی رمز عبور",
-        "city" => "شهر",
-        "province" => "استان",
-        "country" => "کشور",
-        "address" => "نشانی",
-        "phone" => "تلفن",
-        "mobile" => "تلفن همراه",
-        "age" => "سن",
-        "sex" => "جنسیت",
-        "gender" => "جنسیت",
-        "birthday" => "تاریخ تولد",
-        "birthdate" => "تاریخ تولد",
-        "married" => "متاهل",
-        "single" => "مجرد",
-        "day" => "روز",
-        "month" => "ماه",
-        "year" => "سال",
-        "hour" => "ساعت",
-        "minute" => "دقیقه",
-        "second" => "ثانیه",
-        "title" => "عنوان",
-        "text" => "متن",
-        "content" => "محتوا",
-        "description" => "توضیحات",
-        "excerpt" => "گلچین کردن",
-        "date" => "تاریخ",
-        "time" => "زمان",
-        "available" => "موجود",
-        "size" => "اندازه",
-        "volume" => "حجم",
-        "file" => "فایل",
-        "fullname" => "نام کامل",
-        "melli_code" => "کد ملی",
-        "national_number" => "کد ملی",
-        "postal_code" => "کد پستی",
-        "zip_code" => "کد پستی",
-        "passport_number" => "شماره پاسپورت",
-        "passport_no" => "شماره پاسپورت",
-        "sheba_number" => "شماره شبا",
-        "iban" => "شماره شبا",
-        "accountـnumber" => "شماره حساب"
+        "user.username" => "نام کاربری",
+        "user.email" => "پست الکترونیکی",
+        "user.fname" => "نام",
+        "user.lname" => "نام خانوادگی",
+        "user.password" => "رمز عبور",
     ],
 ];

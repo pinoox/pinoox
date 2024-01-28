@@ -121,20 +121,12 @@ class ApiController extends Controller
             'user.password' => 'required|min:6',
         ]);
 
-        return $this->message($validation->errors(), false);
-        $user = HelperArray::parseParams($inputs['user'], 'fname,lname,username,password,email', null, '!empty');
-        $db = HelperArray::parseParams($inputs['db'], 'host,database,username,password,prefix', null, '!empty');
+        if($validation->fails())
+            return $this->message($validation->errors()->first(), false);
 
-        $valid = Validation::validate($user, [
-            'fname' => ['required|length:>2', rlang('user.name')],
-            'lname' => ['required|length:>2', rlang('user.family_name')],
-            'email' => ['required|email', rlang('user.email')],
-            'username' => ['required|length:>2|username', rlang('user.username')],
-            'password' => ['required|length:>5', rlang('user.password')],
-        ]);
-
-        if ($valid->isFail())
-            return $this->message($valid->first(), false);
+        $data = $validation->validate();
+        $user = $data['user'];
+        $db = $request->json->all('db');
 
         if (!$this->insertTables($db, $user)) {
             return $this->message(rlang('install.err_insert_tables'), false);
@@ -185,8 +177,6 @@ class ApiController extends Controller
             ->set('production', $data)
             ->set('development', $data)
             ->save();
-
-        //TODO migrate init & run
 
         $migrator = new Migrator('pincore');
         try {

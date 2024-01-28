@@ -204,21 +204,14 @@ class Request extends RequestSymfony
         return $this->validation;
     }
 
-    public function validate(array $rules, array $data = [], array $messages = [], array $attributes = [])
+    public function validate(array $rules, array $messages = [], array $attributes = [])
     {
-        return $this->validation($rules, $data, $messages, $attributes)->validate();
+        return $this->validation($rules, $messages, $attributes)->validate();
     }
 
-    public function validation(array $rules, array $data = [], array $messages = [], array $attributes = []): Validator
+    public function validation(array $rules, array $messages = [], array $attributes = []): Validator
     {
-        if (empty($data)) {
-            $data = HelperArray::parseParams(
-                $this->all(),
-                array_keys($rules),
-            );
-        }
-
-        return $this->getValidation()->make($data, $rules, $messages, $attributes);
+        return $this->getValidation()->make($this->all(), $rules, $messages, $attributes);
     }
 
     public function all(): array
