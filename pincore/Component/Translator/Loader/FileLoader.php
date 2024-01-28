@@ -42,7 +42,13 @@ class FileLoader extends FileLoaderIlluminate
         return $this->postfix;
     }
 
-    public function load($locale, $group, $namespace = null)
+    /**
+     * @param $locale
+     * @param $group
+     * @param null $namespace
+     * @return array
+     */
+    public function load($locale, $group, $namespace = null): array
     {
         if ($group !== '*') {
             $group .= $this->postfix;
@@ -50,7 +56,7 @@ class FileLoader extends FileLoaderIlluminate
         return parent::load($locale, $group, $namespace);
     }
 
-    protected function loadPaths(array $paths, $locale, $group)
+    protected function loadPaths(array $paths, $locale, $group): array
     {
         return collect($paths)
             ->reduce(function ($output, $path) use ($locale, $group) {
