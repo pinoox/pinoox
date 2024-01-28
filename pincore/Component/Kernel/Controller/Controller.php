@@ -3,6 +3,7 @@
 
 namespace Pinoox\Component\Kernel\Controller;
 
+use Illuminate\Validation\Validator;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\App\App;
@@ -32,6 +33,21 @@ abstract class Controller
     public function setContainer(ContainerInterface $container): ?ContainerInterface
     {
         return $this->container = $container;
+    }
+
+    protected function validation(array $rules, array $messages = [], array $attributes = []): Validator
+    {
+        return $this->getRequest()->validation($rules, $messages, $attributes);
+    }
+
+    protected function validate(array $rules, array $messages = [], array $attributes = []): array
+    {
+        return $this->getRequest()->validate($rules, $messages, $attributes);
+    }
+
+    protected function getRequest(): Request
+    {
+        return $this->container->get('kernel.request_stack')->getCurrentRequest();
     }
 
     protected function redirect(string $url, int $status = 302): RedirectResponse

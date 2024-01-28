@@ -38,7 +38,7 @@ use Pinoox\Portal\App\App;
  * @method static ObjectPortal2 getSelector()
  * @method static setSelector(\Illuminate\Translation\MessageSelector $selector)
  * @method static ObjectPortal3 getLoader()
- * @method static Lang locale()
+ * @method static string locale()
  * @method static string getLocale()
  * @method static setLocale($locale)
  * @method static string getFallback()
@@ -111,7 +111,6 @@ class Lang extends Portal
     {
         return [
             'load',
-            'locale',
             'setFallback'
         ];
     }

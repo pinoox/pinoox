@@ -9,19 +9,17 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace Pinoox\Service;
 
-use Pinoox\Component\Interfaces\ServiceInterface;
-use Symfony\Component\ErrorHandler\Debug;
 
-class DebuggerService implements ServiceInterface
+namespace App\com_pinoox_manager\Controller;
+
+
+use Pinoox\Component\Kernel\Controller\Controller;
+
+class ApiController extends Controller
 {
-
-    public function _run()
+    protected function message(mixed $result, bool $status): array
     {
-    }
-
-    public function _stop()
-    {
+        return ["status" => $status, "result" => $result];
     }
 }

@@ -14,10 +14,10 @@
 namespace Pinoox\Component\Package\Engine;
 
 
-use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Path\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
+use Pinoox\Component\Translator\Translator;
 use RuntimeException;
 
 interface EngineInterface
@@ -35,10 +35,10 @@ interface EngineInterface
      * Get Lang App.
      *
      * @param string|ReferenceInterface $packageName
-     * @return Lang
+     * @return Translator
      * @throws RuntimeException if the template cannot be rendered
      */
-    public function lang(string|ReferenceInterface $packageName): Lang;
+    public function lang(string|ReferenceInterface $packageName): Translator;
 
     /**
      * get routes.

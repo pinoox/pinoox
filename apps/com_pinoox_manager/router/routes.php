@@ -10,21 +10,19 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function Pinoox\Router\{route, collection};
+use function Pinoox\Router\{get, collection};
 
-route(
-    path: '/',
+get(
+    path: '*',
     action: '@home',
-    methods: 'GET'
 );
 
-route(
+get(
     path: '/dist/pinoox.js',
     action: '@pinooxjs',
-    methods: 'GET'
 );
 
 collection(
     path: '/api/v1',
-    routes: 'router>api.php',
+    routes: 'router/api.php',
 );

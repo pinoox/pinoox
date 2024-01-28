@@ -36,20 +36,6 @@ abstract class Portal
     protected static string $__vendorDir;
     protected static string $__baseDir;
 
-    /*
-    public function __get(string $name)
-    {
-        $instance = self::__instance();
-        return $instance->$name;
-    }
-
-    public function __set(string $name, $value): void
-    {
-        $instance = self::__instance();
-        $instance->$name = $value;
-    }
-    */
-
     /**
      * Check the builder method call
      *

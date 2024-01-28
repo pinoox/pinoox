@@ -19,6 +19,7 @@ use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Factory as ObjectPortal4;
 use Illuminate\Validation\PresenceVerifierInterface as ObjectPortal3;
 use Illuminate\Validation\Validator as ObjectPortal1;
+use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Validation\Factory;
 
@@ -44,45 +45,47 @@ use Pinoox\Component\Validation\Factory;
  */
 class Validation extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(DatabasePresenceVerifier::class, 'verifier')->setArguments([
-		    DB::getDatabaseManager(),
-		]);
-		self::__bind(Factory::class)->setArguments([
-		    Lang::__ref()
-		])->addMethodCall('setPresenceVerifier', [
-		    self::__ref('verifier'),
-		]);
-	}
+    public static function __register(): void
+    {
+        self::__bind(DatabasePresenceVerifier::class, 'verifier')->setArguments([
+            DB::getDatabaseManager(),
+        ]);
+
+        self::__bind(Factory::class)->setArguments([
+            Lang::__ref(),
+            Container::Illuminate()
+        ])->addMethodCall('setPresenceVerifier', [
+            self::__ref('verifier'),
+        ]);
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'validation';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'validation';
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [];
+    }
 }

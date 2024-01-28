@@ -57,16 +57,6 @@ class AppProvider
         $this->getClassLoader()->addClassMap($classMap);
     }
 
-    private function loadServices(): void
-    {
-        $services = $this->app->get('service');
-        if (empty($services))
-            return;
-        foreach ($services as $service) {
-            Service::run($service);
-        }
-    }
-
     private function getClassLoader(): ClassLoader
     {
         return $this->app->classLoader;
@@ -91,7 +81,6 @@ class AppProvider
             $this->lock();
             $this->loadComposer($this->app->path());
             $this->loader();
-            $this->loadServices();
         }
     }
 

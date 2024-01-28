@@ -14,6 +14,7 @@
 
 namespace Pinoox\Portal;
 
+use Pinoox\Component\Http\JsonResponse;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Template\Reference\TemplatePathReference as ObjectPortal2;
@@ -55,13 +56,30 @@ class View extends Portal
 	}
 
 
-	public static function response(string $name, array $parameters = [], ?string $contentType = null): Response
+	public static function response(string $name, array $parameters = [], ?string $contentType = null,?string $charset = null): Response
 	{
 		$content = self::render($name, $parameters);
 		$response = new Response($content);
 		if (!empty($contentType))
 		    $response->addContentType($contentType);
+        if (!empty($charset))
+		    $response->setCharset($charset);
 		return $response;
+	}
+
+    public static function jsonResponse(string $name, array $parameters = [],?string $charset = null): JsonResponse
+	{
+		$content = self::render($name, $parameters);
+		$response = new JsonResponse();
+        $response->setJson($content);
+        if (!empty($charset))
+		    $response->setCharset($charset);
+		return $response;
+	}
+
+    public static function jsResponse(string $name, array $parameters = [],?string $charset = 'UTF-8'): Response
+	{
+		return self::response($name, $parameters, 'application/javascript', $charset);
 	}
 
 

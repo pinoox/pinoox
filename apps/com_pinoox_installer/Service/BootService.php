@@ -7,34 +7,25 @@
  *      *     *  *    **  ****  ****  *    *
  * @author   Pinoox
  * @link https://www.pinoox.com/
- * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace App\com_pinoox_installer\Controller;
 
-use Pinoox\Component\Helpers\HelperHeader;
+namespace App\com_pinoox_installer\Service;
+
+
 use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Service\Service;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\Lang;
 use Pinoox\Portal\View;
 
-class MainController extends Controller
+class BootService extends Service
 {
-    public function __construct()
+    protected function before(Request $request): void
     {
         $this->setLang();
-    }
-
-    public function home()
-    {
-        return View::render('index');
-    }
-
-    public function pinooxjs()
-    {
-        HelperHeader::contentType('application/javascript', 'UTF-8');
-        return View::render('pinoox');
     }
 
     private function setLang()
@@ -52,4 +43,3 @@ class MainController extends Controller
         View::set('currentLang', $lang);
     }
 }
-    

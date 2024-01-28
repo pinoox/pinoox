@@ -14,7 +14,7 @@ return array(
     'open' => 'setting-dashboard',
     'sys-app' => true,
     'service' => [
-        'cache/update'
+        \App\com_pinoox_manager\Service\BootService::class
     ]
 );
 
