@@ -22,9 +22,8 @@ class MigrationQuery
         return MigrationModel::where('app', $app)->orderBy('batch', 'DESC')->first()->batch ?? 0;
     }
 
-    public static function fetchAllByBatch($batch, $app)
+    public static function fetchAllByBatch($batch, $app): ?array
     {
-
         if (!empty($batch)) {
             return MigrationModel::query()->where('batch', $batch)->where('app', $app)->get()->toArray() ?? null;
         } else {

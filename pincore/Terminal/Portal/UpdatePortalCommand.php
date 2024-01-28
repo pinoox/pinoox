@@ -14,9 +14,7 @@
 namespace Pinoox\Terminal\Portal;
 
 use Pinoox\Component\Helpers\PhpFile\PortalFile;
-use Pinoox\Component\Source\PortalManager;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppManager;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

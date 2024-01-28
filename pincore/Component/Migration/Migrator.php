@@ -14,10 +14,6 @@
 
 namespace Pinoox\Component\Migration;
 
-use Pinoox\Component\Kernel\Exception;
-use Pinoox\Portal\AppManager;
-use Pinoox\Portal\MigrationToolkit;
-
 /**
  * Class Migrator
  * @package Pinoox\Terminal\Migrate
@@ -30,15 +26,8 @@ class Migrator
     private string $package;
     private string $action; //create, rollback, init
 
-    /**
-     * @var array The app information.
-     */
-    private array $app;
+    private MigrationToolkit $mig;
 
-    /**
-     * @var MigrationToolkit|null Migration toolkit instance.
-     */
-    private $toolkit = null;
 
     /**
      * Migrator constructor.
@@ -51,54 +40,59 @@ class Migrator
     }
 
     /**
+     * @throws \Exception
+     */
+    public function init(): array|bool
+    {
+        $this->mig = new MigrationToolkit();
+
+        if ($this->mig->isExistsMigrationTable()) return false;
+        $this->mig->package('pincore')->action('init')->load();
+
+        if (!$this->mig->isSuccess()) throw new \Exception($this->mig->getErrors());
+        return $this->migrate();
+    }
+
+    /**
      * Initialize the migration process.
      * @throws \Exception When there's an error during the initialization process.
      */
-    public function run(): string
+    public function run(): array
     {
-        try {
-            $this->app = AppManager::getApp($this->package);
-        } catch (Exception $e) {
-            throw new \Exception($e->getMessage());
-        }
-
-        $this->toolkit = MigrationToolkit::appPath($this->app['path'])
-            ->migrationPath($this->app['migration'])
-            ->package($this->app['package'])
-            ->namespace($this->app['namespace'])
-            ->action($this->action)
-            ->load();
-
-        if (!$this->toolkit->isSuccess()) {
-            throw new \Exception($this->toolkit->getErrors());
-        }
+        $this->mig = new MigrationToolkit();
+        $this->mig->package($this->package)->action($this->action)->load();
+        if (!$this->mig->isSuccess()) throw new \Exception($this->mig->getErrors());
 
         return $this->migrate();
     }
 
     /**
      * Run the migration process.
-     * @return string The status message after migration completion.
+     * @return array The status message after migration completion.
      */
-    private function migrate(): string
+    private function migrate(): array
     {
-        $migrations = $this->toolkit->getMigrations();
+        $migrations = $this->mig->getMigrations();
+
         if (empty($migrations)) {
-            return 'Nothing to migrate.';
+            return ['Nothing to migrate.'];
         }
 
         $batch = 0;
         if ($this->action != 'init') {
-            $batch = MigrationQuery::fetchLatestBatch($this->app['package']) ?? 0;
+            $batch = MigrationQuery::fetchLatestBatch($this->package) ?? 0;
         }
 
+        $messages = [];
         foreach ($migrations as $m) {
             $class = require_once $m['migrationFile'];
             $class->up();
 
             MigrationQuery::insert($m['fileName'], $m['packageName'], $batch);
+
+            $messages[] = '✓ [' . $m['fileName'] . '] migrated successfully';
         }
 
-        return 'Migration completed successfully.';
+        return $messages;
     }
 }

@@ -56,8 +56,9 @@ class DB extends Portal
     /**
      * @throws Exception
      */
-    public static function boot(): void
+    public static function register(): void
     {
+
         $config = self::getConfig();
         // add default connection
         self::addConnection($config);

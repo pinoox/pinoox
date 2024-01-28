@@ -4,14 +4,13 @@ namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppManager;
+use Pinoox\Portal\MigrationToolkit;
 use Pinoox\Portal\StubGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
 
@@ -23,20 +22,15 @@ class MigrateCreateCommand extends Terminal
 {
     private string $package;
 
-    private array $app;
-
-    private string $className;
+    private string $modelName;
 
 
-    /**
-     * @var MigrationToolkit
-     */
-    private $toolkit = null;
+    private $mig;
 
     protected function configure(): void
     {
         $this
-            ->addArgument('className', InputArgument::REQUIRED, 'Enter name of migration class name')
+            ->addArgument('modelName', InputArgument::REQUIRED, 'Enter name of migration model name')
             ->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
     }
 
@@ -45,7 +39,7 @@ class MigrateCreateCommand extends Terminal
         parent::execute($input, $output);
 
         $this->package = $input->getArgument('package');
-        $this->className = $input->getArgument('className');
+        $this->modelName = $input->getArgument('modelName');
 
         $this->init();
         $this->create();
@@ -56,54 +50,42 @@ class MigrateCreateCommand extends Terminal
 
     private function init(): void
     {
-        try {
-            $this->app = AppManager::getApp($this->package);
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-        }
-
-        $this->toolkit = MigrationToolkit::appPath($this->app['path'])
-            ->migrationPath($this->app['migration'])
-            ->package($this->app['package'])
-            ->namespace($this->app['namespace'])
-            ->action('create')
+        $this->mig = new MigrationToolkit();
+        $this->mig->package($this->package)->action('create')
             ->load();
 
-        if (!$this->toolkit->isSuccess()) {
-            $this->error($this->toolkit->getErrors());
+        if (!$this->mig->isSuccess()) {
+            $this->error($this->mig->getErrors());
         }
     }
 
     private function create(): void
     {
         //get input
-        $this->className = Str::toCamelCase($this->className);
-        $fileName = Str::toUnderScore($this->className);
+        $this->modelName = Str::toCamelCase($this->modelName);
+        $fileName = Str::toUnderScore($this->modelName);
 
         //check availability
         $finder = new Finder();
-        $finder->in($this->app['migration'])
+        $finder->in($this->mig->getMigrationPath())
             ->files()
             ->filter(static function (SplFileInfo $file) {
                 return $file->isDir() || \preg_match('/\.(php)$/', $file->getPathname());
             });
 
-
         //create filename
-        $migrationFilename = $this->toolkit->generateMigrationFileName($fileName);
-        $exportPath = $this->app['migration'] . '/' . $migrationFilename;
+        $this->mig->generateMigrationFileName($fileName);
+        $exportPath = $this->mig->filePath() . '.php';
 
         try {
             $isCreated = StubGenerator::generate('migration.create.stub', $exportPath, [
                 'copyright' => StubGenerator::get('copyright.stub'),
-                'table' => $migrationFilename,
+                'table' => $this->mig->getTableName(),
             ]);
 
             if ($isCreated) {
                 //print success messages
-                $this->success('✓ Created Class ' . $this->className);
-                $this->success(' in path: ' . $this->app['migration']);
-                $this->warning('/' . $migrationFilename);
+                $this->success('✓ Migration [' . $this->mig->getMigrationName() . '] created successfully');
                 $this->newLine();
             } else {
                 $this->error('Can\'t generate a new migration class!');

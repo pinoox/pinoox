@@ -18,7 +18,7 @@ use Illuminate\Translation\Translator as TranslatorIlluminate;
 
 class Translator extends TranslatorIlluminate
 {
-    protected function getLine($namespace, $group, $locale, $item, array $replace)
+    protected function getLine($namespace, $group, $locale, $item, array $replace): string|array|null
     {
         $this->load($namespace, $group, $locale);
 
@@ -36,5 +36,6 @@ class Translator extends TranslatorIlluminate
 
             return $line;
         }
+        return null;
     }
 }

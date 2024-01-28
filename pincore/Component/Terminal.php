@@ -46,19 +46,19 @@ class Terminal extends Command
         exit;
     }
 
-    #[NoReturn] protected function success($message, $newLine = true): void
+    protected function success($message, $newLine = true): void
     {
         $this->output->write("<info>$message</info>");
         if ($newLine) $this->newline();
     }
 
-    #[NoReturn] protected function question($message, $newLine = true): void
+    protected function question($message, $newLine = true): void
     {
         $this->output->write("<question>$message</question>");
         if ($newLine) $this->newline();
     }
 
-    #[NoReturn] protected function warning($message, $newLine = true): void
+    protected function warning($message, $newLine = true): void
     {
         $this->output->write("<comment>$message</comment>");
         if ($newLine) $this->newline();
@@ -82,7 +82,7 @@ class Terminal extends Command
         $table->render();
     }
 
-    protected function confirm(string $message,InputInterface $input, OutputInterface $output): bool
+    protected function confirm(string $message, InputInterface $input, OutputInterface $output): bool
     {
         $io = new SymfonyStyle($input, $output);
 
