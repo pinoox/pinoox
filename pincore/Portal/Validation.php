@@ -19,6 +19,7 @@ use Illuminate\Validation\DatabasePresenceVerifier;
 use Illuminate\Validation\Factory as ObjectPortal4;
 use Illuminate\Validation\PresenceVerifierInterface as ObjectPortal3;
 use Illuminate\Validation\Validator as ObjectPortal1;
+use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Validation\Factory;
 
@@ -51,7 +52,8 @@ class Validation extends Portal
         ]);
 
         self::__bind(Factory::class)->setArguments([
-            Lang::__ref()
+            Lang::__ref(),
+            Container::Illuminate()
         ])->addMethodCall('setPresenceVerifier', [
             self::__ref('verifier'),
         ]);

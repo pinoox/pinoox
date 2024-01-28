@@ -17,9 +17,9 @@ namespace Pinoox\Portal;
 use Illuminate\Database\Connection;
 use Illuminate\Database\DatabaseManager;
 use Illuminate\Events\Dispatcher;
-use Illuminate\Container\Container;
 use Illuminate\Database\Query\Builder as ObjectPortal3;
 use Illuminate\Database\Schema\Builder as ObjectPortal1;
+use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Source\Portal;
 use Closure;
@@ -48,7 +48,9 @@ class DB extends Portal
 {
     public static function __register(): void
     {
-        self::__bind(\Pinoox\Component\Database\DatabaseManager::class);
+        self::__bind(\Pinoox\Component\Database\DatabaseManager::class)->setArguments([
+            Container::Illuminate()
+        ]);
     }
 
     /**
@@ -61,7 +63,7 @@ class DB extends Portal
         self::addConnection($config);
 
         // Set the event dispatcher used by Eloquent models... (optional)
-        self::setEventDispatcher(new Dispatcher(new Container));
+        self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
 
         //Make this Capsule instance available globally.
         self::setAsGlobal();
