@@ -13,8 +13,8 @@
 
 namespace Pinoox\Terminal\Migrate;
 
+use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\MigrationToolkit;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,10 +29,7 @@ class MigrateStatusCommand extends Terminal
 {
     private string $package;
 
-    /**
-     * @var MigrationToolkit
-     */
-    private $toolkit = null;
+    private $mig = null;
 
     protected function configure(): void
     {
@@ -53,19 +50,19 @@ class MigrateStatusCommand extends Terminal
 
     private function init()
     {
-
-        $this->toolkit = MigrationToolkit::package($this->package)
+        $this->mig = new  MigrationToolkit();
+        $this->mig->package($this->package)
             ->action('status')
             ->load();
 
-        if (!$this->toolkit->isSuccess()) {
-            $this->error($this->toolkit->getErrors());
+        if (!$this->mig->isSuccess()) {
+            $this->error($this->mig->getErrors());
         }
     }
 
     private function status()
     {
-        $migrations = $this->toolkit->getMigrations();
+        $migrations = $this->mig->getMigrations();
 
         if (empty($migrations)) {
             $this->success('There are no migrations!');
@@ -74,7 +71,7 @@ class MigrateStatusCommand extends Terminal
 
         $this->success('Migration status:');
         $this->newLine();
-       $this->table(['Migration', 'Batch', 'Status'], $this->getRows($migrations));
+        $this->table(['Migration', 'Batch', 'Status'], $this->getRows($migrations));
     }
 
     private function getRows($migrations): array

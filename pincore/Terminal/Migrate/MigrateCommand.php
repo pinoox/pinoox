@@ -13,6 +13,7 @@
 
 namespace Pinoox\Terminal\Migrate;
 
+use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -40,18 +41,34 @@ class MigrateCommand extends Terminal
     {
         parent::execute($input, $output);
 
-        $package = $input->getArgument('package');
-
-        $migrator = new Migrator($package);
-
         try {
-            $result = $migrator->run();
-            $this->success($result);
+            $package = $input->getArgument('package');
+
+            $initializer = new Migrator('pincore', 'init');
+            $initMessages = $initializer->init();
+            $this->printMessages($initMessages);
+
+            $migrator = new Migrator($package, 'run');
+            $messages = $migrator->run();
+            $this->printMessages($messages);
+
         } catch (\Exception $e) {
             $this->error($e->getMessage());
         }
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function printMessages($messages): void
+    {
+        if (empty($messages)) throw new Exception($messages);
+
+        foreach ($messages as $message) {
+            $this->success($message);
+        }
     }
 
 }

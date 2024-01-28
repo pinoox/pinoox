@@ -25,10 +25,7 @@ class MigrateCreateCommand extends Terminal
     private string $modelName;
 
 
-    /**
-     * @var MigrationToolkit
-     */
-    private $toolkit = null;
+    private $mig;
 
     protected function configure(): void
     {
@@ -53,12 +50,12 @@ class MigrateCreateCommand extends Terminal
 
     private function init(): void
     {
-        $this->toolkit = MigrationToolkit::package($this->package)
-            ->action('create')
+        $this->mig = new MigrationToolkit();
+        $this->mig->package($this->package)->action('create')
             ->load();
 
-        if (!$this->toolkit->isSuccess()) {
-            $this->error($this->toolkit->getErrors());
+        if (!$this->mig->isSuccess()) {
+            $this->error($this->mig->getErrors());
         }
     }
 
@@ -70,25 +67,25 @@ class MigrateCreateCommand extends Terminal
 
         //check availability
         $finder = new Finder();
-        $finder->in($this->toolkit->getMigrationPath())
+        $finder->in($this->mig->getMigrationPath())
             ->files()
             ->filter(static function (SplFileInfo $file) {
                 return $file->isDir() || \preg_match('/\.(php)$/', $file->getPathname());
             });
 
         //create filename
-        $this->toolkit->generateMigrationFileName($fileName);
-        $exportPath = $this->toolkit->filePath() . '.php';
+        $this->mig->generateMigrationFileName($fileName);
+        $exportPath = $this->mig->filePath() . '.php';
 
         try {
             $isCreated = StubGenerator::generate('migration.create.stub', $exportPath, [
                 'copyright' => StubGenerator::get('copyright.stub'),
-                'table' => $this->toolkit->getTableName(),
+                'table' => $this->mig->getTableName(),
             ]);
 
             if ($isCreated) {
                 //print success messages
-                $this->success('✓ Migration [' . $this->toolkit->getMigrationName() . '] created successfully');
+                $this->success('✓ Migration [' . $this->mig->getMigrationName() . '] created successfully');
                 $this->newLine();
             } else {
                 $this->error('Can\'t generate a new migration class!');
