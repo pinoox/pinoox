@@ -22,6 +22,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
+use Pinoox\Portal\DB;
 
 class ApiController extends Controller
 {
@@ -46,8 +47,9 @@ class ApiController extends Controller
         ];
     }
 
-    private function checkConnect($data): bool
+    private function checkConnection($data): bool
     {
+
         $isConnect = false;
         try {
             $mysqli = new \mysqli($data['host'], $data['username'], $data['password'], $data['database']);
@@ -62,7 +64,7 @@ class ApiController extends Controller
     {
         $data = $request->json('host,database,username,password,prefix', '', '!empty');
 
-        if ($this->checkConnect($data)) {
+        if ($this->checkConnection($data)) {
             return $this->message('connect', true);
         }
 
@@ -152,7 +154,7 @@ class ApiController extends Controller
         if (empty($c) || empty($u))
             return false;
 
-        if (!$this->checkConnect($c)) return false;
+        if (!$this->checkConnection($c)) return false;
 
         $data = [
             'driver' => 'mysql',
@@ -180,7 +182,7 @@ class ApiController extends Controller
             $migrator = new Migrator('pincore','run');
             $migrator->run();
         } catch (\Exception $e) {
-            return $this->message(rlang('install.err_insert_tables'),false);
+            return false;
         }
 
         return UserModel::create([
