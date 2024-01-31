@@ -38,8 +38,8 @@ class Route
         if ($this->path === '*') {
             $this->path = '{parameters}';
             $filters['parameters'] = '.*';
-            $count = strlen($collection->path);
             $this->path = $this->getPath('');
+            $count = strlen($this->path);
             $this->priority = -9999 + $count;
         } else {
             $this->path = $this->getPath('/');

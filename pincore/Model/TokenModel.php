@@ -36,6 +36,9 @@ class TokenModel extends Model
         'token_data',
         'user_id',
         'remote_url',
+        'app',
+        'ip',
+        'user_agent',
     ];
 
     protected $casts = [

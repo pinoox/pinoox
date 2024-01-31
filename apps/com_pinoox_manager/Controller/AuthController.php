@@ -13,10 +13,7 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\HttpRequest;
 use Pinoox\Component\User;
-use Pinoox\Portal\Config;
-use Pinoox\Portal\Url;
 
 class AuthController extends ApiController
 {
