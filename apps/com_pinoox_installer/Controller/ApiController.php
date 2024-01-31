@@ -15,6 +15,7 @@ namespace App\com_pinoox_installer\Controller;
 
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\System;
 use Pinoox\Model\UserModel;
@@ -26,6 +27,24 @@ use Pinoox\Portal\DB;
 
 class ApiController extends Controller
 {
+
+    public function generateConfig($c): array
+    {
+        return [
+            'host' => $c['host'],
+            'database' => $c['database'],
+            'username' => $c['username'],
+            'password' => $c['password'],
+            'prefix' => $c['prefix'],
+            'driver' => 'mysql',
+            'port' => '3306',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_bin',
+            'strict' => true,
+            'engine' => null,
+        ];
+    }
+
     public function changeLang($lang): array
     {
         $lang = strtolower($lang);
@@ -49,15 +68,15 @@ class ApiController extends Controller
 
     private function checkConnection($data): bool
     {
+        DB::addConnection($this->generateConfig($data));
+        DB::bootEloquent();
 
-        $isConnect = false;
         try {
-            $mysqli = new \mysqli($data['host'], $data['username'], $data['password'], $data['database']);
-            $isConnect = !$mysqli->connect_error;
+            DB::connection()->getPdo();
+            return true;
         } catch (\Exception $e) {
+            return false;
         }
-
-        return $isConnect;
     }
 
     public function checkDB(Request $request)
@@ -118,7 +137,7 @@ class ApiController extends Controller
             'user.password' => 'required|min:6',
         ]);
 
-        if($validation->fails())
+        if ($validation->fails())
             return $this->message($validation->errors()->first(), false);
 
         $data = $validation->validate();
@@ -154,21 +173,15 @@ class ApiController extends Controller
         if (empty($c) || empty($u))
             return false;
 
-        if (!$this->checkConnection($c)) return false;
-
         $data = [
-            'driver' => 'mysql',
             'host' => $c['host'],
-            'port' => '3306',
             'database' => $c['database'],
             'username' => $c['username'],
             'password' => $c['password'],
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_bin',
             'prefix' => $c['prefix'],
-            'strict' => true,
-            'engine' => null,
         ];
+
+        if (!$this->checkConnection($data)) return false;
 
         Config::name('~database')
             ->set('production', $data)
@@ -176,18 +189,20 @@ class ApiController extends Controller
             ->save();
 
         try {
-            $initializer = new Migrator('pincore','init');
+
+            $initializer = new Migrator('pincore', 'init');
             $initializer->init();
 
-            $migrator = new Migrator('pincore','run');
+            $migrator = new Migrator('pincore', 'run');
             $migrator->run();
+
         } catch (\Exception $e) {
             return false;
         }
 
         return UserModel::create([
             'app' => 'pincore',
-            'fname' =>  $u['fname'],
+            'fname' => $u['fname'],
             'lname' => $u['lname'],
             'username' => $u['username'],
             'password' => $u['password'],

@@ -87,7 +87,6 @@ class MigrationToolkit
      */
     public function load(): self
     {
-        
         $this->findMigrationPath();
         $migrations = $this->loadFiles();
 
@@ -134,11 +133,7 @@ class MigrationToolkit
      */
     public function isExistsMigrationTable(): bool
     {
-        $isExists = $this->schema->hasTable('pincore_migration');
-        if (!$isExists) {
-            return false;
-        }
-        return true;
+        return $this->schema->hasTable('pincore_migration');
     }
 
     private function loadFiles(): array
@@ -146,7 +141,7 @@ class MigrationToolkit
         if (!file_exists($this->migrationPath)) {
             mkdir($this->migrationPath, 0755, true);
         }
-        
+
         $files = [];
         $finder = new Finder();
         $finder->in($this->migrationPath)->files();
@@ -154,8 +149,10 @@ class MigrationToolkit
         foreach ($finder as $f) {
             $filename = $f->getBasename('.php');
 
-            if ($this->action == 'init' && !str_contains($filename, 'migration'))
+            if ($this->action == 'init' && !str_contains($filename, 'migration')
+                || $this->action == 'run' && str_contains($filename, 'migration')) {
                 continue;
+            }
 
             preg_match('/(\d{4}_\d{2}_\d{2}_\d{6})/', $filename, $matches);
             $timestamp = $matches[1] ?? null;
@@ -173,7 +170,7 @@ class MigrationToolkit
         usort($files, function ($a, $b) {
             return strcmp($a['timestamp'], $b['timestamp']);
         });
-        
+
         return $files;
     }
 
