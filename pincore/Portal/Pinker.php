@@ -20,7 +20,7 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Baker\Pinker as ObjectPortal1;
 
 /**
- * @method static \Pinoox\Component\Store\Baker\Pinker create(string $mainFile = '', string $bakedFile = '', ?\Pinoox\Component\Store\Baker\FileHandlerInterface $fileHandler = NULL)
+ * @method static \Pinoox\Component\Store\Baker\Pinker create(string $mainFile = '', string $bakedFile = '', ?Pinoox\Component\Store\Baker\FileHandlerInterface $fileHandler = NULL)
  * @method static array build($data, array $info = [])
  * @method static \Pinoox\Component\Store\Baker\Pinker ___()
  *
@@ -39,7 +39,7 @@ class Pinker extends Portal
 	public static function folder(string $path, string $file): ObjectPortal1
 	{
 		$mainFile = $path . '/' . $file;
-        $mainFile = is_file($mainFile) ? $mainFile : '';
+		$mainFile = is_file($mainFile) ? $mainFile : '';
 
 		$bakedFile = $path . '/' . self::folder . '/' . $file;
 
