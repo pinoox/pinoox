@@ -93,9 +93,11 @@ class Url implements UrlInterface
         return $this->request->getPathInfo();
     }
 
-    public function route($name, $parameters = []): string
+    public function route($name, $parameters = [],bool $isFullBase = true): string
     {
-        return $this->get($this->app->router()->path($name, $parameters));
+        static $urlManager = new UrlManager();
+        $urlManager->setBasePath($this->site($isFullBase));
+        return $urlManager->get($this->app->router()->path($name, $parameters));
     }
 
     public function parameters(): array
