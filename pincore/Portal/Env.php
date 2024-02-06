@@ -16,6 +16,7 @@ namespace Pinoox\Portal;
 
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\App;
 
 /**
  * @method static mixed get(?string $key = NULL, mixed $default = NULL)
@@ -32,7 +33,7 @@ class Env extends Portal
 	public static function __register(): void
 	{
 		self::__bind(\Pinoox\Component\Helpers\Env::class)->setArguments([
-            Loader::getBasePath()
+            App::path()
 		]);
 	}
 

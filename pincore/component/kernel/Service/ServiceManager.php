@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Kernel\Service;
 
 
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -63,7 +64,7 @@ class ServiceManager
     public
     function handle(Request|RequestSymfony $request, \Closure $next)
     {
-        foreach ($this->services as $service) {
+        foreach ($this->getServices() as $service) {
             $next = $this->handleRow($service, $request, $next);
         }
 
@@ -73,17 +74,26 @@ class ServiceManager
     /**
      * @return array
      */
-    public
-    function getServices(): array
+    public function getServices(): array
     {
-        return $this->services;
+        $filters = [];
+        $filteredServices = [];
+
+        foreach ($this->services as $service) {
+            if (Str::firstHas($service, '!')) {
+                $filters[] = Str::firstDelete($service, '!');
+            } else {
+                $filteredServices[] = $service;
+            }
+        }
+
+        return array_values(array_diff($filteredServices, $filters));
     }
 
     /**
      * @param array $services
      */
-    public
-    function setServices(array $services): void
+    public function setServices(array $services): void
     {
         $this->services = $services;
     }

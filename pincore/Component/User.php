@@ -18,6 +18,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Model\TokenModel;
 use Pinoox\Model\UserModel;
 use Firebase\JWT\JWT;
+use Pinoox\Portal\Hash;
 use Pinoox\Portal\Lang;
 
 class User
@@ -91,7 +92,7 @@ class User
             return false;
         }
 
-        if (!Security::passVerify($password, $user->password)) {
+        if (!Hash::check($password, $user->password)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
         }
