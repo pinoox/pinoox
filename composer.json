@@ -19,6 +19,7 @@
         "php": "^8.1",
         "ext-mysqli": "*",
         "doctrine/dbal": "^3.5",
+        "firebase/php-jwt": "^6.10",
         "illuminate/database": "^10.40",
         "illuminate/events": "^10.42",
         "illuminate/hashing": "^10.42",

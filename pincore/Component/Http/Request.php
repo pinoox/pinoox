@@ -122,6 +122,36 @@ class Request extends RequestSymfony
         );
     }
 
+    public function isXmlHttpRequest(): bool
+    {
+        if (parent::isXmlHttpRequest()) {
+            return true;
+        }
+
+        if ($this->headers->has('HTTP_X_REQUESTED_WITH') && strtolower($this->headers->get('HTTP_X_REQUESTED_WITH')) === 'xmlhttprequest') {
+            return true;
+        }
+
+        if (!empty($this->getContent())) {
+            return true;
+        }
+
+        if ($this->headers->has('Origin')) {
+            return true;
+        }
+
+        if ($this->server->has('CONTENT_TYPE') && strpos($this->server->get('CONTENT_TYPE'), 'application/json') !== false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function isXHR(): bool
+    {
+        return $this->isXmlHttpRequest();
+    }
+
     public function queryOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
