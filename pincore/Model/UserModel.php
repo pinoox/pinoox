@@ -15,11 +15,8 @@
 namespace Pinoox\Model;
 
 use Pinoox\Component\Database\Model;
-use Pinoox\Component\Date;
-use Pinoox\Component\Token;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Hash;
-use Pinoox\Portal\Url;
 
 class UserModel extends Model
 {
