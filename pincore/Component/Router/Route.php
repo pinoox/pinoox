@@ -48,6 +48,7 @@ class Route
         $this->name = $this->buildName($name);
         $this->defaults = array_merge($this->collection->defaults, $defaults);
         $this->filters = array_merge($this->collection->filters, $filters);
+        $this->data = array_merge($this->collection->data, $this->data);
         $this->services = array_unique(array_merge($this->collection->services,$services));
         $this->defaults['_controller'] = $action;
         $actionCollection = $this->collection->action;
