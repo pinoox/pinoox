@@ -3,8 +3,8 @@
 namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\MigrationToolkit;
 use Pinoox\Portal\StubGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -50,9 +50,13 @@ class MigrateCreateCommand extends Terminal
 
     private function init(): void
     {
-        $this->mig = new MigrationToolkit();
-        $this->mig->package($this->package)->action('create')
-            ->load();
+        try {
+            $this->mig = new MigrationToolkit();
+            $this->mig->package($this->package)->action('create')
+                ->load();
+        } catch (\Exception $e) {
+            $this->error($e);
+        }
 
         if (!$this->mig->isSuccess()) {
             $this->error($this->mig->getErrors());
