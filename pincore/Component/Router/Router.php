@@ -43,11 +43,6 @@ class Router
      */
     public array $actions = [];
 
-    /**
-     * @var array
-     */
-    private array $data = [];
-
     private App $app;
     private UrlGeneratorInterface $urlGenerator;
 
@@ -139,7 +134,7 @@ class Router
      * @param array $data
      * @param array $services
      */
-    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [],array $services = []): void
+    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
     {
         if (is_array($path)) {
             foreach ($path as $routeName => $p) {
@@ -152,7 +147,7 @@ class Router
                 $data = $p['data'] ?? $data;
                 $property = $p['property'] ?? $property;
                 $services = $p['services'] ?? $services;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data,$services);
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data, $services);
             }
         } else {
             $name = $this->buildName($name);
@@ -165,17 +160,12 @@ class Router
                 defaults: $defaults,
                 filters: $filters,
                 priority: is_null($property) ? $this->count() : $property,
-                data: $this->buildData($data),
+                data: $data,
                 services: $services,
             );
 
             $this->currentCollection()->add($route);
         }
-    }
-
-    private function buildData(array $data = []): array
-    {
-        return !empty($data) ? $data : $this->data;
     }
 
     /**
@@ -221,13 +211,14 @@ class Router
      * @param array $services
      * @return Collection
      */
-    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [],array $services = []): Collection
+    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [], array $services = []): Collection
     {
         $cast = $this->current;
         $prefixName = $this->buildPrefixNameCollection($prefixName);
         $defaults = $this->buildDefaultsCollection($defaults);
         $services = $this->buildServicesCollection($services);
         $filters = $this->buildFiltersCollection($filters);
+        $data = $this->buildFiltersCollection($data);
         $controller = $this->buildControllerCollection($controller);
         $prefixPath = $this->buildPrefixPathCollection($path);
 
@@ -242,7 +233,7 @@ class Router
             defaults: $defaults,
             filters: $filters,
             name: $prefixName,
-            data: $this->buildData($data),
+            data: $data,
             prefixController: 'App\\' . $this->app->package() . '\\Controller',
             services: $services,
         );
@@ -283,9 +274,8 @@ class Router
         return !empty($path) ? '/' . $path : '/';
     }
 
-    public function build($path, $routes, array $data = []): Router
+    public function build($path, $routes): Router
     {
-        $this->data = $data;
 
         $collection = $this->collection(
             path: $path,
@@ -293,7 +283,6 @@ class Router
         );
 
         $collection->cast = -1;
-        $this->data = [];
         $router = new Router($this->routeName, $this->app, $collection);
         $router->actions = $this->actions;
         return $router;
@@ -419,6 +408,14 @@ class Router
             $filters = array_merge($this->currentCollection()->filters, $filters);
         }
         return $filters;
+    }
+
+    private function buildDataCollection(array $data): array
+    {
+        if ($this->current > -1) {
+            $data = array_merge($this->currentCollection()->data, $data);
+        }
+        return $data;
     }
 
     /**

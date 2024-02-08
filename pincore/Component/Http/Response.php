@@ -33,4 +33,11 @@ class Response extends ResponseSymfony
         $this->headers->set('Content-Type', $contentType);
     }
 
+    public function json(mixed $data = null, ?int $status = null, ?array $headers = null, bool $json = false)
+    {
+        $data = !is_null($data) ? $data : $this->content;
+        $status = !is_null($status) ? $status : $this->statusCode;
+        $headers = !is_null($headers) ? $headers : $this->headers->all();
+        return new JsonResponse($data, $status, $headers, $json);
+    }
 }
