@@ -16,6 +16,7 @@ namespace Pinoox\Terminal\Migrate;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\DB;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -45,9 +46,11 @@ class MigrateCommand extends Terminal
         try {
             $package = $input->getArgument('package');
 
-            $initializer = new Migrator('pincore', 'init');
-            $initMessages = $initializer->init();
-            $this->printMessages($initMessages);
+            if ($package === 'pincore') {
+                $initializer = new Migrator('pincore', 'init');
+                $initMessages = $initializer->init();
+                $this->printMessages($initMessages);
+            }
 
             $migrator = new Migrator($package, 'run');
             $messages = $migrator->run();
