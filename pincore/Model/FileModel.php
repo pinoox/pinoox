@@ -16,6 +16,12 @@ namespace Pinoox\Model;
 
 use Pinoox\Component\Database\Model;
 
+
+/**
+ * @property mixed $file_id
+ */
+
+
 class FileModel extends Model
 {
     /**
@@ -24,5 +30,6 @@ class FileModel extends Model
      * @var string
      */
     protected $table = 'pincore_file';
+    protected $primaryKey = 'file_id';
 
 }

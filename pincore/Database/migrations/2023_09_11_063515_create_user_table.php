@@ -11,7 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Database\Migrations;
+namespace Pinoox\Database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;

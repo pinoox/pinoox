@@ -1,0 +1,17 @@
+<?php
+{{ copyright }}
+
+namespace App\{{package}}\Model;
+
+use Pinoox\Component\Database\Model;
+
+class {{model}} extends Model
+{
+    /**
+     * The table associated with the model.
+     *
+     * @var string
+     */
+    protected $table = '{{package}}_{{table}}';
+
+}

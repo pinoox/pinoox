@@ -22,15 +22,18 @@ class MigrateCreateCommand extends Terminal
 {
     private string $package;
 
-    private string $modelName;
+    private string $migration;
 
 
-    private $mig;
+    /**
+     * @var MigrationToolkit
+     */
+    private MigrationToolkit $mig;
 
     protected function configure(): void
     {
         $this
-            ->addArgument('modelName', InputArgument::REQUIRED, 'Enter name of migration model name')
+            ->addArgument('migration', InputArgument::REQUIRED, 'Enter name of migration name')
             ->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
     }
 
@@ -39,7 +42,7 @@ class MigrateCreateCommand extends Terminal
         parent::execute($input, $output);
 
         $this->package = $input->getArgument('package');
-        $this->modelName = $input->getArgument('modelName');
+        $this->migration = $input->getArgument('migration');
 
         $this->init();
         $this->create();
@@ -65,26 +68,11 @@ class MigrateCreateCommand extends Terminal
 
     private function create(): void
     {
-        //get input
-        $this->modelName = Str::toCamelCase($this->modelName);
-        $fileName = Str::toUnderScore($this->modelName);
-
-        //check availability
-        $finder = new Finder();
-        $finder->in($this->mig->getMigrationPath())
-            ->files()
-            ->filter(static function (SplFileInfo $file) {
-                return $file->isDir() || \preg_match('/\.(php)$/', $file->getPathname());
-            });
-
-        //create filename
-        $this->mig->generateMigrationFileName($fileName);
-        $exportPath = $this->mig->filePath() . '.php';
-
         try {
-            $isCreated = StubGenerator::generate('migration.create.stub', $exportPath, [
+            $isCreated = StubGenerator::generate('migration.create.stub', $this->getExportPath(), [
                 'copyright' => StubGenerator::get('copyright.stub'),
                 'table' => $this->mig->getTableName(),
+                'namespace' => "App\\$this->package\migrations",
             ]);
 
             if ($isCreated) {
@@ -100,5 +88,21 @@ class MigrateCreateCommand extends Terminal
 
     }
 
+    private function getExportPath(): string
+    {
+        //get input
+        $this->migration = Str::toCamelCase($this->migration);
+        $fileName = Str::toUnderScore($this->migration);
+
+        //check availability
+        $finder = new Finder();
+        $finder->in($this->mig->getMigrationPath())
+            ->files()
+            ->name('*.php');
+
+        //create filename
+        $this->mig->generateMigrationFileName($fileName);
+        return $this->mig->filePath() . '.php';
+    }
 
 }
