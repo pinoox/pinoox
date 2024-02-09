@@ -5,12 +5,15 @@ namespace Pinoox\Terminal\Model;
 use Pinoox\Component\Helpers\PhpFile\ModelFile;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\AppManager;
+use Pinoox\Portal\StubGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Finder\Finder;
 
 #[AsCommand(
     name: 'model:create',
@@ -19,14 +22,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ModelCreateCommand extends Terminal
 {
     private string $package;
-
-    private array $app;
-
-    private string $className;
-
-    private string $modelFolder;
-
-    private string $modelFileName;
+    private string $model;
+    private string $table;
 
     protected function configure(): void
     {
@@ -39,8 +36,8 @@ class ModelCreateCommand extends Terminal
     {
         parent::execute($input, $output);
 
+        $this->model = $input->getArgument('model');
         $this->package = $input->getArgument('package');
-        $this->className = $input->getArgument('model');
 
         $this->init();
         $this->create();
@@ -48,56 +45,52 @@ class ModelCreateCommand extends Terminal
         return Command::SUCCESS;
     }
 
-    private function init()
+    private function init(): void
     {
-        try {
-            $this->app = AppManager::getApp($this->package);
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
+        if (!AppEngine::exists($this->package)) {
+            $this->error('Package not found');
         }
-
-        $this->modelFolder = $this->app['path'] . 'model';
     }
 
-    private function create()
+    private function create(): void
     {
-        //check availability
-        $exportPath = $this->readyModel();
-        $this->check();
-
         try {
-            $isCreated = ModelFile::create(
-                exportPath: $exportPath,
-                className: $this->className,
-                package: $this->app['package'],
-                namespace: $this->app['namespace'] . '/model'
-            );
+            $isCreated = StubGenerator::generate('model.create.stub', $this->getExportPath(), [
+                'copyright' => StubGenerator::get('copyright.stub'),
+                'package' => $this->package,
+                'model' => $this->model.'Model',
+                'table' => $this->table,
+            ]);
 
             if ($isCreated) {
-                //print success messages
-                $this->success(sprintf('Model created in "%s"', str_replace('\\', '/', $exportPath)));
+                $this->success('✓ Model [' . $this->model . '] created successfully');
                 $this->newLine();
             } else {
-                $this->error(sprintf('Same file exist in "%s"!', str_replace('\\', '/', $exportPath)));
+                $this->error('Can\'t generate a new model!');
             }
         } catch (\Exception $e) {
             $this->error($e);
         }
     }
 
-    private function check()
+
+    private function getExportPath(): string
     {
-        if (file_exists($this->modelFolder . '/' . $this->modelFileName)) {
-            $this->error('☓  The model name "' . $this->className . '" already exists ');
+        $path = AppEngine::path($this->package) . '/Model';
+
+        $this->model = Str::toCamelCase($this->model);
+        $this->table = Str::toUnderScore($this->model);
+
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        } else {
+            //check availability
+            $finder = new Finder();
+            $finder->in($path)
+                ->files()
+                ->name('*.php');
         }
-    }
 
-    private function readyModel(): string
-    {
-        //get input
-        $this->className = Str::toCamelCase($this->className);
-        $this->modelFileName = $this->className . '.php';
-
-        return $this->modelFolder . '/' . $this->modelFileName;
+        return $path . '/' . $this->model . 'Model.php';
     }
 }
