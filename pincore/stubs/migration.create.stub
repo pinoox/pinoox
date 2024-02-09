@@ -1,7 +1,7 @@
 <?php
 {{ copyright }}
 
-namespace App\com_pinoox_test\Database\Migrations;
+namespace {{namespace}};
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;
