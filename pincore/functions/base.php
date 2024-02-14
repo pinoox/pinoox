@@ -25,6 +25,7 @@ use Pinoox\Portal\Env;
 use Pinoox\Portal\Pinker;
 use Pinoox\Portal\Url;
 use Pinoox\Component\Http\Response;
+use Pinoox\component\Helpers\ViteHelper;
 
 if (!function_exists('url')) {
     function url(string $link = ''): string
@@ -49,26 +50,9 @@ if (!function_exists('alias')) {
 }
 
 if (!function_exists('vite')) {
-    function vite($name = null, $fileManifest = 'dist/manifest.json')
+    function vite(string $name, string $fileManifest = 'dist/.vite/manifest.json')
     {
-        $pathManifest = View::path()->assets($fileManifest);
-        $manifest = [];
-        if (is_file($pathManifest)) {
-            $manifest = file_get_contents($pathManifest);
-            $manifest = Str::decodeJson($manifest);
-        }
-
-        $manifest = !empty($name) ? @$manifest[$name]['file'] : $name;
-        if (!empty($manifest)) {
-            $dir = dirname($fileManifest);
-            $url = assets($dir . '/' . $manifest);
-            if (File::extension($manifest) === 'js')
-                echo '<script type="module"  src="' . $url . '"></script>';
-            else if (File::extension($manifest) === 'css')
-                echo '<link rel="stylesheet" href="' . $url . '">';
-            else
-                echo $manifest;
-        }
+        ViteHelper::usePrintVite($name, $fileManifest);
     }
 }
 
