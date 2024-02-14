@@ -14,11 +14,9 @@
 
 namespace Pinoox\Portal;
 
-use Pinoox\Component\File;
 use Pinoox\Component\Path\Reference\ReferenceInterface;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\Config as ObjectPortal1;
-use Pinoox\Component\Store\Config\Data\DataManager;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 
 /**
