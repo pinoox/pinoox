@@ -32,4 +32,17 @@ class FileModel extends Model
     protected $table = 'pincore_file';
     protected $primaryKey = 'file_id';
 
+    protected $fillable = [
+        'user_id',
+        'app',
+        'file_group',
+        'file_realname',
+        'file_name',
+        'file_ext',
+        'file_path',
+        'file_size',
+        'file_date',
+        'file_access',
+    ];
+
 }
