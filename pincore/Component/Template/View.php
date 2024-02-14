@@ -80,6 +80,7 @@ class View implements ViewInterface
             'url',
             'furl',
             'lang' => 'rlang',
+            't',
             'config',
             'app',
             'dd',
