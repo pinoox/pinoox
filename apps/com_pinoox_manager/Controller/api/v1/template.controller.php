@@ -57,38 +57,38 @@ class TemplateController extends LoginConfiguration
     public function install($uid, $packageName)
     {
         if (empty($packageName))
-            Response::json(rlang('manager.request_install_template_not_valid'), false);
+            Response::json(t('manager.request_install_template_not_valid'), false);
 
         if (!Wizard::is_installed($packageName))
-            Response::json(rlang('manager.there_is_no_app'), false);
+            Response::json(t('manager.there_is_no_app'), false);
 
         $file = Wizard::get_downloaded_template($uid);
         $meta = Wizard::pullTemplateMeta($file);
 
         Wizard::installTemplate($file, $packageName, $meta);
-        Response::json(rlang('manager.done_successfully'), true);
+        Response::json(t('manager.done_successfully'), true);
     }
 
     public function installPackage($filename)
     {
         if (empty($filename))
-            Response::json(rlang('manager.request_install_template_not_valid'), false);
+            Response::json(t('manager.request_install_template_not_valid'), false);
 
         $pinFile = Dir::path(self::manualPath . $filename);
         if (!is_file($pinFile))
-            Response::json(rlang('manager.request_install_template_not_valid'), false);
+            Response::json(t('manager.request_install_template_not_valid'), false);
 
         $meta = Wizard::pullTemplateMeta($pinFile);
 
         if (!Wizard::is_installed($meta['app']))
-            Response::json(rlang('manager.there_is_no_app'), false);
+            Response::json(t('manager.there_is_no_app'), false);
 
         if (Wizard::installTemplate($pinFile, $meta['app'], $meta)) {
-            Response::json(rlang('manager.done_successfully'), true);
+            Response::json(t('manager.done_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                Response::json(rlang('manager.request_install_template_not_valid'), false);
+                Response::json(t('manager.request_install_template_not_valid'), false);
             else
                 Response::json($message, false);
         }
@@ -104,6 +104,6 @@ class TemplateController extends LoginConfiguration
     public function remove($packageName, $folderName)
     {
         Wizard::deleteTemplate($packageName, $folderName);
-        Response::json(rlang('manager.done_successfully'), true);
+        Response::json(t('manager.done_successfully'), true);
     }
 }

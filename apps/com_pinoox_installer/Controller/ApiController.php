@@ -59,9 +59,9 @@ class ApiController extends Controller
         return [
             'direction' => in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr',
             'lang' => [
-                'install' => rlang('install'),
-                'user' => rlang('user'),
-                'language' => rlang('language'),
+                'install' => t('install'),
+                'user' => t('user'),
+                'language' => t('language'),
             ]
         ];
     }
@@ -124,7 +124,7 @@ class ApiController extends Controller
 
     public function agreement()
     {
-        return rlang('agreement');
+        return t('agreement');
     }
 
     public function setup(Request $request)
@@ -145,7 +145,7 @@ class ApiController extends Controller
         $db = $request->json->all('db');
 
         if (!$this->insertTables($db, $user)) {
-            return $this->message(rlang('install.err_insert_tables'), false);
+            return $this->message(t('install.err_insert_tables'), false);
         }
 
         $appRoutes = Config::name('app')->get();

@@ -79,7 +79,17 @@ if (!function_exists('lang')) {
 }
 
 if (!function_exists('rlang')) {
-    function rlang($key, array $replace = [], $locale = NULL, $fallback = true)
+    /**
+     * @deprecated Use the 't()' function instead, which provides the same functionality.
+     */
+    function t($key, array $replace = [], $locale = NULL, $fallback = true)
+    {
+        return Lang::get($key, $replace, $locale, $fallback);
+    }
+}
+
+if (!function_exists('t')) {
+    function t($key, array $replace = [], $locale = NULL, $fallback = true)
     {
         return Lang::get($key, $replace, $locale, $fallback);
     }

@@ -34,7 +34,7 @@ class AuthController extends ApiController
             return $this->message(User::get(), true);
         }
 
-        return $this->message(rlang('validation.username_or_password_is_wrong'), false);
+        return $this->message(t('validation.username_or_password_is_wrong'), false);
     }
 
 }

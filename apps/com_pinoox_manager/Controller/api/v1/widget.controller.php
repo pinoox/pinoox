@@ -26,7 +26,7 @@ class WidgetController extends LoginConfiguration
 
         Response::json([
            'time' => time(),
-           'date' => rlang('widget>clock.today').' '.$date,
+           'date' => t('widget>clock.today').' '.$date,
            'moment' => $isJalali? Date::j('a') :  Date::g('a'),
        ]);
     }

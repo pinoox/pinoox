@@ -33,9 +33,9 @@ class BootService extends Service
         $lang = App::get('lang');
         $direction = in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr';
         $data = Str::encodeJson([
-            'install' => rlang('install'),
-            'user' => rlang('user'),
-            'language' => rlang('language'),
+            'install' => t('install'),
+            'user' => t('user'),
+            'language' => t('language'),
         ], true);
 
         View::set('_lang', $data);

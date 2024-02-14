@@ -29,18 +29,18 @@ class BootService extends Service
     private function setLang()
     {
         $lang = [
-            'manager' => rlang('manager'),
-            'user' => rlang('user'),
+            'manager' => t('manager'),
+            'user' => t('user'),
             'setting' => [
-                'account' => rlang('setting>account'),
-                'dashboard' => rlang('setting>dashboard'),
-                'market' => rlang('setting>market'),
-                'router' => rlang('setting>router'),
-                'appManager' => rlang('setting>appManager'),
+                'account' => t('setting>account'),
+                'dashboard' => t('setting>dashboard'),
+                'market' => t('setting>market'),
+                'router' => t('setting>router'),
+                'appManager' => t('setting>appManager'),
             ],
             'widget' => [
-                'clock' => rlang('widget>clock'),
-                'storage' => rlang('widget>storage'),
+                'clock' => t('widget>clock'),
+                'storage' => t('widget>storage'),
             ],
         ];
 
