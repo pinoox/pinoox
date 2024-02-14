@@ -78,7 +78,7 @@ class MarketController extends LoginConfiguration
     {
         $app = AppHelper::fetch_by_package_name($package_name);
         if (!empty($app))
-            Response::json(rlang('manager.currently_installed'), false);
+            Response::json(t('manager.currently_installed'), false);
 
         $auth = Request::inputOne('auth');
         $params = $this->getAuthParams($auth);
@@ -93,7 +93,7 @@ class MarketController extends LoginConfiguration
                 Download::fetch('https://www.pinoox.com/api/manager/v1/market/download/' . $response['result']['hash'], $path)->process();
                 Config::set('market.' . $package_name, $response['result']);
                 Config::save('market');
-                Response::json(rlang('manager.download_completed'), true);
+                Response::json(t('manager.download_completed'), true);
             }
         }
     }
@@ -137,7 +137,7 @@ class MarketController extends LoginConfiguration
             } else {
                 $path = path("downloads>templates>$uid.pin");
                 Download::fetch('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $response['result']['hash'], $path)->process();
-                Response::json(rlang('manager.download_completed'), true);
+                Response::json(t('manager.download_completed'), true);
             }
         }
     }

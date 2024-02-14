@@ -93,7 +93,7 @@ class UserController extends MasterConfiguration
             Response::json($user, true);
         }
 
-        Response::json(rlang('~user.password_is_wrong'), false);
+        Response::json(t('~user.password_is_wrong'), false);
     }
 
     public function logout()
@@ -159,7 +159,7 @@ class UserController extends MasterConfiguration
             }
         }
 
-        Response::json(rlang('manager.invalid_request'), false);
+        Response::json(t('manager.invalid_request'), false);
     }
 
     public function changeInfo()
@@ -170,10 +170,10 @@ class UserController extends MasterConfiguration
         $inputs = Request::input('fname,lname,username,email', null, '!empty');
 
         $valid = Validation::check($inputs, [
-            'fname' => ['length:>2', rlang('user.first_name')],
-            'lname' => ['required|length:>2', rlang('user.last_name')],
-            'username' => ['required|username', rlang('user.username')],
-            'email' => ['required|email', rlang('user.email')],
+            'fname' => ['length:>2', t('user.first_name')],
+            'lname' => ['required|length:>2', t('user.last_name')],
+            'username' => ['required|username', t('user.username')],
+            'email' => ['required|email', t('user.email')],
         ]);
         if ($valid->isFail())
             Response::json($valid->first(), false);
@@ -194,9 +194,9 @@ class UserController extends MasterConfiguration
         $inputs = Request::input('old_password,new_password,valid_password', null, '!empty');
 
         $valid = Validation::check($inputs, [
-            'old_password' => ['required', rlang('user.old_password')],
-            'new_password' => ['required|length:5>|match:!=[old_password]', rlang('user.new_password')],
-            'valid_password' => ['required|match:==[new_password]', rlang('user.valid_password')],
+            'old_password' => ['required', t('user.old_password')],
+            'new_password' => ['required|length:5>|match:!=[old_password]', t('user.new_password')],
+            'valid_password' => ['required|match:==[new_password]', t('user.valid_password')],
         ]);
 
         if ($valid->isFail())
@@ -205,14 +205,14 @@ class UserController extends MasterConfiguration
         $user_id = User::get('user_id');
 
         if (!UserModel::fetch_by_password($user_id, $inputs['old_password'])) {
-            Response::json(rlang('user.err_old_password'), false);
+            Response::json(t('user.err_old_password'), false);
         }
 
         if (UserModel::update_password($user_id, $inputs['new_password'], $inputs['old_password'])) {
             Response::json(null, true);
         }
 
-        Response::json(rlang('user.err_old_password'), false);
+        Response::json(t('user.err_old_password'), false);
     }
 
     public function getUsers($packageName)
@@ -226,7 +226,7 @@ class UserController extends MasterConfiguration
                 'register_date_fa' => Date::j('Y/m/d', $user['register_date']),
                 'fname' => $user['fname'],
                 'lname' => $user['lname'],
-                'status_fa' => rlang('user.' . $user['status']),
+                'status_fa' => t('user.' . $user['status']),
                 'full_name' => $user['fname'] . ' ' . $user['lname'],
                 'avatar' => Url::upload($user['avatar_id'], Url::file('resources/avatar.png')),
                 'avatar_thumb' => Url::thumb($user['avatar_id'], 128, Url::file('resources/avatar.png')),

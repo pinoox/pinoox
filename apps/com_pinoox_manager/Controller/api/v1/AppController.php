@@ -75,18 +75,18 @@ class AppController extends LoginConfiguration
     public function install($packageName)
     {
         if (empty($packageName))
-            return $this->message(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(t('manager.request_install_app_not_valid'), false);
 
         $pinFile = Wizard::get_downloaded($packageName);
         if (!is_file($pinFile))
-            return $this->message(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(t('manager.request_install_app_not_valid'), false);
 
         if (Wizard::installApp($pinFile)) {
-            return $this->message(rlang('manager.done_successfully'), true);
+            return $this->message(t('manager.done_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                return $this->message(rlang('manager.request_install_app_not_valid'), false);
+                return $this->message(t('manager.request_install_app_not_valid'), false);
             else
                 return $this->message($message, false);
         }
@@ -95,17 +95,17 @@ class AppController extends LoginConfiguration
     public function installPackage($filename)
     {
         if (empty($filename))
-            return $this->message(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(t('manager.request_install_app_not_valid'), false);
 
         $pinFile = Path::get(self::manualPath . $filename);
         if (!is_file($pinFile))
-            return $this->message(rlang('manager.request_install_app_not_valid'), false);
+            return $this->message(t('manager.request_install_app_not_valid'), false);
         if (Wizard::installApp($pinFile)) {
-            return $this->message(rlang('manager.done_successfully'), true);
+            return $this->message(t('manager.done_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                return $this->message(rlang('manager.request_install_app_not_valid'), false);
+                return $this->message(t('manager.request_install_app_not_valid'), false);
             else
                 return $this->message($message, false);
         }
@@ -114,17 +114,17 @@ class AppController extends LoginConfiguration
     public function updatePackage($filename)
     {
         if (empty($filename))
-            return $this->message(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(t('manager.request_update_app_not_valid'), false);
 
         $pinFile = Path::get(self::manualPath . $filename);
         if (!is_file($pinFile))
-            return $this->message(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(t('manager.request_update_app_not_valid'), false);
         if (Wizard::updateApp($pinFile)) {
-            return $this->message(rlang('manager.update_successfully'), true);
+            return $this->message(t('manager.update_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                return $this->message(rlang('manager.request_update_app_not_valid'), false);
+                return $this->message(t('manager.request_update_app_not_valid'), false);
             else
                 return $this->message($message, false);
         }
@@ -133,18 +133,18 @@ class AppController extends LoginConfiguration
     public function update($packageName)
     {
         if (empty($packageName))
-            return $this->message(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(t('manager.request_update_app_not_valid'), false);
 
         $pinFile = Wizard::get_downloaded($packageName);
         if (!is_file($pinFile))
-            return $this->message(rlang('manager.request_update_app_not_valid'), false);
+            return $this->message(t('manager.request_update_app_not_valid'), false);
 
         if (Wizard::updateApp($pinFile)) {
-            return $this->message(rlang('manager.update_successfully'), true);
+            return $this->message(t('manager.update_successfully'), true);
         } else {
             $message = Wizard::getMessage();
             if (empty($message))
-                return $this->message(rlang('manager.request_update_app_not_valid'), false);
+                return $this->message(t('manager.request_update_app_not_valid'), false);
             else
                 return $this->message($message, false);
         }
@@ -153,7 +153,7 @@ class AppController extends LoginConfiguration
     public function remove($packageName)
     {
         Wizard::deleteApp($packageName);
-        return $this->message(rlang('manager.done_successfully'), true);
+        return $this->message(t('manager.done_successfully'), true);
     }
 
     public function files()
