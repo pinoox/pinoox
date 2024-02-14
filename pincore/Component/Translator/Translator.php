@@ -22,10 +22,11 @@ class Translator extends TranslatorIlluminate
     {
         $this->load($namespace, $group, $locale);
 
-        if (empty($item))
-            return $this->loaded[$namespace][$group][$locale];
 
-        $line = Arr::get($this->loaded[$namespace][$group][$locale], $item);
+        if (empty($item))
+            $line = $this->loaded[$namespace][$group][$locale];
+        else
+            $line = Arr::get($this->loaded[$namespace][$group][$locale], $item);
 
         if (is_string($line)) {
             return $this->makeReplacements($line, $replace);
