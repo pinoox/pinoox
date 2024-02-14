@@ -420,13 +420,10 @@ class HelperArray
      */
     public static function parseParam($array, $key, $default = null)
     {
-        $isHtml = Str::has($key, '!') ? true : false;
+        $isHtml = Str::has($key, '!');
         $key = is_string($key) ? str_replace('!', '', $key) : $key;
-        $value = isset($array[$key]) && !is_null($array[$key]) ? $array[$key] : $default;
-        $value = $isHtml || is_array($value) ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
-
-
-        return $value;
+        $value = $array[$key] ?? $default;
+        return $isHtml || is_array($value) ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
     }
 
     /**

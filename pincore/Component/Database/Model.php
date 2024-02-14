@@ -13,7 +13,6 @@
 
 namespace Pinoox\Component\Database;
 
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 use Closure as ObjectPortal11;
@@ -156,5 +155,10 @@ abstract class Model extends EloquentModel
         }
         $package = app('package') . '_';
         return $package . strtolower(str_replace('\\', '', class_basename($this)));
+    }
+
+    public static function tableName()
+    {
+        return with(new static)->getTable();
     }
 }

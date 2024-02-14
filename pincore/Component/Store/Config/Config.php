@@ -13,7 +13,6 @@
 
 namespace Pinoox\Component\Store\Config;
 
-use Pinoox\Component\Store\Config\Data\DataArray;
 use Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface;
 
 class Config implements ConfigInterface
