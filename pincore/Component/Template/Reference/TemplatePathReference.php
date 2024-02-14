@@ -15,12 +15,13 @@ namespace Pinoox\Component\Template\Reference;
 
 
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Path\Manager\PathManager;
 
 class TemplatePathReference
 {
     public function __construct(
-        private string|array    $folders,
-        private string $themePath
+        private string|array $folders,
+        private string       $themePath
     )
     {
     }
@@ -51,7 +52,8 @@ class TemplatePathReference
             return $f;
         }
 
-        return Str::ds($this->current() . '/' . $file);
+        $pathManager = new PathManager($this->current());
+        return $pathManager->get($file);
     }
 
     public function file(string $file): bool|string
