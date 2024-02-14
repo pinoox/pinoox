@@ -79,7 +79,7 @@ class View implements ViewInterface
         $this->twigEngine->addInternalFunction([
             'url',
             'furl',
-            'lang' => 'rlang',
+            'lang' => 't',
             't',
             'config',
             'app',
