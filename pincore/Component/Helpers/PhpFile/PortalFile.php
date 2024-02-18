@@ -18,6 +18,7 @@ use Nette\PhpGenerator\ClassType;
 use Nette\PhpGenerator\PhpFile as PhpFileNette;
 use Nette\PhpGenerator\PhpNamespace;
 use Pinoox\Component\File;
+use Pinoox\Component\Helpers\HelperAnnotations;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Path\Path;
@@ -115,7 +116,7 @@ class PortalFile extends PhpFile
     }
 
     private function buildPortalFolder(): void
-    { 
+    {
         $portalFolder = path('~pincore/Portal');
         if (!empty($this->subFolder)) {
             $portalFolder .= '/' . $this->subFolder;
@@ -308,8 +309,10 @@ class PortalFile extends PhpFile
             $return = $className;
         }
 
-        $args = str_replace("\n", '', self::getMethodParametersForDeclaration($method));
+        $args = self::getMethodParametersForDeclaration($method);
+        $args = str_replace(["\n", "\r"], '', $args);
         $args = str_replace("array ()", '[]', $args);
+        $args = rtrim($args);
 
         if ($return === $name) {
             $returnType = $className;
@@ -340,8 +343,8 @@ class PortalFile extends PhpFile
                 if ((class_exists($part) || interface_exists($part) || trait_exists($part))) {
                     if (!Str::firstHas($part, '\\')) {
                         if (Str::firstHas($part, '?')) {
-                            $part = str_replace('?', '', $part);
-                            $returnTypeParts[$index] = '?\\' . $part;
+                            $part = str_replace('?', '?\\', $part);
+                            $returnTypeParts[$index] = $part;
                         } else {
                             $returnTypeParts[$index] = '\\' . $part;
                         }
@@ -354,11 +357,7 @@ class PortalFile extends PhpFile
 
 
         $returnType = !empty($returnType) ? $returnType . ' ' : '';
-        return Str::replaceData('@method static {return}{name}({args})', [
-            'name' => $methodName,
-            'return' => $returnType,
-            'args' => $args,
-        ]);
+        return "@method static {$returnType}{$methodName}({$args})";
     }
 
     public function addCommentMethods(ClassType|ClassLike $class, PhpNamespace $namespace, string $serviceName = null): void
@@ -389,10 +388,39 @@ class PortalFile extends PhpFile
         if ($container->hasDefinition($serviceName)) {
             $voidMethods = [];
             $num = 1;
-            $className = $container->getDefinition($serviceName)->getClass();
+            $definition = $container->getDefinition($serviceName);
+            $className = $definition->getClass();
             $reflection = $container->getReflectionClass($className);
-            $methods = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
-            foreach ($methods as $method) {
+            $methods = [];
+
+            $tags = HelperAnnotations::getTagsIntoComment($reflection->getDocComment());
+            if (!empty($tags['mixin'])) {
+                foreach ($tags['mixin'] as $mixinClassName) {
+                    $reflectionMixinClass = new \ReflectionClass($mixinClassName);
+                    $items = $reflectionMixinClass->getMethods(ReflectionMethod::IS_PUBLIC);
+                    foreach ($items as $item) {
+                        $methods[$item->getName()] = [
+                            "method" => $item,
+                            "class" => $mixinClassName,
+                        ];
+                    }
+                }
+            }
+
+            $items = $reflection->getMethods(ReflectionMethod::IS_PUBLIC);
+            foreach ($items as $item) {
+                $methods[$item->getName()] = [
+                    "method" => $item,
+                    "class" => $className,
+                ];
+            }
+
+            foreach ($methods as $v) {
+                /**
+                 * @var ReflectionMethod $method
+                 */
+                $method = $v['method'];
+                $_className = $v['class'];
                 if (isset($replace[$method->getName()]) || Str::firstHas($method->getName(), '__') || in_array($method->getName(), $exclude) || (!empty($include) && !in_array($method->getName(), $include)) || method_exists($this->getPortalName(), $method->getName()))
                     continue;
                 if ($method instanceof ReflectionMethod) {
@@ -400,7 +428,8 @@ class PortalFile extends PhpFile
                     if ($returnType === 'void' && $isCallBack && empty($callback)) {
                         $voidMethods[] = $method->getName();
                     }
-                    $class->addComment($this->generateMethodComment($this->getClassname(), $class->getName(), $className, $method->getName(), $method, $namespace, $returnType, $isCallBack, $callback, $num));
+
+                    $class->addComment($this->generateMethodComment($this->getClassname(), $class->getName(), $_className, $method->getName(), $method, $namespace, $returnType, $isCallBack, $callback, $num));
                 }
             }
 

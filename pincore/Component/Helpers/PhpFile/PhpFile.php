@@ -70,8 +70,8 @@ class PhpFile
             if ($text) {
                 $tags = HelperAnnotations::getTagsIntoComment($text);
             }
-            if (!empty($tags['return'])) {
-                $items = explode('|', $tags['return']);
+            if (!empty($tags['return'][0])) {
+                $items = explode('|', $tags['return'][0]);
                 $uses = HelperAnnotations::getUsesInPHPFile($method->class);
                 $returns = [];
                 foreach ($items as $item) {

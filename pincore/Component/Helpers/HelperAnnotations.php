@@ -67,17 +67,20 @@ class HelperAnnotations
     public static function getTagsIntoComment(string $text): array
     {
         $tags = [];
-        $_to_string = trim($text, "\**/");
-        if (\preg_match_all('/@(?P<name>[A-Za-z_-]+)(?:[ \t]+(?P<value>.*?))?[ \t]*\r?$/m', $_to_string, $matches)) {
-            $numMatches = \count($matches[0]);
-            for ($i = 0; $i < $numMatches; ++$i) {
-                $tags[$matches['name'][$i]] = (string)$matches['value'][$i];
+
+        $text = preg_replace('/\/\*\*|\*\/|\*\s?/m', '', $text);
+
+        if (preg_match_all('/@(\w+)\s+(.*?)(?=\s+@|$)/s', $text, $matches)) {
+            foreach ($matches[1] as $key => $tagName) {
+                if (!isset($tags[$tagName])) {
+                    $tags[$tagName] = [];
+                }
+                $tags[$tagName][] = trim($matches[2][$key]);
             }
         }
 
         return $tags;
     }
-
 
     /**
      * Get comments in a file
