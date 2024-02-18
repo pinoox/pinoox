@@ -90,7 +90,7 @@ class View implements ViewInterface
         ]);
 
         // add custom functions
-        @include  $functions = $this->path()
+        @include $functions = $this->path()
             ->assets('functions.php');
         $this->twigEngine
             ->addFunctionsFile($functions);
@@ -98,7 +98,7 @@ class View implements ViewInterface
 
     public function changeTheme(string|array $folders)
     {
-        $this->setView($folders,$this->pathTheme);
+        $this->setView($folders, $this->pathTheme);
     }
 
     private function addCustomFunctions(string|array $folders, string $pathTheme)
@@ -194,6 +194,11 @@ class View implements ViewInterface
     public function engines(): array
     {
         return $this->parser::ENGINES;
+    }
+
+    public function asstes(string $file = ''): string
+    {
+        return $this->path()->assets($file);
     }
 
     /**
