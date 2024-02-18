@@ -57,23 +57,33 @@ use Pinoox\Portal\App\App;
  */
 class Lang extends Portal
 {
-    private const  locale = 'en';
+    private const  localeFallback = 'en';
     private const folder = 'lang';
     private const ext = '.lang';
 
     public static function __register(): void
     {
-        $path = Path::get(self::folder);
+        $localeFallback = App::get('lang_fallback') ?? self::localeFallback;
+        $paths = [
+            Path::get(self::folder),
+            View::asstes('lang'),
+        ];
         self::__bind(FileLoader::class, 'loader')
-            ->setArgument('path', $path)
+            ->setArgument('path', $paths)
             ->setArgument('postfix', self::ext);
 
-        self::__bind(Translator::class)->setArguments([
+        $definition = self::__bind(Translator::class)->setArguments([
             self::__ref('loader'),
             App::get('lang')
         ])->addMethodCall('setFallback', [
-            self::locale
+            $localeFallback
         ]);
+
+        foreach ($paths as $path) {
+            $definition->addMethodCall('addJsonPath', [
+                $path
+            ]);
+        }
     }
 
 
