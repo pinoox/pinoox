@@ -24,6 +24,9 @@ use Pinoox\Component\Translator\loader\FileLoader;
 use Pinoox\Portal\App\App;
 
 /**
+ * @method static Lang addPath(string $path)
+ * @method static addJsonPath($path)
+ * @method static Lang addPathAndJson(string $path)
  * @method static bool hasForLocale($key, $locale = NULL)
  * @method static bool has($key, $locale = NULL, $fallback = true)
  * @method static string|array get($key, array $replace = [], $locale = NULL, $fallback = true)
@@ -32,7 +35,6 @@ use Pinoox\Portal\App\App;
  * @method static Lang load($namespace, $group, $locale)
  * @method static ObjectPortal1 handleMissingKeysUsing(?callable $callback)
  * @method static addNamespace($namespace, $hint)
- * @method static addJsonPath($path)
  * @method static array parseKey($key)
  * @method static determineLocalesUsing($callback)
  * @method static ObjectPortal2 getSelector()
@@ -57,71 +59,72 @@ use Pinoox\Portal\App\App;
  */
 class Lang extends Portal
 {
-    private const  localeFallback = 'en';
-    private const folder = 'lang';
-    private const ext = '.lang';
+	private const localeFallback = 'en';
+	private const folder = 'lang';
+	private const ext = '.lang';
 
-    public static function __register(): void
-    {
-        $localeFallback = App::get('lang_fallback') ?? self::localeFallback;
-        $paths = [
-            Path::get(self::folder),
-            View::asstes('lang'),
-        ];
-        self::__bind(FileLoader::class, 'loader')
-            ->setArgument('path', $paths)
-            ->setArgument('postfix', self::ext);
+	public static function __register(): void
+	{
+		$localeFallback = App::get('lang_fallback') ?? self::localeFallback;
+		$paths = [
+		    Path::get(self::folder),
+		    View::asstes('lang'),
+		];
 
-        $definition = self::__bind(Translator::class)->setArguments([
-            self::__ref('loader'),
-            App::get('lang')
-        ])->addMethodCall('setFallback', [
-            $localeFallback
-        ]);
+		self::__bind(FileLoader::class, 'loader')
+		    ->setArgument('path', $paths)
+		    ->setArgument('postfix', self::ext);
 
-        foreach ($paths as $path) {
-            $definition->addMethodCall('addJsonPath', [
-                $path
-            ]);
-        }
-    }
+		$definition = self::__bind(Translator::class)->setArguments([
+		    self::__ref('loader'),
+		    App::get('lang')
+		])->addMethodCall('setFallback', [
+		    $localeFallback
+		]);
 
-
-    public static function __app(): string
-    {
-        return App::package();
-    }
+		foreach ($paths as $path) {
+		    $definition->addMethodCall('addJsonPath', [
+		        $path
+		    ]);
+		}
+	}
 
 
-    /**
-     * Get the registered name of the component.
-     * @return string
-     */
-    public static function __name(): string
-    {
-        return 'lang';
-    }
+	public static function __app(): string
+	{
+		return App::package();
+	}
 
 
-    /**
-     * Get exclude method names .
-     * @return string[]
-     */
-    public static function __exclude(): array
-    {
-        return [];
-    }
+	/**
+	 * Get the registered name of the component.
+	 * @return string
+	 */
+	public static function __name(): string
+	{
+		return 'lang';
+	}
 
 
-    /**
-     * Get method names for callback object.
-     * @return string[]
-     */
-    public static function __callback(): array
-    {
-        return [
-            'load',
-            'setFallback'
-        ];
-    }
+	/**
+	 * Get exclude method names .
+	 * @return string[]
+	 */
+	public static function __exclude(): array
+	{
+		return [];
+	}
+
+
+	/**
+	 * Get method names for callback object.
+	 * @return string[]
+	 */
+	public static function __callback(): array
+	{
+		return [
+		    'load',
+		    'setFallback'
+		];
+	}
 }

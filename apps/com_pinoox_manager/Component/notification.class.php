@@ -14,7 +14,7 @@
 namespace App\com_pinoox_manager\Component;
 
 use App\com_pinoox_manager\Model\NotificationModel;
-use Pinoox\Component\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\MagicTrait;
 use Pinoox\Component\Router;
 

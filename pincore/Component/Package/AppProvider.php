@@ -21,7 +21,7 @@ use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\Loader;
-use pinoox\component\kernel\Terminal;
+use Pinoox\Component\kernel\Terminal;
 use Pinoox\Component\Service;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\View;

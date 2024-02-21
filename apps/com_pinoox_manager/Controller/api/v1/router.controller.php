@@ -14,7 +14,7 @@ namespace App\com_pinoox_manager\Controller\api\v1;
 
 use App\com_pinoox_manager\Controller\AppHelper;
 use Pinoox\Component\Config;
-use Pinoox\Component\HelperString;
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Request;
 use Pinoox\Component\Response;
 use Pinoox\Component\Validation;
