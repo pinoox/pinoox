@@ -15,8 +15,6 @@ namespace Pinoox\Component\Translator;
 
 use Illuminate\Support\Arr;
 use Illuminate\Translation\Translator as TranslatorIlluminate;
-use Pinoox\Component\Kernel\Exception;
-use Pinoox\Component\Translator\loader\FileLoader;
 
 class Translator extends TranslatorIlluminate
 {

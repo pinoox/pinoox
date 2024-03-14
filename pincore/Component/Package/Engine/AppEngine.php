@@ -27,7 +27,7 @@ use Pinoox\Component\Store\Config\Config;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Component\Store\Baker\Pinker;
 use Exception;
-use Pinoox\Component\Translator\loader\FileLoader;
+use Pinoox\Component\Translator\Loader\FileLoader;
 use Pinoox\Component\Translator\Translator;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\Exception\DirectoryNotFoundException;

@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Component\Translator\loader;
+namespace Pinoox\Component\Translator\Loader;
 
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Translation\FileLoader as FileLoaderIlluminate;

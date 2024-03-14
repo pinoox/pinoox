@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Component\Kernel\listener;
+namespace Pinoox\Component\Kernel\Listener;
 
 use Pinoox\Component\Kernel\Kernel;
 use Psr\Log\LoggerInterface;
