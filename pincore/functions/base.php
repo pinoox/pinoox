@@ -25,7 +25,7 @@ use Pinoox\Portal\Env;
 use Pinoox\Portal\Pinker;
 use Pinoox\Portal\Url;
 use Pinoox\Component\Http\Response;
-use Pinoox\component\Helpers\ViteHelper;
+use Pinoox\Component\Helpers\ViteHelper;
 
 if (!function_exists('url')) {
     function url(string $link = ''): string
