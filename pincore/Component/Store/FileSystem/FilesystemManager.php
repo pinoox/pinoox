@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\component\Store\FileSystem;
+namespace Pinoox\Component\Store\FileSystem;
 
 use Aws\S3\S3Client;
 use Closure;

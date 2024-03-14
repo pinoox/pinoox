@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\component\Helpers;
+namespace Pinoox\Component\Helpers;
 
 
 use Pinoox\Portal\View;

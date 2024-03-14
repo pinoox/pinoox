@@ -20,11 +20,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
-use Pinoox\Component\Kernel\Loader;
-use Pinoox\Component\kernel\Terminal;
-use Pinoox\Component\Service;
-use Pinoox\Portal\Config;
-use Pinoox\Portal\View;
+use Pinoox\Component\Kernel\Terminal;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 

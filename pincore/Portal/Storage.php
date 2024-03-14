@@ -20,7 +20,7 @@ use Illuminate\Filesystem\FilesystemAdapter as ObjectPortal1;
 use League\Flysystem\FilesystemAdapter as ObjectPortal4;
 use League\Flysystem\FilesystemOperator as ObjectPortal3;
 use Pinoox\Component\Source\Portal;
-use Pinoox\component\Store\FileSystem\FilesystemManager;
+use Pinoox\Component\Store\FileSystem\FilesystemManager;
 use Symfony\Component\HttpFoundation\StreamedResponse as ObjectPortal2;
 
 /**
@@ -91,9 +91,9 @@ use Symfony\Component\HttpFoundation\StreamedResponse as ObjectPortal2;
  * @method static purge($name = NULL)
  * @method static FilesystemManager extend($driver, \Closure $callback)
  * @method static setConfig(\Pinoox\Component\Store\Config\ConfigInterface $config)
- * @method static \Pinoox\component\Store\FileSystem\FilesystemManager ___()
+ * @method static \Pinoox\Component\Store\FileSystem\FilesystemManager ___()
  *
- * @see \Pinoox\component\Store\FileSystem\FilesystemManager
+ * @see \Pinoox\Component\Store\FileSystem\FilesystemManager
  */
 class Storage extends Portal
 {
