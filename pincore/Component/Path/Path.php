@@ -66,7 +66,7 @@ class Path implements PathInterface
     {
         $parser = $this->reference($path);
         $package = empty($package)? $parser->getPackageName() : $package;
-        $key = $parser->get();
+        $key = $package . ':' . $parser->getPath();
 
         if (isset($this->paths[$key]))
             return $this->paths[$key];
@@ -86,13 +86,12 @@ class Path implements PathInterface
     private function getManager(?string $packageName = null): PathManager
     {
         $pathManager = new PathManager();
-        $currentPackage = $this->package;
         if ($packageName === '~') {
             $pathManager->setBasePath($this->basePath);
         }  else if ($packageName && $this->appEngine->exists($packageName)) {
             $pathManager->setBasePath($this->appEngine->path($packageName));
         } else {
-            $pathManager->setBasePath($this->appEngine->path($currentPackage));
+            $pathManager->setBasePath($this->appEngine->path($this->package));
         }
 
         return $pathManager;

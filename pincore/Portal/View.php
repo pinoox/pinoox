@@ -31,6 +31,7 @@ use Pinoox\Portal\App\App;
  * @method static mixed get(int|string $index)
  * @method static View set(string $name, mixed $value)
  * @method static array engines()
+ * @method static string asstes(string $file = '')
  * @method static string render(string $name, array $parameters = [])
  * @method static View ready(string $name = '', array $parameters = [])
  * @method static string getContentReady()
@@ -56,28 +57,35 @@ class View extends Portal
 	}
 
 
-	public static function response(string $name, array $parameters = [], ?string $contentType = null,?string $charset = null): Response
+	public static function response(
+		string $name,
+		array $parameters = [],
+		?string $contentType = null,
+		?string $charset = null,
+	): Response
 	{
 		$content = self::render($name, $parameters);
 		$response = new Response($content);
 		if (!empty($contentType))
 		    $response->addContentType($contentType);
-        if (!empty($charset))
+		if (!empty($charset))
 		    $response->setCharset($charset);
 		return $response;
 	}
 
-    public static function jsonResponse(string $name, array $parameters = [],?string $charset = null): JsonResponse
+
+	public static function jsonResponse(string $name, array $parameters = [], ?string $charset = null): JsonResponse
 	{
 		$content = self::render($name, $parameters);
 		$response = new JsonResponse();
-        $response->setJson($content);
-        if (!empty($charset))
+		$response->setJson($content);
+		if (!empty($charset))
 		    $response->setCharset($charset);
 		return $response;
 	}
 
-    public static function jsResponse(string $name, array $parameters = [],?string $charset = 'UTF-8'): Response
+
+	public static function jsResponse(string $name, array $parameters = [], ?string $charset = 'UTF-8'): Response
 	{
 		return self::response($name, $parameters, 'application/javascript', $charset);
 	}

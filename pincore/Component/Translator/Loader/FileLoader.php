@@ -70,4 +70,9 @@ class FileLoader extends FileLoaderIlluminate
                 return $output;
             }, []);
     }
+
+    public function addPath(string $path): void
+    {
+        $this->paths[] = $path;
+    }
 }

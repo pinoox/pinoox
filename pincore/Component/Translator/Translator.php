@@ -15,9 +15,20 @@ namespace Pinoox\Component\Translator;
 
 use Illuminate\Support\Arr;
 use Illuminate\Translation\Translator as TranslatorIlluminate;
+use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Translator\loader\FileLoader;
 
 class Translator extends TranslatorIlluminate
 {
+    public function addPath(string $path): void
+    {
+        $this->loader->addPath($path);
+    }
+    public function addJsonPath($path)
+    {
+        $this->loader->addJsonPath($path);
+    }
+
     protected function getLine($namespace, $group, $locale, $item, array $replace): string|array|null
     {
         $this->load($namespace, $group, $locale);
@@ -38,5 +49,11 @@ class Translator extends TranslatorIlluminate
             return $line;
         }
         return null;
+    }
+
+    public function addPathAndJson(string $path): void
+    {
+        $this->addPath($path);
+        $this->addJsonPath($path);
     }
 }
