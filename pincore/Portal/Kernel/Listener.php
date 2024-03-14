@@ -25,7 +25,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\Validation;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
-use Pinoox\Component\Kernel\listener\RouterListener;
+use Pinoox\Component\Kernel\Listener\RouterListener;
 
 class Listener extends Portal
 {

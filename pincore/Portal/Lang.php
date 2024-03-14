@@ -20,7 +20,7 @@ use Illuminate\Translation\Translator as ObjectPortal1;
 use Pinoox\Component\Lang\Source\FileLangSource;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Translator\Translator;
-use Pinoox\Component\Translator\loader\FileLoader;
+use Pinoox\Component\Translator\Loader\FileLoader;
 use Pinoox\Portal\App\App;
 
 /**
