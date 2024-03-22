@@ -13,6 +13,7 @@
 
 namespace Pinoox\Component\Store\Baker;
 
+use Closure;
 use Pinoox\Component\Helpers\HelperAnnotations;
 use Pinoox\Component\Helpers\HelperObject;
 use Pinoox\Component\Helpers\Str;
@@ -125,14 +126,14 @@ class Pinker
         if (is_array($data)) {
             foreach ($data as $key => $value) {
                 $key = $this->isCamelToUnderscore ? Str::camelToUnderscore($key) : $key;
-                if (is_callable($value)) {
+                if (is_callable($value) && $value instanceof Closure) {
                     $replaces['{_{' . $key . '}_}'] = HelperObject::closure_dump($value);
                     $printData[$key] = '{_{' . $key . '}_}';
                 } else {
                     $printData[$key] = $value;
                 }
             }
-        } elseif (is_callable($data)) {
+        } elseif (is_callable($data) && $data instanceof Closure) {
             $replaces['{_}'] = HelperObject::closure_dump($data);
             $printData = '{_}';
         } else {
