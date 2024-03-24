@@ -92,22 +92,30 @@ class PortalFile extends PhpFile
 
     private function buildPackage($input): void
     {
-        $this->package = $input->getOption('package');
+        $package = $input->getOption('package');
+        $this->package = !empty($package) ? $package : 'pincore';
     }
 
     private function buildNameSpace(): void
     {
-        $namespace = 'Pinoox\\Portal';
+        if ($this->package == 'pincore')
+            $namespace = 'Pinoox\\Portal';
+        else
+            $namespace = 'App\\' . $this->package . '\\Portal';
+
+        $subFolder = '';
         if (!empty($this->subFolder)) {
-            $namespace .= '\\' . $this->subFolder;
+            $subFolder = $this->subFolder;
+
+            $parts = explode('\\', $subFolder);
+            foreach ($parts as $key => $part) {
+                $parts[$key] = ucfirst($part);
+            }
+
+            $namespace .= '\\' . implode('\\', $parts);
         }
 
-        $parts = explode('\\', $namespace);
-        foreach ($parts as $key => $part) {
-            $parts[$key] = ucfirst($part);
-        }
-
-        $this->namespace = implode('\\', $parts);
+        $this->namespace = $namespace;
     }
 
     private function buildPortalName(): void
@@ -117,7 +125,12 @@ class PortalFile extends PhpFile
 
     private function buildPortalFolder(): void
     {
-        $portalFolder = path('~pincore/Portal');
+
+        if ($this->package === 'pincore')
+            $portalFolder = path('~pincore/Portal');
+        else
+            $portalFolder = path('Portal', $this->package);
+
         if (!empty($this->subFolder)) {
             $portalFolder .= '/' . $this->subFolder;
         }
@@ -377,14 +390,11 @@ class PortalFile extends PhpFile
             $include = call_user_func([$this->getPortalName(), '__include']);
             $replace = call_user_func([$this->getPortalName(), '__compileReplaces']);
         }
-        $container = Container::pincore();
-
-        // TODO app container
-//        if (App::exists($this->getPackage())) {
-//            $container = Container::app($this->getPackage());
-//        } else {
-//            $container = Container::pincore();
-//        }
+        if ($this->package == 'pincore') {
+            $container = Container::pincore();
+        } else {
+            $container = Container::app($this->package);
+        }
         if ($container->hasDefinition($serviceName)) {
             $voidMethods = [];
             $num = 1;

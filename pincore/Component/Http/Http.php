@@ -60,7 +60,7 @@ class Http
     public static function request(string $method, string $url, array $options = []): ?ResponseInterface
     {
         try {
-            return HttpClient::create()->request($method, $url, $options);
+            return HttpClient::create(['verify_peer' => false, 'verify_host' => false])->request($method, $url, $options);
         } catch (TransportExceptionInterface $e) {
         }
 

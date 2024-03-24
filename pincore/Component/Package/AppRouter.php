@@ -180,7 +180,7 @@ class AppRouter
      * @param string $packageName
      * @return array|null
      */
-    public function getPackage(string $packageName): ?array
+    public function getByPackage(string $packageName): ?array
     {
         $routes = $this->get();
         return array_filter($routes, function ($route) use ($packageName) {
@@ -205,9 +205,9 @@ class AppRouter
      * @param string $packageName
      * @return bool
      */
-    public function existsPackage(string $packageName): bool
+    public function existByPackage(string $packageName): bool
     {
-        return !empty($this->getPackage($packageName));
+        return !empty($this->getByPackage($packageName));
     }
 
     /**

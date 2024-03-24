@@ -31,7 +31,7 @@ class UpdatePortalCommand extends Terminal
     {
         $this
             ->addArgument('portalName', InputArgument::REQUIRED, 'Enter name of portal')
-            ->addOption('package', 'p', InputArgument::OPTIONAL, 'change package name for example:[-p or --package=com_pinoox_welcome | --p=com_pinoox_welcome]', 'pincore');
+            ->addOption('package', 'p', InputArgument::OPTIONAL, 'change package name for example:[-p or --package=com_pinoox_welcome | -p com_pinoox_welcome]', 'pincore');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

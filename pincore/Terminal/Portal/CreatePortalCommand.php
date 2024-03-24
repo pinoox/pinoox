@@ -32,8 +32,8 @@ class CreatePortalCommand extends Terminal
     {
         $this
             ->addArgument('portalName', InputArgument::REQUIRED, 'Enter name of portal')
-            ->addOption('package', 'p', InputArgument::OPTIONAL, 'change package name for example:[-p or --package=com_pinoox_welcome | --p=com_pinoox_welcome]', 'pincore')
-            ->addOption('service', 's', InputArgument::OPTIONAL, 'change service name for example:[-s or --service=view | --s=view]', '');
+            ->addOption('package', 'p', InputArgument::OPTIONAL, 'change package name for example:[-p or --package=com_pinoox_welcome | -p com_pinoox_welcome]', 'pincore')
+            ->addOption('service', 's', InputArgument::OPTIONAL, 'change service name for example:[-s or --service=view | -s view]', '');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -43,7 +43,7 @@ class CreatePortalCommand extends Terminal
         $manager = new PortalFile($input);
         if($manager->create())
         {
-            $this->success(sprintf('Model created in "%s"', $manager->getPortalPath()));
+            $this->success(sprintf('Portal created in "%s"', $manager->getPortalPath()));
             $this->newLine();
             return Command::SUCCESS;
         }
