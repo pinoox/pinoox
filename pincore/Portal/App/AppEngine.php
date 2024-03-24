@@ -20,19 +20,22 @@ use Pinoox\Component\Package\AppManager;
 use Pinoox\Component\Router\Router as ObjectPortal2;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal3;
+use Pinoox\Component\Translator\Translator as ObjectPortal1;
 use Pinoox\Portal\Pinker;
 
 /**
+ * @method static array getDefaultData()
  * @method static bool stable(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static array getAllRouters(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static ObjectPortal2 router(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName, string $path = '/')
  * @method static AppManager manager(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
- * @method static ObjectPortal4 lang(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static ObjectPortal1 lang(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static ObjectPortal3 config(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static bool exists(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
  * @method static AppEngine add(string $packageName, string $path)
  * @method static string path(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName, string $path = '')
  * @method static bool supports(\Pinoox\Component\Path\Reference\ReferenceInterface|string $packageName)
+ * @method static bool checkName(string $packageName)
  * @method static array all()
  * @method static \Pinoox\Component\Package\Engine\AppEngine ___()
  *

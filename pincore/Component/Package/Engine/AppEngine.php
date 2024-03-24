@@ -93,6 +93,11 @@ class AppEngine implements EngineInterface
         $this->defaultData = $data;
     }
 
+    public function getDefaultData() : array
+    {
+        return $this->defaultData;
+    }
+
     public function stable(string|ReferenceInterface $packageName): bool
     {
         $enable = false;
@@ -256,7 +261,7 @@ class AppEngine implements EngineInterface
      * @param string $packageName
      * @return bool
      */
-    private function checkName(string $packageName): bool
+    public function checkName(string $packageName): bool
     {
         return !!preg_match('/^[a-zA-Z]+[a-zA-Z0-9]*+[_]\s{0,1}[a-zA-Z0-9]+[_]\s{0,1}[a-zA-Z0-9]+[_]{0,1}[a-zA-Z0-9]+$/m', $packageName);
     }
