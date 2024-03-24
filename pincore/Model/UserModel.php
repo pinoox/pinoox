@@ -41,6 +41,8 @@ class UserModel extends Model
         'status',
     ];
 
+    protected $appends = ['full_name'];
+
     protected static function boot()
     {
         parent::boot();
@@ -57,4 +59,8 @@ class UserModel extends Model
         return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
     }
 
+    public function getFullNameAttribute()
+    {
+        return $this->fname . ' ' . $this->lname;
+    }
 }
