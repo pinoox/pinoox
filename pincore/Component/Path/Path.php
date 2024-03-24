@@ -13,6 +13,7 @@
 
 namespace Pinoox\Component\Path;
 
+use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Path\Parser\ParserInterface;
 use Pinoox\Component\Path\Parser\PathParser;
@@ -29,9 +30,9 @@ class Path implements PathInterface
 
     public function __construct(
         private readonly string          $basePath,
-        private readonly ParserInterface      $parser,
+        private readonly ParserInterface $parser,
         private readonly EngineInterface $appEngine,
-        private string        $package
+        private string                   $package
     )
     {
     }
@@ -62,10 +63,10 @@ class Path implements PathInterface
      * @return string
      * @throws \Exception
      */
-    public function get(string|ReferenceInterface $path = '',string $package = ''): string
+    public function get(string|ReferenceInterface $path = '', string $package = ''): string
     {
         $parser = $this->reference($path);
-        $package = empty($package)? $parser->getPackageName() : $package;
+        $package = empty($package) ? $parser->getPackageName() : $package;
         $key = $package . ':' . $parser->getPath();
 
         if (isset($this->paths[$key]))
@@ -75,6 +76,14 @@ class Path implements PathInterface
         $value = !empty($parser->getPath()) ? $parser->getPath() : '';
         $value = $pathManager->get($value);
         return $this->paths[$key] = $value;
+    }
+
+    public function params(string|ReferenceInterface $path = '', string $package = ''): string
+    {
+        $basePath = $this->get('~');
+        $path = $this->get($path, $package);
+        $path = Str::firstDelete($path, $basePath);
+        return Str::firstDelete($path, '/');
     }
 
     public function set($key, $value): static
@@ -88,7 +97,7 @@ class Path implements PathInterface
         $pathManager = new PathManager();
         if ($packageName === '~') {
             $pathManager->setBasePath($this->basePath);
-        }  else if ($packageName && $this->appEngine->exists($packageName)) {
+        } else if ($packageName && $this->appEngine->exists($packageName)) {
             $pathManager->setBasePath($this->appEngine->path($packageName));
         } else {
             $pathManager->setBasePath($this->appEngine->path($this->package));
