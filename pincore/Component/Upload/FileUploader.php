@@ -96,7 +96,7 @@ class FileUploader
     public function delete(FileModel $fileModel): self
     {
         $this->fileModel = $fileModel;
-        $path = path('~apps/' . $fileModel->file_path);
+        $path = path($fileModel->file_path,$fileModel->app);
         $originalFile = $path . '/' . $fileModel->file_name;
         $thumbnailFile = $path . '/thumbs/thumb_' . $fileModel->file_name;
 

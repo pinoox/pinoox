@@ -21,9 +21,8 @@ class FileUploaderFactory
 
     public function store($destination, $file, $access = 'public'): FileUploader
     {
-        $destination = App::package() . '/' . $destination;
         return new FileUploader(
-            path('~apps'),
+            path(''),
             $destination,
             $file,
             $access
