@@ -43,14 +43,29 @@ class UserModel extends Model
 
     protected $appends = ['full_name'];
 
+    public static function hashPassword($password)
+    {
+        return Hash::make($password);
+    }
+
+    public static function updatePassword($user_id, $new_password)
+    {
+        $hashed_password = self::hashPassword($new_password);
+        self::where('user_id', $user_id)->update(['password' => $hashed_password]);
+    }
+
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($user) {
+        static::creating(function (UserModel $user) {
             $user->app = $user->app ?: App::package();
             $user->status = $user->status ?: self::active;
-            $user->password =  Hash::make($user->password);
+            $user->password = self::hashPassword($user->password);
+        });
+
+        static::deleting(function (UserModel $user) {
+            $user->avatar()->delete();
         });
     }
 
