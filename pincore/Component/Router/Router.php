@@ -478,19 +478,15 @@ class Router
 
     private function defaultRoutes(): void
     {
-        $paths = ['/{slash_remover}/'];
-        $pathRoute = $this->app->pathRoute();
-        if (!empty($pathRoute) && $pathRoute !== '/')
-            $paths[] = '//';
-
         $this->add(
-            path: $paths,
+            path:  '/{slash_remover}/',
             action: function (Route $route, $slash_remover = '') {
                 $base = Str::lastDelete($route->getCollection()->path, '/');
                 $slug = $base . '/' . $slash_remover;
                 $slug = Str::lastDelete($slug, '/');
                 return new RedirectResponse('~' . $slug, 301);
             },
+            methods: ['GET'],
             filters: [
                 'slash_remover' => '.+/'
             ]
