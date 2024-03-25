@@ -251,6 +251,7 @@ class Request extends RequestSymfony
             ...$this->request->all(),
             ...$this->query->all(),
             ...$this->json->all(),
+            ...$this->files->all(),
         ];
     }
 
