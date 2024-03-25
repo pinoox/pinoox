@@ -198,7 +198,7 @@ class FileUploader
 
     private function isImage(): bool
     {
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif','webp'];
         $fileExtension = strtolower($this->file->getClientOriginalExtension());
 
         return in_array($fileExtension, $allowedExtensions);
