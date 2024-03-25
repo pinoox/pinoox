@@ -68,6 +68,7 @@ class Route
         $route = new RouteCapsule($this->path, $this->defaults);
         $route->setMethods($this->methods);
         $route->setRequirements($this->filters);
+
         return $route;
     }
 

@@ -18,9 +18,9 @@ use Symfony\Component\Routing\Route as RouteSymfony;
 
 class RouteCapsule extends RouteSymfony
 {
-    public function setPath(string $pattern): static
-    {
-        $pattern = Str::lastDelete($pattern,'/');
-        return parent::setPath($pattern);
-    }
+//    public function setPath(string $pattern): static
+//    {
+//        $pattern = Str::lastDelete($pattern,'/');
+//        return parent::setPath($pattern);
+//    }
 }

@@ -14,14 +14,16 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Pinoox\Component\Database\Model;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\FileUploader;
+use Pinoox\Portal\Url;
 
 
 /**
  * @property mixed $file_id
  */
-
-
 class FileModel extends Model
 {
     /**
@@ -45,4 +47,39 @@ class FileModel extends Model
         'file_access',
     ];
 
+    protected $appends = ['file_link', 'thumb_link'];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(UserModel::class, 'user_id');
+    }
+
+    public function getFileLinkAttribute()
+    {
+        return Url::path($this->file_path . '/' . $this->file_name);
+    }
+
+
+    public function getThumbLinkAttribute()
+    {
+        if (in_array($this->file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+            return Url::path($this->file_path . '/thumbs/thumb_' . $this->file_name);
+        }
+
+        return null;
+    }
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($file) {
+            $path = path($file->file_path, $file->app);
+            $originalFile = $path . '/' . $file->file_name;
+            $thumbnailFile = $path . '/thumbs/thumb_' . $file->file_name;
+
+            if (file_exists($originalFile)) unlink($originalFile);
+            if (file_exists($thumbnailFile)) unlink($thumbnailFile);
+        });
+    }
 }
