@@ -18,6 +18,16 @@ use Pinoox\Component\Database\Model;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Hash;
 
+
+/**
+ * @property mixed $user_id
+ * @property mixed $fname
+ * @property mixed $lname
+ * @property mixed $email
+ * @property string $status
+ * @property string $password
+ * @property string|null $app
+ */
 class UserModel extends Model
 {
 
@@ -26,9 +36,10 @@ class UserModel extends Model
     const CREATED_AT = 'register_date';
     const UPDATED_AT = null;
     protected $table = 'pincore_user';
-    public $incrementing = false;
-    public $primaryKey = 'user_id';
+    public $incrementing = true;
+    protected $primaryKey = 'user_id';
 
+    protected $hidden = ['password', 'session_id'];
     protected $fillable = [
         'session_id',
         'avatar_id',
