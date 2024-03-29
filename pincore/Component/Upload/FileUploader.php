@@ -39,6 +39,7 @@ class FileUploader
     private FileModel $fileModel;
     private $isThumb;
     private $thumbInfo;
+    private $error;
 
     public function __construct(string $path = '', string $destination = '', string $fileKey = null, string $access = 'public')
     {
@@ -75,6 +76,11 @@ class FileUploader
 
     public function upload(): self
     {
+        if (empty($this->file)) {
+            $this->error = -1;
+            return $this;
+        }
+
         $this->extension = $this->file->getClientOriginalExtension();
         $this->size = $this->file->getSize();
         $this->fileRealname = $this->file->getClientOriginalName();
@@ -96,7 +102,7 @@ class FileUploader
     public function delete(FileModel $fileModel): self
     {
         $this->fileModel = $fileModel;
-        $path = path($fileModel->file_path,$fileModel->app);
+        $path = path($fileModel->file_path, $fileModel->app);
         $originalFile = $path . '/' . $fileModel->file_name;
         $thumbnailFile = $path . '/thumbs/thumb_' . $fileModel->file_name;
 
@@ -198,7 +204,7 @@ class FileUploader
 
     private function isImage(): bool
     {
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif','webp'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $fileExtension = strtolower($this->file->getClientOriginalExtension());
 
         return in_array($fileExtension, $allowedExtensions);
@@ -227,6 +233,11 @@ class FileUploader
     public function getGroup(): string
     {
         return $this->group;
+    }
+
+    public function isFail()
+    {
+        return !empty($this->error);
     }
 
 }
