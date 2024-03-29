@@ -40,13 +40,22 @@ class Request extends RequestSymfony
         );
     }
 
-    public function get(string|array $keys, mixed $default = null, string $validation = ''): array
+    public function get(string|array $keys, mixed $default = null, string $validation = ''): mixed
     {
         return HelperArray::parseParams(
             $this->all(),
             $keys,
             $default,
             $validation
+        );
+    }
+
+    public function getOne(string $key, mixed $default = null)
+    {
+        return HelperArray::parseParams(
+            $this->all(),
+            $key,
+            $default,
         );
     }
 
