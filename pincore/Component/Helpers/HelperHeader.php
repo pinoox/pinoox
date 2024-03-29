@@ -24,7 +24,7 @@ class HelperHeader
 
     // generate status code for http
 
-    public static function addHeader($key, $value = null, $replace = true, $http_response_code = null)
+    public static function addHeader($key, $value = null, $replace = true, $http_response_code = 200)
     {
         if (!empty($value))
             header($key . ": " . $value, $replace, $http_response_code);
@@ -43,7 +43,7 @@ class HelperHeader
 
     public static function contentType($mimeType, $charset = null, $boundary = null)
     {
-        if(self::$isContentType)
+        if (self::$isContentType)
             return;
 
         self::$isContentType = true;
