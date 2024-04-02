@@ -10,9 +10,18 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use Pinoox\Portal\View;
-use function Pinoox\Router\{action};
 
-action('home', fn() => View::render('index'));
-action('pinooxjs', fn() => View::jsResponse('pinoox'));
+namespace App\com_pinoox_manager\Service;
 
+
+use App\com_pinoox_shop\Service\AuthService;
+use Pinoox\Component\Router\Route;
+use Pinoox\Component\Http\Request;
+
+class LoginAuthService extends AuthService
+{
+    protected function exit(Request $request, Route $route)
+    {
+        return response()->json(['error' => 'Access denied!'], 401);
+    }
+}

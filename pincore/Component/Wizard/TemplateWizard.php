@@ -19,7 +19,7 @@ class TemplateWizard extends Wizard implements WizardInterface
 {
     protected string $type = 'template';
 
-    public function open(string $path): Wizard
+    public function open(string $path): static
     {
         parent::open($path);
 

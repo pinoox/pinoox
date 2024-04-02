@@ -10,11 +10,20 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use function Pinoox\Router\{post, action};
-
-action('login', [\App\com_pinoox_manager\Controller\AuthController::class, 'login']);
+use App\com_pinoox_manager\Controller\AuthController;
+use function Pinoox\Router\{get, post};
 
 post(
     path: '/user/login',
-    action: '&login',
+    action: [AuthController::class, 'login'],
+);
+
+get(
+    path: '/user/get',
+    action: [AuthController::class, 'getUser'],
+);
+
+get(
+    path: '/user/getOptions',
+    action: [AuthController::class, 'getOptions'],
 );
