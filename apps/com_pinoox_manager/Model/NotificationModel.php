@@ -21,9 +21,7 @@ class NotificationModel extends Model
     protected $table = 'com_pinoox_manager_notification';
 
     protected $primaryKey = 'ntf_id';
-
-    const CREATED_AT = 'insert_date';
-    const UPDATED_AT = null;
+    public $timestamps = true;
 
     protected $fillable = [
         'app',
@@ -31,7 +29,6 @@ class NotificationModel extends Model
         'message',
         'action_key',
         'action_data',
-        'insert_date',
         'push_date',
         'status',
     ];

@@ -24,11 +24,10 @@ use Pinoox\Portal\Url;
 
 class TokenModel extends Model
 {
-    const CREATED_AT = 'insert_date';
-    const UPDATED_AT = null;
     public $incrementing = true;
     protected $primaryKey = ['app', 'token_key'];
     protected $table = 'pincore_token';
+    public $timestamps = true;
 
     protected $fillable = [
         'token_key',
@@ -53,7 +52,6 @@ class TokenModel extends Model
             $token->app = $token->app ?? App::package();
             $token->ip = $token->ip ?? Url::clientIp();
             $token->user_agent = $token->user_agent?? Url::userAgent();
-            $token->insert_date = Date::g('Y-m-d H:i:s');
             $token->expiration_date = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
         });
     }

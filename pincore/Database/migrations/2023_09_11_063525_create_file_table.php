@@ -34,7 +34,6 @@ return new class extends MigrationBase
             $table->string('file_ext', 255)->nullable();
             $table->string('file_path', 255)->nullable();
             $table->double('file_size')->nullable();
-            $table->dateTime('file_date')->nullable();
             $table->string('file_access', 255)->nullable();
             $table->timestamps();
 
