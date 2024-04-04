@@ -33,6 +33,7 @@ class FileModel extends Model
      */
     protected $table = 'pincore_file';
     protected $primaryKey = 'file_id';
+    public $incrementing = true;
 
     protected $fillable = [
         'user_id',
