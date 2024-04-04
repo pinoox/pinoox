@@ -25,7 +25,7 @@ use Pinoox\Portal\Url;
 class TokenModel extends Model
 {
     public $incrementing = true;
-    protected $primaryKey = ['app', 'token_key'];
+    public $primaryKey = 'token_id';
     protected $table = 'pincore_token';
     public $timestamps = true;
 
@@ -38,10 +38,15 @@ class TokenModel extends Model
         'app',
         'ip',
         'user_agent',
+        'expiration_date',
     ];
 
     protected $casts = [
         'token_data' => 'json',
+    ];
+
+    protected $hidden = [
+        'app'
     ];
 
     protected static function boot()

@@ -25,9 +25,10 @@ return new class extends MigrationBase
     {
         $this->schema->disableForeignKeyConstraints();
         $this->schema->create('pincore_token', function (Blueprint $table) {
+            $table->increments('token_id');
             $table->string('token_key', 100);
             $table->string('token_name', 255)->nullable();
-            $table->text('token_data')->nullable();
+            $table->json('token_data')->nullable();
             $table->string('app', 50);
             $table->unsignedInteger('user_id')->nullable();
             $table->string('ip', 255)->nullable();
@@ -36,7 +37,6 @@ return new class extends MigrationBase
             $table->string('remote_url', 255)->nullable();
             $table->timestamps();
 
-            $table->primary(['token_key', 'app']);
             $table->index('user_id');
             $table->foreign('user_id')->references('user_id')->on('pincore_user')->onDelete('set null')->onUpdate('cascade');
         });
@@ -47,9 +47,6 @@ return new class extends MigrationBase
      */
     public function down()
     {
-        $this->schema->table('pincore_token', function (Blueprint $table) {
-            $table->dropForeign(['user_id']);
-        });
         $this->schema->dropIfExists('pincore_token');
     }
 };
