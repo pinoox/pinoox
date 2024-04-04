@@ -84,9 +84,9 @@ class User
             $query->where('email', $username)->orWhere('username', $username);
         });
         if ($isActive) {
-            $user->where('status', UserModel::active);
+            $user->where('status', UserModel::ACTIVE);
         }
-        $user = $user->first();
+        $user = $user->first()->makeVisible('password');
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
@@ -221,7 +221,7 @@ class User
             $user = UserModel::where('app', self::getApp())
                 ->where('user_id', $user_id)
                 ->first();
-            if ($user && $user->status == UserModel::active) {
+            if ($user && $user->status == UserModel::ACTIVE) {
                 $user->makeHidden('password');
                 self::$user = $user->toArray();
                 if (self::$updateTokenKey) {

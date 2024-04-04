@@ -65,7 +65,7 @@ class AuthController extends ApiController
 
         $input = $validation->validate();
         $user = UserModel::where('user_id', $user_id)->first();
-        if (Hash::check($input['password'], $user->password)) {
+        if (Hash::check($input['password'], $user->makeVisible('password')->password)) {
             User::append('isLock', false);
             $user = $this->getUser();
             return $this->message($user);
