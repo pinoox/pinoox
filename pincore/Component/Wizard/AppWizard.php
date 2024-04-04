@@ -58,10 +58,10 @@ class AppWizard extends Wizard implements WizardInterface
      *
      * @param string $path The path to the package file.
      *
-     * @return Wizard The current instance of the wizard.
+     * @return static The current instance of the wizard.
      * @throws Exception
      */
-    public function open(string $path): Wizard
+    public function open(string $path): static
     {
         parent::open($path);
 
@@ -123,7 +123,7 @@ class AppWizard extends Wizard implements WizardInterface
     /**
      * Enable migration during the installation process.
      */
-    public function migration($val = true): Wizard
+    public function migration($val = true): static
     {
         $this->migration = $val;
         return $this;

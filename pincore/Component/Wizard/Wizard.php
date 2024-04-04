@@ -15,8 +15,10 @@ namespace Pinoox\Component\Wizard;
 use PhpZip\Exception\ZipEntryNotFoundException;
 use PhpZip\Exception\ZipException;
 use PhpZip\ZipFile;
+use Pinoox\Component\File;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Portal\FileSystem;
 use Pinoox\Portal\Zip;
 
 /**
@@ -87,7 +89,8 @@ abstract class Wizard implements WizardInterface
     protected ZipFile $zip;
 
     public function __construct(
-        protected EngineInterface $appEngine
+        protected string          $tmpPath,
+        protected EngineInterface $appEngine,
     )
     {
     }
@@ -193,14 +196,12 @@ abstract class Wizard implements WizardInterface
      */
     private function createTmp(): void
     {
-        $tmpPath = $this->appEngine->path('pinker/' . $this->tmpPathRoot);
-
-        if (!is_dir($tmpPath)) {
-            mkdir($tmpPath);
+        if (!is_dir($this->tmpPath)) {
+            mkdir($this->tmpPath, 0777, true);
         }
-        $this->tmpPathPackage = $tmpPath . '/' . basename($this->filename, '.pin');
+        $this->tmpPathPackage = $this->tmpPath . '/' . basename($this->filename, '.pin');
         if (!is_dir($this->tmpPathPackage)) {
-            mkdir($this->tmpPathPackage);
+            mkdir($this->tmpPathPackage, 0777, true);
         }
     }
 
@@ -333,5 +334,11 @@ abstract class Wizard implements WizardInterface
     {
         $this->force = $val;
         return $this;
+    }
+
+    public function deleteTemp()
+    {
+        if (is_dir($this->tmpPathPackage))
+            FileSystem::remove($this->tmpPathPackage);
     }
 }

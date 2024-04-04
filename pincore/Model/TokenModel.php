@@ -26,7 +26,7 @@ class TokenModel extends Model
 {
     const CREATED_AT = 'insert_date';
     const UPDATED_AT = null;
-    public $incrementing = false;
+    public $incrementing = true;
     protected $primaryKey = ['app', 'token_key'];
     protected $table = 'pincore_token';
 

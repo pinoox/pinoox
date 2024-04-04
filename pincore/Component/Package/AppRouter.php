@@ -127,7 +127,7 @@ class AppRouter
     public function delete(string $url)
     {
         $this->appRouteConfig
-            ->delete($url)
+            ->remove($url)
             ->save();
     }
 

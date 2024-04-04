@@ -16,6 +16,7 @@ use App\com_pinoox_manager\Component\Wizard;
 use App\com_pinoox_manager\Component\AppHelper;
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Lang;
 use Pinoox\Component\Request as RequestData;
 use Pinoox\Component\Response;
@@ -25,6 +26,7 @@ use Pinoox\Portal\Path;
 
 class AppController extends LoginConfiguration
 {
+
     public function get($filter = null)
     {
         switch ($filter) {
@@ -77,7 +79,7 @@ class AppController extends LoginConfiguration
         if (empty($packageName))
             return $this->message(t('manager.request_install_app_not_valid'), false);
 
-        $pinFile = Wizard::get_downloaded($packageName);
+        $pinFile = Wizard::getDownloaded($packageName);
         if (!is_file($pinFile))
             return $this->message(t('manager.request_install_app_not_valid'), false);
 
@@ -116,7 +118,7 @@ class AppController extends LoginConfiguration
         if (empty($filename))
             return $this->message(t('manager.request_update_app_not_valid'), false);
 
-        $pinFile = Path::get(self::manualPath . $filename);
+        $pinFile = path(self::manualPath . $filename);
         if (!is_file($pinFile))
             return $this->message(t('manager.request_update_app_not_valid'), false);
         if (Wizard::updateApp($pinFile)) {
@@ -135,7 +137,7 @@ class AppController extends LoginConfiguration
         if (empty($packageName))
             return $this->message(t('manager.request_update_app_not_valid'), false);
 
-        $pinFile = Wizard::get_downloaded($packageName);
+        $pinFile = Wizard::getDownloaded($packageName);
         if (!is_file($pinFile))
             return $this->message(t('manager.request_update_app_not_valid'), false);
 
@@ -158,7 +160,7 @@ class AppController extends LoginConfiguration
 
     public function files()
     {
-        $path = Path::get(self::manualPath);
+        $path = path(self::manualPath);
         $files = File::get_files_by_pattern($path, '*.pin');
         $files = array_map(function ($file) {
             $data = Wizard::pullDataPackage($file);
@@ -176,19 +178,19 @@ class AppController extends LoginConfiguration
         return $this->message($files);
     }
 
-    public function deleteFile()
+    public function deleteFile(Request $request)
     {
-        $filename = RequestData::inputOne('filename', null, '!empty');
+        $filename = $request->getPayload()->get('filename');
 
         if (empty($filename))
-            return $this->message(Lang::get('manager.error_happened'), false);
+            return $this->message(t('manager.error_happened'), false);
 
-        $pinFile = Path::get(self::manualPath . $filename);
+        $pinFile = path(self::manualPath . $filename);
         if (!is_file($pinFile))
-            return $this->message(Lang::get('manager.error_happened'), false);
+            return $this->message(t('manager.error_happened'), false);
 
         Wizard::deletePackageFile($pinFile);
-        return $this->message(Lang::get('manager.delete_successfully'), true);
+        return $this->message(t('manager.delete_successfully'), true);
     }
 
     public function filesUpload()

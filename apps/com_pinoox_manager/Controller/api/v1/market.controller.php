@@ -37,7 +37,7 @@ class MarketController extends LoginConfiguration
         if (empty($package_name))
             Response::json(Lang::get('manager.error_happened'), false);
 
-        $pinFile = Wizard::get_downloaded($package_name);
+        $pinFile = Wizard::getDownloaded($package_name);
         if (!is_file($pinFile))
             Response::json(Lang::get('manager.error_happened'), false);
 
@@ -70,7 +70,7 @@ class MarketController extends LoginConfiguration
         $data = Request::sendGet("https://www.pinoox.com/api/manager/v1/market/getApp/" . $package_name);
         HelperHeader::contentType('application/json', 'UTF-8');
         $arr = json_decode($data, true);
-        $arr['state'] = Wizard::app_state($package_name);
+        $arr['state'] = Wizard::appState($package_name);
         Response::json($arr);
     }
 
@@ -111,7 +111,7 @@ class MarketController extends LoginConfiguration
         if (!empty($result)) {
             foreach ($result as $t) {
                 //check template state
-                $t['state'] = Wizard::template_state($package_name, $t['uid']);
+                $t['state'] = Wizard::templateState($package_name, $t['uid']);
                 $t['type'] = 'theme';
                 $templates[] = $t;
             }
@@ -126,7 +126,7 @@ class MarketController extends LoginConfiguration
         $data = Request::input('auth,package_name', null, '!empty');
         $params = $this->getAuthParams($data['auth']);
 
-        if (!Wizard::is_installed($data['package_name']))
+        if (!Wizard::isInstalled($data['package_name']))
             exit();
 
         $res = Request::sendPost('https://www.pinoox.com/api/manager/v1/market/downloadRequestTemplate/' . $uid, $params);

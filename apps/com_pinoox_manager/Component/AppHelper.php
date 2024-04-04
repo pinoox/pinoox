@@ -14,50 +14,43 @@ namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Router;
+use Pinoox\Portal\App\AppRouter;
+use Pinoox\Portal\Path;
 use Pinoox\Portal\Url;
-use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
+use Pinoox\Component\Package\AppManager;
 
 class AppHelper
 {
-    /**
-     * @param null|boolean $sysApp null: return all installed and system apps | true: return all system apps | false: return all installed app
-     * @param bool $isCheckHidden
-     * @param bool $isCheckRouter
-     * @return array
-     */
-    public static function fetch_all($sysApp = null, $isCheckHidden = false, $isCheckRouter = false)
+    public static function getAll(null|bool $sysApp = null,bool $isCheckHidden = false,bool $isCheckRouter = false)
     {
-        $path = Dir::path('~apps/');
-        $folders = File::get_dir_folders($path);
         $icon_default = Url::path('resources/default.png');
-        $app = App::package();
-
+        $apps = AppEngine::all();
         $result = [];
-        foreach ($folders as $folder) {
-            $package_key = basename($folder);
-
-            if (!AppEngine::exists($package_key))
+        /**
+         * @var AppManager $app
+         */
+        foreach ($apps as $app) {
+            if (!$app->exists())
                 continue;
 
-            $app = AppEngine::config($package_key);
+            $appConfig = $app->config();
 
-            $isEnable = $app->get('enable');
+            $isEnable = $appConfig->get('enable');
             if (!$isEnable)
                 continue;
 
-            $isHidden = $app->get('hidden');
+            $isHidden = $appConfig->get('hidden');
             if (!$isCheckHidden && $isHidden)
                 continue;
 
-            $isRouter = $app->get('router');
+            $isRouter = $appConfig->get('router');
             if ($isCheckRouter && !$isRouter)
                 continue;
 
             if (!is_null($sysApp)) {
-                $sysAppState = $app->get(('sys-app'));
+                $sysAppState = $appConfig->get(('sys-app'));
                 if ($sysApp && !$sysAppState) {
                     continue;
                 } else if (!$sysApp && $sysAppState) {
@@ -65,45 +58,35 @@ class AppHelper
                 }
             }
 
-            $result[$package_key] = [
-                'package_name' => $package_key,
+            $icon = Url::path(Path::get($appConfig->get('icon'), $app->package()));
+            $result[$app->package()] = [
+                'package_name' => $app->package(),
                 'hidden' => $isHidden,
-                'dock' => $app->get('dock'),
+                'dock' => $appConfig->get('dock'),
                 'router' => $isRouter,
-                'name' => $app->get('name'),
-                'description' => $app->get('description'),
-                'version' => $app->get('version-name'),
-                'version_code' => $app->get('version-code'),
-                'developer' => $app->get('developer'),
-                'open' => $app->get('open'),
-                'sys_app' => $app->get('sys-app'),
-                'icon' => Url::check(Url::path($app->get('icon'), $package_key), $icon_default),
-                'routes' => self::fetch_all_aliases_by_package_name($package_key),
-                'build' => $app->get('build')
+                'name' => $appConfig->get('name'),
+                'description' => $appConfig->get('description'),
+                'version' => $appConfig->get('version-name'),
+                'version_code' => $appConfig->get('version-code'),
+                'developer' => $appConfig->get('developer'),
+                'open' => $appConfig->get('open'),
+                'sys_app' => $appConfig->get('sys-app'),
+                'icon' => Url::check($icon, $icon_default),
+                'routes' => AppRouter::getByPackage($app->package()),
+                'build' => $appConfig->get('build')
             ];
         }
 
         return $result;
     }
 
-    public static function fetch_all_aliases_by_package_name($packageName)
-    {
-        $routes = Config::name('~app')->get();
-        $aliases = [];
-        foreach ($routes as $alias => $package) {
-            if ($package == $packageName) {
-                $aliases[] = $alias;
-            }
-        }
-        return $aliases;
-    }
-
-    public static function fetch_by_package_name($packageName)
+    public static function getOne($packageName)
     {
         $icon_default = Url::path('resources/default.png');
-        $app = AppEngine::config($packageName);
         $result = null;
-        if (Router::existApp($packageName)) {
+        if (AppEngine::exists($packageName)) {
+            $app = AppEngine::config($packageName);
+
             $result = [
                 'name' => $app->get('name'),
                 'hidden' => $app->get('hidden'),
@@ -116,37 +99,11 @@ class AppHelper
                 'version' => $app->get('version-name'),
                 'version_code' => $app->get('version-code'),
                 'developer' => $app->get('developer'),
-                'icon' => Url::check(Url::file($app->get('icon'), $packageName), $icon_default),
+                'icon' => Url::check(Url::path($app->get('icon'), $packageName), $icon_default),
                 'build' => $app->get('build')
             ];
         }
 
         return $result;
     }
-
-    public static function fetch_all_downloads()
-    {
-        $folders = File::get_dir_folders(Dir::path('downloads>apps'));
-        if (!empty($folders) && isset($folders[0])) {
-            $folder = $folders[0];
-            $files = File::get_files_by_pattern($folder, '*.pin');
-            $result = [];
-
-            foreach ($files as $file) {
-                $data = Wizard::pullDataPackage($file);
-                if (!Wizard::isValidNamePackage($data['package_name']) || !Config::getLinear('market', $data['package_name'])) {
-                    Wizard::deletePackageFile($file);
-                    Config::name('market')->remove($data['package_name'])->save();
-                    continue;
-                }
-                $data['market'] = Config::name('market')->get($data['package_name']);
-                $result[] = $data;
-            }
-
-            return $result;
-        }
-
-    }
-
-
 }
