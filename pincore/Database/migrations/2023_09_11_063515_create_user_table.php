@@ -35,8 +35,8 @@ return new class extends MigrationBase {
             $table->string('group_key', 50)->nullable();
             $table->string('email', 50)->nullable();
             $table->string('mobile', 50)->nullable();
-            $table->dateTime('register_date')->nullable();
             $table->string('status', 50)->nullable();
+            $table->timestamps();
 
             $table->index('user_id');
             $table->index('avatar_id');

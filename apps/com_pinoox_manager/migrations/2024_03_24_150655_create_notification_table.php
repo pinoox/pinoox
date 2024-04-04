@@ -30,7 +30,6 @@ return new class extends MigrationBase
             $table->string('message', 1000)->nullable();
             $table->string('action_key', 255)->nullable();
             $table->json('action_data')->nullable();
-            $table->dateTime('insert_date')->nullable();
             $table->dateTime('push_date')->nullable();
             $table->enum('status', ['pending', 'send', 'seen', 'hide']);
             $table->timestamps();

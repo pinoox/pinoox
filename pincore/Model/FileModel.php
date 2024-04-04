@@ -34,6 +34,7 @@ class FileModel extends Model
     protected $table = 'pincore_file';
     protected $primaryKey = 'file_id';
     public $incrementing = true;
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id',
@@ -44,7 +45,6 @@ class FileModel extends Model
         'file_ext',
         'file_path',
         'file_size',
-        'file_date',
         'file_access',
     ];
 
