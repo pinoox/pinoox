@@ -21,14 +21,15 @@ use Pinoox\Portal\Hash;
 class UserModel extends Model
 {
 
-    const active = 'active';
-    const suspend = 'suspend';
-    const CREATED_AT = 'register_date';
-    const UPDATED_AT = null;
+    const ACTIVE = 'active';
+    const SUSPEND = 'suspend';
+    const PENDING = 'pending';
+    
     protected $table = 'pincore_user';
-    public $incrementing = false;
+    public $incrementing = true;
     public $primaryKey = 'user_id';
-
+    public $timestamps = true;
+    
     protected $fillable = [
         'session_id',
         'avatar_id',
@@ -37,11 +38,17 @@ class UserModel extends Model
         'lname',
         'username',
         'password',
+        'group_key',
         'email',
+        'mobile',
         'status',
     ];
 
     protected $appends = ['full_name'];
+
+    protected $hidden = [
+        'password', 'session_id','app'
+    ];
 
     public static function hashPassword($password)
     {
@@ -60,7 +67,7 @@ class UserModel extends Model
 
         static::creating(function (UserModel $user) {
             $user->app = $user->app ?: App::package();
-            $user->status = $user->status ?: self::active;
+            $user->status = $user->status ?: self::ACTIVE;
             $user->password = self::hashPassword($user->password);
         });
 
