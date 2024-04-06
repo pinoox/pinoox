@@ -17,7 +17,6 @@ namespace Pinoox\Model\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Scope;
-use Pinoox\Portal\App\App;
 
 class AppScope implements Scope
 {

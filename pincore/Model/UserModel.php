@@ -92,6 +92,7 @@ class UserModel extends Model
     public static function setPackage(string $package): void
     {
         App::set('transport.user', $package)->save();
+        self::addAppGlobalScope();
     }
 
     public static function getPackage(): string
@@ -101,6 +102,11 @@ class UserModel extends Model
     }
 
     protected static function booted()
+    {
+        self::addAppGlobalScope();
+    }
+
+    private static function addAppGlobalScope(): void
     {
         static::addGlobalScope('app', new AppScope(static::getPackage()));
     }

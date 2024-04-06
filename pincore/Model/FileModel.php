@@ -97,6 +97,7 @@ class FileModel extends Model
     public static function setPackage(string $package): void
     {
         App::set('transport.file', $package)->save();
+        self::addAppGlobalScope();
     }
 
     public static function getPackage(): string
@@ -106,6 +107,11 @@ class FileModel extends Model
     }
 
     protected static function booted()
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
+    }
+
+    private static function addAppGlobalScope(): void
     {
         static::addGlobalScope('app', new AppScope(static::getPackage()));
     }
