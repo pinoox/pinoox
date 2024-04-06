@@ -14,7 +14,6 @@ namespace Pinoox\Component;
 
 use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Builder;
-use Pinoox\Portal\App\App;
 use Pinoox\Model\TokenModel;
 use Pinoox\Model\UserModel;
 use Firebase\JWT\JWT;
@@ -38,11 +37,6 @@ class User
     private static $updateTokenKey = false;
     private static $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
-    public static function app($packageName)
-    {
-        self::$app = $packageName;
-    }
-
     public static function updateLifetime($status)
     {
         self::$updateLifetime = $status;
@@ -65,11 +59,6 @@ class User
         self::$user = null;
     }
 
-    public static function getApp()
-    {
-        return (!empty(self::$app)) ? self::$app : App::package();
-    }
-
     public static function login($username, $password, $isActive = true)
     {
         self::$msg = null;
@@ -79,8 +68,7 @@ class User
             return false;
         }
 
-        $user = UserModel::where('app', self::getApp());
-        $user->where(function (Builder $query) use ($username) {
+        $user = UserModel::where(function (Builder $query) use ($username) {
             $query->where('email', $username)->orWhere('username', $username);
         });
         if ($isActive) {
@@ -218,8 +206,7 @@ class User
         $token = self::getToken();
         $user_id = @$token['user_id'];
         if ($user_id && empty(self::$user)) {
-            $user = UserModel::where('app', self::getApp())
-                ->where('user_id', $user_id)
+            $user = UserModel::where('user_id', $user_id)
                 ->first();
             if ($user && $user->status == UserModel::ACTIVE) {
                 $user->makeHidden('password');
