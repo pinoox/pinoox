@@ -15,9 +15,7 @@ namespace App\com_pinoox_manager\Controller;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\User;
 use Pinoox\Model\UserModel;
-use Pinoox\Portal\Config;
 use Pinoox\Portal\Hash;
-use Pinoox\Portal\Url;
 
 class AuthController extends ApiController
 {

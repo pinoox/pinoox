@@ -14,8 +14,11 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Component\Database\Model;
+use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Hash;
 
 class UserModel extends Model
@@ -24,12 +27,12 @@ class UserModel extends Model
     const ACTIVE = 'active';
     const SUSPEND = 'suspend';
     const PENDING = 'pending';
-    
+
     protected $table = 'pincore_user';
     public $incrementing = true;
     public $primaryKey = 'user_id';
     public $timestamps = true;
-    
+
     protected $fillable = [
         'session_id',
         'avatar_id',
@@ -47,7 +50,7 @@ class UserModel extends Model
     protected $appends = ['full_name'];
 
     protected $hidden = [
-        'password', 'session_id','app'
+        'password', 'session_id', 'app'
     ];
 
     public static function hashPassword($password)
@@ -66,7 +69,7 @@ class UserModel extends Model
         parent::boot();
 
         static::creating(function (UserModel $user) {
-            $user->app = $user->app ?: App::package();
+            $user->app = $user->app ?: self::getPackage();
             $user->status = $user->status ?: self::ACTIVE;
             $user->password = self::hashPassword($user->password);
         });
@@ -84,5 +87,21 @@ class UserModel extends Model
     public function getFullNameAttribute()
     {
         return $this->fname . ' ' . $this->lname;
+    }
+
+    public static function setPackage(string $package): void
+    {
+        App::set('transport.user', $package)->save();
+    }
+
+    public static function getPackage(): string
+    {
+        $package = App::get('transport.user');
+        return $package ?? App::package();
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
     }
 }

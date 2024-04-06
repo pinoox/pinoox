@@ -19,7 +19,10 @@ use Pinoox\Component\Date;
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Token;
+use Pinoox\Component\User;
+use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Url;
 
 class TokenModel extends Model
@@ -54,10 +57,27 @@ class TokenModel extends Model
         parent::boot();
 
         static::creating(function ($token) {
-            $token->app = $token->app ?? App::package();
+            $token->app = $token->app ?? self::getPackage();
+            $token->user_id = $token->user_id ?? User::get('user_id');
             $token->ip = $token->ip ?? Url::clientIp();
-            $token->user_agent = $token->user_agent?? Url::userAgent();
+            $token->user_agent = $token->user_agent ?? Url::userAgent();
             $token->expiration_date = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
         });
+    }
+
+    public static function setPackage(string $package): void
+    {
+        App::set('transport.token', $package)->save();
+    }
+
+    public static function getPackage(): string
+    {
+        $package = App::get('transport.token');
+        return $package ?? App::package();
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
     }
 }
