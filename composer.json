@@ -23,6 +23,7 @@
         "illuminate/database": "^10.40",
         "illuminate/events": "^10.42",
         "illuminate/hashing": "^10.42",
+        "illuminate/pagination": "^10.48",
         "illuminate/validation": "^10.40",
         "intervention/image": "^3.3",
         "nelexa/zip": "^4.0",
