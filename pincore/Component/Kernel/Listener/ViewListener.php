@@ -39,6 +39,8 @@ class ViewListener implements EventSubscriberInterface
             $event->setResponse(new Response($response->getContentReady()));
         } else if ($response instanceof View) {
             $event->setResponse(new Response($response->getContentReady()));
+        }else if (is_object($response) && method_exists($response,'toArray')) {
+            $event->setResponse(new JsonResponse($response->toArray()));
         }
     }
 
