@@ -53,6 +53,9 @@ class FileModel extends Model
         'file_access',
     ];
 
+    protected $hidden = [
+        'app'
+    ];
     protected $appends = ['file_link', 'thumb_link'];
 
     public function user(): BelongsTo
