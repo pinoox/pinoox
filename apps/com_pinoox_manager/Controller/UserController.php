@@ -129,9 +129,9 @@ class UserController extends ApiController
         $default = Url::path('resources/avatar.png');
         $isAvatar = !empty($user->avatar_id);
         $avatar = $avatarThumb = $default;
-        if ($user->avatar) {
-            $avatar = Url::check($user->avatar->file_link, $default);
-            $avatarThumb = Url::check($user->avatar->thumb_link, $default);
+        if ($user->file) {
+            $avatar = Url::check($user->file->file_link, $default);
+            $avatarThumb = Url::check($user->file->thumb_link, $default);
         }
 
         if ($isLock) {

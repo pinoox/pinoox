@@ -14,12 +14,11 @@
 
 namespace Pinoox\Model;
 
-use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Hash;
+use Pinoox\Portal\Url;
 
 class UserModel extends Model
 {
@@ -32,6 +31,7 @@ class UserModel extends Model
     public $incrementing = true;
     public $primaryKey = 'user_id';
     public $timestamps = true;
+    private $defaultAvatarLink = null;
 
     protected $fillable = [
         'session_id',
@@ -47,7 +47,7 @@ class UserModel extends Model
         'status',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'avatar'];
 
     protected $hidden = [
         'password', 'session_id', 'app'
@@ -75,11 +75,32 @@ class UserModel extends Model
         });
 
         static::deleting(function (UserModel $user) {
-            $user->avatar()->delete();
+            $user->file->delete();
         });
     }
 
-    public function avatar(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function getAvatarAttribute()
+    {
+        $file = FileModel::where('file_id', $this->avatar_id)->first();
+        if (!is_null($this->defaultAvatarLink)) {
+            return [
+                'file_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
+                'thumb_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
+            ];
+        } else {
+            return [
+                'file_link' => $file?->file_link,
+                'thumb_link' => $file?->thumb_link,
+            ];
+        }
+    }
+
+    public function setDefaultAvatarLink(string $imageLink): void
+    {
+        $this->defaultAvatarLink = $imageLink;
+    }
+
+    public function file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
     }
