@@ -14,6 +14,7 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
@@ -24,6 +25,7 @@ class UserModel extends Model
 {
 
     const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
     const SUSPEND = 'suspend';
     const PENDING = 'pending';
 
@@ -130,5 +132,16 @@ class UserModel extends Model
     private static function addAppGlobalScope(): void
     {
         static::addGlobalScope('app', new AppScope(static::getPackage()));
+    }
+
+    public static function ruleUnique($column = null, $ignoreUserId = null)
+    {
+        $rule = Rule::unique(static::tableName(), $column)->where('app', static::getPackage());
+
+        if (!is_null($ignoreUserId)) {
+            $rule = $rule->ignore($ignoreUserId, 'user_id');
+        }
+
+        return $rule;
     }
 }
