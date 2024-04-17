@@ -11,6 +11,7 @@ return [
     "different" => ":attribute و :other باید متفاوت باشند.",
     "same" => ":attribute و :other باید مانند هم باشند.",
     "confirmed" => ":attribute با تاییدیه مطابقت ندارد.",
+    "mimes" => ":attribute با فرمت :values مجاز است.",
 
     "min" => [
         "numeric" => ":attribute نباید کوچکتر از :min باشد.",
@@ -20,6 +21,7 @@ return [
     ],
 
     'attributes' => [
+        "avatar" => "تصویر کاربری",
         "password" => "رمز عبور",
         "username" => "نام کاربری",
         "email" => "پست الکترونیکی",
