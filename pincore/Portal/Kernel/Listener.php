@@ -15,7 +15,7 @@
 namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
-use Pinoox\Component\Kernel\Listener\MiddlewareListener;
+use Pinoox\Component\Kernel\Listener\ExceptionListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
 use Pinoox\Component\Kernel\Listener\RouteEmptyListener;
 use Pinoox\Component\Kernel\Listener\ViewListener;
@@ -50,7 +50,9 @@ class Listener extends Portal
         self::__bind(ResponseListener::class, 'response')
             ->setArguments(['%charset%']);
 
-        self::__bind(ErrorListener::class, 'exception')
+        self::__bind(ExceptionListener::class, 'exception');
+
+        self::__bind(ErrorListener::class, 'core_exception')
             ->setArguments([[ErrorController::class, 'exception']]);
     }
 

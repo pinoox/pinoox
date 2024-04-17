@@ -8,7 +8,6 @@ use Pinoox\Component\Http\Response;
 
 class ErrorController extends Controller
 {
-
     public function exception(FlattenException $exception)
     {
         $msg = 'Something went wrong! (' . $exception->getMessage() . ')';
