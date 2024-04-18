@@ -42,11 +42,7 @@ final class FormRequestValueResolver implements ArgumentValueResolverInterface
          * @var FormRequest $formRequest;
          */
         $formRequest = new $type($request);
-        $formRequest->prepend();
-        if($formRequest->isAuto)
-        {
-            $formRequest->check();
-        }
+        $formRequest->__resolve();
         yield $formRequest;
     }
 }

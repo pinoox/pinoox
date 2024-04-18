@@ -15,6 +15,7 @@ namespace Pinoox\Component\Kernel\Listener;
 
 
 use Pinoox\Component\Http\Response;
+use Pinoox\Component\Http\ResponseException;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Portal\Kernel\Dispatcher;
 use Pinoox\Portal\Kernel\Listener;
@@ -28,7 +29,12 @@ class ExceptionListener implements EventSubscriberInterface
 {
     public function onException(ExceptionEvent $event)
     {
-        if ($event->getRequest()->attributes->has('_controller')) {
+        $exception = $event->getThrowable();
+        if ($exception instanceof ResponseException) {
+            $event->setResponse(
+                $exception->getResponse()
+            );
+        } else if ($event->getRequest()->attributes->has('_controller')) {
             $controller = $event->getRequest()->attributes->get('_controller');
             if (isset($controller[0]) && class_exists($controller[0]) && method_exists($controller[0], '_exception')) {
                 $result = call_user_func_array(array($controller[0], '_exception'), [

@@ -12,6 +12,8 @@
 
 namespace Pinoox\Component\Http;
 
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
@@ -269,5 +271,60 @@ class Request extends RequestSymfony
             $this->context->setQueryString($this->server->get('QUERY_STRING', ''));
         }
         return $this->context;
+    }
+
+    public function isJson(): bool
+    {
+        return Str::contains($this->headers->get('CONTENT_TYPE') ?? '', ['/json', '+json']);
+    }
+
+    public function input(): InputBag
+    {
+        if ($this->isJson()) {
+            return $this->json;
+        }
+
+        return in_array($this->getRealMethod(), ['GET', 'HEAD']) ? $this->query : $this->request;
+    }
+
+    public function merge(array $input): static
+    {
+        $this->input()->add($input);
+
+        return $this;
+    }
+
+    public function replace(array $input): static
+    {
+        $this->input()->replace($input);
+
+        return $this;
+    }
+
+    public function filter(string $key, mixed $default = null, int $filter = \FILTER_DEFAULT, mixed $options = []): mixed
+    {
+        return $this->input()->filter($key, $default, $filter, $options);
+    }
+
+    public function has(string $key): bool
+    {
+        return $this->input()->has($key);
+    }
+
+    public function __get($key)
+    {
+        return $this->input()->get($key);
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->input()->set($name, $value);
+    }
+
+    public function set(string $key, mixed $value): static
+    {
+        $this->input()->set($key, $value);
+
+        return $this;
     }
 }

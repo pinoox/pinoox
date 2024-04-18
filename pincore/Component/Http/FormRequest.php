@@ -13,22 +13,34 @@
 
 namespace Pinoox\Component\Http;
 
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\ValidatedInput;
-use Illuminate\Validation\ValidationException;
+use Pinoox\Component\Validation\AuthorizationException;
+use Pinoox\Component\Validation\ValidationException;
 use Illuminate\Validation\Validator;
-use Pinoox\Component\Kernel\Exception;
+use Symfony\Component\HttpFoundation\InputBag;
 
 abstract class FormRequest
 {
+    const AUTHORIZATION = 'authorization';
+    const VALIDATION = 'validation';
+    protected $stopOnFirstFailure = false;
+
     public Request $global;
-    public $isAuto = false;
+    protected Validator $validator;
+
+    protected $check = true;
     protected $errorBag = 'default';
 
     public function __construct(Request $request)
     {
         $this->global = $request;
+        $this->validator = $this->createValidator();
     }
 
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function validate()
     {
         return $this->validation()->validate();
@@ -44,15 +56,38 @@ abstract class FormRequest
         return true;
     }
 
-    public function validated($key = null, $default = null): mixed
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function validated($key = null, $default = null)
     {
         return data_get($this->validation()->validated(), $key, $default);
     }
 
+    protected function createValidator(): Validator
+    {
+        $validator = $this->global->getValidation()
+            ->make(
+                $this->data(),
+                $this->rules(),
+                $this->messages(),
+                $this->attributes()
+            )->stopOnFirstFailure($this->stopOnFirstFailure);
+
+        // add after
+        $this->addAfterArrayToValidator($validator);
+
+        return $this->with($validator);
+    }
+
+    protected function addAfterArrayToValidator(Validator $validator): void
+    {
+        $validator->after($this->after());
+    }
+
     public function validation(): Validator
     {
-        $validator = $this->global->getValidation()->make($this->data(), $this->rules(), $this->messages(), $this->attributes());
-        return $this->withValidator($validator);
+        return $this->validator;
     }
 
     public function data(): array
@@ -75,12 +110,90 @@ abstract class FormRequest
         return [];
     }
 
-    public function prepend()
+    public function after(): array|callable
+    {
+        return [];
+    }
+
+    protected function prepend()
     {
         // ...
     }
 
+    public function input(): InputBag
+    {
+        return $this->global->input();
+    }
 
+    public function has(string $key): bool
+    {
+        return $this->input()->has($key);
+    }
+
+    public function all(): array
+    {
+        return $this->input()->all();
+    }
+
+    public function get(string $key, mixed $default = null): mixed
+    {
+        if ($this->has($key)) {
+            return $this->all()[$key];
+        }
+
+        return $default;
+    }
+
+    public function merge(array $input): static
+    {
+        $this->input()->add($input);
+
+        return $this;
+    }
+
+    public function set(string $key, mixed $value): static
+    {
+        $this->input()->set($key, $value);
+
+        return $this;
+    }
+
+    public function replace(array $input): static
+    {
+        $this->input()->replace($input);
+
+        return $this;
+    }
+
+    public function filter(string $key, mixed $default = null, int $filter = \FILTER_DEFAULT, mixed $options = []): mixed
+    {
+        return $this->input()->filter($key, $default, $filter, $options);
+    }
+
+    public function __get($key)
+    {
+        return $this->input()->get($key);
+    }
+
+    public function __set(string $name, $value): void
+    {
+        $this->input()->set($name, $value);
+    }
+
+    public function __resolve()
+    {
+        $this->prepend();
+
+        if (!$this->check)
+            return;
+
+        $this->check();
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws AuthorizationException
+     */
     public function check()
     {
         if (!$this->passesAuthorization()) {
@@ -92,12 +205,26 @@ abstract class FormRequest
         if ($instance->fails()) {
             $this->failedValidation($instance);
         }
+
+        return $this->validated();
     }
 
-    public function withValidator(Validator $validator): Validator
+    /**
+     * Handle the failure based on the type of error.
+     *
+     * @param string $type The type of error. Possible values are 'authorization' or 'validation'.
+     * @return void
+     */
+    protected function failed(string $type)
+    {
+        // ...
+    }
+
+    public function with(Validator $validator): Validator
     {
         return $validator;
     }
+
 
     protected function getValidatorInstance(): Validator
     {
@@ -106,21 +233,39 @@ abstract class FormRequest
 
     protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
     {
+        $this->failed(self::VALIDATION);
         throw (new ValidationException($validator))
             ->errorBag($this->errorBag);
     }
 
-    protected function passesAuthorization()
+    public function passes(): bool
     {
-        if (method_exists($this, 'authorize')) {
-            return $this->authorize();
-        }
+        return $this->passesAuthorization() && $this->passesValidation();
+    }
 
-        return true;
+    public function fails(): bool
+    {
+        return !$this->passesAuthorization() || !$this->passesValidation();
+    }
+
+    protected function passesAuthorization(): bool
+    {
+        return $this->authorize();
+    }
+
+    protected function passesValidation(): bool
+    {
+        return $this->validation()->passes();
     }
 
     protected function failedAuthorization()
     {
-        throw new Exception('This action is unauthorized.',0);
+        $this->failed(self::AUTHORIZATION);
+        throw new AuthorizationException();
+    }
+
+    protected function errors(): MessageBag
+    {
+        return $this->validator->errors();
     }
 }
