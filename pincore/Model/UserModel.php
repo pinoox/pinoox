@@ -76,6 +76,12 @@ class UserModel extends Model
             $user->password = self::hashPassword($user->password);
         });
 
+        static::updating(function (UserModel $user) {
+            if ($user->isDirty('password')) {
+                $user->password = self::hashPassword($user->password);
+            }
+        });
+
         static::deleting(function (UserModel $user) {
             $user->file->delete();
         });
