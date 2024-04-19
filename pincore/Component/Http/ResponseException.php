@@ -23,6 +23,11 @@ class ResponseException extends RuntimeException
 
     public static function call(Response $response): static
     {
+        throw static::init($response);
+    }
+
+    public static function init(Response $response): static
+    {
         return new static($response);
     }
 

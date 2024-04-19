@@ -12,7 +12,6 @@
 
 namespace Pinoox\Component\Http;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
@@ -309,6 +308,13 @@ class Request extends RequestSymfony
     public function has(string $key): bool
     {
         return $this->input()->has($key);
+    }
+
+    public function remove(string $key): static
+    {
+        $this->input()->remove($key);
+
+        return $this;
     }
 
     public function __get($key)

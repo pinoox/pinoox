@@ -18,37 +18,58 @@ use Illuminate\Support\ValidatedInput;
 use Pinoox\Component\Validation\AuthorizationException;
 use Pinoox\Component\Validation\ValidationException;
 use Illuminate\Validation\Validator;
+use Symfony\Component\HttpFoundation\FileBag;
+use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\ServerBag;
 
 abstract class FormRequest
 {
     const AUTHORIZATION = 'authorization';
     const VALIDATION = 'validation';
-    protected $stopOnFirstFailure = false;
+    protected bool $stopOnFirstFailure = false;
 
     public Request $global;
     protected Validator $validator;
 
-    protected $check = true;
-    protected $errorBag = 'default';
+    protected bool $check = true;
+    protected string $errorBag = 'default';
+    public FileBag $files;
+    public InputBag $cookies;
+    public InputBag $request;
+    public InputBag $query;
+    public ServerBag $server;
+    public HeaderBag $headers;
 
     public function __construct(Request $request)
     {
-        $this->global = $request;
+        $this->initialRequest($request);
         $this->validator = $this->createValidator();
     }
 
-    /**
-     * @throws \Illuminate\Validation\ValidationException
-     */
+    protected function initialRequest(Request $request): void
+    {
+        $this->global = $request;
+        $this->files = $request->files;
+        $this->cookies = $request->cookies;
+        $this->request = $request->request;
+        $this->server = $request->server;
+        $this->headers = $request->headers;
+    }
+
+    public function getPayload(): InputBag
+    {
+        return $this->global->getPayload();
+    }
+
     public function validate()
     {
-        return $this->validation()->validate();
+        return $this->validator->validate();
     }
 
     public function safe(array $keys = null): ValidatedInput|array
     {
-        return $this->validation()->safe($keys);
+        return $this->validator->safe($keys);
     }
 
     public function authorize(): bool
@@ -56,16 +77,14 @@ abstract class FormRequest
         return true;
     }
 
-    /**
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function validated($key = null, $default = null)
     {
-        return data_get($this->validation()->validated(), $key, $default);
+        return data_get($this->validator->validated(), $key, $default);
     }
 
     protected function createValidator(): Validator
     {
+        $this->prepend();
         $validator = $this->global->getValidation()
             ->make(
                 $this->data(),
@@ -130,9 +149,16 @@ abstract class FormRequest
         return $this->input()->has($key);
     }
 
-    public function all(): array
+    public function remove(string $key): static
     {
-        return $this->input()->all();
+        $this->input()->remove($key);
+
+        return $this;
+    }
+
+    public function all(?string $key = null): array
+    {
+        return $this->input()->all($key);
     }
 
     public function get(string $key, mixed $default = null): mixed
@@ -180,14 +206,31 @@ abstract class FormRequest
         $this->input()->set($name, $value);
     }
 
-    public function __resolve()
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws AuthorizationException
+     */
+    public function __resolve(): void
     {
-        $this->prepend();
-
         if (!$this->check)
             return;
 
-        $this->check();
+        $this->checkFormRequest();
+    }
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     * @throws AuthorizationException
+     */
+    protected function checkFormRequest(): void
+    {
+        if (!$this->passesAuthorization()) {
+            $this->failedAuthorization();
+        }
+
+        if ($this->validator->fails()) {
+            $this->failedValidation();
+        }
     }
 
     /**
@@ -196,16 +239,7 @@ abstract class FormRequest
      */
     public function check()
     {
-        if (!$this->passesAuthorization()) {
-            $this->failedAuthorization();
-        }
-
-        $instance = $this->getValidatorInstance();
-
-        if ($instance->fails()) {
-            $this->failedValidation($instance);
-        }
-
+        $this->checkFormRequest();
         return $this->validated();
     }
 
@@ -231,10 +265,10 @@ abstract class FormRequest
         return $this->validation();
     }
 
-    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    protected function failedValidation()
     {
         $this->failed(self::VALIDATION);
-        throw (new ValidationException($validator))
+        throw (new ValidationException($this->validator))
             ->errorBag($this->errorBag);
     }
 
@@ -255,7 +289,7 @@ abstract class FormRequest
 
     protected function passesValidation(): bool
     {
-        return $this->validation()->passes();
+        return $this->validator->passes();
     }
 
     protected function failedAuthorization()
