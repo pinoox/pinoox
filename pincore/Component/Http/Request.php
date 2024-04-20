@@ -15,8 +15,12 @@ namespace Pinoox\Component\Http;
 use Illuminate\Support\Str;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
+use Pinoox\Component\Upload\FileUploader;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
+use Pinoox\Component\Http\File\UploadedFile;
+use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\Routing\RequestContext;
 use Illuminate\Validation\Validator;
@@ -24,31 +28,19 @@ use Illuminate\Validation\Validator;
 class Request extends RequestSymfony
 {
     public InputBag $json;
+    public ParameterBag $parameters;
 
     public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
+        $this->convertFiles();
         $this->initJsonData();
+        $this->parameters = $this->attributes;
     }
 
-    public function value(string $key, mixed $default = null, string $validation = ''): mixed
+    public function get(string $key, mixed $default = null): mixed
     {
-        return HelperArray::parseParam(
-            $this->all(),
-            $key,
-            $default,
-            $validation
-        );
-    }
-
-    public function get(string|array $keys, mixed $default = null, string $validation = ''): array
-    {
-        return HelperArray::parseParams(
-            $this->all(),
-            $keys,
-            $default,
-            $validation
-        );
+        return $this->fetchDataByKey($this->input()->all(), $key, $default);
     }
 
     private function initJsonData(): void
@@ -181,20 +173,20 @@ class Request extends RequestSymfony
         );
     }
 
-    public function attributes($keys, $default = null, $removeNull = false): array
+    public function parameters($keys, $default = null, $removeNull = false): array
     {
         return HelperArray::parseParams(
-            $this->attributes->all(),
+            $this->parameters->all(),
             $keys,
             $default,
             $removeNull
         );
     }
 
-    public function attributesOne($key, $default = null): mixed
+    public function parametersOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
-            $this->attributes->all(),
+            $this->parameters->all(),
             $key,
             $default,
         );
@@ -256,6 +248,38 @@ class Request extends RequestSymfony
         ];
     }
 
+    protected function convertUploadedFiles(array $files)
+    {
+        return array_map(function ($file) {
+            if (is_null($file) || (is_array($file) && empty(array_filter($file)))) {
+                return $file;
+            }
+
+            return is_array($file)
+                ? $this->convertUploadedFiles($file)
+                : UploadedFile::createFromBase($file);
+        }, $files);
+    }
+
+    protected function convertFiles()
+    {
+        $this->files = new FileBag($this->convertUploadedFiles($this->files->all()));
+    }
+
+    public function file(string $key, mixed $default = null): UploadedFile
+    {
+        if ($this->has($key)) {
+            return $this->fetchDataByKey($this->files->all(), $key, $default);
+        }
+
+        return $default;
+    }
+
+    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?FileUploader
+    {
+        return $this->file($key, $default)?->store($destination, $access);
+    }
+
     public function getContext(): RequestContext
     {
         if (empty($this->context)) {
@@ -298,6 +322,22 @@ class Request extends RequestSymfony
         $this->input()->replace($input);
 
         return $this;
+    }
+
+    protected function fetchDataByKey($array, $key, $default = null)
+    {
+        if (isset($array[$key]))
+            return $array[$key];
+
+        $keys = explode('.', $key);
+        foreach ($keys as $k) {
+            if (isset($array[$k]))
+                $array = $array[$k];
+            else
+                return $default;
+        }
+
+        return $array;
     }
 
     public function filter(string $key, mixed $default = null, int $filter = \FILTER_DEFAULT, mixed $options = []): mixed

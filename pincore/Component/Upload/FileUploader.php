@@ -40,15 +40,21 @@ class FileUploader
     private $isThumb;
     private $thumbInfo;
 
-    public function __construct(string $path = '', string $destination = '', string $fileKey = null, string $access = 'public')
+    public function __construct(string $path = '', string $destination = '', UploadedFile|string $fileKey = null, string $access = 'public')
     {
         $this->path = $path;
         $this->destination = $destination;
         $this->access = $access;
-        $this->fileKey = $fileKey;
 
-        if (!empty($_FILES) && !empty($fileKey))
-            $this->file = (new FileBag($_FILES))->get($fileKey);
+        if ($fileKey instanceof UploadedFile) {
+            $this->fileKey = $fileKey;
+            $this->file = $fileKey;
+        } else {
+            $this->fileKey = $fileKey;
+            if (!empty($_FILES) && !empty($fileKey))
+                $this->file = (new FileBag($_FILES))->get($fileKey);
+        }
+
 
         $this->setUploadPath();
     }
@@ -96,7 +102,7 @@ class FileUploader
     public function delete(FileModel $fileModel): self
     {
         $this->fileModel = $fileModel;
-        $path = path($fileModel->file_path,$fileModel->app);
+        $path = path($fileModel->file_path, $fileModel->app);
         $originalFile = $path . '/' . $fileModel->file_name;
         $thumbnailFile = $path . '/thumbs/thumb_' . $fileModel->file_name;
 
@@ -198,7 +204,7 @@ class FileUploader
 
     private function isImage(): bool
     {
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif','webp'];
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
         $fileExtension = strtolower($this->file->getClientOriginalExtension());
 
         return in_array($fileExtension, $allowedExtensions);

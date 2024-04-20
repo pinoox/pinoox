@@ -15,12 +15,15 @@ namespace Pinoox\Component\Http;
 
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ValidatedInput;
+use Pinoox\Component\Upload\FileUploader;
 use Pinoox\Component\Validation\AuthorizationException;
 use Pinoox\Component\Validation\ValidationException;
 use Illuminate\Validation\Validator;
+use Pinoox\Component\Http\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\ServerBag;
 
 abstract class FormRequest
@@ -40,6 +43,7 @@ abstract class FormRequest
     public InputBag $query;
     public ServerBag $server;
     public HeaderBag $headers;
+    public ParameterBag $parameters;
 
     public function __construct(Request $request)
     {
@@ -55,6 +59,7 @@ abstract class FormRequest
         $this->request = $request->request;
         $this->server = $request->server;
         $this->headers = $request->headers;
+        $this->parameters = $request->parameters;
     }
 
     public function getPayload(): InputBag
@@ -62,9 +67,9 @@ abstract class FormRequest
         return $this->global->getPayload();
     }
 
-    public function validate()
+    public function validate($key = null, $default = null)
     {
-        return $this->validator->validate();
+        return data_get($this->validator->validate(), $key, $default);
     }
 
     public function safe(array $keys = null): ValidatedInput|array
@@ -75,6 +80,16 @@ abstract class FormRequest
     public function authorize(): bool
     {
         return true;
+    }
+
+    public function file(string $key, mixed $default = null): UploadedFile
+    {
+        return $this->global->file($key, $default);
+    }
+
+    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?FileUploader
+    {
+        return $this->global->store($key, $destination, $access, $default);
     }
 
     public function validated($key = null, $default = null)
@@ -163,11 +178,7 @@ abstract class FormRequest
 
     public function get(string $key, mixed $default = null): mixed
     {
-        if ($this->has($key)) {
-            return $this->all()[$key];
-        }
-
-        return $default;
+        return $this->global->get($key, $default);
     }
 
     public function merge(array $input): static
