@@ -24,6 +24,7 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Validation\Factory;
 
 /**
+ * @method static bool check(mixed $value, array|string $rule)
  * @method static ObjectPortal1 make(array $data, array $rules, array $messages = [], array $attributes = [])
  * @method static array validate(array $data, array $rules, array $messages = [], array $attributes = [])
  * @method static extend($rule, $extension, $message = NULL)
@@ -45,47 +46,47 @@ use Pinoox\Component\Validation\Factory;
  */
 class Validation extends Portal
 {
-    public static function __register(): void
-    {
-        self::__bind(DatabasePresenceVerifier::class, 'verifier')->setArguments([
-            DB::getDatabaseManager(),
-        ]);
+	public static function __register(): void
+	{
+		self::__bind(DatabasePresenceVerifier::class, 'verifier')->setArguments([
+		    DB::getDatabaseManager(),
+		]);
 
-        self::__bind(Factory::class)->setArguments([
-            Lang::__ref(),
-            Container::Illuminate()
-        ])->addMethodCall('setPresenceVerifier', [
-            self::__ref('verifier'),
-        ]);
-    }
-
-
-    /**
-     * Get the registered name of the component.
-     * @return string
-     */
-    public static function __name(): string
-    {
-        return 'validation';
-    }
+		self::__bind(Factory::class)->setArguments([
+		    Lang::__ref(),
+		    Container::Illuminate()
+		])->addMethodCall('setPresenceVerifier', [
+		    self::__ref('verifier'),
+		]);
+	}
 
 
-    /**
-     * Get exclude method names .
-     * @return string[]
-     */
-    public static function __exclude(): array
-    {
-        return [];
-    }
+	/**
+	 * Get the registered name of the component.
+	 * @return string
+	 */
+	public static function __name(): string
+	{
+		return 'validation';
+	}
 
 
-    /**
-     * Get method names for callback object.
-     * @return string[]
-     */
-    public static function __callback(): array
-    {
-        return [];
-    }
+	/**
+	 * Get exclude method names .
+	 * @return string[]
+	 */
+	public static function __exclude(): array
+	{
+		return [];
+	}
+
+
+	/**
+	 * Get method names for callback object.
+	 * @return string[]
+	 */
+	public static function __callback(): array
+	{
+		return [];
+	}
 }
