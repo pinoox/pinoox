@@ -15,6 +15,7 @@ use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Kernel\ContainerBuilder;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Path;
 use Pinoox\Portal\Lang;
 use Pinoox\Component\Helpers\Str;
@@ -78,11 +79,11 @@ if (!function_exists('lang')) {
     }
 }
 
-if (!function_exists('t(')) {
+if (!function_exists('rlang')) {
     /**
      * @deprecated Use the 't()' function instead, which provides the same functionality.
      */
-    function t($key, array $replace = [], $locale = NULL, $fallback = true)
+    function rlang($key, array $replace = [], $locale = NULL, $fallback = true)
     {
         return Lang::get($key, $replace, $locale, $fallback);
     }
@@ -219,5 +220,15 @@ if (!function_exists('response')) {
     function response(?string $content = '', int $status = 200, array $headers = []): Response
     {
         return new Response($content, $status, $headers);
+    }
+}
+
+if (!function_exists('transaction')) {
+    /**
+     * @throws Throwable
+     */
+    function transaction(Closure $callback, int $attempts = 1): mixed
+    {
+        return DB::transaction($callback, $attempts);
     }
 }
