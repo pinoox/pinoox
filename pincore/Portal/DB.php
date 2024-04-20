@@ -138,7 +138,7 @@ class DB extends Portal
     /**
      * @throws Throwable
      */
-    public static function transaction(Closure $callback, $attempts = 1): mixed
+    public static function transaction(Closure $callback, int $attempts = 1): mixed
     {
         return DB::connection()->transaction($callback, $attempts);
     }

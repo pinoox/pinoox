@@ -92,11 +92,15 @@ class UserModel extends Model
         $file = FileModel::where('file_id', $this->avatar_id)->first();
         if (!is_null($this->defaultAvatarLink)) {
             return [
+                'file_id' => $this->avatar_id,
                 'file_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
                 'thumb_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
             ];
+        } else if (empty($this->avatar_id)) {
+            return null;
         } else {
             return [
+                'file_id' => $this->avatar_id,
                 'file_link' => $file?->file_link,
                 'thumb_link' => $file?->thumb_link,
             ];
