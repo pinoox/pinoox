@@ -13,6 +13,7 @@
 
 namespace Pinoox\Component\Database;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 use Closure as ObjectPortal11;
@@ -26,6 +27,8 @@ use Illuminate\Database\Eloquent\Relations\Relation as ObjectPortal4;
 use Illuminate\Database\Query\Builder as ObjectPortal10;
 use Illuminate\Support\Collection as ObjectPortal6;
 use Illuminate\Support\LazyCollection as ObjectPortal5;
+use Pinoox\Portal\DB;
+use Throwable;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder make(array $attributes = [])
@@ -160,5 +163,37 @@ abstract class Model extends EloquentModel
     public static function tableName()
     {
         return with(new static)->getTable();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function beginTransaction(): void
+    {
+       DB::beginTransaction();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function commit(): void
+    {
+        DB::commit();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function rollBack($toLevel = null): void
+    {
+        DB::rollBack($toLevel);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function transaction(Closure $callback, int $attempts = 1): mixed
+    {
+        return DB::transaction($callback, $attempts);
     }
 }
