@@ -22,6 +22,7 @@ use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
+use Pinoox\Component\Store\Config\Data\DataManager;
 use Pinoox\Component\Translator\Translator;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
@@ -37,6 +38,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         public readonly AppEngine   $appEngine,
         public RequestContext       $context,
         public readonly ClassLoader $classLoader,
+        private readonly array $defaultAliases = []
     )
     {
         $this->appLayer = $this->appRouter->find();
@@ -321,15 +323,25 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         });
     }
 
+    public function dataAlias(): DataManager
+    {
+        $coreAliases = $this->defaultAliases;
+        $appAliases = $this->get('alias');
+        $appAliases = !empty($appAliases) && is_array($appAliases) ? $appAliases : [];
+        return new DataManager([
+            ...$coreAliases,
+            ...$appAliases,
+        ]);
+    }
+
     public function aliases(): array
     {
-        $aliases = $this->config()->get('alias');
-        return !empty($aliases) && is_array($aliases) ? $aliases : [];
+        return $this->dataAlias()->get();
     }
 
     public function alias(string $name): mixed
     {
-        return $this->get('alias.' . $name);
+        return $this->dataAlias()->get($name);
     }
 }
 
