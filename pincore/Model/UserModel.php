@@ -83,7 +83,7 @@ class UserModel extends Model
         });
 
         static::deleting(function (UserModel $user) {
-            $user->file->delete();
+            $user->file?->delete();
         });
     }
 
