@@ -18,10 +18,12 @@ use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
 use Pinoox\Component\Kernel\Listener\ExceptionListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
 use Pinoox\Component\Kernel\Listener\RouteEmptyListener;
+use Pinoox\Component\Kernel\Listener\TransactionalListener;
 use Pinoox\Component\Kernel\Listener\ViewListener;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Controller\ErrorController;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Validation;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
@@ -54,6 +56,9 @@ class Listener extends Portal
 
         self::__bind(ErrorListener::class, 'core_exception')
             ->setArguments([[ErrorController::class, 'exception']]);
+
+        self::__bind(TransactionalListener::class, 'transactional')
+            ->setArguments([DB::__ref()]);
     }
 
     /**
