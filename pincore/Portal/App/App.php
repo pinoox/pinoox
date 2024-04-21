@@ -25,7 +25,9 @@ use Pinoox\Component\Router\Router as ObjectPortal2;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal5;
 use Pinoox\Component\Translator\Translator as ObjectPortal8;
+use Pinoox\Portal\Config;
 use Pinoox\Portal\Lang;
+use Pinoox\Service\TransactionService;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -65,52 +67,60 @@ use Symfony\Component\Routing\RequestContext;
  */
 class App extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(RequestContext::class, 'context');
+    public static function __register(): void
+    {
+        self::__bind(RequestContext::class, 'context');
 
-		self::__bind(\Pinoox\Component\Package\App::class)->setArguments([
-		    AppRouter::__ref(),
-		    AppEngine::__ref(),
-		    self::__ref('context'),
-		    Loader::getClassLoader(),
-		]);
+        self::__bind(\Pinoox\Component\Package\App::class)->setArguments([
+            AppRouter::__ref(),
+            AppEngine::__ref(),
+            self::__ref('context'),
+            Loader::getClassLoader(),
+            self::getDefaultAliases()
+        ]);
 
-		self::__watch('set', function ($key, $value) {
-		    if ($key === 'lang')
-		        Lang::setLocale($value);
+        self::__watch('set', function ($key, $value) {
+            if ($key === 'lang')
+                Lang::setLocale($value);
         });
     }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'app';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'app';
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    public static function getDefaultAliases(): array
+    {
+        return [
+            'transaction' => TransactionService::class,
+        ];
+    }
+
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'setKernel'
-		];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'setKernel'
+        ];
+    }
 }
