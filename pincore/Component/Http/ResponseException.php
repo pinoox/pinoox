@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Http;
 
 
+use Pinoox\Component\Helpers\HelperResponse;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -31,7 +32,7 @@ class ResponseException extends RuntimeException
         return new static($response);
     }
 
-    public function __construct(Response $response)
+    public function __construct($response)
     {
         $this->setResponse($response);
     }
@@ -41,8 +42,8 @@ class ResponseException extends RuntimeException
         return $this->response;
     }
 
-    public function setResponse(Response $response)
+    public function setResponse($response)
     {
-        $this->response = $response;
+        $this->response = HelperResponse::normalize($response);
     }
 }
