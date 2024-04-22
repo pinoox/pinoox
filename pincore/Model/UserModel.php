@@ -18,6 +18,7 @@ use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 
@@ -153,5 +154,56 @@ class UserModel extends Model
         }
 
         return $rule;
+    }
+
+    public function scopeFlexibleOrderBy($query, $field, $direction = 'asc')
+    {
+        if ($field && $direction && $direction !== 'none') {
+            $direction = DB::orderDirection($direction);
+
+            if (in_array($field, $this->fillable) || $field === 'user_id') {
+                $query->orderBy($field, $direction);
+            } elseif ($field === 'full_name') {
+                $query->orderByRaw("CONCAT(fname, ' ', lname) $direction");
+            }
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereFullName($query, $keyword = '')
+    {
+        if (!empty($keyword))
+            $query->whereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
+
+        return $query;
+    }
+
+    public function scopeWhereStatus($query, $status, $replace = [],$whereType = 'and')
+    {
+        if (!empty($status))
+        {
+            $status = $replace[$status] ?? $status;
+            $query->where('status', $status,boolean: $whereType);
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereKeyword($query, $keyword = '', $status = [])
+    {
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword,$status) {
+                $q->where('fname', 'like', "%{$keyword}%")
+                    ->orWhere('lname', 'like', "%{$keyword}%")
+                    ->orWhere('username', 'like', "%{$keyword}%")
+                    ->orWhere('email', 'like', "%{$keyword}%")
+                    ->orWhere('mobile', 'like', "%{$keyword}%")
+                    ->whereStatus($keyword,$status,'or')
+                    ->orWhereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
+            });
+        }
+
+        return $query;
     }
 }
