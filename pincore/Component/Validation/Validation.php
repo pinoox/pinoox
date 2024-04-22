@@ -18,6 +18,7 @@ use Illuminate\Validation\Validator;
 
 class Validation extends Validator
 {
+    private array $mixinData = [];
     public function __construct(Translator $translator, array $data, array $rules, array $messages = [], array $attributes = [])
     {
         parent::__construct($translator, $data, $rules, $messages, $attributes);
@@ -59,5 +60,29 @@ class Validation extends Validator
     private function getFileDefaultMessages(string $locale): string
     {
         return __DIR__ . '/messages/' . $locale . '.php';
+    }
+
+    public function validated()
+    {
+        return [
+            ...parent::validated(),
+            ...$this->getMixin(),
+        ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getMixin(): array
+    {
+        return $this->mixinData;
+    }
+
+    /**
+     * @param array $mixinData
+     */
+    public function mixin(array $mixinData): void
+    {
+        $this->mixinData = $mixinData;
     }
 }
