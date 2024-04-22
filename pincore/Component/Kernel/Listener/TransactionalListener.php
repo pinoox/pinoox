@@ -34,23 +34,38 @@ class TransactionalListener implements EventSubscriberInterface
 
     public function onController(ControllerEvent $event)
     {
-        $controller = $event->getController()[0] ?? $event->getController();
-        $reflectionClass = new \ReflectionClass($controller);
-
-        if ($controller instanceof Transactional || $reflectionClass->getAttributes(Transactional::class)) {
+        $controller = $event->getController();
+        if ($this->hasTransactional($controller)) {
             $this->db?->getConnection()->beginTransaction();
             $event->getRequest()->attributes->set('transactional', true);
-            return;
+        }
+    }
+
+    private function hasTransactional($controller): bool
+    {
+        if ($controller instanceof \Closure) {
+            if ($this->hasTransactionalAttribute(new \ReflectionFunction($controller)))
+                return true;
         }
 
-        $method = $event->getController()[1] ?? null;
-        if ($method) {
-            $reflectionMethod = new \ReflectionMethod($controller, $method);
-            if ($reflectionMethod->getAttributes(Transactional::class)) {
-                $this->db?->getConnection()->beginTransaction();
-                $event->getRequest()->attributes->set('transactional', true);
-            }
+        if (is_array($controller)) {
+            $class = $controller[0] ?? $controller;
+
+            if ($this->hasTransactionalAttribute(new \ReflectionClass($class)))
+                return true;
+
+            $method = $controller[1] ?? null;
+
+            if ($method && $this->hasTransactionalAttribute(new \ReflectionMethod($class, $method)))
+                return true;
         }
+
+        return false;
+    }
+
+    private function hasTransactionalAttribute(\ReflectionClass|\ReflectionFunction|\ReflectionMethod $reflection): bool
+    {
+        return (bool)$reflection->getAttributes(Transactional::class);
     }
 
     public function onResponse(ResponseEvent $event)
