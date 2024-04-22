@@ -19,6 +19,7 @@ use Pinoox\Component\Database\Transactional;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -52,7 +53,7 @@ class TransactionalListener implements EventSubscriberInterface
         }
     }
 
-    public function onView(ViewEvent $event)
+    public function onResponse(ResponseEvent $event)
     {
         if ($event->getRequest()->attributes->get('transactional')) {
             $response = $event->getResponse();
@@ -75,8 +76,8 @@ class TransactionalListener implements EventSubscriberInterface
     {
         return array(
             KernelEvents::CONTROLLER => 'onController',
-            KernelEvents::VIEW => 'onView',
-            KernelEvents::EXCEPTION => ['onException', -1],
+            KernelEvents::RESPONSE => 'onResponse',
+            KernelEvents::EXCEPTION => 'onException',
         );
     }
 }
