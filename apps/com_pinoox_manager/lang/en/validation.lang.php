@@ -9,6 +9,7 @@ return [
     'same' => 'The :attribute and :other must match.',
     'different' => 'The :attribute and :other must be different.',
     'confirmed' => 'The :attribute confirmation does not match.',
+    "mimes" => ":attribute with :values format is allowed.",
 
     'min' => [
         'array' => 'The :attribute must have at least :min items.',
@@ -18,6 +19,7 @@ return [
     ],
 
     'attributes' => [
+        'avatar' => 'avatar',
         'username' => 'username',
         "password" => "password",
         "email" => "email",

@@ -14,9 +14,11 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 
@@ -24,6 +26,7 @@ class UserModel extends Model
 {
 
     const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
     const SUSPEND = 'suspend';
     const PENDING = 'pending';
 
@@ -74,8 +77,14 @@ class UserModel extends Model
             $user->password = self::hashPassword($user->password);
         });
 
+        static::updating(function (UserModel $user) {
+            if ($user->isDirty('password')) {
+                $user->password = self::hashPassword($user->password);
+            }
+        });
+
         static::deleting(function (UserModel $user) {
-            $user->file->delete();
+            $user->file?->delete();
         });
     }
 
@@ -84,11 +93,15 @@ class UserModel extends Model
         $file = FileModel::where('file_id', $this->avatar_id)->first();
         if (!is_null($this->defaultAvatarLink)) {
             return [
+                'file_id' => $this->avatar_id,
                 'file_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
                 'thumb_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
             ];
+        } else if (empty($this->avatar_id)) {
+            return null;
         } else {
             return [
+                'file_id' => $this->avatar_id,
                 'file_link' => $file?->file_link,
                 'thumb_link' => $file?->thumb_link,
             ];
@@ -130,5 +143,67 @@ class UserModel extends Model
     private static function addAppGlobalScope(): void
     {
         static::addGlobalScope('app', new AppScope(static::getPackage()));
+    }
+
+    public static function ruleUnique($column = null, $ignoreUserId = null)
+    {
+        $rule = Rule::unique(static::tableName(), $column)->where('app', static::getPackage());
+
+        if (!is_null($ignoreUserId)) {
+            $rule = $rule->ignore($ignoreUserId, 'user_id');
+        }
+
+        return $rule;
+    }
+
+    public function scopeFlexibleOrderBy($query, $field, $direction = 'asc')
+    {
+        if ($field && $direction && $direction !== 'none') {
+            $direction = DB::orderDirection($direction);
+
+            if (in_array($field, $this->fillable) || $field === 'user_id') {
+                $query->orderBy($field, $direction);
+            } elseif ($field === 'full_name') {
+                $query->orderByRaw("CONCAT(fname, ' ', lname) $direction");
+            }
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereFullName($query, $keyword = '')
+    {
+        if (!empty($keyword))
+            $query->whereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
+
+        return $query;
+    }
+
+    public function scopeWhereStatus($query, $status, $replace = [],$whereType = 'and')
+    {
+        if (!empty($status))
+        {
+            $status = $replace[$status] ?? $status;
+            $query->where('status', $status,boolean: $whereType);
+        }
+
+        return $query;
+    }
+
+    public function scopeWhereKeyword($query, $keyword = '', $status = [])
+    {
+        if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword,$status) {
+                $q->where('fname', 'like', "%{$keyword}%")
+                    ->orWhere('lname', 'like', "%{$keyword}%")
+                    ->orWhere('username', 'like', "%{$keyword}%")
+                    ->orWhere('email', 'like', "%{$keyword}%")
+                    ->orWhere('mobile', 'like', "%{$keyword}%")
+                    ->whereStatus($keyword,$status,'or')
+                    ->orWhereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
+            });
+        }
+
+        return $query;
     }
 }
