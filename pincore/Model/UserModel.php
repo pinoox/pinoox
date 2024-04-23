@@ -16,6 +16,8 @@ namespace Pinoox\Model;
 
 use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
+use Pinoox\Component\Database\Search\Searchable;
+use Pinoox\Component\Database\Sort\Sortable;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\DB;
@@ -24,7 +26,6 @@ use Pinoox\Portal\Url;
 
 class UserModel extends Model
 {
-
     const ACTIVE = 'active';
     const INACTIVE = 'inactive';
     const SUSPEND = 'suspend';
@@ -55,6 +56,14 @@ class UserModel extends Model
     protected $hidden = [
         'password', 'session_id', 'app'
     ];
+
+    protected array $sortableSupports = [
+        'full_name' => 'concat:fname,lname',
+        'user_id',
+        'created_at',
+    ];
+
+    protected bool $allowedAnySortable = false;
 
     public static function hashPassword($password)
     {
@@ -166,42 +175,6 @@ class UserModel extends Model
             } elseif ($field === 'full_name') {
                 $query->orderByRaw("CONCAT(fname, ' ', lname) $direction");
             }
-        }
-
-        return $query;
-    }
-
-    public function scopeWhereFullName($query, $keyword = '')
-    {
-        if (!empty($keyword))
-            $query->whereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
-
-        return $query;
-    }
-
-    public function scopeWhereStatus($query, $status, $replace = [],$whereType = 'and')
-    {
-        if (!empty($status))
-        {
-            $status = $replace[$status] ?? $status;
-            $query->where('status', $status,boolean: $whereType);
-        }
-
-        return $query;
-    }
-
-    public function scopeWhereKeyword($query, $keyword = '', $status = [])
-    {
-        if (!empty($keyword)) {
-            $query->where(function ($q) use ($keyword,$status) {
-                $q->where('fname', 'like', "%{$keyword}%")
-                    ->orWhere('lname', 'like', "%{$keyword}%")
-                    ->orWhere('username', 'like', "%{$keyword}%")
-                    ->orWhere('email', 'like', "%{$keyword}%")
-                    ->orWhere('mobile', 'like', "%{$keyword}%")
-                    ->whereStatus($keyword,$status,'or')
-                    ->orWhereRaw("CONCAT(fname, ' ', lname) LIKE '%$keyword%'");
-            });
         }
 
         return $query;

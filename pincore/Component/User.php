@@ -71,15 +71,19 @@ class User
         $user = UserModel::where(function (Builder $query) use ($username) {
             $query->where('email', $username)->orWhere('username', $username);
         });
+
+
         if ($isActive) {
             $user->where('status', UserModel::ACTIVE);
         }
-        $user = $user->first()->makeVisible('password');
+
+        $user = $user->first();
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
         }
 
+        $user->makeVisible('password');
         if (!Hash::check($password, $user->password)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
@@ -137,7 +141,7 @@ class User
                 return false;
         }
         try {
-            $payload = JWT::decode($token,new Key(self::$secret_key,'HS256'));
+            $payload = JWT::decode($token, new Key(self::$secret_key, 'HS256'));
             $token_key = $payload->pinoox_user;
 
             return $token_key;
@@ -170,7 +174,7 @@ class User
                 $payloadArray = [
                     'pinoox_user' => $token_key,
                 ];
-                self::$login_key = JWT::encode($payloadArray, self::$secret_key,'HS256');
+                self::$login_key = JWT::encode($payloadArray, self::$secret_key, 'HS256');
                 break;
             case self::SESSION:
                 Session::lifeTime(999999999);

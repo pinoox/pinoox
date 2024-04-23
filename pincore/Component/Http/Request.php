@@ -237,14 +237,14 @@ class Request extends RequestSymfony
         return $this->getValidation()->make($this->all(), $rules, $messages, $attributes);
     }
 
-    public function all(): array
+    public function all(?string $key = null): array
     {
         return [
-            ...$this->attributes->all(),
-            ...$this->request->all(),
-            ...$this->query->all(),
-            ...$this->json->all(),
-            ...$this->files->all(),
+            ...$this->attributes->all($key),
+            ...$this->request->all($key),
+            ...$this->query->all($key),
+            ...$this->json->all($key),
+            ...$this->files->all($key),
         ];
     }
 

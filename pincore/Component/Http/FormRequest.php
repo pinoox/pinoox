@@ -34,7 +34,7 @@ abstract class FormRequest
 
     public Request $global;
     protected Validator $validator;
-
+    protected bool $isJsonValidator = false;
     protected bool $check = true;
     protected string $errorBag = 'default';
     public FileBag $files;
@@ -106,7 +106,9 @@ abstract class FormRequest
                 $this->rules(),
                 $this->messages(),
                 $this->attributes()
-            )->stopOnFirstFailure($this->stopOnFirstFailure);
+            );
+        $validator->stopOnFirstFailure($this->stopOnFirstFailure);
+        $validator->mixin($this->mixin());
 
         // add after
         $this->addAfterArrayToValidator($validator);
@@ -279,8 +281,15 @@ abstract class FormRequest
     protected function failedValidation()
     {
         $this->failed(self::VALIDATION);
-        throw (new ValidationException($this->validator))
-            ->errorBag($this->errorBag);
+        if (!$this->jsonException) {
+            throw (new ValidationException($this->validator))
+                ->errorBag($this->errorBag);
+        } else {
+            $err = $this->stopOnFirstFailure ? $this->errors()->first() : $this->errors();
+            $response = response()->json(["error" => $err], 422);
+            ResponseException::call($response);
+        }
+
     }
 
     public function passes(): bool
@@ -312,5 +321,10 @@ abstract class FormRequest
     protected function errors(): MessageBag
     {
         return $this->validator->errors();
+    }
+
+    public function mixin(): array
+    {
+        return [];
     }
 }
