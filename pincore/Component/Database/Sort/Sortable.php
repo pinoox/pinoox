@@ -16,7 +16,7 @@ namespace Pinoox\Component\Database\Sort;
 use Illuminate\Database\Eloquent\Builder;
 
 /**
- * @method static Builder sortFiled($field, $direction = 'asc')
+ * @method static Builder sortFiled($field, $direction = 'asc', ?array $support = null)
  */
 trait Sortable
 {
@@ -24,9 +24,10 @@ trait Sortable
 
     protected bool $allowedAnySortable = false;
 
-    public function scopeSortFiled(Builder $query, $field, $direction = 'asc'): Builder
+    public function scopeSortFiled(Builder $query, $field, $direction = 'asc', ?array $support = null): Builder
     {
-        $sortTable = new SortTable($query, $field, $direction, $this->getSortableSupports(), $this->fillable);
+        $support = is_null($support) ? $this->getSortableSupports() : $support;
+        $sortTable = new SortTable($query, $field, $direction, $support, $this->fillable);
         $sortTable->setEnableAllowedColumns(!$this->isAllowedAnySortable());
         $sortTable->apply();
         return $query;
