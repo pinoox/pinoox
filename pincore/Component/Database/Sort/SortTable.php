@@ -38,7 +38,22 @@ class SortTable
     public function apply(): void
     {
         if ($this->field && $this->direction !== 'none') {
-            $this->orderBy($this->field, $this->direction);
+            $this->applyByFiled($this->field, $this->direction);
+        }
+    }
+
+    private function applyByFiled(array|string $fields, string $direction)
+    {
+        if (is_string($fields))
+            $fields = ['field' => $fields, 'direction' => $this->direction];
+
+        foreach ($fields as $item) {
+            $field = is_array($item) ? $item['field'] ?? '' : $item;
+            $direction = is_array($item) ? $item['direction'] ?? $this->direction : $this->direction;
+
+            if (empty($field))
+                continue;
+            $this->orderBy($field, $direction);
         }
     }
 
@@ -75,8 +90,9 @@ class SortTable
 
         $parts = explode(':', $condition);
         if (count($parts) >= 2) {
-            $type = trim($parts[0]);
-            $condition = trim(implode(',',$parts));
+            $type = array_shift($parts);
+            $type = trim($type);
+            $condition = trim(implode(',', $parts));
         } else {
             $condition = trim($condition);
             $type = $condition;
