@@ -15,18 +15,16 @@
 namespace App\com_pinoox_manager\Component;
 
 
-use Pinoox\Component\Cache;
+use Pinoox\Component\Migration\MigrationToolkit;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
-use Pinoox\Component\Dir;
 use Pinoox\Component\File;
-use Pinoox\Component\Lang;
-use Pinoox\Component\Router;
-use Pinoox\Component\Service;
+use Pinoox\Portal\FileSystem;
+use Pinoox\Portal\Lang;
 use Pinoox\Portal\Url;
-use Pinoox\Component\User;
-use Pinoox\Model\TokenModel;
-use Pinoox\Model\UserModel;
-use Pinoox\Portal\Path;
+use Pinoox\Portal\Wizard\AppWizard;
+use Pinoox\Portal\Wizard\TemplateWizard;
 use Pinoox\Portal\Zip;
 
 class Wizard
@@ -36,23 +34,11 @@ class Wizard
 
     public static function installApp($pinFile)
     {
-        $data = self::pullDataPackage($pinFile);
+        $appWizard = AppWizard::open($pinFile)
+            ->migration();
 
-        if (!self::isValidNamePackage($data['package_name']))
-            return false;
-
-        if (!self::checkVersion($data))
-            return false;
-
-        $appPath = path('~apps/' . $data['package_name'] . '/');
-        Zip::openFile($pinFile)->extractTo($appPath);
-
-        //check database
-        self::runQuery($data['package_name']);
-        self::changeLang($data['package_name']);
-        self::runService($data['package_name'], 'install');
-        self::setApp('com_pinoox_manager', true);
-        self::deletePackageFile($pinFile);
+        if (!$appWizard->isInstalled())
+            $appWizard->install();
 
         return true;
     }
@@ -61,43 +47,32 @@ class Wizard
     {
         $filename = File::fullname($pinFile);
         $size = File::size($pinFile);
-        $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . '/' . $name;
-        $configFile = $dir  . '/app.php';
 
-        if (!is_file($configFile)) {
-            Zip::openFile($pinFile)->extractTo($dir,[
-                'app.php'
-            ]);
-        }
-
-        $app = Config::file($configFile);
-        $iconPath = $app->icon;
-
+        $appWizard = AppWizard::open($pinFile);
+        $info = $appWizard->getInfo();
+        $info = !empty($info) ? $info : [];
+        $defaultData = AppEngine::getDefaultData();
+        $info = array_merge($defaultData, $info);
         $icon = Url::path('resources/default.png');
-        if (!empty($iconPath)) {
-            $iconFile = Path::get($dir . '/' . $app->icon);
-            if (!is_file($iconFile)) {
-                Zip::openFile($pinFile)->extractTo($dir,[
-                    $iconFile
-                ]);
-            }
-
+        if (!empty($info['icon'])) {
+            $iconFile = $info['icon_path'];
             if (is_file($iconFile))
-                $icon = Url::path($dir . '/' . $app->icon);
+                $icon = Url::path($info['icon_path']);
         }
 
         return [
             'type' => 'app',
             'filename' => $filename,
-            'package_name' => $app->package_name,
-            'app' => $app->package_name,
-            'name' => $app->name,
-            'description' => $app->description,
-            'version' => $app->version_name,
-            'version_code' => $app->version_code,
-            'developer' => $app->developer,
-            'path_icon' => $app->icon,
+            'package_name' => $info['package'],
+            'package' => $info['package'],
+            'app' => $info['package'],
+            'name' => $info['name'],
+            'description' => $info['description'],
+            'version' => $info['version-name'],
+            'version-code' => $info['version-code'],
+            'version_code' => $info['version-code'],
+            'developer' => $info['developer'],
+            'path_icon' => $info['icon'],
             'icon' => $icon,
             'size' => File::print_size($size, 1),
         ];
@@ -105,90 +80,44 @@ class Wizard
 
     public static function isValidNamePackage($packageName)
     {
-        if (!empty($packageName)) {
-            $parts = explode('_', $packageName);
-            return count($parts) >= 2;
-        }
-        return false;
+        return AppEngine::checkName($packageName);
     }
 
     public static function checkVersion($data)
     {
         $packageName = $data['package_name'];
-        $versionCode = @$data['version_code'];
+        $versionCode = @$data['version-code'];
 
-        if (!Router::existApp($packageName))
+        if (!AppEngine::exists($packageName))
             return true;
 
-        $app = new AppProvider($packageName);
-        $versionCodeApp = $app->versionCode;
+        $app = AppEngine::config($packageName);
+        $versionCodeApp = $app->get('version-code');
 
         if ($versionCodeApp == $versionCode) {
-            self::$message = Lang::get('manager.version_already_installed');
+            self::$message = t('manager.version_already_installed');
             return false;
         } else if ($versionCodeApp > $versionCode) {
-            self::$message = Lang::get('manager.newer_version_installed');
+            self::$message = t('manager.newer_version_installed');
             return false;
         }
 
         return true;
-    }
-
-    public static function runQuery($package_name, $isRemoveFile = true, $isCopyUser = true)
-    {
-        if (is_file($appDB)) {
-            $prefix = Config::get('~database.prefix');
-            $query = file_get_contents($appDB);
-            $query = str_replace('{dbprefix}', $prefix . $package_name . '_', $query);
-            $queryArr = explode(';', $query);
-
-            PinooxDatabase::$db->startTransaction();
-            foreach ($queryArr as $q) {
-                if (empty($q)) continue;
-                PinooxDatabase::$db->mysqli()->query($q);
-            }
-
-            //copy new user
-            if ($isCopyUser)
-                UserModel::copy(User::get('user_id'), $package_name);
-
-            PinooxDatabase::$db->commit();
-
-            if ($isRemoveFile)
-                File::remove_file($appDB);
-
-            return true;
-        }
-        return false;
     }
 
     public static function changeLang($package_name)
     {
-        $lang = Lang::current();
-        if (!Lang::exists($lang, $package_name))
-            return false;
-        self::setApp($package_name);
-        AppProvider::set('lang', $lang);
-        AppProvider::save();
+        $lang = Lang::locale();
+        AppEngine::config($package_name)
+            ->set('lang', $lang)
+            ->save();
         return true;
-    }
-
-    private static function runService($packageName, $state = 'install')
-    {
-        $current = Router::getApp();
-        self::setApp($packageName);
-        Cache::app($packageName);
-        Service::app($packageName);
-        Service::run('app/' . $state);
-        Router::setApp($current);
     }
 
     public static function deletePackageFile($pinFile)
     {
-        $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . '/' . $name;
-        File::remove_file($pinFile);
-        File::remove($dir);
+        AppWizard::open($pinFile)->deleteTemp();
+        FileSystem::remove($pinFile);
     }
 
     public static function updateApp($pinFile)
@@ -200,30 +129,25 @@ class Wizard
             return false;
         }
 
+        $appWizard = AppWizard::open($pinFile)->migration();
+
+        if (!$appWizard->isUpdateAvailable())
+            return false;
+
         if (!self::checkVersion($data))
             return false;
 
-        Zip::remove($pinFile, [
-            'pinker/',
-        ]);
+        $appWizard->force()->install();
 
-        $appPath = path('~apps/' . $data['package_name'] . '/');
+        $app = AppEngine::config($data['package']);
+        $app->set('version-code', $data['version-code']);
+        $app->set('version-name', $data['version']);
+        $app->set('name', $data['name']);
+        $app->set('developer', $data['developer']);
+        $app->set('description', $data['description']);
+        $app->set('icon', $data['path_icon']);
+        $app->save();
 
-        Zip::extract($pinFile, $appPath);
-        File::remove_file($pinFile);
-
-
-        self::setApp($data['package_name']);
-        AppProvider::set('version-code', $data['version_code']);
-        AppProvider::set('version-name', $data['version']);
-        AppProvider::set('name', $data['name']);
-        AppProvider::set('developer', $data['developer']);
-        AppProvider::set('description', $data['description']);
-        AppProvider::set('icon', $data['path_icon']);
-        AppProvider::save();
-        self::runService($data['package_name'], 'update');
-
-        self::setApp('com_pinoox_manager', true);
         self::deletePackageFile($pinFile);
 
         return true;
@@ -243,66 +167,29 @@ class Wizard
         File::remove($appPath);
 
         //remove route
-        self::removeRoutes($packageName);
+        AppRouter::deletePackage($packageName);
 
         //remove database
-        self::removeDatabase($packageName);
-
-        self::runService($packageName, 'delete');
-    }
-
-    private static function removeRoutes($packageName)
-    {
-        $routes = Config::get('~app');
-        foreach ($routes as $alias => $package) {
-            if ($package == $packageName && $alias != '*') {
-                unset($routes[$alias]);
-            }
-        }
-        Config::set('~app', $routes);
-        Config::save('~app');
-    }
-
-    private static function removeDatabase($packageName)
-    {
-        PinooxDatabase::startTransaction();
-
-        $tables = PinooxDatabase::getTables($packageName);
-        $tables = implode(',', $tables);
-        PinooxDatabase::$db->rawQuery("SET FOREIGN_KEY_CHECKS = 0");
-
-        //delete all tables
-        if (!empty($tables))
-            PinooxDatabase::$db->rawQuery("DROP TABLE IF EXISTS " . $tables);
-
-        //delete all rows
-        UserModel::delete_by_app($packageName);
-        TokenModel::delete_by_app($packageName);
-        SessionModel::delete_by_app($packageName);
-
-        PinooxDatabase::$db->rawQuery("SET FOREIGN_KEY_CHECKS = 1");
-        PinooxDatabase::commit();
+        $mig = new MigrationToolkit();
+        $mig->package($packageName)
+            ->action('rollback')
+            ->load();
     }
 
     public static function updateCore($file)
     {
-        Zip::extract($file, path('~'));
-        File::remove_file($file);
-        Cache::clean('version');
-        Cache::get('version');
-        Config::bake('~pinoox');
-        Service::run('~core/update');
+        Zip::openFile($file)
+            ->extractTo(path('~'));
 
-        Cache::app('com_pinoox_manager');
-        Service::app('com_pinoox_manager');
-        Service::run('app/update');
+        FileSystem::remove($file);
+        Config::name('version')->restore();
     }
 
-    public static function app_state($package_name)
+    public static function appState($package_name)
     {
-        if (self::is_installed($package_name))
+        if (self::isInstalled($package_name))
             $state = 'installed';
-        else if (self::is_downloaded($package_name))
+        else if (self::isDownloaded($package_name))
             $state = 'install';
         else
             $state = 'download';
@@ -310,27 +197,27 @@ class Wizard
         return $state;
     }
 
-    public static function is_installed($package_name)
+    public static function isInstalled($package_name)
     {
-        return Router::existApp($package_name);
+        return AppEngine::exists($package_name);
     }
 
-    public static function is_downloaded($package_name)
+    public static function isDownloaded($package_name)
     {
-        $file = Dir::path('downloads/apps/' . $package_name . '.pin');
+        $file = path('downloads/apps/' . $package_name . '.pin');
         return (!empty($file) && file_exists($file));
     }
 
-    public static function get_downloaded($package_name)
+    public static function getDownloaded($package_name)
     {
-        return Dir::path('downloads/apps/' . $package_name . '.pin');
+        return path('downloads/apps/' . $package_name . '.pin');
     }
 
-    public static function template_state($package_name, $uid)
+    public static function templateState($package_name, $uid)
     {
-        if (self::is_installed_template($package_name, $uid))
+        if (self::isInstalledTemplate($package_name, $uid))
             $state = 'installed';
-        else if (self::is_downloaded_template($uid))
+        else if (self::isDownloadedTemplate($uid))
             $state = 'install';
         else
             $state = 'download';
@@ -338,79 +225,61 @@ class Wizard
         return $state;
     }
 
-    public static function is_installed_template($package_name, $uid)
+    public static function isInstalledTemplate($package_name, $uid)
     {
-        $file = Dir::path("~apps/$package_name/theme/$uid");
+        $file = path("~apps/$package_name/theme/$uid");
         return (!empty($file) && file_exists($file));
     }
 
-    public static function is_downloaded_template($uid)
+    public static function isDownloadedTemplate($uid)
     {
-        $file = Dir::path("downloads/templates/$uid.pin");
+        $file = path("downloads/templates/$uid.pin");
         return (!empty($file) && file_exists($file));
     }
 
-    public static function get_downloaded_template($uid)
+    public static function getDownloadedTemplate($uid)
     {
-        return Dir::path("downloads/templates/$uid.pin");
+        return path("downloads/templates/$uid.pin");
     }
 
     public static function installTemplate($file, $packageName, $meta)
     {
-        if (Zip::extract($file, path("~apps/$packageName/theme/" . $meta['name']))) {
-            File::remove_file($file);
-            return true;
-        }
-
+        //Todo install template
         return false;
     }
 
     public static function deleteTemplate($packageName, $folderName)
     {
+        //Todo delete template
         $templatePath = path('~apps/' . $packageName . '/theme/' . $folderName);
         File::remove($templatePath);
     }
 
     public static function checkTemplateFolderName($packageName, $templateFolderName)
     {
+        //todo check template folder
         $file = path("~apps/$packageName/theme/" . $templateFolderName);
         return file_exists($file);
     }
 
     public static function pullTemplateMeta($pinFile)
     {
+        // todo template meta
         $filename = File::fullname($pinFile);
         $size = File::size($pinFile);
         $name = File::name($pinFile);
-        $dir = File::dir($pinFile) . '/' . $name;
-        $metaFile = $dir  . '/meta.json';
 
-        if (!is_file($metaFile)) {
-            Zip::addEntries('meta.json');
-            Zip::extract($pinFile, $dir);
-        }
 
-        $meta = json_decode(file_get_contents($metaFile), true);
-        $coverPath = @$meta['cover'];
+        $meta = TemplateWizard::open($pinFile)->getInfo();
 
         $cover = Url::path('resources/theme.jpg');
-        if (!empty($coverPath)) {
-            $coverFile = Dir::path($dir . '>' . $coverPath);
-            if (!is_file($coverFile)) {
-                Zip::addEntries($coverPath);
-                Zip::extract($pinFile, $dir);
-            }
-
-            if (is_file($coverFile))
-                $cover = Url::path($dir . '/' . $coverPath);
-        }
 
         if (empty($meta['title'])) {
             $title = null;
-        } else if (empty($meta['title'][Lang::current()])) {
+        } else if (empty($meta['title'][Lang::locale()])) {
             $title = array_values($meta['title'])[0];
         } else {
-            $title = $meta['title'][Lang::current()];
+            $title = $meta['title'][Lang::locale()];
         }
 
         return [
@@ -422,7 +291,7 @@ class Wizard
             'title' => @$meta['title'],
             'description' => @$meta['description'],
             'version' => @$meta['version'],
-            'version_code' => @$meta['app_version'],
+            'version-code' => @$meta['app_version'],
             'developer' => @$meta['developer'],
             'path_cover' => @$meta['cover'],
             'cover' => $cover,

@@ -27,14 +27,16 @@ return new class extends MigrationBase {
             $table->increments('user_id');
             $table->unsignedInteger('session_id')->nullable();
             $table->unsignedInteger('avatar_id')->nullable();
-            $table->string('app', 255)->nullable();
-            $table->string('fname', 255)->nullable();
-            $table->string('lname', 255)->nullable();
-            $table->string('username', 255)->nullable();
+            $table->string('app', 50)->nullable();
+            $table->string('fname', 50)->nullable();
+            $table->string('lname', 50)->nullable();
+            $table->string('username', 50)->nullable();
             $table->string('password', 255)->nullable();
-            $table->string('email', 255)->nullable();
-            $table->dateTime('register_date')->nullable();
-            $table->string('status', 255)->nullable();
+            $table->string('group_key', 50)->nullable();
+            $table->string('email', 50)->nullable();
+            $table->string('mobile', 50)->nullable();
+            $table->string('status', 50)->nullable();
+            $table->timestamps();
 
             $table->index('user_id');
             $table->index('avatar_id');

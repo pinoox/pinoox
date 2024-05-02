@@ -13,9 +13,7 @@
 namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\HelperHeader;
-use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\BootInterface;
-use Pinoox\Portal\App\App;
 use Pinoox\Model\TokenModel;
 
 class Token implements BootInterface
@@ -32,7 +30,7 @@ class Token implements BootInterface
     public static function deleteAllExpired()
     {
         $now = Date::g('Y-m-d H:i:s');
-        return TokenModel::where('expiration_date', '<', $now)->delete();
+        return TokenModel::withoutGlobalScopes(['app'])->where('expiration_date', '<', $now)->delete();
     }
 
     public static function lifeTime($lifeTime, $unitTime = null)
@@ -89,7 +87,6 @@ class Token implements BootInterface
     public static function getData($token_key)
     {
         $token = TokenModel::where('token_key', $token_key)
-            ->where('app', App::package())
             ->first();
 
         return !empty($token) ? $token->token_data : null;
@@ -98,17 +95,15 @@ class Token implements BootInterface
     public static function delete($token_key)
     {
         return TokenModel::where('token_key', $token_key)
-            ->where('app', App::package())
             ->delete();
     }
 
     public static function get($token_key)
     {
         $token = TokenModel::where('token_key', $token_key)
-            ->where('app', App::package())
             ->first();
 
-        return !empty($token)? $token->toArray() : null;
+        return !empty($token) ? $token->toArray() : null;
     }
 
     public static function setData($token_key, $token_data, $UpdateLifetime = false)
@@ -120,14 +115,12 @@ class Token implements BootInterface
             $values['expiration_date'] = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
 
         return TokenModel::where('token_key', $token_key)
-            ->where('app', App::package())
             ->update($values);
     }
 
     public static function updateLifetime($token_key)
     {
         return TokenModel::where('token_key', $token_key)
-            ->where('app', App::package())
             ->update([
                 'expiration_date' => Date::g('Y-m-d H:i:s', time() + Token::$lifeTime),
             ]);
@@ -138,8 +131,8 @@ class Token implements BootInterface
         self::$token_key = self::generateUniqueKey();
 
         $token = TokenModel::where('token_key', $old_token_key);
-        if ($app)
-            $token->where('app', App::package());
+        if (!$app)
+            $token->withoutGlobalScope('app');
 
         $values = ['token_key' => self::$token_key];
         if ($UpdateLifetime)

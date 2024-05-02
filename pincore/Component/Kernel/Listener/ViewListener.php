@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
+use Pinoox\Component\Helpers\HelperResponse;
 use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Template\ViewInterface;
@@ -23,23 +24,9 @@ class ViewListener implements EventSubscriberInterface
                 $response = '';
         }
 
-        if (is_string($response)) {
-            if (filter_var($response, FILTER_VALIDATE_URL)) {
-                $event->setResponse(new RedirectResponse($response));
-            } else {
-                $event->setResponse(new Response($response));
-            }
-        } else if (is_bool($response)) {
-            $event->setResponse(new Response($response ? 'true' : 'false'));
-        } else if (is_numeric($response)) {
-            $event->setResponse(new Response(strval($response)));
-        } else if (is_array($response)) {
-            $event->setResponse(new JsonResponse($response));
-        } else if ($response instanceof ViewInterface) {
-            $event->setResponse(new Response($response->getContentReady()));
-        } else if ($response instanceof View) {
-            $event->setResponse(new Response($response->getContentReady()));
-        }
+        $normalize = HelperResponse::normalize($response);
+        if($normalize !== $response)
+            $event->setResponse($normalize);
     }
 
     public static function getSubscribedEvents(): array

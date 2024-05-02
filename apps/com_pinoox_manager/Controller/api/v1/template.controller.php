@@ -59,10 +59,10 @@ class TemplateController extends LoginConfiguration
         if (empty($packageName))
             Response::json(t('manager.request_install_template_not_valid'), false);
 
-        if (!Wizard::is_installed($packageName))
+        if (!Wizard::isInstalled($packageName))
             Response::json(t('manager.there_is_no_app'), false);
 
-        $file = Wizard::get_downloaded_template($uid);
+        $file = Wizard::getDownloadedTemplate($uid);
         $meta = Wizard::pullTemplateMeta($file);
 
         Wizard::installTemplate($file, $packageName, $meta);
@@ -80,7 +80,7 @@ class TemplateController extends LoginConfiguration
 
         $meta = Wizard::pullTemplateMeta($pinFile);
 
-        if (!Wizard::is_installed($meta['app']))
+        if (!Wizard::isInstalled($meta['app']))
             Response::json(t('manager.there_is_no_app'), false);
 
         if (Wizard::installTemplate($pinFile, $meta['app'], $meta)) {

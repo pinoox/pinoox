@@ -41,15 +41,21 @@ class FileUploader
     private $thumbInfo;
     private $error;
 
-    public function __construct(string $path = '', string $destination = '', string $fileKey = null, string $access = 'public')
+    public function __construct(string $path = '', string $destination = '', UploadedFile|string $fileKey = null, string $access = 'public')
     {
         $this->path = $path;
         $this->destination = $destination;
         $this->access = $access;
-        $this->fileKey = $fileKey;
 
-        if (!empty($_FILES) && !empty($fileKey))
-            $this->file = (new FileBag($_FILES))->get($fileKey);
+        if ($fileKey instanceof UploadedFile) {
+            $this->fileKey = $fileKey;
+            $this->file = $fileKey;
+        } else {
+            $this->fileKey = $fileKey;
+            if (!empty($_FILES) && !empty($fileKey))
+                $this->file = (new FileBag($_FILES))->get($fileKey);
+        }
+
 
         $this->setUploadPath();
     }

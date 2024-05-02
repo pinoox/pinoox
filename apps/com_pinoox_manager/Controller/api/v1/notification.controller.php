@@ -28,7 +28,7 @@ class NotificationController extends LoginConfiguration
     {
         $result = Notification::getAll();
         $result = array_map(function ($ntf) {
-            $ntf['insert_jDate'] = Date::j('d F Y', $ntf['insert_date']);
+            $ntf['insert_jDate'] = Date::j('d F Y', $ntf['created_at']);
             return $ntf;
         }, $result);
 

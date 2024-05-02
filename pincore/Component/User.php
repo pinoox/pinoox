@@ -14,7 +14,6 @@ namespace Pinoox\Component;
 
 use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Builder;
-use Pinoox\Portal\App\App;
 use Pinoox\Model\TokenModel;
 use Pinoox\Model\UserModel;
 use Firebase\JWT\JWT;
@@ -38,11 +37,6 @@ class User
     private static $updateTokenKey = false;
     private static $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
-    public static function app($packageName)
-    {
-        self::$app = $packageName;
-    }
-
     public static function updateLifetime($status)
     {
         self::$updateLifetime = $status;
@@ -65,11 +59,6 @@ class User
         self::$user = null;
     }
 
-    public static function getApp()
-    {
-        return (!empty(self::$app)) ? self::$app : App::package();
-    }
-
     public static function login($username, $password, $isActive = true)
     {
         self::$msg = null;
@@ -79,19 +68,22 @@ class User
             return false;
         }
 
-        $user = UserModel::where('app', self::getApp());
-        $user->where(function (Builder $query) use ($username) {
+        $user = UserModel::where(function (Builder $query) use ($username) {
             $query->where('email', $username)->orWhere('username', $username);
         });
+
+
         if ($isActive) {
-            $user->where('status', UserModel::active);
+            $user->where('status', UserModel::ACTIVE);
         }
+
         $user = $user->first();
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
         }
 
+        $user->makeVisible('password');
         if (!Hash::check($password, $user->password)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
@@ -149,7 +141,7 @@ class User
                 return false;
         }
         try {
-            $payload = JWT::decode($token,new Key(self::$secret_key,'HS256'));
+            $payload = JWT::decode($token, new Key(self::$secret_key, 'HS256'));
             $token_key = $payload->pinoox_user;
 
             return $token_key;
@@ -182,7 +174,7 @@ class User
                 $payloadArray = [
                     'pinoox_user' => $token_key,
                 ];
-                self::$login_key = JWT::encode($payloadArray, self::$secret_key,'HS256');
+                self::$login_key = JWT::encode($payloadArray, self::$secret_key, 'HS256');
                 break;
             case self::SESSION:
                 Session::lifeTime(999999999);
@@ -218,10 +210,9 @@ class User
         $token = self::getToken();
         $user_id = @$token['user_id'];
         if ($user_id && empty(self::$user)) {
-            $user = UserModel::where('app', self::getApp())
-                ->where('user_id', $user_id)
+            $user = UserModel::where('user_id', $user_id)
                 ->first();
-            if ($user && $user->status == UserModel::active) {
+            if ($user && $user->status == UserModel::ACTIVE) {
                 $user->makeHidden('password');
                 self::$user = $user->toArray();
                 if (self::$updateTokenKey) {

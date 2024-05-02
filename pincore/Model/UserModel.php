@@ -14,9 +14,15 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
+use Pinoox\Component\Database\Search\Searchable;
+use Pinoox\Component\Database\Sort\Sortable;
+use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\DB;
 use Pinoox\Portal\Hash;
+use Pinoox\Portal\Url;
 
 
 /**
@@ -30,14 +36,17 @@ use Pinoox\Portal\Hash;
  */
 class UserModel extends Model
 {
+    const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
+    const SUSPEND = 'suspend';
+    const PENDING = 'pending';
 
-    const active = 'active';
-    const suspend = 'suspend';
-    const CREATED_AT = 'register_date';
-    const UPDATED_AT = null;
     protected $table = 'pincore_user';
     public $incrementing = true;
-    protected $primaryKey = 'user_id';
+
+    public $primaryKey = 'user_id';
+    public $timestamps = true;
+    private $defaultAvatarLink = null;
 
     protected $hidden = ['password', 'session_id'];
     protected $fillable = [
@@ -48,11 +57,25 @@ class UserModel extends Model
         'lname',
         'username',
         'password',
+        'group_key',
         'email',
+        'mobile',
         'status',
     ];
 
-    protected $appends = ['full_name'];
+    protected $appends = ['full_name', 'avatar'];
+
+    protected $hidden = [
+        'password', 'session_id', 'app'
+    ];
+
+    protected array $sortableSupports = [
+        'full_name' => 'concat:fname,lname',
+        'user_id',
+        'created_at',
+    ];
+
+    protected bool $allowedAnySortable = false;
 
     public static function hashPassword($password)
     {
@@ -70,17 +93,48 @@ class UserModel extends Model
         parent::boot();
 
         static::creating(function (UserModel $user) {
-            $user->app = $user->app ?: App::package();
-            $user->status = $user->status ?: self::active;
+            $user->app = $user->app ?: self::getPackage();
+            $user->status = $user->status ?: self::ACTIVE;
             $user->password = self::hashPassword($user->password);
         });
 
+        static::updating(function (UserModel $user) {
+            if ($user->isDirty('password')) {
+                $user->password = self::hashPassword($user->password);
+            }
+        });
+
         static::deleting(function (UserModel $user) {
-            $user->avatar()->delete();
+            $user->file?->delete();
         });
     }
 
-    public function avatar(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function getAvatarAttribute()
+    {
+        $file = FileModel::where('file_id', $this->avatar_id)->first();
+        if (!is_null($this->defaultAvatarLink)) {
+            return [
+                'file_id' => $this->avatar_id,
+                'file_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
+                'thumb_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
+            ];
+        } else if (empty($this->avatar_id)) {
+            return null;
+        } else {
+            return [
+                'file_id' => $this->avatar_id,
+                'file_link' => $file?->file_link,
+                'thumb_link' => $file?->thumb_link,
+            ];
+        }
+    }
+
+    public function setDefaultAvatarLink(string $imageLink): void
+    {
+        $this->defaultAvatarLink = $imageLink;
+    }
+
+    public function file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
     }
@@ -88,5 +142,53 @@ class UserModel extends Model
     public function getFullNameAttribute()
     {
         return $this->fname . ' ' . $this->lname;
+    }
+
+    public static function setPackage(string $package): void
+    {
+        App::set('transport.user', $package)->save();
+        self::addAppGlobalScope();
+    }
+
+    public static function getPackage(): string
+    {
+        $package = App::get('transport.user');
+        return $package ?? App::package();
+    }
+
+    protected static function booted()
+    {
+        self::addAppGlobalScope();
+    }
+
+    private static function addAppGlobalScope(): void
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
+    }
+
+    public static function ruleUnique($column = null, $ignoreUserId = null)
+    {
+        $rule = Rule::unique(static::tableName(), $column)->where('app', static::getPackage());
+
+        if (!is_null($ignoreUserId)) {
+            $rule = $rule->ignore($ignoreUserId, 'user_id');
+        }
+
+        return $rule;
+    }
+
+    public function scopeFlexibleOrderBy($query, $field, $direction = 'asc')
+    {
+        if ($field && $direction && $direction !== 'none') {
+            $direction = DB::orderDirection($direction);
+
+            if (in_array($field, $this->fillable) || $field === 'user_id') {
+                $query->orderBy($field, $direction);
+            } elseif ($field === 'full_name') {
+                $query->orderByRaw("CONCAT(fname, ' ', lname) $direction");
+            }
+        }
+
+        return $query;
     }
 }

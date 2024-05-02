@@ -1,0 +1,13 @@
+{
+    "name": "pinoox/com_pinoox_manager",
+    "description": "manager app",
+    "authors": [
+        {
+            "name": "Pinoox",
+            "email": "dev@pinoox.com"
+        }
+    ],
+    "require": {
+        "morilog/jalali": "^3.4"
+    }
+}

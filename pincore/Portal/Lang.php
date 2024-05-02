@@ -17,7 +17,6 @@ namespace Pinoox\Portal;
 use Illuminate\Contracts\Translation\Loader as ObjectPortal3;
 use Illuminate\Translation\MessageSelector as ObjectPortal2;
 use Illuminate\Translation\Translator as ObjectPortal1;
-use Pinoox\Component\Lang\Source\FileLangSource;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Translator\Translator;
 use Pinoox\Component\Translator\Loader\FileLoader;

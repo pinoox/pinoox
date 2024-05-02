@@ -62,7 +62,6 @@ class FileUploader extends Portal
             'file_size' => $uploader->getSize(),
             'file_access' => $uploader->getAccess(),
             'file_group' => $uploader->getGroup(),
-            'file_date' => Carbon::now(),
         ]);
         if ($model) {
             $uploader->setResult('file_id', $model->file_id);

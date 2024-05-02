@@ -13,6 +13,7 @@
 
 namespace Pinoox\Component\Database;
 
+use Closure;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 
 use Closure as ObjectPortal11;
@@ -26,6 +27,10 @@ use Illuminate\Database\Eloquent\Relations\Relation as ObjectPortal4;
 use Illuminate\Database\Query\Builder as ObjectPortal10;
 use Illuminate\Support\Collection as ObjectPortal6;
 use Illuminate\Support\LazyCollection as ObjectPortal5;
+use Pinoox\Component\Database\Search\Searchable;
+use Pinoox\Component\Database\Sort\Sortable;
+use Pinoox\Portal\DB;
+use Throwable;
 
 /**
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder make(array $attributes = [])
@@ -42,27 +47,27 @@ use Illuminate\Support\LazyCollection as ObjectPortal5;
  * @method static ObjectPortal1 oldest($column = NULL)
  * @method static ObjectPortal2 hydrate(array $items)
  * @method static ObjectPortal2 fromQuery($query, $bindings = [])
- * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Builder|null find($id, $columns = array (  0 => '*',))
- * @method static ObjectPortal2 findMany($ids, $columns = array (  0 => '*',))
- * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[] findOrFail($id, $columns = array (  0 => '*',))
- * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder findOrNew($id, $columns = array (  0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Builder|null find($id, $columns = array(0 => '*',))
+ * @method static ObjectPortal2 findMany($ids, $columns = array(0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder[] findOrFail($id, $columns = array(0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder findOrNew($id, $columns = array(0 => '*',))
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder firstOrNew(array $attributes = [], array $values = [])
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder firstOrCreate(array $attributes = [], array $values = [])
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder updateOrCreate(array $attributes, array $values = [])
- * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder firstOrFail($columns = array (  0 => '*',))
- * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder|mixed firstOr($columns = array (  0 => '*',), ?Closure $callback = NULL)
- * @method static ObjectPortal3 sole($columns = array (  0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder firstOrFail($columns = array(0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder|mixed firstOr($columns = array(0 => '*',), ?Closure $callback = NULL)
+ * @method static ObjectPortal3 sole($columns = array(0 => '*',))
  * @method static mixed value($column)
  * @method static mixed valueOrFail($column)
- * @method static \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder[] get($columns = array (  0 => '*',))
- * @method static \Illuminate\Database\Eloquent\Model[]|\Illuminate\Database\Eloquent\Builder[] getModels($columns = array (  0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Eloquent\Builder[] get($columns = array(0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model[]|\Illuminate\Database\Eloquent\Builder[] getModels($columns = array(0 => '*',))
  * @method static array eagerLoadRelations(array $models)
  * @method static ObjectPortal4 getRelation($name)
  * @method static ObjectPortal5 cursor()
  * @method static ObjectPortal6 pluck($column, $key = NULL)
- * @method static ObjectPortal7 paginate($perPage = NULL, $columns = array (  0 => '*',), $pageName = 'page', $page = NULL)
- * @method static ObjectPortal8 simplePaginate($perPage = NULL, $columns = array (  0 => '*',), $pageName = 'page', $page = NULL)
- * @method static ObjectPortal9 cursorPaginate($perPage = NULL, $columns = array (  0 => '*',), $cursorName = 'cursor', $cursor = NULL)
+ * @method static ObjectPortal7 paginate($perPage = NULL, $columns = array(0 => '*',), $pageName = 'page', $page = NULL)
+ * @method static ObjectPortal8 simplePaginate($perPage = NULL, $columns = array(0 => '*',), $pageName = 'page', $page = NULL)
+ * @method static ObjectPortal9 cursorPaginate($perPage = NULL, $columns = array(0 => '*',), $cursorName = 'cursor', $cursor = NULL)
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder create(array $attributes = [])
  * @method static \Illuminate\Database\Eloquent\Model|\Illuminate\Database\Eloquent\Builder forceCreate(array $attributes)
  * @method static int update(array $values)
@@ -93,7 +98,7 @@ use Illuminate\Support\LazyCollection as ObjectPortal5;
  * @method static bool hasMacro($name)
  * @method static ObjectPortal11 getGlobalMacro($name)
  * @method static bool hasGlobalMacro($name)
- * @method static ObjectPortal1 clone()
+ * @method static ObjectPortal1 clone ()
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder has($relation, $operator = '>=', $count = 1, $boolean = 'and', ?Closure $callback = NULL)
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder orHas($relation, $operator = '>=', $count = 1)
  * @method static \Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Builder doesntHave($relation, $boolean = 'and', ?Closure $callback = NULL)
@@ -134,8 +139,8 @@ use Illuminate\Support\LazyCollection as ObjectPortal5;
  * @method static ObjectPortal5 lazy($chunkSize = 1000)
  * @method static ObjectPortal5 lazyById($chunkSize = 1000, $column = NULL, $alias = NULL)
  * @method static ObjectPortal5 lazyByIdDesc($chunkSize = 1000, $column = NULL, $alias = NULL)
- * @method static \Illuminate\Database\Eloquent\Model|object|\Illuminate\Database\Eloquent\Builder|null first($columns = array (  0 => '*',))
- * @method static \Illuminate\Database\Eloquent\Model|object|\Illuminate\Database\Eloquent\Builder|null baseSole($columns = array (  0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|object|\Illuminate\Database\Eloquent\Builder|null first($columns = array(0 => '*',))
+ * @method static \Illuminate\Database\Eloquent\Model|object|\Illuminate\Database\Eloquent\Builder|null baseSole($columns = array(0 => '*',))
  * @method static \Illuminate\Database\Eloquent\Builder|mixed tap($callback)
  * @method static \Illuminate\Database\Eloquent\Builder|mixed when($value, $callback, $default = NULL)
  * @method static \Illuminate\Database\Eloquent\Builder|mixed unless($value, $callback, $default = NULL)
@@ -143,6 +148,8 @@ use Illuminate\Support\LazyCollection as ObjectPortal5;
  */
 abstract class Model extends EloquentModel
 {
+    use Searchable, Sortable;
+
     /**
      * Get the table associated with the model.
      *
@@ -160,5 +167,37 @@ abstract class Model extends EloquentModel
     public static function tableName()
     {
         return with(new static)->getTable();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function beginTransaction(): void
+    {
+        DB::beginTransaction();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function commit(): void
+    {
+        DB::commit();
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function rollBack($toLevel = null): void
+    {
+        DB::rollBack($toLevel);
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public static function transaction(Closure $callback, int $attempts = 1): mixed
+    {
+        return DB::transaction($callback, $attempts);
     }
 }

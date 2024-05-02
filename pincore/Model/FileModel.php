@@ -16,7 +16,12 @@ namespace Pinoox\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Pinoox\Component\Database\Model;
+use Pinoox\Component\Date;
+use Pinoox\Component\Token;
+use Pinoox\Component\User;
+use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\FileUploader;
 use Pinoox\Portal\Url;
 
@@ -33,6 +38,8 @@ class FileModel extends Model
      */
     protected $table = 'pincore_file';
     protected $primaryKey = 'file_id';
+    public $incrementing = true;
+    public $timestamps = true;
 
     protected $fillable = [
         'user_id',
@@ -43,10 +50,12 @@ class FileModel extends Model
         'file_ext',
         'file_path',
         'file_size',
-        'file_date',
         'file_access',
     ];
 
+    protected $hidden = [
+        'app'
+    ];
     protected $appends = ['file_link', 'thumb_link'];
 
     public function user(): BelongsTo
@@ -73,6 +82,11 @@ class FileModel extends Model
     {
         parent::boot();
 
+        static::creating(function ($file) {
+            $file->app = $file->app ?? self::getPackage();
+            $file->user_id = $file->user_id ?? User::get('user_id');
+        });
+
         static::deleting(function ($file) {
             $path = path($file->file_path, $file->app);
             $originalFile = $path . '/' . $file->file_name;
@@ -81,5 +95,27 @@ class FileModel extends Model
             if (file_exists($originalFile)) unlink($originalFile);
             if (file_exists($thumbnailFile)) unlink($thumbnailFile);
         });
+    }
+
+    public static function setPackage(string $package): void
+    {
+        App::set('transport.file', $package)->save();
+        self::addAppGlobalScope();
+    }
+
+    public static function getPackage(): string
+    {
+        $package = App::get('transport.file');
+        return $package ?? App::package();
+    }
+
+    protected static function booted()
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
+    }
+
+    private static function addAppGlobalScope(): void
+    {
+        static::addGlobalScope('app', new AppScope(static::getPackage()));
     }
 }

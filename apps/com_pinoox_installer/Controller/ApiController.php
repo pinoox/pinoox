@@ -15,9 +15,7 @@ namespace App\com_pinoox_installer\Controller;
 
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
-use Pinoox\Component\System;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;

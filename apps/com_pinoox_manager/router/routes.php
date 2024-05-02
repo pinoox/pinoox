@@ -10,19 +10,29 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use App\com_pinoox_manager\Service\LoginAuthService;
+use Pinoox\Portal\View;
 use function Pinoox\Router\{get, collection};
 
 get(
     path: '*',
-    action: '@home',
+    action: fn() => View::render('index'),
 );
 
 get(
     path: '/dist/pinoox.js',
-    action: '@pinooxjs',
+    action: fn() => View::jsResponse('pinoox')
 );
 
 collection(
     path: '/api/v1',
-    routes: 'router/api.php',
+    routes: __DIR__ . '/api.php',
+);
+
+collection(
+    path: '/api/v1',
+    routes: __DIR__ . '/api-auth.php',
+    services: [
+        LoginAuthService::class
+    ]
 );

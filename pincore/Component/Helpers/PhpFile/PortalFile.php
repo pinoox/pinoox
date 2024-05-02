@@ -401,11 +401,14 @@ class PortalFile extends PhpFile
             $definition = $container->getDefinition($serviceName);
             $className = $definition->getClass();
             $reflection = $container->getReflectionClass($className);
+            $uses = HelperAnnotations::getUsesInPHPFile($className);
+
             $methods = [];
 
             $tags = HelperAnnotations::getTagsIntoComment($reflection->getDocComment());
             if (!empty($tags['mixin'])) {
                 foreach ($tags['mixin'] as $mixinClassName) {
+                    $mixinClassName = $uses[$mixinClassName] ?? $mixinClassName;
                     $reflectionMixinClass = new \ReflectionClass($mixinClassName);
                     $items = $reflectionMixinClass->getMethods(ReflectionMethod::IS_PUBLIC);
                     foreach ($items as $item) {

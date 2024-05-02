@@ -10,7 +10,7 @@ node_modules
 package-lock.json
 
 # Composer
-/vendor
+vendor
 /composer.lock
 
 # PHPUnit
@@ -19,7 +19,8 @@ package-lock.json
 # MacOS
 .DS_Store
 
-apps/**/*
+apps/**/* 
 !apps/com_pinoox_manager
 !apps/com_pinoox_welcome
 !apps/com_pinoox_installer
+ 

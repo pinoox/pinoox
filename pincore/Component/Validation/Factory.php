@@ -34,4 +34,10 @@ class Factory extends FactoryIlluminate
 
         return call_user_func($this->resolver, $this->translator, $data, $rules, $messages, $attributes);
     }
+
+
+    public function check(mixed $value, string|array $rule): bool
+    {
+        return $this->make(['value' => $value], ['value' => $rule])->passes();
+    }
 }
