@@ -13,6 +13,7 @@ return [
         'prefix' => '',
         'strict' => true,
         'engine' => null,
+        'timezone' => '+03:30',
     ],
 ];
 

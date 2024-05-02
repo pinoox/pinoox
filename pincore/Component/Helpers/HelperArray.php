@@ -348,72 +348,57 @@ class HelperArray
     public static function parseParams($array, $keys, $default = null, $removeNull = false)
     {
         $data = [];
-        if ($keys == '*') $keys = (!empty($array) && is_array($array)) ? array_keys($array) : $array;
-        if (is_array($keys)) {
-            foreach ($keys as $key => $val) {
-                // set default for array items
-                if (!is_numeric($key)) {
-                    $isHtml = Str::has($key, '!') ? true : false;
-                    $key = is_string($key) ? str_replace('!', '', $key) : $key;
-                    //has default
-                    if ($removeNull && !isset($array[$key]))
-                        continue;
 
-                    //check is array
-                    if (isset($array[$key]) && is_array($array[$key])) {
-                        $data[$key] = $array[$key];
-                    } else {
-                        $value = isset($array[$key]) && !is_null($array[$key]) ? $array[$key] : $val;
-                        $data[$key] = is_array($value) || $isHtml ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
-                    }
-                } else {
-                    $isHtml = Str::has($val, '!') ? true : false;
-                    $val = is_string($val) ? str_replace('!', '', $val) : $val;
-                    //there isn't default
-                    if ($removeNull && !isset($array[$val]))
-                        continue;
-                    //check is array
-                    if (isset($array[$val]) && is_array($array[$val])) {
-                        $data[$val] = $array[$val];
-                    } else {
-                        $value = isset($array[$val]) && !is_null($array[$val]) ? $array[$val] : $default;
-                        $data[$val] = $isHtml || is_array($value) ? $value : (is_string($value) ? htmlspecialchars(stripslashes($value)) : $value);
-                    }
-
-                }
-            }
-            return $data;
-        } else {
-            $explodedKeys = explode(',', $keys);
-            foreach ($explodedKeys as $key) {
-
-                if (strstr($key, '=')) {
-                    $cleanKey = substr($key, 0, strpos($key, '='));
-                    $cleanDefault = str_replace($cleanKey . "=", '', $key);
-                } else {
-                    $cleanKey = $key;
-                    $cleanDefault = $default;
-                }
-                $isHtml = Str::has($cleanKey, '!') ? true : false;
-                $cleanKey = is_string($cleanKey) ? str_replace('!', '', $cleanKey) : $cleanKey;
-
-                if ($removeNull && !isset($array[$cleanKey]))
-                    continue;
-                //check is array
-                if (isset($array[$cleanKey]) && is_array($array[$cleanKey])) {
-                    $data[$cleanKey] = $array[$cleanKey];
-                } else {
-                    $value = isset($array[$cleanKey]) && !is_null($array[$cleanKey]) ? $array[$cleanKey] : $cleanDefault;
-                    if (!is_object($value))
-                    {
-                        $value = $isHtml ? $value : htmlspecialchars(stripslashes($value));
-                    }
-                    $data[$cleanKey] = $value;
-                }
-            }
-            return $data;
+        // Convert wildcard keys to all keys of the array
+        if ($keys == '*') {
+            $keys = (!empty($array) && is_array($array)) ? array_keys($array) : $array;
         }
+
+        // Ensure keys is an array
+        $keys = is_array($keys) ? $keys : explode(',', $keys);
+
+        foreach ($keys as $key => $defaultValue) {
+            // Extract key and default value if specified as key=value pair
+            if (is_numeric($key)) {
+                if (str_contains($defaultValue, '=')) {
+                    [$key, $defaultValue] = explode('=', $defaultValue, 2);
+                } else {
+                    $key = $defaultValue;
+                    $defaultValue = $default;
+                }
+            }
+
+            // Remove HTML flag if present
+            $isHtml = str_contains($key, '!');
+            $key = str_replace('!', '', $key);
+
+            // Skip null values if removeNull is true
+            if ($removeNull && !isset($array[$key])) {
+                continue;
+            }
+
+            // Handle array values
+            $value = $array[$key] ?? $defaultValue;
+            $data[$key] = is_array($value) ? $value : self::sanitizeValue($value);
+        }
+
+        // If there's only one item in $data, return that item instead of the array
+        if (count($data) === 1) {
+            return reset($data);
+        }
+
+        return $data;
     }
+
+    private static function sanitizeValue($value)
+    {
+        if (is_string($value)) {
+            $value = htmlspecialchars(stripslashes($value));
+        }
+
+        return $value;
+    }
+
 
     /**
      * Parse one param an array

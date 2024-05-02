@@ -39,6 +39,7 @@ class FileUploader
     private FileModel $fileModel;
     private $isThumb;
     private $thumbInfo;
+    private $error;
 
     public function __construct(string $path = '', string $destination = '', UploadedFile|string $fileKey = null, string $access = 'public')
     {
@@ -81,6 +82,11 @@ class FileUploader
 
     public function upload(): self
     {
+        if (empty($this->file)) {
+            $this->error = -1;
+            return $this;
+        }
+
         $this->extension = $this->file->getClientOriginalExtension();
         $this->size = $this->file->getSize();
         $this->fileRealname = $this->file->getClientOriginalName();
@@ -233,6 +239,11 @@ class FileUploader
     public function getGroup(): string
     {
         return $this->group;
+    }
+
+    public function isFail()
+    {
+        return !empty($this->error);
     }
 
 }

@@ -24,6 +24,16 @@ use Pinoox\Portal\DB;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 
+
+/**
+ * @property mixed $user_id
+ * @property mixed $fname
+ * @property mixed $lname
+ * @property mixed $email
+ * @property string $status
+ * @property string $password
+ * @property string|null $app
+ */
 class UserModel extends Model
 {
     const ACTIVE = 'active';
@@ -33,10 +43,12 @@ class UserModel extends Model
 
     protected $table = 'pincore_user';
     public $incrementing = true;
+
     public $primaryKey = 'user_id';
     public $timestamps = true;
     private $defaultAvatarLink = null;
 
+    protected $hidden = ['password', 'session_id'];
     protected $fillable = [
         'session_id',
         'avatar_id',

@@ -17,39 +17,55 @@ use ReflectionFunction;
 
 class HelperObject
 {
-    public static function closure_dump(Closure $c)
+    public static function closure_dump(Closure $closure): string
     {
         $str = 'function (';
-        $r = new ReflectionFunction($c);
-        $params = array();
-        foreach ($r->getParameters() as $p) {
-            $s = '';
-            if ($p->isArray()) {
-                $s .= 'array ';
-            } else if ($p->getClass()) {
-                $s .= $p->getClass()->name . ' ';
+        $reflection = new ReflectionFunction($closure);
+        $params = [];
+
+        foreach ($reflection->getParameters() as $param) {
+            $paramStr = '';
+
+            $paramType = $param->getType();
+            if ($paramType !== null && $paramType->getName() === 'array') {
+                $paramStr .= 'array ';
+            } elseif ($paramType !== null) {
+                $paramStr .= $paramType->getName() . ' ';
             }
-            if ($p->isPassedByReference()) {
-                $s .= '&';
+
+            if ($param->isPassedByReference()) {
+                $paramStr .= '&';
             }
-            $s .= '$' . $p->name;
-            if ($p->isOptional()) {
-                $s .= ' = ' . var_export($p->getDefaultValue(), TRUE);
+
+            $paramStr .= '$' . $param->name;
+
+            if ($param->isOptional()) {
+                $paramStr .= ' = ' . var_export($param->getDefaultValue(), true);
             }
-            $params [] = $s;
+
+            $params[] = $paramStr;
         }
-        $str .= implode(', ', $params);
-        $str .= '){';
-        $lines = file($r->getFileName());
-        $start = $r->getStartLine() - 1;
-        $function_text = '';
-        for ($l = $start; $l < $r->getEndLine(); $l++) {
-            $function_text .= $lines[$l];
+
+        $str .= implode(', ', $params) . '){';
+
+        $lines = file($reflection->getFileName());
+        $start = $reflection->getStartLine() - 1;
+        $end = $reflection->getEndLine();
+
+        $functionText = '';
+
+        for ($line = $start; $line < $end; $line++) {
+            $functionText .= $lines[$line];
         }
+
         $regex = '/function\s*?\(.*\)\s*?{(.*?)\}/ms';
-        preg_match_all($regex, $function_text, $matches, PREG_SET_ORDER, 0);
-        $function_text = isset($matches[0][1])?$matches[0][1] : null;
-        return $str.$function_text.'}';
+        preg_match_all($regex, $functionText, $matches, PREG_SET_ORDER, 0);
+        $functionText = $matches[0][1] ?? null;
+
+        return $str . $functionText . '}';
     }
+
+
+
 }
     

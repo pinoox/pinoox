@@ -19,7 +19,8 @@ vendor
 # MacOS
 .DS_Store
 
-apps/**/*
-!apps/com_pinoox_installer
+apps/**/* 
 !apps/com_pinoox_manager
 !apps/com_pinoox_welcome
+!apps/com_pinoox_installer
+ 

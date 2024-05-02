@@ -43,6 +43,15 @@ class Request extends RequestSymfony
         return $this->fetchDataByKey($this->input()->all(), $key, $default);
     }
 
+    public function getOne(string $key, mixed $default = null)
+    {
+        return HelperArray::parseParams(
+            $this->all(),
+            $key,
+            $default,
+        );
+    }
+
     private function initJsonData(): void
     {
         $data = [];
