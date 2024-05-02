@@ -33,10 +33,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class MigrateCommand extends Terminal
 {
-
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::REQUIRED, 'Enter the package name that you want to migrate schemas');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to migrate schemas',$this->getDefaultPackage());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

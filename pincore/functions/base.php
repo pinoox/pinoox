@@ -196,16 +196,14 @@ if (!function_exists('pincore')) {
 
 if (!function_exists('_env')) {
     /**
-     * get & set in env
-     *
-     * @return mixed
+     * get envs
      */
-    function _env($key = null, $value = null)
+    function _env(?string $key = null, $default = null): mixed
     {
-        if (empty($value))
-            return Env::get($key);
+        if (!is_null($key))
+            return Env::get($key, $default);
         else
-            Env::set($key, $value);
+            return $_ENV;
     }
 }
 

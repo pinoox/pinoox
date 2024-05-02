@@ -92,4 +92,8 @@ class Terminal extends Command
     }
 
 
+    protected function getDefaultPackage(): string
+    {
+        return _env('PINOOX_CLI_PACKAGE', 'pincore');
+    }
 }

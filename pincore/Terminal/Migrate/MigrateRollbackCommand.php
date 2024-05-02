@@ -35,7 +35,7 @@ class MigrateRollbackCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas',$this->getDefaultPackage());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
