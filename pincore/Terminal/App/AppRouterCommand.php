@@ -61,7 +61,7 @@ class AppRouterCommand extends Terminal
     {
         $route = $input->getArgument('route');
         AppRouter::delete($route);
-        $output->writeln("<info>Route <options=bold>$route</> removed</info>");
+        $output->writeln("<info>Route <options=bold>'$route'</> removed</info>");
     }
 
 
@@ -70,7 +70,7 @@ class AppRouterCommand extends Terminal
         $route = $input->getArgument('route');
         $packageName = $input->getArgument('packageName');
         AppRouter::set($route, $packageName);
-        $output->writeln("<info>Route <options=bold>$route</> set to package <options=bold>$packageName</></info>");
+        $output->writeln("<info>Route <options=bold>'$route'</> set to package <options=bold>'$packageName'</></info>");
     }
 
     private function getRoutes(InputInterface $input, OutputInterface $output)
