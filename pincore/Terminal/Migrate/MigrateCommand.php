@@ -16,7 +16,6 @@ namespace Pinoox\Terminal\Migrate;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Database\Schema;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
