@@ -13,8 +13,8 @@
 namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Migrations\Migration;
-use Pinoox\Portal\DB;
 use Illuminate\Database\Schema\Builder;
+use Pinoox\Portal\Database\DB;
 
 class MigrationBase extends Migration
 {

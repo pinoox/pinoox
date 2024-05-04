@@ -16,11 +16,9 @@ namespace Pinoox\Model;
 
 use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
-use Pinoox\Component\Database\Search\Searchable;
-use Pinoox\Component\Database\Sort\Sortable;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 

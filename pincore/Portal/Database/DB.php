@@ -12,9 +12,8 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Portal;
+namespace Pinoox\Portal\Database;
 
-use Closure;
 use Doctrine\DBAL\Connection as ObjectPortal7;
 use Doctrine\DBAL\Schema\AbstractSchemaManager as ObjectPortal6;
 use Doctrine\DBAL\Schema\Column as ObjectPortal5;
@@ -35,7 +34,7 @@ use PDO as ObjectPortal8;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Source\Portal;
-use Throwable;
+use Pinoox\Portal\Config;
 
 /**
  * @method static useDefaultQueryGrammar()

@@ -16,7 +16,7 @@ namespace Pinoox\Service;
 
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Service\Service;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 
 class TransactionalService extends Service
 {

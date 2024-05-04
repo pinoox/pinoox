@@ -15,11 +15,10 @@ namespace App\com_pinoox_manager\Controller;
 
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Router\Route;
 use Pinoox\Component\User;
 use Pinoox\Model\FileModel;
 use Pinoox\Model\UserModel;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\FileUploader;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;

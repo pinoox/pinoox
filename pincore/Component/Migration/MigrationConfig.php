@@ -14,7 +14,7 @@
 namespace Pinoox\Component\Migration;
 
 use Pinoox\Component\Kernel\Exception;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 
 class MigrationConfig
 {
