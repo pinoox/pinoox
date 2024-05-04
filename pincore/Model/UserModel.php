@@ -65,10 +65,6 @@ class UserModel extends Model
 
     protected $appends = ['full_name', 'avatar'];
 
-    protected $hidden = [
-        'password', 'session_id', 'app'
-    ];
-
     protected array $sortableSupports = [
         'full_name' => 'concat:fname,lname',
         'user_id',
