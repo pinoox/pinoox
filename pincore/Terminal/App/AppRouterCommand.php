@@ -29,7 +29,8 @@ class AppRouterCommand extends Terminal
         $this
             ->setName('app:router')
             ->setDescription('Manage application routes')
-            ->addOption('package', 'p',InputOption::VALUE_OPTIONAL, 'Package name')
+            ->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'Package name')
+            ->addOption('path', 'u', InputOption::VALUE_OPTIONAL, 'Path name')
             ->addArgument('action', InputArgument::OPTIONAL, 'Action (set/remove)')
             ->addArgument('route', InputArgument::OPTIONAL, 'Route path')
             ->addArgument('packageName', InputArgument::OPTIONAL, 'Package name for set action');
@@ -38,6 +39,7 @@ class AppRouterCommand extends Terminal
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $package = $input->getOption('package');
+        $path = $input->getOption('path');
         $action = $input->getArgument('action');
 
         if ($action === 'set') {
@@ -46,6 +48,8 @@ class AppRouterCommand extends Terminal
             $this->removeRoute($input, $output);
         } elseif ($package) {
             $this->getRoutesByPackage($input, $output);
+        } elseif ($path) {
+            $this->getRoutesByPath($input, $output);
         } else {
             $this->getRoutes($input, $output);
         }
@@ -57,7 +61,7 @@ class AppRouterCommand extends Terminal
     {
         $route = $input->getArgument('route');
         AppRouter::delete($route);
-        $output->writeln("Route '$route' removed");
+        $output->writeln("<info>Route <options=bold>$route</> removed</info>");
     }
 
 
@@ -66,15 +70,24 @@ class AppRouterCommand extends Terminal
         $route = $input->getArgument('route');
         $packageName = $input->getArgument('packageName');
         AppRouter::set($route, $packageName);
-        $output->writeln("Route '$route' set to package '$packageName'");
+        $output->writeln("<info>Route <options=bold>$route</> set to package <options=bold>$packageName</></info>");
     }
 
     private function getRoutes(InputInterface $input, OutputInterface $output)
     {
         $routes = AppRouter::get();
+        $output->writeln("");
+
         $output->writeln("All app routes:");
 
         $rows = array_map(fn(string $k, string $v): array => [$k, $v], array_keys($routes), array_values($routes));
+        $this->printTable($output, $rows);
+        $output->writeln("");
+
+    }
+
+    private function printTable(OutputInterface $output, $rows)
+    {
         $table = new Table($output);
         $table->setStyle('box-double')
             ->setHeaders(['path', 'package'])
@@ -86,17 +99,28 @@ class AppRouterCommand extends Terminal
     {
         $package = $input->getOption('package');
         $routes = AppRouter::getByPackage($package);
-        $output->writeln("Routes for package '$package':");
+        $output->writeln("");
+        $output->writeln("Routes for package <fg=yellow>$package</>:");
 
         $rows = [];
-        $i = 1;
         foreach ($routes as $route => $packageName) {
-            $rows[] = [$i++, $route];
+            $rows[] = [$route, $packageName];
         }
-        $table = new Table($output);
-        $table->setStyle('box-double')
-            ->setHeaders(['#', 'path'])
-            ->setRows($rows)
-            ->render();
+        $this->printTable($output,$rows);
+        $output->writeln("");
+    }
+
+    private function getRoutesByPath(InputInterface $input, OutputInterface $output)
+    {
+        $path = $input->getOption('path');
+        $packageName = AppRouter::get($path);
+        $output->writeln("");
+        $output->writeln("Routes for path <fg=yellow>$path</>:");
+        $rows = [
+            [$path, $packageName]
+        ];
+        $this->printTable($output,$rows);
+        $output->writeln("");
+
     }
 }
