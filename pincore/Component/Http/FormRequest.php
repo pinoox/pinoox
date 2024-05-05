@@ -36,6 +36,8 @@ abstract class FormRequest
     protected Validator $validator;
     protected bool $isJsonValidator = false;
     protected bool $check = true;
+    protected bool $jsonException = false;
+
     protected string $errorBag = 'default';
     public FileBag $files;
     public InputBag $cookies;
