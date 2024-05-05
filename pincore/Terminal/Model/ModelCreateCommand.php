@@ -4,6 +4,7 @@ namespace Pinoox\Terminal\Model;
 
 use Pinoox\Component\Helpers\PhpFile\ModelFile;
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Helpers\StubBuilderHelper;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\AppManager;
@@ -24,73 +25,41 @@ class ModelCreateCommand extends Terminal
     private string $package;
     private string $model;
     private string $table;
+    private string $classname;
+    private string $sub;
 
     protected function configure(): void
     {
         $this
             ->addArgument('model', InputArgument::REQUIRED, 'Enter name of model class')
-            ->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
+            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas', $this->getDefaultPackage());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $this->model = $input->getArgument('model');
-        $this->package = $input->getArgument('package');
+        $model = $input->getArgument('model');
+        $package = $input->getArgument('package');
+        $table = Str::toUnderScore($model);
+        $table = str_replace(['\\','\\_'],'',$table);
 
-        $this->init();
-        $this->create();
-
-        return Command::SUCCESS;
-    }
-
-    private function init(): void
-    {
-        if (!AppEngine::exists($this->package)) {
+        if (!AppEngine::exists($package)) {
             $this->error('Package not found');
         }
-    }
 
-    private function create(): void
-    {
-        try {
-            $isCreated = StubGenerator::generate('model.create.stub', $this->getExportPath(), [
-                'copyright' => StubGenerator::get('copyright.stub'),
-                'package' => $this->package,
-                'model' => $this->model.'Model',
-                'table' => $this->table,
-            ]);
+        $stub = new StubBuilderHelper($model, $package, 'model');
+        $isCreated =  $stub->generate('model.create.stub', [
+            'table' => $table,
+        ]);
 
-            if ($isCreated) {
-                $this->success('✓ Model [' . $this->model . '] created successfully');
-                $this->newLine();
-            } else {
-                $this->error('Can\'t generate a new model!');
-            }
-        } catch (\Exception $e) {
-            $this->error($e);
-        }
-    }
-
-
-    private function getExportPath(): string
-    {
-        $path = AppEngine::path($this->package) . '/Model';
-
-        $this->model = Str::toCamelCase($this->model);
-        $this->table = Str::toUnderScore($this->model);
-
-        if (!file_exists($path)) {
-            mkdir($path, 0755, true);
+        if ($isCreated) {
+            $this->success($stub->message);
+            $this->newLine();
         } else {
-            //check availability
-            $finder = new Finder();
-            $finder->in($path)
-                ->files()
-                ->name('*.php');
+            $this->error($stub->message);
         }
 
-        return $path . '/' . $this->model . 'Model.php';
+        return Command::SUCCESS;
     }
 }
