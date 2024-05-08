@@ -156,7 +156,7 @@ if (!function_exists('cache')) {
 
 if (!function_exists('view')) {
     /**
-     * render view
+     * ready view
      *
      * @param string $name
      * @param array $parameters
@@ -164,7 +164,21 @@ if (!function_exists('view')) {
      */
     function view(string $name = '', array $parameters = []): \Pinoox\Component\Template\View
     {
-        return View::___()->ready($name, $parameters);
+        return View::ready($name, $parameters);
+    }
+}
+
+if (!function_exists('render')) {
+    /**
+     * render view
+     *
+     * @param array|string $name
+     * @param array $parameters
+     * @return string
+     */
+    function render(array|string $name = '', array $parameters = []): string
+    {
+        return View::render($name, $parameters);
     }
 }
 
