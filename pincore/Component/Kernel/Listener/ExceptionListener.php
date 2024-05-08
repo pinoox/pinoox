@@ -36,7 +36,7 @@ class ExceptionListener implements EventSubscriberInterface
             );
         } else if ($event->getRequest()->attributes->has('_controller')) {
             $controller = $event->getRequest()->attributes->get('_controller');
-            if (isset($controller[0]) && class_exists($controller[0]) && method_exists($controller[0], '_exception')) {
+            if (is_array($controller) && isset($controller[0]) && class_exists($controller[0]) && method_exists($controller[0], '_exception')) {
                 $result = call_user_func_array(array($controller[0], '_exception'), [
                     $event,
                 ]);
