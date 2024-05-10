@@ -158,11 +158,11 @@ if (!function_exists('view')) {
     /**
      * ready view
      *
-     * @param string $name
+     * @param string|array $name
      * @param array $parameters
      * @return \Pinoox\Component\Template\View
      */
-    function view(string $name = '', array $parameters = []): \Pinoox\Component\Template\View
+    function view(string|array $name = '', array $parameters = []): \Pinoox\Component\Template\View
     {
         return View::ready($name, $parameters);
     }
@@ -213,10 +213,7 @@ if (!function_exists('_env')) {
      */
     function _env(?string $key = null, $default = null): mixed
     {
-        if (!is_null($key))
-            return Env::get($key, $default);
-        else
-            return $_ENV;
+        return Env::get($key, $default);
     }
 }
 
