@@ -413,6 +413,15 @@ class PortalFile extends PhpFile
             $methods = [];
 
             $tags = HelperAnnotations::getTagsIntoComment($reflection->getDocComment());
+
+            if (!empty($tags['method'])) {
+                foreach ($tags['method'] as $methodPhpDoc) {
+                    if (Str::has($methodPhpDoc, 'static '))
+                        str_replace('static ', '', $methodPhpDoc);
+                    $class->addComment('@method static ' . $methodPhpDoc);
+                }
+            }
+
             if (!empty($tags['mixin'])) {
                 foreach ($tags['mixin'] as $mixinClassName) {
                     $mixinClassName = $uses[$mixinClassName] ?? $mixinClassName;
