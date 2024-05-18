@@ -18,6 +18,7 @@ use Illuminate\Validation\Validator;
 
 class Validation extends Validator
 {
+    private array $defaultMixinData = [];
     private array $mixinData = [];
     private array $replaceRules = [];
 
@@ -86,6 +87,7 @@ class Validation extends Validator
     public function validated()
     {
         return [
+            ...$this->getDefaultMixin(),
             ...parent::validated(),
             ...$this->getMixin(),
         ];
@@ -99,11 +101,22 @@ class Validation extends Validator
         return $this->mixinData;
     }
 
+
+    public function getDefaultMixin(): array
+    {
+        return $this->defaultMixinData;
+    }
+
     /**
      * @param array $mixinData
      */
     public function mixin(array $mixinData): void
     {
         $this->mixinData = $mixinData;
+    }
+
+    public function fallbacks(array $data): void
+    {
+        $this->defaultMixinData = $data;
     }
 }
