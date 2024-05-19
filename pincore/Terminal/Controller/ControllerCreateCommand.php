@@ -1,13 +1,11 @@
 <?php
 
-namespace Pinoox\Terminal\Model;
+namespace Pinoox\Terminal\Controller;
 
-use Pinoox\Component\Helpers\PhpFile\ModelFile;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Helpers\StubBuilderHelper;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\AppManager;
 use Pinoox\Portal\StubGenerator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -17,21 +15,20 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
 #[AsCommand(
-    name: 'model:create',
-    description: 'Create a new model class.',
+    name: 'controller:create',
+    description: 'Create a new controller class.',
 )]
-class ModelCreateCommand extends Terminal
+class ControllerCreateCommand extends Terminal
 {
     private string $package;
-    private string $model;
-    private string $table;
+    private string $controller;
     private string $classname;
     private string $sub;
 
     protected function configure(): void
     {
         $this
-            ->addArgument('model', InputArgument::REQUIRED, 'Enter name of model class')
+            ->addArgument('controller', InputArgument::REQUIRED, 'Enter name of controller class')
             ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas', $this->getDefaultPackage());
     }
 
@@ -39,19 +36,15 @@ class ModelCreateCommand extends Terminal
     {
         parent::execute($input, $output);
 
-        $model = $input->getArgument('model');
+        $controller = $input->getArgument('controller');
         $package = $input->getArgument('package');
-        $table = Str::toUnderScore($model);
-        $table = str_replace(['\\','\\_'],'',$table);
 
         if (!AppEngine::exists($package)) {
             $this->error('Package not found');
         }
 
-        $stub = new StubBuilderHelper($model, $package, 'model');
-        $isCreated =  $stub->generate('model.create.stub', [
-            'table' => $table,
-        ]);
+        $stub = new StubBuilderHelper($controller, $package, 'Controller');
+        $isCreated =  $stub->generate('controller.create.stub');
 
         if ($isCreated) {
             $this->success($stub->message);
@@ -62,4 +55,5 @@ class ModelCreateCommand extends Terminal
 
         return Command::SUCCESS;
     }
+
 }

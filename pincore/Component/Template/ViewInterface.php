@@ -73,8 +73,9 @@ interface ViewInterface
      *
      * @param string $name
      * @param mixed $value
+     * @return ViewInterface
      */
-    public function set(string $name, mixed $value): void;
+    public function set(string $name, mixed $value): ViewInterface;
 
     /**
      * get content ready

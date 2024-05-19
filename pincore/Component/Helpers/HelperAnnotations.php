@@ -70,7 +70,7 @@ class HelperAnnotations
 
         $text = preg_replace('/\/\*\*|\*\/|\*\s?/m', '', $text);
 
-        if (preg_match_all('/@(\w+)\s+(.*?)(?=\s+@|$)/s', $text, $matches)) {
+        if (preg_match_all('/@(\w+)\s+(.*?)(?=\n|$)/s', $text, $matches)) {
             foreach ($matches[1] as $key => $tagName) {
                 if (!isset($tags[$tagName])) {
                     $tags[$tagName] = [];

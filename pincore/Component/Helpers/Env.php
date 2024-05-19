@@ -57,7 +57,7 @@ class Env
         $dotenv = new Dotenv();
         $path = $this->basePath . '/.env';
         try {
-            $dotenv->bootEnv($this->basePath . '/.env');
+            $dotenv->bootEnv($path);
 
             if (isset($_SERVER['SYMFONY_DOTENV_VARS']))
                 unset($_SERVER['SYMFONY_DOTENV_VARS']);

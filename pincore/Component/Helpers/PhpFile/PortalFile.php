@@ -24,6 +24,7 @@ use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Path\Path;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\AppEngine;
+use ReflectionClass;
 use Symfony\Component\Console\Input\InputInterface;
 use ReflectionFunction;
 use ReflectionMethod;
@@ -375,7 +376,6 @@ class PortalFile extends PhpFile
 
     public function addCommentMethods(ClassType|ClassLike $class, PhpNamespace $namespace, string $serviceName = null): void
     {
-
         $serviceName = !empty($serviceName) ? $serviceName : $this->getService();
         $isCallBack = true;
         $callback = [];
@@ -395,17 +395,33 @@ class PortalFile extends PhpFile
         } else {
             $container = Container::app($this->package);
         }
-        if ($container->hasDefinition($serviceName)) {
+        if ($container->has($serviceName)) {
             $voidMethods = [];
             $num = 1;
-            $definition = $container->getDefinition($serviceName);
-            $className = $definition->getClass();
-            $reflection = $container->getReflectionClass($className);
+            if ($container->hasDefinition($serviceName)) {
+                $definition = $container->getDefinition($serviceName);
+                $className = $definition->getClass();
+                $reflection = $container->getReflectionClass($className);
+            } else {
+                $obj = $container->get($serviceName);
+                $reflection = new ReflectionClass($obj);
+                $className = $reflection->getName();
+            }
+
             $uses = HelperAnnotations::getUsesInPHPFile($className);
 
             $methods = [];
 
             $tags = HelperAnnotations::getTagsIntoComment($reflection->getDocComment());
+
+            if (!empty($tags['method'])) {
+                foreach ($tags['method'] as $methodPhpDoc) {
+                    if (Str::has($methodPhpDoc, 'static '))
+                        str_replace('static ', '', $methodPhpDoc);
+                    $class->addComment('@method static ' . $methodPhpDoc);
+                }
+            }
+
             if (!empty($tags['mixin'])) {
                 foreach ($tags['mixin'] as $mixinClassName) {
                     $mixinClassName = $uses[$mixinClassName] ?? $mixinClassName;

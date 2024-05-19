@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'default' => _env('FILESYSTEM_DISK', 'local'),
+    'default' => env('FILESYSTEM_DISK', 'local'),
 
     /*
     |--------------------------------------------------------------------------
@@ -39,20 +39,20 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => 'storage/app/public',
-            'url' => _env('APP_URL').'/storage',
+            'url' => env('APP_URL').'/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
 
         's3' => [
             'driver' => 's3',
-            'key' => _env('AWS_ACCESS_KEY_ID'),
-            'secret' => _env('AWS_SECRET_ACCESS_KEY'),
-            'region' => _env('AWS_DEFAULT_REGION'),
-            'bucket' => _env('AWS_BUCKET'),
-            'url' => _env('AWS_URL'),
-            'endpoint' => _env('AWS_ENDPOINT'),
-            'use_path_style_endpoint' => _env('AWS_USE_PATH_STYLE_ENDPOINT', false),
+            'key' => env('AWS_ACCESS_KEY_ID'),
+            'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'bucket' => env('AWS_BUCKET'),
+            'url' => env('AWS_URL'),
+            'endpoint' => env('AWS_ENDPOINT'),
+            'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
         ],
 

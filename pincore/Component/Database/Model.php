@@ -14,14 +14,13 @@
 namespace Pinoox\Component\Database;
 
 use Closure;
-use Illuminate\Database\Eloquent\Model as EloquentModel;
-
 use Closure as ObjectPortal11;
 use Illuminate\Contracts\Pagination\CursorPaginator as ObjectPortal9;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator as ObjectPortal7;
 use Illuminate\Contracts\Pagination\Paginator as ObjectPortal8;
 use Illuminate\Database\Eloquent\Builder as ObjectPortal1;
 use Illuminate\Database\Eloquent\Collection as ObjectPortal2;
+use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Model as ObjectPortal3;
 use Illuminate\Database\Eloquent\Relations\Relation as ObjectPortal4;
 use Illuminate\Database\Query\Builder as ObjectPortal10;
@@ -29,7 +28,7 @@ use Illuminate\Support\Collection as ObjectPortal6;
 use Illuminate\Support\LazyCollection as ObjectPortal5;
 use Pinoox\Component\Database\Search\Searchable;
 use Pinoox\Component\Database\Sort\Sortable;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 use Throwable;
 
 /**

@@ -22,6 +22,7 @@ use Illuminate\Validation\Validator as ObjectPortal1;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Validation\Factory;
+use Pinoox\Portal\Database\DB;
 
 /**
  * @method static bool check(mixed $value, array|string $rule)

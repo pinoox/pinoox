@@ -49,8 +49,9 @@ class View implements ViewInterface
      * Set View
      * @param string|array $folders
      * @param string $pathTheme
+     * @return View
      */
-    public function setView(string|array $folders, string $pathTheme): void
+    public function setView(string|array $folders, string $pathTheme): static
     {
         $this->folders = $folders;
         $this->pathTheme = $pathTheme;
@@ -94,21 +95,26 @@ class View implements ViewInterface
             ->assets('functions.php');
         $this->twigEngine
             ->addFunctionsFile($functions);
+
+        return $this;
     }
 
-    public function changeTheme(string|array $folders)
+    public function changeTheme(string|array $folders): static
     {
         $this->setView($folders, $this->pathTheme);
+
+        return $this;
     }
 
-    private function addCustomFunctions(string|array $folders, string $pathTheme)
+    private function addCustomFunctions(string|array $folders, string $pathTheme): static
     {
         if (is_array($folders)) {
             foreach ($folders as $folder) {
                 $this->addCustomFunctions($folder, $pathTheme);
             }
-
         }
+
+        return $this;
     }
 
     /**
@@ -148,8 +154,8 @@ class View implements ViewInterface
 
         $engines = $this->engines();
         foreach ($engines as $engine) {
-            $name .= '.' . $engine;
-            if ($this->existsFile($name)) {
+            $filename = $name . '.' . $engine;
+            if ($this->existsFile($filename)) {
                 return true;
             }
         }
@@ -180,10 +186,13 @@ class View implements ViewInterface
      *
      * @param string $name
      * @param mixed $value
+     * @return View
      */
-    public function set(string $name, mixed $value): void
+    public function set(string $name, mixed $value): static
     {
         $this->globals[$name] = $value;
+
+        return $this;
     }
 
     /**
@@ -204,12 +213,30 @@ class View implements ViewInterface
     /**
      * render view
      *
-     * @param string $name
+     * @param string|array|null $name
      * @param array $parameters
      * @return string
      */
-    public function render(string $name, array $parameters = []): string
+    public function render(string|array|null $name = null, array $parameters = []): string
     {
+        $result = $this->getContentReady();
+        return $result . $this->renderByEngine($name, $parameters);
+    }
+
+    public function renderByEngine(string|array|null $name, array $parameters): string
+    {
+        $result = '';
+
+        if (empty($name))
+            return $result;
+
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                $result .= $this->renderByEngine($n, $parameters);
+            }
+            return $result;
+        }
+
         if ($this->existsFile($name))
             return $this->renderFile($name, $parameters);
 
@@ -228,14 +255,21 @@ class View implements ViewInterface
     /**
      * add ready render
      *
-     * @param string $name
+     * @param string|array $name
      * @param array $parameters
      * @return View
      */
-    public function ready(string $name = '', array $parameters = []): View
+    public function ready(string|array $name = '', array $parameters = []): static
     {
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                $this->ready($n, $parameters);
+            }
+            return $this;
+        }
+
         if (!empty($name))
-            $this->readyRenders[$name] = $parameters;
+            $this->readyRenders[] = ['name' => $name, 'parameters' => $parameters];
 
         return $this;
     }
@@ -248,8 +282,8 @@ class View implements ViewInterface
     public function getContentReady(): string
     {
         $content = '';
-        foreach ($this->readyRenders as $name => $parameters) {
-            $content .= $this->render($name, $parameters);
+        foreach ($this->readyRenders as ['name' => $name, 'parameters' => $parameters]) {
+            $content .= $this->renderByEngine($name, $parameters);
         }
 
         return $content;

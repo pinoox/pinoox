@@ -12,7 +12,6 @@
 
 namespace Pinoox\Component\Upload;
 
-use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Model\FileModel;
 use Pinoox\Portal\Image;
@@ -228,7 +227,7 @@ class FileUploader
                 mkdir($thumbnailFolder, 0755, true);
 
             Image::read($originalImage)
-                ->resize($this->thumbInfo['width'], $this->thumbInfo['height'])
+                ->scale($this->thumbInfo['width'], $this->thumbInfo['height'])
                 ->save($thumbnailPath);
         }
     }

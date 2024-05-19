@@ -33,7 +33,7 @@ class MigrateStatusCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app', $this->getDefaultPackage());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

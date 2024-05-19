@@ -1,0 +1,11 @@
+<?php
+{{ copyright }}
+
+namespace App\{{package}}\Controller{{sub}};
+
+use Pinoox\Component\Kernel\Controller\Controller;
+
+class {{classname}} extends Controller
+{
+
+}

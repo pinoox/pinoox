@@ -19,7 +19,7 @@ use Pinoox\Component\Http\Response as ObjectPortal2;
 use Pinoox\Component\Kernel\Kernel as ObjectPortal3;
 use Pinoox\Component\Package\App as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Dumper;
 use Pinoox\Portal\Env;
 use Pinoox\Portal\Kernel\HttpKernel;
