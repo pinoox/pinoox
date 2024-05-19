@@ -11,13 +11,13 @@
  */
 
 
-namespace Pinoox\Component\Kernel\Service;
+namespace Pinoox\Component\Flow;
 
 
 use Pinoox\Component\Http\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-abstract class Service implements ServiceInterface
+abstract class Flow implements FlowInterface
 {
 
     protected ?RequestEvent $event;

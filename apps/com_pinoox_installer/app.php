@@ -10,8 +10,8 @@ return array(
     'version-code' => 7,
     'lang' => 'en',
     'user' => 'com_pinoox_manager',
-    'service' => [
-        \App\com_pinoox_installer\Service\BootService::class
+    'flow' => [
+        \App\com_pinoox_installer\Flow\BootFlow::class
     ],
 );
 

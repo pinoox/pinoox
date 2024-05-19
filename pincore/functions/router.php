@@ -17,11 +17,11 @@ use Pinoox\Portal\Router;
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function route(array|string $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function route(array|string $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::add($path, $action, $name, $methods, $defaults, $filters, $property, $data, $services);
+    Router::add($path, $action, $name, $methods, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -36,11 +36,11 @@ function route(array|string $path, array|string|Closure $action = '', string $na
  * @param array $defaults
  * @param string $prefixName
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function collection(string $path = '', string|array|callable|Router|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $filters = [], array $defaults = [], string $prefixName = '', array $data = [], array $services = []): void
+function collection(string $path = '', string|array|callable|Router|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $filters = [], array $defaults = [], string $prefixName = '', array $data = [], array $flows = []): void
 {
-    Router::collection($path, $routes, $controller, $methods, $action, $defaults, $filters, $prefixName, $data, $services);
+    Router::collection($path, $routes, $controller, $methods, $action, $defaults, $filters, $prefixName, $data, $flows);
 }
 
 
@@ -66,11 +66,11 @@ function action(string $name, array|string|Closure $action): void
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function get(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function get(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::get($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::get($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -84,11 +84,11 @@ function get(array|string $path, array|string|Closure $action = '', string $name
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function post(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function post(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::post($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::post($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -102,11 +102,11 @@ function post(array|string $path, array|string|Closure $action = '', string $nam
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function put(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function put(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::put($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::put($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -120,11 +120,11 @@ function put(array|string $path, array|string|Closure $action = '', string $name
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function patch(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function patch(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::patch($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::patch($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -138,11 +138,11 @@ function patch(array|string $path, array|string|Closure $action = '', string $na
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function delete(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function delete(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::delete($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::delete($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -156,11 +156,11 @@ function delete(array|string $path, array|string|Closure $action = '', string $n
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function options(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function options(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::options($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::options($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -174,11 +174,11 @@ function options(array|string $path, array|string|Closure $action = '', string $
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function head(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function head(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::head($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::head($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 
@@ -192,11 +192,11 @@ function head(array|string $path, array|string|Closure $action = '', string $nam
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function purge(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function purge(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::purge($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::purge($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 /**
@@ -209,11 +209,11 @@ function purge(array|string $path, array|string|Closure $action = '', string $na
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function trace(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function trace(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::trace($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::trace($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }
 
 /**
@@ -226,9 +226,9 @@ function trace(array|string $path, array|string|Closure $action = '', string $na
  * @param array $filters
  * @param int|null $property
  * @param array $data
- * @param array $services
+ * @param array $flows
  */
-function connect(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $services = []): void
+function connect(array|string $path, array|string|Closure $action = '', string $name = '', array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
 {
-    Router::connect($path, $action, $name, $defaults, $filters, $property, $data, $services);
+    Router::connect($path, $action, $name, $defaults, $filters, $property, $data, $flows);
 }

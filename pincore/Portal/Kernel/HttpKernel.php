@@ -14,19 +14,16 @@
 
 namespace Pinoox\Portal\Kernel;
 
-use App\com_pinoox_welcome\Service\TestService;
+use Pinoox\Component\Kernel\Event\ResponseEvent;
+use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Router\RouteCollection;
+use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\FlowManager;
 use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
-use Symfony\Component\Routing\Generator\UrlGenerator;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
-use Symfony\Component\Routing\RequestContext;
-use Pinoox\Component\Kernel\Kernel;
-use Pinoox\Component\Kernel\Event\ResponseEvent;
-use Pinoox\Component\Source\Portal;
 
 /**
  * @method static ObjectPortal1 handleSubRequest(\Symfony\Component\HttpFoundation\Request $request)
@@ -55,8 +52,8 @@ class HttpKernel extends Portal
                 Resolver::__ref('controller'),
                 self::__ref('request_stack'),
                 Resolver::__ref('argument'),
-            ])->addMethodCall('setServiceManager', [
-                ServiceManager::__ref(),
+            ])->addMethodCall('setFlowManager', [
+                FlowManager::__ref(),
             ]);
 
         self::setRouteDefault();
