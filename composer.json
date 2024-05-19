@@ -26,7 +26,6 @@
         "illuminate/pagination": "^10.48",
         "illuminate/validation": "^10.40",
         "intervention/image": "^3.3",
-        "morilog/jalali": "^3.4",
         "nelexa/zip": "^4.0",
         "nesbot/carbon": "^2.72.3",
         "nette/php-generator": "^4.1",
