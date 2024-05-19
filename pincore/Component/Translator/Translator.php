@@ -22,7 +22,8 @@ class Translator extends TranslatorIlluminate
     {
         $this->loader->addPath($path);
     }
-    public function addJsonPath($path)
+
+    public function addJsonPath($path): void
     {
         $this->loader->addJsonPath($path);
     }

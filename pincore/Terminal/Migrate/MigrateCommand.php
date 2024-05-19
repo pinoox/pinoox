@@ -73,10 +73,10 @@ class MigrateCommand extends Terminal
      */
     private function printMessages($messages): void
     {
-        if (empty($messages)) throw new Exception($messages);
-
-        foreach ($messages as $message) {
-            $this->success($message);
+        if (!empty($messages)){
+            foreach ($messages as $message) {
+                $this->success($message);
+            }
         }
     }
 
