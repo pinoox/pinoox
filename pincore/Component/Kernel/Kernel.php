@@ -2,14 +2,12 @@
 
 namespace Pinoox\Component\Kernel;
 
-use Pinoox\Component\Http\Response;
-use Pinoox\Component\Kernel\Service\ServiceManager;
+use Pinoox\Component\Flow\FlowManager;
 use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ResponseSymfony;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
-use Symfony\Component\HttpKernel\Event\FinishRequestEvent;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -23,11 +21,11 @@ class Kernel extends HttpKernel
     const HANDLE_BEFORE = 'handle.before';
     const HANDLE_AFTER = 'handle.after';
 
-    private ?ServiceManager $serviceManager = null;
+    private ?FlowManager $flowManager = null;
 
-    public function setServiceManager(ServiceManager $serviceManager): void
+    public function setFlowManager(FlowManager $flowManager): void
     {
-        $this->serviceManager = $serviceManager;
+        $this->flowManager = $flowManager;
     }
 
     public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): ResponseSymfony
@@ -47,10 +45,10 @@ class Kernel extends HttpKernel
             return parent::handle($request, $type, $catch);
         };
 
-        if ($this->serviceManager !== null) {
-            $this->addRouteServices($request);
-            $this->serviceManager->setRequestEvent($event);
-            $response = $this->serviceManager->handle($request, $next);
+        if ($this->flowManager !== null) {
+            $this->addRouteFlows($request);
+            $this->flowManager->setRequestEvent($event);
+            $response = $this->flowManager->handle($request, $next);
             if (!($response instanceof ResponseSymfony)) {
                 $event = new ViewEvent($this, $request, $type, $response);
                 $this->dispatcher->dispatch($event, self::HANDLE_AFTER);
@@ -63,11 +61,11 @@ class Kernel extends HttpKernel
         return $response;
     }
 
-    private function addRouteServices(Request $request): void
+    private function addRouteFlows(Request $request): void
     {
         $router = $request->attributes->get('_router');
-        $services = !empty($router) && ($router instanceof Route) ? $router->services : [];
-        $this->serviceManager->addServices($services);
+        $flows = !empty($router) && ($router instanceof Route) ? $router->flows : [];
+        $this->flowManager->addFlows($flows);
     }
 
     /**

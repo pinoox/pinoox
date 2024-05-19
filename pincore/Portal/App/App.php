@@ -26,7 +26,7 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal5;
 use Pinoox\Component\Translator\Translator as ObjectPortal8;
 use Pinoox\Portal\Lang;
-use Pinoox\Service\TransactionalService;
+use Pinoox\Flow\TransactionalFlow;
 use Symfony\Component\Routing\RequestContext;
 
 /**
@@ -98,7 +98,7 @@ class App extends Portal
     public static function getDefaultAliases(): array
     {
         return [
-            'transactional' => TransactionalService::class,
+            'transactional' => TransactionalFlow::class,
         ];
     }
 

@@ -11,14 +11,14 @@
  */
 
 
-namespace App\com_pinoox_manager\Service;
+namespace App\com_pinoox_manager\Flow;
 
 
-use App\com_pinoox_shop\Service\AuthService;
+use App\com_pinoox_shop\Flow\AuthFlow;
 use Pinoox\Component\Router\Route;
 use Pinoox\Component\Http\Request;
 
-class LoginAuthService extends AuthService
+class LoginAuthFlow extends AuthFlow
 {
     protected function exit(Request $request, Route $route)
     {

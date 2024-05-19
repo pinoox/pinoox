@@ -13,8 +13,8 @@ return array(
     'minpin' => 1,
     'open' => 'setting-dashboard',
     'sys-app' => true,
-    'service' => [
-        \App\com_pinoox_manager\Service\BootService::class
+    'flow' => [
+        \App\com_pinoox_manager\Flow\BootFlow::class
     ]
 );
 

@@ -11,14 +11,14 @@
  */
 
 
-namespace Pinoox\Service;
+namespace Pinoox\Flow;
 
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Service\Service;
+use Pinoox\Component\Flow\Flow;
 use Pinoox\Portal\Database\DB;
 
-class TransactionalService extends Service
+class TransactionalFlow extends Flow
 {
     public function handle(Request $request, \Closure $next): mixed
     {

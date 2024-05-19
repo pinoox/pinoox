@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Component\Kernel\Service;
+namespace Pinoox\Component\Flow;
 
 
 use Pinoox\Component\Helpers\Str;
@@ -19,27 +19,27 @@ use Pinoox\Component\Http\Request;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 
-class ServiceManager
+class FlowManager
 {
     /**
-     * @var ServiceInterface[]|string[] $services
+     * @var FlowInterface[]|string[] $flows
      */
-    private array $services;
+    private array $flows;
     private array $alias = [];
     private RequestEvent $requestEvent;
 
-    public function __construct(array $services = [], array $alias = [], ?RequestEvent $requestEvent = null)
+    public function __construct(array $flows = [], array $alias = [], ?RequestEvent $requestEvent = null)
     {
-        $this->services = $services;
+        $this->flows = $flows;
         $this->alias = $alias;
         if ($requestEvent !== null) {
             $this->setRequestEvent($requestEvent);
         }
     }
 
-    private function handleRow(string|object $service, Request|RequestSymfony $request, \Closure $next)
+    private function handleRow(string|object $flow, Request|RequestSymfony $request, \Closure $next)
     {
-        $alias = $this->getAliasNestedValue($service);
+        $alias = $this->getAliasNestedValue($flow);
         if (!empty($alias)) {
             $values = $alias;
             if (is_array($values)) {
@@ -50,10 +50,10 @@ class ServiceManager
                 $next = $this->handleRow($values, $request, $next);
             }
         } else {
-            $service = is_object($service) ? $service : new $service($this->requestEvent);
-            if ($service instanceof ServiceInterface) {
-                $next = function ($request) use ($service, $next) {
-                    return $service->response($request, $next);
+            $flow = is_object($flow) ? $flow : new $flow($this->requestEvent);
+            if ($flow instanceof FlowInterface) {
+                $next = function ($request) use ($flow, $next) {
+                    return $flow->response($request, $next);
                 };
             }
         }
@@ -64,8 +64,8 @@ class ServiceManager
     public
     function handle(Request|RequestSymfony $request, \Closure $next)
     {
-        foreach ($this->getServices() as $service) {
-            $next = $this->handleRow($service, $request, $next);
+        foreach ($this->getFlows() as $flow) {
+            $next = $this->handleRow($flow, $request, $next);
         }
 
         return $next($request);
@@ -74,40 +74,40 @@ class ServiceManager
     /**
      * @return array
      */
-    public function getServices(): array
+    public function getFlows(): array
     {
         $filters = [];
-        $filteredServices = [];
+        $filteredFlows = [];
 
-        foreach ($this->services as $service) {
-            if (Str::firstHas($service, '!')) {
-                $filters[] = Str::firstDelete($service, '!');
+        foreach ($this->flows as $flow) {
+            if (Str::firstHas($flow, '!')) {
+                $filters[] = Str::firstDelete($flow, '!');
             } else {
-                $filteredServices[] = $service;
+                $filteredFlows[] = $flow;
             }
         }
 
-        return array_values(array_diff($filteredServices, $filters));
+        return array_values(array_diff($filteredFlows, $filters));
     }
 
     /**
-     * @param array $services
+     * @param array $flows
      */
-    public function setServices(array $services): void
+    public function setFlows(array $flows): void
     {
-        $this->services = $services;
+        $this->flows = $flows;
     }
 
     public
-    function addService(string|ServiceInterface $service): void
+    function addFlow(string|FlowInterface $flow): void
     {
-        $this->services[] = $service;
+        $this->flows[] = $flow;
     }
 
     public
-    function addServices(array $services): void
+    function addFlows(array $flows): void
     {
-        $this->services = array_unique(array_merge($services, $this->services));
+        $this->flows = array_unique(array_merge($flows, $this->flows));
     }
 
     /**

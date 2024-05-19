@@ -11,35 +11,30 @@
  */
 
 
-namespace App\com_pinoox_installer\Service;
+namespace App\com_pinoox_manager\Flow;
 
 
+use App\com_pinoox_manager\Component\LangHelper;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Service\Service;
-use Pinoox\Portal\App\App;
-use Pinoox\Portal\Lang;
+use Pinoox\Component\Flow\Flow;
+use Pinoox\Component\User;
 use Pinoox\Portal\View;
 
-class BootService extends Service
+class BootFlow extends Flow
 {
     protected function before(Request $request): void
     {
+        User::lifeTime(100, 'day');
         $this->setLang();
     }
 
     private function setLang()
     {
-        $lang = App::get('lang');
-        $direction = in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr';
-        $data = Str::encodeJson([
-            'install' => t('install'),
-            'user' => t('user'),
-            'language' => t('language'),
-        ], true);
+        $lang = LangHelper::all();
 
-        View::set('_lang', $data);
-        View::set('_direction', $direction);
-        View::set('currentLang', $lang);
+        View::set('_direction', @$lang['manager']['direction']);
+        View::set('_lang', Str::encodeJson($lang, true));
     }
+
 }
