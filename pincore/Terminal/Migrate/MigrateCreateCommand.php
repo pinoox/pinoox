@@ -12,7 +12,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\Finder\SplFileInfo;
 
 #[AsCommand(
     name: 'migrate:create',
@@ -34,7 +33,7 @@ class MigrateCreateCommand extends Terminal
     {
         $this
             ->addArgument('migration', InputArgument::REQUIRED, 'Enter name of migration name')
-            ->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
+            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas',$this->getDefaultPackage());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

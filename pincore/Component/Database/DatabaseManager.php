@@ -40,4 +40,9 @@ class DatabaseManager extends Capsule
     {
         return strtolower($type) === 'asc' ? 'asc' : 'desc';
     }
+
+    public function __call($method, $parameters)
+    {
+        return static::connection()->$method(...$parameters);
+    }
 }

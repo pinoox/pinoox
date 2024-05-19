@@ -24,6 +24,7 @@
         "illuminate/events": "^10.42",
         "illuminate/hashing": "^10.42",
         "illuminate/pagination": "^10.48",
+        "illuminate/support": "^10.48",
         "illuminate/validation": "^10.40",
         "intervention/image": "^3.3",
         "nelexa/zip": "^4.0",
@@ -53,8 +54,7 @@
             "App\\": "apps/"
         },
         "files": [
-            "pincore/functions/base.php",
-            "pincore/functions/router.php"
+            "pincore/functions/base.php"
         ]
     },
     "autoload-dev": {

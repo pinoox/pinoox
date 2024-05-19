@@ -1,11 +1,11 @@
 <?php
 {{ copyright }}
 
-namespace App\{{package}}\Model;
+namespace App\{{package}}\Model{{sub}};
 
 use Pinoox\Component\Database\Model;
 
-class {{model}} extends Model
+class {{classname}} extends Model
 {
     /**
      * The table associated with the model.

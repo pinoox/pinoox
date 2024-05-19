@@ -36,6 +36,8 @@ abstract class FormRequest
     protected Validator $validator;
     protected bool $isJsonValidator = false;
     protected bool $check = true;
+    protected bool $jsonException = false;
+
     protected string $errorBag = 'default';
     public FileBag $files;
     public InputBag $cookies;
@@ -109,12 +111,14 @@ abstract class FormRequest
             );
         $validator->stopOnFirstFailure($this->stopOnFirstFailure);
         $validator->mixin($this->mixin());
+        $validator->fallbacks($this->fallbacks());
 
         // add after
         $this->addAfterArrayToValidator($validator);
 
         return $this->with($validator);
     }
+
 
     protected function addAfterArrayToValidator(Validator $validator): void
     {
@@ -128,10 +132,21 @@ abstract class FormRequest
 
     public function data(): array
     {
-        return $this->global->all();
+        return array_replace
+        ($this->defaults(), $this->global->all());
     }
 
     public function rules(): array
+    {
+        return [];
+    }
+
+    public function defaults(): array
+    {
+        return [];
+    }
+
+    public function fallbacks(): array
     {
         return [];
     }

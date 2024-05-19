@@ -15,7 +15,7 @@ namespace Pinoox\Component\Migration;
 use Illuminate\Database\Capsule\Manager;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\DB;
+use Pinoox\Portal\Database\DB;
 use Symfony\Component\Finder\Finder;
 
 class MigrationToolkit
@@ -114,7 +114,6 @@ class MigrationToolkit
                     $this->setError($e);
                 }
             }
-
         }
 
         return $this;
@@ -219,7 +218,7 @@ class MigrationToolkit
     private function snakeCase($string): string
     {
         // Replace spaces and underscores with dashes
-        $string = str_replace([' ', '_'], '-', $string);
+        $string = str_replace([' ', '_'], '_', $string);
 
         // Convert the string to lowercase
         return strtolower($string);

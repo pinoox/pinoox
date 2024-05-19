@@ -27,10 +27,17 @@ trait Sortable
     public function scopeSortFiled(Builder $query, $field, $direction = 'asc', ?array $support = null): Builder
     {
         $support = is_null($support) ? $this->getSortableSupports() : $support;
-        $sortTable = new SortTable($query, $field, $direction, $support, $this->fillable);
+
+
+        $sortTable = new SortTable($query, $field, $direction, $support, $this->getAllowedColumns());
         $sortTable->setEnableAllowedColumns(!$this->isAllowedAnySortable());
         $sortTable->apply();
         return $query;
+    }
+
+    private function getAllowedColumns(): array
+    {
+        return array_merge($this->fillable, (array)$this->primaryKey);
     }
 
     /**

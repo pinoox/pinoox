@@ -13,13 +13,16 @@
 
 namespace Pinoox\Terminal\Migrate;
 
+use Pinoox\Component\Migration\MigrationQuery;
 use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Component\Terminal;
-use Pinoox\Component\Migration\MigrationQuery;
+use Pinoox\Portal\Database\DB;
+use Pinoox\Portal\Database\Schema;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
@@ -35,17 +38,27 @@ class MigrateRollbackCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::REQUIRED, 'Enter the package name of app you want to migrate schemas');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas', $this->getDefaultPackage());
+        $this->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints');
+
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
+        $ignoreFk = $input->getOption('ignore-fk');
 
         $this->package = $input->getArgument('package');
 
         $this->init();
+
+        if ($ignoreFk)
+            Schema::disableForeignKeyConstraints();
+
         $this->reverse();
+
+        if ($ignoreFk)
+            Schema::enableForeignKeyConstraints();
 
         return Command::SUCCESS;
     }
@@ -94,7 +107,6 @@ class MigrateRollbackCommand extends Terminal
             $this->info($m['fileName'] . ' (' . substr($exec_time, 0, 5) . 'ms)');
             $this->newLine();
         }
-
     }
 
 }
