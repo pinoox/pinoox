@@ -19,11 +19,12 @@ if (!function_exists('view')) {
      *
      * @param string|array $name
      * @param array $parameters
+     * @param bool $exist
      * @return \Pinoox\Component\Template\View
      */
-    function view(string|array $name = '', array $parameters = []): \Pinoox\Component\Template\View
+    function view(string|array $name = '', array $parameters = [], bool $exist = true): \Pinoox\Component\Template\View
     {
-        return View::ready($name, $parameters);
+        return View::ready($name, $parameters, $exist);
     }
 }
 
@@ -33,11 +34,12 @@ if (!function_exists('render')) {
      *
      * @param array|string $name
      * @param array $parameters
+     * @param bool $exist
      * @return string
      */
-    function render(array|string $name = '', array $parameters = []): string
+    function render(array|string $name = '', array $parameters = [], bool $exist = true): string
     {
-        return View::render($name, $parameters);
+        return View::render($name, $parameters, $exist);
     }
 }
 
