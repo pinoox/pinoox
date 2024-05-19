@@ -11,16 +11,16 @@
  */
 
 
-namespace Pinoox\Service;
+namespace Pinoox\Flow;
 
 
 use Closure;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Service\Service;
+use Pinoox\Component\Flow\Flow;
 use Pinoox\Component\Router\Route;
 use Pinoox\Component\User;
 
-abstract class AuthService extends Service
+abstract class AuthFlow extends Flow
 {
     final protected function handle(Request $request, Closure $next)
     {

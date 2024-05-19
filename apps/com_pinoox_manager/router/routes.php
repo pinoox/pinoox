@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use App\com_pinoox_manager\Service\LoginAuthService;
+use App\com_pinoox_manager\Flow\LoginAuthFlow;
 use Pinoox\Portal\View;
 use function Pinoox\Router\{get, collection};
 
@@ -32,7 +32,7 @@ collection(
 collection(
     path: '/api/v1',
     routes: __DIR__ . '/api-auth.php',
-    services: [
-        LoginAuthService::class
+    flows: [
+        LoginAuthFlow::class
     ]
 );

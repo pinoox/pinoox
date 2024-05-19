@@ -12,7 +12,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Portal\Kernel;
+namespace Pinoox\Portal;
 
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
@@ -20,28 +20,28 @@ use Symfony\Component\HttpKernel\Event\RequestEvent as ObjectPortal1;
 
 /**
  * @method static handle(\Pinoox\Component\Http\Request|\Symfony\Component\HttpFoundation\Request $request, \Closure $next)
- * @method static array getServices()
- * @method static ServiceManager setServices(array $services)
- * @method static ServiceManager addService(\Pinoox\Component\Kernel\Service\ServiceInterface|string $service)
- * @method static ServiceManager addServices(array $services)
+ * @method static array getFlows()
+ * @method static FlowManager setFlows(array $flows)
+ * @method static FlowManager addFlow(\Pinoox\Component\Flow\FlowInterface|string $flow)
+ * @method static FlowManager addFlows(array $flows)
  * @method static ObjectPortal1 getRequestEvent()
- * @method static ServiceManager setRequestEvent(\Symfony\Component\HttpKernel\Event\RequestEvent $requestEvent)
+ * @method static FlowManager setRequestEvent(\Symfony\Component\HttpKernel\Event\RequestEvent $requestEvent)
  * @method static array getAlias()
- * @method static ServiceManager setAlias(array $alias)
- * @method static ServiceManager addAliases(array $aliases)
+ * @method static FlowManager setAlias(array $alias)
+ * @method static FlowManager addAliases(array $aliases)
  * @method static getAliasNestedValue(string $key)
- * @method static \Pinoox\Component\Kernel\Service\ServiceManager ___()
+ * @method static \Pinoox\Component\Flow\FlowManager ___()
  *
- * @see \Pinoox\Component\Kernel\Service\ServiceManager
+ * @see \Pinoox\Component\Flow\FlowManager
  */
-class ServiceManager extends Portal
+class FlowManager extends Portal
 {
 	public static function __register(): void
 	{
-		$services = App::get('service');
-		$services = !empty($services) && is_array($services) ? $services : [];
-		self::__bind(\Pinoox\Component\Kernel\Service\ServiceManager::class)->setArguments([
-		    $services,
+		$flows = App::get('flow');
+        $flows = !empty($flows) && is_array($flows) ? $flows : [];
+		self::__bind(\Pinoox\Component\Flow\FlowManager::class)->setArguments([
+            $flows,
 		    App::aliases()
 		]);
 	}
@@ -59,7 +59,7 @@ class ServiceManager extends Portal
 	 */
 	public static function __name(): string
 	{
-		return 'kernel.service_manager';
+		return 'kernel.flow_manager';
 	}
 
 
@@ -80,9 +80,9 @@ class ServiceManager extends Portal
 	public static function __callback(): array
 	{
 		return [
-		    'setServices',
-		    'addService',
-		    'addServices'
+		    'setFlows',
+		    'addFlow',
+		    'addFlows'
 		];
 	}
 }

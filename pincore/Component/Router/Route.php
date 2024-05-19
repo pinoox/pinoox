@@ -31,7 +31,7 @@ class Route
         private int                  $priority = 0,
         private string               $prefixName = '',
         public array                 $data = [],
-        public array                 $services = [],
+        public array                 $flows = [],
 
     )
     {
@@ -49,7 +49,7 @@ class Route
         $this->defaults = array_merge($this->collection->defaults, $defaults);
         $this->filters = array_merge($this->collection->filters, $filters);
         $this->data = array_merge($this->collection->data, $this->data);
-        $this->services = array_unique(array_merge($this->collection->services,$services));
+        $this->flows = array_unique(array_merge($this->collection->flows,$flows));
         $this->defaults['_controller'] = $action;
         $actionCollection = $this->collection->action;
         if (!empty($actionCollection)) {

@@ -9,22 +9,14 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-namespace Pinoox\Component\Interfaces;
 
-interface ServiceInterface
+
+namespace Pinoox\Component\Flow;
+
+
+use Pinoox\Component\Http\Request;
+
+interface FlowInterface
 {
-    /**
-     * Run service
-     *
-     * @return mixed
-     */
-    public function _run();
-
-    /**
-     * Stop service
-     *
-     * @return mixed
-     */
-    public function _stop();
+    public function response(Request $request, \Closure $next): mixed;
 }
-    
