@@ -30,10 +30,13 @@ use Pinoox\Portal\App\App;
  * @method static array getAll()
  * @method static mixed get(int|string $index)
  * @method static \Pinoox\Component\Template\View set(string $name, mixed $value)
+ * @method static \Pinoox\Component\Template\View add(array $data)
+ * @method static \Pinoox\Component\Template\View setData(array $data)
  * @method static array engines()
  * @method static string asstes(string $file = '')
- * @method static string render(array|null|string $name, array $parameters = [],bool $exist = true)
- * @method static \Pinoox\Component\Template\View ready(array|string $name = '', array $parameters = [])
+ * @method static string render(array|null|string $name = NULL, array $parameters = [], bool $exist = true)
+ * @method static string renderByEngine(array|null|string $name, array $parameters, bool $exist = true)
+ * @method static \Pinoox\Component\Template\View ready(array|string $name = '', array $parameters = [], bool $exist = true)
  * @method static string getContentReady()
  * @method static ObjectPortal2 path()
  * @method static \Pinoox\Component\Template\View ___()
@@ -42,87 +45,87 @@ use Pinoox\Portal\App\App;
  */
 class View extends Portal
 {
-    public static function __register(): void
-    {
-        // theme names
-        $folders = App::get('theme');
+	public static function __register(): void
+	{
+		// theme names
+		$folders = App::get('theme');
 
-        // base path
-        $pathTheme = Path::get(App::get('path-theme'));
+		// base path
+		$pathTheme = Path::get(App::get('path-theme'));
 
-        self::__bind(ObjectPortal1::class)->setArguments([
-            $folders,
-            $pathTheme,
-        ]);
-    }
-
-
-    public static function response(
-        string  $name,
-        array   $parameters = [],
-        ?string $contentType = null,
-        ?string $charset = null,
-    ): Response
-    {
-        $content = self::render($name, $parameters);
-        $response = new Response($content);
-        if (!empty($contentType))
-            $response->addContentType($contentType);
-        if (!empty($charset))
-            $response->setCharset($charset);
-        return $response;
-    }
+		self::__bind(ObjectPortal1::class)->setArguments([
+		    $folders,
+		    $pathTheme,
+		]);
+	}
 
 
-    public static function jsonResponse(string $name, array $parameters = [], ?string $charset = null): JsonResponse
-    {
-        $content = self::render($name, $parameters);
-        $response = new JsonResponse();
-        $response->setJson($content);
-        if (!empty($charset))
-            $response->setCharset($charset);
-        return $response;
-    }
+	public static function response(
+		string $name,
+		array $parameters = [],
+		?string $contentType = null,
+		?string $charset = null,
+	): Response
+	{
+		$content = self::render($name, $parameters);
+		$response = new Response($content);
+		if (!empty($contentType))
+		    $response->addContentType($contentType);
+		if (!empty($charset))
+		    $response->setCharset($charset);
+		return $response;
+	}
 
 
-    public static function jsResponse(string $name, array $parameters = [], ?string $charset = 'UTF-8'): Response
-    {
-        return self::response($name, $parameters, 'application/javascript', $charset);
-    }
+	public static function jsonResponse(string $name, array $parameters = [], ?string $charset = null): JsonResponse
+	{
+		$content = self::render($name, $parameters);
+		$response = new JsonResponse();
+		$response->setJson($content);
+		if (!empty($charset))
+		    $response->setCharset($charset);
+		return $response;
+	}
 
 
-    /**
-     * Get the registered name of the component.
-     * @return string
-     */
-    public static function __name(): string
-    {
-        return 'view';
-    }
+	public static function jsResponse(string $name, array $parameters = [], ?string $charset = 'UTF-8'): Response
+	{
+		return self::response($name, $parameters, 'application/javascript', $charset);
+	}
 
 
-    public static function __app(): string
-    {
-        return App::package();
-    }
+	/**
+	 * Get the registered name of the component.
+	 * @return string
+	 */
+	public static function __name(): string
+	{
+		return 'view';
+	}
 
 
-    /**
-     * Get exclude method names.
-     * @return string[]
-     */
-    public static function __exclude(): array
-    {
-        return [];
-    }
+	public static function __app(): string
+	{
+		return App::package();
+	}
 
 
-    /**
-     * Get method names for callback object.
-     * @return string[]
-     */
-    public static function __callback(): array
-    {
-        return [];
-    }
+	/**
+	 * Get exclude method names.
+	 * @return string[]
+	 */
+	public static function __exclude(): array
+	{
+		return [];
+	}
+
+
+	/**
+	 * Get method names for callback object.
+	 * @return string[]
+	 */
+	public static function __callback(): array
+	{
+		return [];
+	}
 }

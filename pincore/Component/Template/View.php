@@ -195,6 +195,18 @@ class View implements ViewInterface
         return $this;
     }
 
+    public function add(array $data): static
+    {
+        $this->globals = array_merge($this->globals, $data);
+        return $this;
+    }
+
+    public function setData(array $data): static
+    {
+        $this->globals = $data;
+        return $this;
+    }
+
     /**
      * get all engines
      *
@@ -262,6 +274,7 @@ class View implements ViewInterface
      *
      * @param string|array $name
      * @param array $parameters
+     * @param bool $exist
      * @return View
      */
     public function ready(string|array $name = '', array $parameters = [], bool $exist = true): static
@@ -274,7 +287,7 @@ class View implements ViewInterface
         }
 
         if (!empty($name))
-            $this->readyRenders[] = ['name' => $name, 'parameters' => $parameters,'exist' => $exist];
+            $this->readyRenders[] = ['name' => $name, 'parameters' => $parameters, 'exist' => $exist];
 
         return $this;
     }
@@ -288,7 +301,7 @@ class View implements ViewInterface
     {
         $content = '';
         foreach ($this->readyRenders as ['name' => $name, 'parameters' => $parameters, 'exist' => $exist]) {
-            $content .= $this->renderByEngine($name, $parameters,$exist);
+            $content .= $this->renderByEngine($name, $parameters, $exist);
         }
 
         return $content;
