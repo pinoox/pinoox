@@ -32,7 +32,7 @@ use Pinoox\Portal\App\App;
  * @method static \Pinoox\Component\Template\View set(string $name, mixed $value)
  * @method static array engines()
  * @method static string asstes(string $file = '')
- * @method static string render(array|null|string $name, array $parameters = [])
+ * @method static string render(array|null|string $name, array $parameters = [],bool $exist = true)
  * @method static \Pinoox\Component\Template\View ready(array|string $name = '', array $parameters = [])
  * @method static string getContentReady()
  * @method static ObjectPortal2 path()

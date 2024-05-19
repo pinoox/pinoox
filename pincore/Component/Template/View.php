@@ -215,15 +215,16 @@ class View implements ViewInterface
      *
      * @param string|array|null $name
      * @param array $parameters
+     * @param bool $exist
      * @return string
      */
-    public function render(string|array|null $name = null, array $parameters = []): string
+    public function render(string|array|null $name = null, array $parameters = [], bool $exist = true): string
     {
         $result = $this->getContentReady();
-        return $result . $this->renderByEngine($name, $parameters);
+        return $result . $this->renderByEngine($name, $parameters, $exist);
     }
 
-    public function renderByEngine(string|array|null $name, array $parameters): string
+    public function renderByEngine(string|array|null $name, array $parameters, bool $exist = true): string
     {
         $result = '';
 
@@ -248,8 +249,12 @@ class View implements ViewInterface
             }
         }
 
-        $template = $this->parser->parse($name);
-        throw new \InvalidArgumentException(sprintf('The template "%s" does not exist.', $template));
+        if ($exist) {
+            $template = $this->parser->parse($name);
+            throw new \InvalidArgumentException(sprintf('The template "%s" does not exist.', $template));
+        }
+
+        return $result;
     }
 
     /**
@@ -259,7 +264,7 @@ class View implements ViewInterface
      * @param array $parameters
      * @return View
      */
-    public function ready(string|array $name = '', array $parameters = []): static
+    public function ready(string|array $name = '', array $parameters = [], bool $exist = true): static
     {
         if (is_array($name)) {
             foreach ($name as $n) {
@@ -269,7 +274,7 @@ class View implements ViewInterface
         }
 
         if (!empty($name))
-            $this->readyRenders[] = ['name' => $name, 'parameters' => $parameters];
+            $this->readyRenders[] = ['name' => $name, 'parameters' => $parameters,'exist' => $exist];
 
         return $this;
     }
@@ -282,8 +287,8 @@ class View implements ViewInterface
     public function getContentReady(): string
     {
         $content = '';
-        foreach ($this->readyRenders as ['name' => $name, 'parameters' => $parameters]) {
-            $content .= $this->renderByEngine($name, $parameters);
+        foreach ($this->readyRenders as ['name' => $name, 'parameters' => $parameters, 'exist' => $exist]) {
+            $content .= $this->renderByEngine($name, $parameters,$exist);
         }
 
         return $content;
