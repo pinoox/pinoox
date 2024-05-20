@@ -39,7 +39,7 @@ class UserModel extends Model
     const SUSPEND = 'suspend';
     const PENDING = 'pending';
 
-    protected $table = 'pincore_user';
+    protected $table = Table::USER;
     public $incrementing = true;
 
     public $primaryKey = 'user_id';

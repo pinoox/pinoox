@@ -15,6 +15,7 @@ namespace Pinoox\Database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;
+use Pinoox\Model\Table;
 
 return new class extends MigrationBase
 {
@@ -24,7 +25,7 @@ return new class extends MigrationBase
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create('pincore_token', function (Blueprint $table) {
+        $this->schema->create(Table::TOKEN, function (Blueprint $table) {
             $table->increments('token_id');
             $table->string('token_key', 100);
             $table->string('token_name', 255)->nullable();
@@ -38,7 +39,7 @@ return new class extends MigrationBase
             $table->timestamps();
 
             $table->index('user_id');
-            $table->foreign('user_id')->references('user_id')->on('pincore_user')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('user_id')->references('user_id')->on(Table::USER)->onDelete('set null')->onUpdate('cascade');
         });
     }
 
@@ -47,6 +48,6 @@ return new class extends MigrationBase
      */
     public function down()
     {
-        $this->schema->dropIfExists('pincore_token');
+        $this->schema->dropIfExists(Table::TOKEN);
     }
 };
