@@ -46,7 +46,8 @@ class UserModel extends Model
     public $timestamps = true;
     private $defaultAvatarLink = null;
 
-    protected $hidden = ['password', 'session_id'];
+    protected $hidden = ['password', 'session_id', 'app'];
+
     protected $fillable = [
         'session_id',
         'avatar_id',
