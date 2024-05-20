@@ -29,7 +29,7 @@ class TokenModel extends Model
 {
     public $incrementing = true;
     public $primaryKey = 'token_id';
-    protected $table = 'pincore_token';
+    protected $table = Table::TOKEN;
     public $timestamps = true;
 
     protected $fillable = [

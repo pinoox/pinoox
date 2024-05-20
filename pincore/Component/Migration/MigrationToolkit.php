@@ -14,6 +14,7 @@ namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Capsule\Manager;
 use Pinoox\Component\Kernel\Exception;
+use Pinoox\Model\Table;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
 use Symfony\Component\Finder\Finder;
@@ -132,7 +133,7 @@ class MigrationToolkit
      */
     public function isExistsMigrationTable(): bool
     {
-        return $this->schema->hasTable('pincore_migration');
+        return $this->schema->hasTable(Table::MIGRATION);
     }
 
     private function loadFiles(): array

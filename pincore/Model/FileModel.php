@@ -32,7 +32,7 @@ class FileModel extends Model
      *
      * @var string
      */
-    protected $table = 'pincore_file';
+    protected $table = Table::FILE;
     protected $primaryKey = 'file_id';
     public $incrementing = true;
     public $timestamps = true;

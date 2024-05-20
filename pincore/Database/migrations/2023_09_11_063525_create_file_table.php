@@ -15,16 +15,16 @@ namespace Pinoox\Database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;
+use Pinoox\Model\Table;
 
-return new class extends MigrationBase
-{
-	/**
-	 * Run the migrations.
-	 */
+return new class extends MigrationBase {
+    /**
+     * Run the migrations.
+     */
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create('pincore_file', function (Blueprint $table) {
+        $this->schema->create(Table::FILE, function (Blueprint $table) {
             $table->increments('file_id');
             $table->unsignedInteger('user_id')->nullable();
             $table->string('app', 255)->nullable();
@@ -38,7 +38,7 @@ return new class extends MigrationBase
             $table->timestamps();
 
             $table->index('user_id');
-            $table->foreign('user_id')->references('user_id')->on('pincore_user')->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('user_id')->references('user_id')->on(Table::USER)->onDelete('set null')->onUpdate('cascade');
         });
     }
 
@@ -47,9 +47,9 @@ return new class extends MigrationBase
      */
     public function down()
     {
-        $this->schema->table('pincore_file', function (Blueprint $table) {
+        $this->schema->table(Table::FILE, function (Blueprint $table) {
             $table->dropForeign(['user_id']);
         });
-        $this->schema->dropIfExists('pincore_file');
+        $this->schema->dropIfExists(Table::FILE);
     }
 };
