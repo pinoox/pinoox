@@ -30,10 +30,14 @@ use Illuminate\Database\Query\Processors\Processor as ObjectPortal11;
 use Illuminate\Database\Schema\Builder as ObjectPortal1;
 use Illuminate\Database\Schema\Grammars\Grammar as ObjectPortal10;
 use Illuminate\Events\Dispatcher;
+use Illuminate\Pagination\Cursor;
+use Illuminate\Pagination\CursorPaginator;
+use Illuminate\Pagination\Paginator;
 use PDO as ObjectPortal8;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
 
 /**
@@ -148,71 +152,108 @@ use Pinoox\Portal\Config;
  */
 class DB extends Portal
 {
-	public static function __register(): void
-	{
-		self::__bind(\Pinoox\Component\Database\DatabaseManager::class)->setArguments([
-		    Container::Illuminate()
-		]);
-	}
+    public static function __register(): void
+    {
+        self::__bind(\Pinoox\Component\Database\DatabaseManager::class)->setArguments([
+            Container::Illuminate()
+        ]);
+
+        self::resolvePagination();
+    }
+
+    public static function hasConnection(): bool
+    {
+        try {
+            if (self::connection()->getPdo()) {
+                return true;
+            }
+        } catch (\Exception $e) {
+        }
+
+        return false;
+    }
 
 
-	/**
-	 * @throws Exception
-	 */
-	public static function register(): void
-	{
-		$config = self::getConfig();
-		// add default connection
-		self::addConnection($config);
+    /**
+     * @throws Exception
+     */
+    public static function register(): void
+    {
+        $config = self::getConfig();
+        // add default connection
+        self::addConnection($config);
 
-		// Set the event dispatcher used by Eloquent models... (optional)
-		self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
+        // Set the event dispatcher used by Eloquent models... (optional)
+        self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
 
-		//Make this Capsule instance available globally.
-		self::setAsGlobal();
-		// Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
-		self::bootEloquent();
-	}
-
-
-	/**
-	 * @throws Exception
-	 */
-	public static function getConfig($key = null)
-	{
-		//get configs
-		$mode = self::mode();
-		if (!($config = Config::name('~database')->getLinear(null, $mode)))
-		    throw new Exception('Database config "' . $mode . '" not defined');
-
-		return $config[$key] ?? $config;
-	}
+        //Make this Capsule instance available globally.
+        self::setAsGlobal();
+        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
+        self::bootEloquent();
+    }
 
 
-	public static function mode()
-	{
-		return Config::name('~pinoox')->get('mode');
-	}
+    /**
+     * @throws Exception
+     */
+    public static function getConfig($key = null)
+    {
+        //get configs
+        $mode = self::mode();
+        if (!($config = Config::name('~database')->getLinear(null, $mode)))
+            throw new Exception('Database config "' . $mode . '" not defined');
+
+        return $config[$key] ?? $config;
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'database';
-	}
+    public static function mode()
+    {
+        return Config::name('~pinoox')->get('mode');
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'setPrefix'
-		];
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'database';
+    }
+
+
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'setPrefix'
+        ];
+    }
+
+    public static function resolvePagination()
+    {
+        Paginator::viewFactoryResolver(fn() => view());
+
+        Paginator::currentPathResolver(fn() => url());
+
+        Paginator::currentPageResolver(function ($pageName = 'page') {
+            $page = App::getRequest()->input()->get($pageName);
+
+            if (filter_var($page, FILTER_VALIDATE_INT) !== false && (int)$page >= 1) {
+                return (int)$page;
+            }
+
+            return 1;
+        });
+
+        Paginator::queryStringResolver(fn() => App::getRequest()->query->all());
+
+        CursorPaginator::currentCursorResolver(function ($cursorName = 'cursor') {
+            return Cursor::fromEncoded(App::getRequest()->input()->get($cursorName));
+        });
+    }
 }
