@@ -22,6 +22,7 @@ class AdvancedSearch
     protected array $rules;
     protected array $replace;
     protected string $logicalOperator = 'AND';
+    protected array $relations = [];
 
     public function __construct(Builder $query, $data, array $rules, array $replace = [], $logicalOperator = 'AND')
     {
@@ -36,14 +37,58 @@ class AdvancedSearch
     {
         $this->query->where(function (Builder $query) {
             foreach ($this->rules as $column => $condition) {
-                $hasCondition = !is_numeric($column);
-                $column = $hasCondition ? $column : $condition;
-                $columns = explode(':', $column);
-                $data = is_array($this->data) ? ($this->data[$columns[0]] ?? null) : $this->data;
-                $column = $columns[1] ?? $columns[0];
-                $condition = $hasCondition ? $condition : '%like%';
-                $this->parseCondition($query, $column, $condition, $data);
+                $this->applyQuery($query, $column, $condition);
             }
+
+            foreach ($this->relations as $relation=>$rules) {
+                $this->applyRelations($query, $relation,$rules);
+            }
+        });
+    }
+
+    protected function applyQuery(Builder $query, $column, $condition)
+    {
+        $hasCondition = !is_numeric($column);
+        $column = $hasCondition ? $column : $condition;
+        $condition = $hasCondition ? $condition : '%like%';
+
+        // relations
+        if (str_contains($column, '.')) {
+            $this->addRelations($query, $column, $condition);
+            return;
+        }
+
+        $columns = explode(':', $column);
+        $data = is_array($this->data) ? ($this->data[$columns[0]] ?? null) : $this->data;
+        $column = $columns[1] ?? $columns[0];
+        $this->parseCondition($query, $column, $condition, $data);
+    }
+
+    protected function addRelations($query, $column, $condition)
+    {
+        $relations = explode('.', $column);
+        $column = array_pop($relations);
+        $relation = implode('.', $relations);
+        $this->relations[$relation][] = [
+            'relation' => $relation,
+            'column' => $column,
+            'condition' => $condition,
+        ];
+    }
+
+    protected function applyRelations(Builder $query, $relation,$rules)
+    {
+        $where = $this->getLogicalOperator() === 'OR' ? 'orWhereHas' : 'whereHas';
+        $query->$where($relation, function ($query) use ($rules) {
+            $query->where(function ($query) use ($rules){
+                foreach ($rules as $rule)
+                {
+                    $column = $rule['column'];
+                    $condition = $rule['condition'];
+
+                    $this->applyQuery($query, $column, $condition);
+                }
+            });
         });
     }
 
@@ -51,14 +96,16 @@ class AdvancedSearch
     {
         $data = $this->replace[$column][$data] ?? $data;
 
-
+        // functions query
         if ($condition instanceof \Closure) {
             $condition($query, $data, $column);
             return;
         }
 
-
+        // query operator: OR,And
         $logicalOperator = $this->getLogicalOperator();
+
+        // multiple rule
         $conditions = is_string($condition) ? explode('|', $condition) : $condition;
 
         foreach ($conditions as $cond) {
@@ -204,7 +251,7 @@ class AdvancedSearch
      */
     public function setLogicalOperator(string $logicalOperator): void
     {
-        $this->logicalOperator = $logicalOperator;
+        $this->logicalOperator = strtoupper($logicalOperator);
     }
 
     /**
