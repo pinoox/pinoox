@@ -40,8 +40,8 @@ class AdvancedSearch
                 $this->applyQuery($query, $column, $condition);
             }
 
-            foreach ($this->relations as $relation=>$rules) {
-                $this->applyRelations($query, $relation,$rules);
+            foreach ($this->relations as $relation => $rules) {
+                $this->applyRelations($query, $relation, $rules);
             }
         });
     }
@@ -76,13 +76,12 @@ class AdvancedSearch
         ];
     }
 
-    protected function applyRelations(Builder $query, $relation,$rules)
+    protected function applyRelations(Builder $query, $relation, $rules)
     {
         $where = $this->getLogicalOperator() === 'OR' ? 'orWhereHas' : 'whereHas';
         $query->$where($relation, function ($query) use ($rules) {
-            $query->where(function ($query) use ($rules){
-                foreach ($rules as $rule)
-                {
+            $query->where(function ($query) use ($rules) {
+                foreach ($rules as $rule) {
                     $column = $rule['column'];
                     $condition = $rule['condition'];
 
