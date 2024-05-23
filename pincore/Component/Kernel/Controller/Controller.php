@@ -119,6 +119,14 @@ abstract class Controller
         return $this->forward(null, $attributes);
     }
 
+    protected function forwardByRoute($routeName, $parameters = [])
+    {
+        $path = Router::path($routeName, $parameters);
+        $request = $this->container->get('kernel.request_stack')->getCurrentRequest();
+        $attributes = App::router()->match($path, $request);
+        return $this->forward(null, $attributes);
+    }
+
     protected function forwardByRequest(?Request $request = null)
     {
         $request = !empty($request) ? $request : $this->container->get('kernel.request_stack')->getCurrentRequest();

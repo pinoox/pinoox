@@ -83,6 +83,11 @@ class Router
         )->generate($name, $params);
     }
 
+    public function controller(string $name)
+    {
+        return $this->currentRoutes()?->get($name)?->getDefault('_controller');
+    }
+
     public function getUrlMatcher(?RequestContext $context = null): UrlMatcherInterface|RequestMatcherInterface
     {
         if (empty($this->urlMatcher)) {
@@ -479,7 +484,7 @@ class Router
     private function defaultRoutes(): void
     {
         $this->add(
-            path:  '/{slash_remover}/',
+            path: '/{slash_remover}/',
             action: function (Route $route, $slash_remover = '') {
                 $base = Str::lastDelete($route->getCollection()->path, '/');
                 $slug = $base . '/' . $slash_remover;
