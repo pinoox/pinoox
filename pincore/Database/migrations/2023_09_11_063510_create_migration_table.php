@@ -15,13 +15,14 @@ namespace App\com_pinoox_test\database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;
+use Pinoox\Model\Table;
 
 return new class extends MigrationBase
 {
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create('pincore_migration', function (Blueprint $table) {
+        $this->schema->create(Table::MIGRATION, function (Blueprint $table) {
             $table->id();
             $table->string('migration');
             $table->integer('batch');
@@ -32,6 +33,6 @@ return new class extends MigrationBase
 
     public function down()
     {
-        $this->schema->dropIfExists('pincore_migration');
+        $this->schema->dropIfExists(Table::MIGRATION);
     }
 };

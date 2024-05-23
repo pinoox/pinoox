@@ -27,6 +27,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface as ObjectPortal4;
 /**
  * @method static ObjectPortal1 getUrlGenerator(?\Symfony\Component\Routing\RequestContext $context = NULL)
  * @method static string path(string $name, array $params = [], ?\Pinoox\Component\Http\Request $request = NULL)
+ * @method static controller(string $name)
  * @method static \Symfony\Component\Routing\Matcher\RequestMatcherInterface|\Symfony\Component\Routing\Matcher\UrlMatcherInterface getUrlMatcher(?\Symfony\Component\Routing\RequestContext $context = NULL)
  * @method static array match(string $path, ?\Pinoox\Component\Http\Request $request = NULL)
  * @method static array matchRequest(\Pinoox\Component\Http\Request $request)

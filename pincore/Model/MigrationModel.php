@@ -16,7 +16,7 @@ class MigrationModel extends Model
      *
      * @var string
      */
-    protected $table = 'pincore_migration';
+    protected $table = Table::MIGRATION;
 
     public $timestamps = false;
 
