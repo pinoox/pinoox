@@ -54,8 +54,8 @@ class AdvancedSearch
 
         // relations
         if (str_contains($column, '.')) {
-            $this->addRelations($query, $column, $condition);
-            return;
+            if ($this->addRelations($query, $column, $condition))
+                return;
         }
 
         $columns = explode(':', $column);
@@ -64,16 +64,33 @@ class AdvancedSearch
         $this->parseCondition($query, $column, $condition, $data);
     }
 
-    protected function addRelations($query, $column, $condition)
+    protected function hasRelation(Builder $query, $relation): bool
+    {
+        try {
+            $query->getRelation($relation);
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
+    protected function addRelations(Builder $query, $column, $condition): bool
     {
         $relations = explode('.', $column);
         $column = array_pop($relations);
         $relation = implode('.', $relations);
-        $this->relations[$relation][] = [
-            'relation' => $relation,
-            'column' => $column,
-            'condition' => $condition,
-        ];
+
+        if ($this->hasRelation($query, $relation)) {
+            $this->relations[$relation][] = [
+                'relation' => $relation,
+                'column' => $column,
+                'condition' => $condition,
+            ];
+
+            return true;
+        }
+
+        return false;
     }
 
     protected function applyRelations(Builder $query, $relation, $rules)
