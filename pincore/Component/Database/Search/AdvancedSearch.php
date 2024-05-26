@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Database\Search;
 
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Expression;
 
 class AdvancedSearch
 {
@@ -46,11 +47,50 @@ class AdvancedSearch
         });
     }
 
+    private function getAlias($table)
+    {
+        if ($table instanceof Expression)
+            $table = $table->getValue($this->query->getGrammar());
+
+        if (!is_string($table))
+            return null;
+
+        $table = str_replace([' as ', ' AS '], '|', $table);
+        $alias = null;
+        if (str_contains($table, '|')) {
+            $alias = explode('|', $table);
+            $alias = array_pop($alias);
+        }
+
+        if (!$alias)
+            return null;
+        $alias = strtolower($alias);
+        return str_replace(['"', "'", '`'], '', $alias);
+    }
+
+    private function getAliasesJoin(): array
+    {
+        $aliases = [];
+        foreach ($this->query->getQuery()->joins as $join) {
+            if ($alias = $this->getAlias($join->table))
+                $aliases[] = $alias;
+        }
+
+        return $aliases;
+    }
+
+    private function hasAliasInJoin($alias): bool
+    {
+        $aliases = $this->getAliasesJoin();
+        return in_array($alias, $aliases);
+    }
+
     protected function applyQuery(Builder $query, $column, $condition)
     {
         $hasCondition = !is_numeric($column);
         $column = $hasCondition ? $column : $condition;
         $condition = $hasCondition ? $condition : '%like%';
+
 
         // relations
         if (str_contains($column, '.')) {
@@ -79,6 +119,9 @@ class AdvancedSearch
         $relations = explode('.', $column);
         $column = array_pop($relations);
         $relation = implode('.', $relations);
+
+        if ($this->hasAliasInJoin($relation))
+            return false;
 
         if ($this->hasRelation($query, $relation)) {
             $this->relations[$relation][] = [
@@ -112,14 +155,17 @@ class AdvancedSearch
     {
         $data = $this->replace[$column][$data] ?? $data;
 
+        // query operator: OR,And
+        $logicalOperator = $this->getLogicalOperator();
+
         // functions query
         if ($condition instanceof \Closure) {
-            $condition($query, $data, $column);
+            $query->where(function ($query) use ($condition, $data, $column,) {
+                $condition($query, $data, $column);
+            }, boolean: $logicalOperator);
             return;
         }
 
-        // query operator: OR,And
-        $logicalOperator = $this->getLogicalOperator();
 
         // multiple rule
         $conditions = is_string($condition) ? explode('|', $condition) : $condition;
@@ -143,7 +189,9 @@ class AdvancedSearch
     protected function applyConditionQuery(Builder $query, $data, $column, $condition, $inputs, $logicalOperator): void
     {
         if ($condition instanceof \Closure) {
-            $condition($query, $data, $column);
+            $query->where(function ($query) use ($condition, $data, $column,) {
+                $condition($query, $data, $column);
+            }, boolean: $logicalOperator);
             return;
         }
 
@@ -213,9 +261,21 @@ class AdvancedSearch
                 $data = is_string($data) ? $data : '';
                 $query->whereRaw("CONCAT(" . implode('," ",', $inputs) . ") LIKE ?", '%' . $data . '%', $logicalOperator);
                 break;
+            case str_starts_with($condition, 'scope'):
+                $methodName = lcfirst(str_replace('scope', '', $condition));
+                $query->where(function ($query) use ($methodName, $inputs) {
+                    $query->$methodName($this->data, ...$inputs);
+                }, boolean: $logicalOperator);
+                break;
             case 'method':
+            case 'call':
+            case 'scope':
                 $methodName = array_shift($inputs);
-                $query->$methodName($this->data[$column], ...$inputs);
+
+                $query->where(function ($query) use ($methodName, $inputs) {
+                    $query->$methodName($this->data, ...$inputs);
+                }, boolean: $logicalOperator);
+
                 break;
             default:
                 $condition = $this->replaceCondition($condition, $data);
