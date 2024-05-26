@@ -24,10 +24,13 @@ use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\Model as ObjectPortal3;
 use Illuminate\Database\Eloquent\Relations\Relation as ObjectPortal4;
 use Illuminate\Database\Query\Builder as ObjectPortal10;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Support\Collection as ObjectPortal6;
 use Illuminate\Support\LazyCollection as ObjectPortal5;
+use Pinoox\Component\Database\Relation\JoinWith;
 use Pinoox\Component\Database\Search\Searchable;
 use Pinoox\Component\Database\Sort\Sortable;
+use Pinoox\Portal\App\App;
 use Pinoox\Portal\Database\DB;
 use Throwable;
 
@@ -147,7 +150,7 @@ use Throwable;
  */
 abstract class Model extends EloquentModel
 {
-    use Searchable, Sortable;
+    use Searchable, Sortable,JoinWith;
 
     /**
      * Get the table associated with the model.
@@ -163,15 +166,48 @@ abstract class Model extends EloquentModel
         return $package . strtolower(str_replace('\\', '', class_basename($this)));
     }
 
-    public static function tableName()
+    protected function hasRelation($relation): bool
     {
-        return with(new static)->getTable();
+        try {
+            $this->query()->getRelation($relation);
+            return true;
+        } catch (\Exception $exception) {
+            return false;
+        }
+    }
+
+
+    protected function getAlias($table = null)
+    {
+        $table = $table ?? $this->tableName();
+        if ($table instanceof Expression)
+            $table = $table->getValue($this->query()->getGrammar());
+
+        if (!is_string($table))
+            return null;
+
+        $table = str_replace([' as ', ' AS '], '|', $table);
+        $alias = null;
+        if (str_contains($table, '|')) {
+            $alias = explode('|', $table);
+            $alias = array_pop($alias);
+        }
+
+        if (!$alias)
+            return null;
+        $alias = strtolower($alias);
+        return str_replace(['"', "'", '`'], '', $alias);
+    }
+
+    protected function tableName()
+    {
+        return $this->getTable();
     }
 
     /**
      * @throws Throwable
      */
-    public static function beginTransaction(): void
+    protected function beginTransaction(): void
     {
         DB::beginTransaction();
     }
@@ -179,7 +215,7 @@ abstract class Model extends EloquentModel
     /**
      * @throws Throwable
      */
-    public static function commit(): void
+    protected function commit(): void
     {
         DB::commit();
     }
@@ -187,7 +223,7 @@ abstract class Model extends EloquentModel
     /**
      * @throws Throwable
      */
-    public static function rollBack($toLevel = null): void
+    protected function rollBack($toLevel = null): void
     {
         DB::rollBack($toLevel);
     }
@@ -195,7 +231,7 @@ abstract class Model extends EloquentModel
     /**
      * @throws Throwable
      */
-    public static function transaction(Closure $callback, int $attempts = 1): mixed
+    protected function transaction(Closure $callback, int $attempts = 1): mixed
     {
         return DB::transaction($callback, $attempts);
     }
