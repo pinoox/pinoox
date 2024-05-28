@@ -37,6 +37,7 @@ return new class extends MigrationBase {
             $table->string('email', 50)->nullable();
             $table->string('mobile', 50)->nullable();
             $table->string('status', 50)->nullable();
+            $table->json('metadata')->nullable();
             $table->timestamps();
 
             $table->index('user_id');
