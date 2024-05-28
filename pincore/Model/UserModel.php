@@ -14,6 +14,7 @@
 
 namespace Pinoox\Model;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\Scope\AppScope;
@@ -60,9 +61,14 @@ class UserModel extends Model
         'email',
         'mobile',
         'status',
+        'metadata',
     ];
 
     protected $appends = ['full_name', 'avatar'];
+
+    protected $casts = [
+        'metadata' => 'array',
+    ];
 
     protected array $sortableSupports = [
         'full_name' => 'concat:fname,lname',
@@ -81,6 +87,11 @@ class UserModel extends Model
     {
         $hashed_password = self::hashPassword($new_password);
         self::where('user_id', $user_id)->update(['password' => $hashed_password]);
+    }
+
+    public function scopeWhereMetadata(Builder $query, $metaKey, $operator = null, $value = null, $boolean = 'and')
+    {
+        return $query->where('metadata->' . $metaKey, $operator, $value, $boolean);
     }
 
     protected static function boot()

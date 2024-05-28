@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response as ResponseSymfony;
 
 class HelperResponse
 {
-    public static function normalize(mixed $response): ResponseSymfony
+    public static function normalize(mixed $response): mixed
     {
         if($response instanceof ResponseSymfony)
             return $response;
