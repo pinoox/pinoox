@@ -17,7 +17,7 @@ return [
     'prerequisites_description' => 'باید سیستم تمامی پیش نیاز های مورد نیاز جهت نصب پینوکس را دارا باشد',
     'err_prerequisites' => 'جهت ادامه فرایند نصب خطاهای زیر را  بررسی کنید',
     'prerequisites_required_space' => 'فضای مورد نیاز نصب (50 مگابایت)',
-    'prerequisites_php' => 'PHP 5.6 به بالا',
+    'prerequisites_php' => 'PHP 8.1.0 به بالا',
     'prerequisites_mod_rewrite' => 'Url Rewrite',
     'prerequisites_mysql' => 'دیتابیس MySQL',
     'version' => 'ورژن',

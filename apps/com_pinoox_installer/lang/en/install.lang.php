@@ -15,7 +15,7 @@ return [
     'prerequisites_description' => 'The system must have all the prerequisites for installing Pinoox',
     'err_prerequisites' => 'Check the following errors to continue the installation process',
     'prerequisites_required_space' => 'Installation Space (50 MB)',
-    'prerequisites_php' => 'PHP 5.6 and up',
+    'prerequisites_php' => 'PHP 8.1.0 and up',
     'prerequisites_mod_rewrite' => 'Url Rewrite',
     'prerequisites_mysql' => 'MySQL database',
     'version' => 'Version',
