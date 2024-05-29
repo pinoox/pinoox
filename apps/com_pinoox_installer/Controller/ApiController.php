@@ -93,7 +93,7 @@ class ApiController extends Controller
         $status = false;
         switch ($type) {
             case 'php' :
-                $status = (bool)version_compare(System::phpVersion(), '5.6', '>=');
+                $status = (bool)version_compare(phpversion(), '8.1.0', '>=');
                 break;
             case 'mysql' :
                 /**
