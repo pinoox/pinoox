@@ -246,7 +246,7 @@ class View implements ViewInterface
 
         if (is_array($name)) {
             foreach ($name as $n) {
-                $result .= $this->renderByEngine($n, $parameters);
+                $result .= $this->renderByEngine($n, $parameters,$exist);
             }
             return $result;
         }
