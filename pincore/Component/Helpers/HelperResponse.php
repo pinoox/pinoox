@@ -29,7 +29,7 @@ class HelperResponse
             return $response;
 
         if (is_string($response)) {
-            return filter_var($response, FILTER_VALIDATE_URL)
+            return filter_var($response, FILTER_VALIDATE_URL) || preg_match('/^https?:\/\/[^\s]+$/i', $response)
                 ? new RedirectResponse($response)
                 : new Response($response);
         }
