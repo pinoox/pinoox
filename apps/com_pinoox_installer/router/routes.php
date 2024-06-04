@@ -10,7 +10,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use Pinoox\Component\Http\RedirectResponse;
 use function Pinoox\Router\{route, collection, get};
 use App\com_pinoox_installer\Controller\ApiController;
 
@@ -29,7 +28,7 @@ route(
 
 route(
     path:'/user',
-    action: fn() => new RedirectResponse('db'),
+    action: fn() => redirect('db'),
 );
 
 route(
