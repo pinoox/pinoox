@@ -175,4 +175,15 @@ class Config implements ConfigInterface
     {
         $this->set($name, $value);
     }
+
+    public function __toString(): string
+    {
+        return json_encode($this->all());
+
+    }
+
+    public function __invoke()
+    {
+        return $this->all();
+    }
 }

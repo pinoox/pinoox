@@ -102,4 +102,15 @@ class FileConfigStrategy implements ConfigStrategyInterface
     {
         return $this->data->all();
     }
+
+    public function __toString(): string
+    {
+        return json_encode($this->all());
+
+    }
+
+    public function __invoke()
+    {
+        return $this->all();
+    }
 }
