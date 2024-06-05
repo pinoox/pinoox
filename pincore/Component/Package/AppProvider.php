@@ -22,6 +22,7 @@ use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\Terminal;
 use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 class AppProvider
@@ -29,9 +30,10 @@ class AppProvider
     private array $lock = [];
 
     public function __construct(
-        private readonly App $app,
-        public Kernel        $httpKernel,
-        public Terminal      $terminal,
+        private readonly App    $app,
+        public Kernel           $httpKernel,
+        public Terminal         $terminal,
+        public SessionInterface $session,
     )
     {
     }
@@ -51,6 +53,27 @@ class AppProvider
         }
 
         $this->getClassLoader()->addClassMap($classMap);
+    }
+
+    private function resolveSession()
+    {
+        $sessionConf = $this->app->get('session');
+        $startSession = $sessionConf === true || $sessionConf === 'start';
+
+        if (is_array($sessionConf)) {
+            $session = class_exists($sessionConf[0]) ? new $sessionConf[0]() : $sessionConf;
+            $startSession = isset($sessionConf[1]) && $sessionConf[1] === 'start';
+        } elseif (is_string($sessionConf)) {
+            $session = class_exists($sessionConf) ? new $sessionConf() : $sessionConf;
+        } else {
+            $session = $sessionConf;
+        }
+
+        $this->getRequest()->setSession($session instanceof SessionInterface ? $session : $this->session);
+
+        if ($startSession && $this->getRequest()->hasSession()) {
+            $this->getRequest()->getSession()->start();
+        }
     }
 
     private function getClassLoader(): ClassLoader
@@ -77,6 +100,7 @@ class AppProvider
             $this->lock();
             $this->loadComposer($this->app->path());
             $this->loader();
+            $this->resolveSession();
         }
     }
 

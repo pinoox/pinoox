@@ -29,6 +29,7 @@ class Request extends RequestSymfony
 {
     public InputBag $json;
     public ParameterBag $parameters;
+    public $session;
 
     public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
     {

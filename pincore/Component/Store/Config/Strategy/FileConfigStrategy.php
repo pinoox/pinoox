@@ -97,4 +97,9 @@ class FileConfigStrategy implements ConfigStrategyInterface
     {
         return $this->pinker->getBakedFile();
     }
+
+    public function all(): mixed
+    {
+        return $this->data->all();
+    }
 }

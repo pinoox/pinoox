@@ -46,7 +46,9 @@ interface ConfigStrategyInterface
      *
      * @return array
      */
-    public function get(string $key = null): mixed;
+    public function get(string $key = null,$default = null): mixed;
+
+    public function all(): mixed;
 
     /**
      * Gets the info of a configuration key.
