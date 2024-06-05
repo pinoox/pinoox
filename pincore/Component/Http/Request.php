@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Request as RequestSymfony;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RequestContext;
 use Illuminate\Validation\Validator;
 
@@ -29,6 +30,9 @@ class Request extends RequestSymfony
 {
     public InputBag $json;
     public ParameterBag $parameters;
+    /**
+     * @var SessionInterface
+     */
     public $session;
 
     public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
