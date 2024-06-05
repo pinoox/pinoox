@@ -84,7 +84,7 @@ class AuthController extends ApiController
 
     public function getOptions()
     {
-        $options = config('options');
+        $options = config('options')->all();
         $options['lang'] = app('lang');
         return $options;
     }

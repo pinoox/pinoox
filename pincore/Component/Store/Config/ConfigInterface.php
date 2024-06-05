@@ -20,9 +20,10 @@ interface ConfigInterface
      *  Get data from config
      *
      * @param string|null $key
+     * @param null $default
      * @return mixed
      */
-    public function get(?string $key = null): mixed;
+    public function get(?string $key = null,$default = null): mixed;
 
     /**
      * Set data in config

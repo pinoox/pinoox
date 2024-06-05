@@ -43,6 +43,11 @@ class DataManager implements DataInterface
         return $this->data;
     }
 
+    public function all(): array
+    {
+        return $this->data;
+    }
+
     public function setData(mixed $data = []): void
     {
         $this->data = $data;

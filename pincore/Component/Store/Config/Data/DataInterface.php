@@ -19,6 +19,8 @@ interface DataInterface
 
     public function get(?string $key = null, mixed $default = null): mixed;
 
+    public function all(): mixed;
+
     public function set(string $key, mixed $value): void;
 
     public function remove(string $key): void;

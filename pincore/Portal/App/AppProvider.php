@@ -24,6 +24,7 @@ use Pinoox\Portal\Dumper;
 use Pinoox\Portal\Env;
 use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Kernel\Terminal;
+use Pinoox\Portal\Session;
 use Symfony\Component\ErrorHandler\Debug;
 
 /**
@@ -49,6 +50,7 @@ class AppProvider extends Portal
 		    App::__ref(),
 		    HttpKernel::__ref(),
 		    Terminal::__ref(),
+            Session::__ref()
 		]);
 
         self::require();
