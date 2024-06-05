@@ -14,11 +14,17 @@ use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\ContainerBuilder;
+use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
+use Pinoox\Component\Store\Cookie;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Env;
 use Pinoox\Portal\Pinker;
+use Symfony\Component\HttpFoundation\Cookie as CookieAlias;
+use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Cookie as CookieSymfony;
 
 if (!function_exists('alias')) {
     function alias(?string $key = null): mixed
@@ -32,28 +38,29 @@ if (!function_exists('config')) {
      * get or set config
      *
      * @param string $key
-     * @return mixed|null
+     * @param null $default
+     * @return mixed|ConfigInterface
      */
-    function config(string $key)
+    function config(string $key, $default = null)
     {
         $parts = explode('.', $key);
-        $name = array_shift($parts);
+        $configName = array_shift($parts);
         $key = !empty($parts) ? implode('.', $parts) : null;
-        $config = Config::name($name);
-        $args = func_get_args();
-        if (isset($args[1]))
-            $config->set($key, $args[1]);
-        else
-            return $config->get($key);
+        $config = Config::name($configName);
 
-        return null;
-    }
-}
+        if (is_null($key)) {
+            return $config;
+        }
 
-if (!function_exists('app')) {
-    function app($key = null)
-    {
-        return App::get($key);
+        if (is_array($key)) {
+            foreach ($key as $name => $value) {
+                $config->set($name, $value);
+            }
+
+            return $config;
+        }
+
+        return $config->get($key, $default);
     }
 }
 
@@ -142,5 +149,81 @@ if (!function_exists('transaction')) {
     function transaction(Closure $callback, int $attempts = 1): mixed
     {
         return DB::transaction($callback, $attempts);
+    }
+}
+
+if (!function_exists('session')) {
+    /**
+     * @param $key
+     * @param $default
+     * @return SessionInterface|mixed
+     */
+    function session($key = null, $default = null)
+    {
+        $session = app()->session();
+        if (is_null($key)) {
+            return $session;
+        }
+
+        if (is_array($key)) {
+            foreach ($key as $name => $value) {
+                $session->set($name, $value);
+            }
+
+            return $session;
+        }
+
+        return $session->get($key, $default);
+    }
+}
+
+if (!function_exists('app')) {
+    /**
+     * @param null $key
+     * @param null $default
+     * @return \Pinoox\Component\Package\App|mixed
+     */
+    function app($key = null, $default = null)
+    {
+        $app = App::___();
+        if (is_null($key)) {
+            return $app;
+        }
+
+        if (is_array($key)) {
+            foreach ($key as $name => $value) {
+                $app->set($name, $value);
+            }
+
+            return $app;
+        }
+
+        return $app->get($key, $default);
+    }
+}
+
+
+if (!function_exists('cookie')) {
+    /**
+     * Create a new cookie instance.
+     *
+     * @param string|null $name
+     * @param string|null $value
+     * @param int|string|DateTimeInterface $expire
+     * @param string|null $path
+     * @param string|null $domain
+     * @param bool|null $secure
+     * @param bool $httpOnly
+     * @param bool $raw
+     * @param string|null $sameSite
+     * @return CookieSymfony|InputBag
+     */
+    function cookie(string $name = null, ?string $value = null, int|string|\DateTimeInterface $expire = 0, ?string $path = '/', ?string $domain = null, ?bool $secure = null, bool $httpOnly = true, bool $raw = false, ?string $sameSite = CookieAlias::SAMESITE_LAX)
+    {
+        if (is_null($name)) {
+            return app()->cookie();
+        }
+
+        return Cookie::create($name, $value, $expire, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
     }
 }

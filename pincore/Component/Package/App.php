@@ -24,6 +24,8 @@ use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
 use Pinoox\Component\Store\Config\Data\DataManager;
 use Pinoox\Component\Translator\Translator;
+use Symfony\Component\HttpFoundation\InputBag;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
@@ -38,7 +40,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         public readonly AppEngine   $appEngine,
         public RequestContext       $context,
         public readonly ClassLoader $classLoader,
-        private readonly array $defaultAliases = []
+        private readonly array      $defaultAliases = []
     )
     {
         $this->appLayer = $this->appRouter->find();
@@ -144,21 +146,22 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
      * Get data from config current app
      *
      * @param string|null $value
+     * @param null $default
      * @return mixed
      */
-    public function get(?string $value = null): mixed
+    public function get(?string $value = null, $default = null): mixed
     {
         $packageName = $this->appLayer?->getPackageName();
 
         if (empty($packageName))
-            return null;
+            return $default;
 
         try {
             return $this->config()->get($value);
         } catch (Exception $e) {
         }
 
-        return null;
+        return $default;
     }
 
     /**
@@ -299,6 +302,16 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
     public function getRequest(): Request
     {
         return $this->getAppRouter()->getRequest();
+    }
+
+    public function session(): SessionInterface
+    {
+        return $this->getRequest()->getSession();
+    }
+
+    public function cookie(): InputBag
+    {
+        return $this->getRequest()->cookies;
     }
 
     public function addPackage(string $packageName, string $dir): void

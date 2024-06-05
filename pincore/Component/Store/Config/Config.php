@@ -48,6 +48,11 @@ class Config implements ConfigInterface
         return $this->strategy->get($key, $default);
     }
 
+    public function all(): mixed
+    {
+        return $this->strategy->all();
+    }
+
     public function add(string $key, mixed $value): static
     {
         $this->strategy->add($key, $value);

@@ -153,12 +153,13 @@ class AppRouter
      * Get routes
      *
      * @param string|null $value
+     * @param null $default
      * @return mixed
      */
-    public function get(?string $value = null): mixed
+    public function get(?string $value = null,$default = null): mixed
     {
         return $this->appRouteConfig
-            ->get($value);
+            ->get($value,$default);
     }
 
     /**
