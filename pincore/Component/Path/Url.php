@@ -108,9 +108,14 @@ class Url implements UrlInterface
     public function site(bool $isFullBase = true): string
     {
         if ($isFullBase)
-            return $_ENV['HOST_PROXY'] ?? $this->request->getUriForPath('');
+            $site = $_ENV['HOST_PROXY'] ?? $this->request->getUriForPath('');
         else
-            return $this->base();
+            $site = $this->base();
+
+        if ($this->request->isSecure() && !str_contains($site, 'https')) {
+            $site = str_replace('http:', 'https:', $site);
+        }
+        return $site;
     }
 
     public function app(bool $isFullBase = true): string

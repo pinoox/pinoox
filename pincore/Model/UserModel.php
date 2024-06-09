@@ -174,7 +174,7 @@ class UserModel extends Model
 
     public static function ruleUnique($column = null, $ignoreUserId = null)
     {
-        $rule = Rule::unique(static::tableName(), $column)->where('app', static::getPackage());
+        $rule = Rule::unique(Table::USER, $column)->where('app', static::getPackage());
 
         if (!is_null($ignoreUserId)) {
             $rule = $rule->ignore($ignoreUserId, 'user_id');
