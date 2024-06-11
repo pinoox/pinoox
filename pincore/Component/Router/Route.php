@@ -17,6 +17,7 @@ use Closure;
 use PhpParser\Node\Stmt\Else_;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Package\App;
+use Pinoox\Component\Path\Manager\PathManager;
 
 class Route
 {
@@ -38,11 +39,11 @@ class Route
         if ($this->path === '*') {
             $this->path = '{parameters}';
             $filters['parameters'] = '.*';
-            $this->path = $this->getPath('');
+            $this->path = $this->getPath();
             $count = strlen($this->path);
             $this->priority = -9999 + $count;
         } else {
-            $this->path = $this->getPath('/');
+            $this->path = $this->getPath();
         }
 
         $this->name = $this->buildName($name);
@@ -94,14 +95,11 @@ class Route
     }
 
     /**
-     * @param string $separator
      * @return string
      */
-    public function getPath(string $separator = '/'): string
+    public function getPath(): string
     {
-        $prefixPath = (!empty($this->collection->prefixPath)) ? Str::lastDelete($this->collection->prefixPath, '/') : '';
-        $path = Str::firstDelete($this->path, '/');
-        return $prefixPath . $separator . $path;
+        return (new PathManager($this->collection->prefixPath))->get($this->path);
     }
 
     /**
