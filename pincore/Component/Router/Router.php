@@ -62,9 +62,6 @@ class Router
         } else {
             $this->collection();
         }
-
-        if ($isDefault)
-            $this->defaultRoutes();
     }
 
     public function getUrlGenerator(?RequestContext $context = null): UrlGeneratorInterface
@@ -480,22 +477,5 @@ class Router
     public function count(): int
     {
         return $this->getCollection()->routes->count();
-    }
-
-    private function defaultRoutes(): void
-    {
-        $this->add(
-            path: '/{slash_remover}/',
-            action: function (Route $route, $slash_remover = '') {
-                $base = Str::lastDelete($route->getCollection()->path, '/');
-                $slug = $base . '/' . $slash_remover;
-                $slug = Str::lastDelete($slug, '/');
-                return new RedirectResponse('~' . $slug, 301);
-            },
-            methods: ['GET'],
-            filters: [
-                'slash_remover' => '.+/'
-            ]
-        );
     }
 }

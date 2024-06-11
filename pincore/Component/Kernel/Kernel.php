@@ -63,6 +63,11 @@ class Kernel extends HttpKernel
 
     private function addRouteFlows(Request $request): void
     {
+        $flows = $request->attributes->get('_flows');
+        if (!empty($flows) && is_array($flows)) {
+            $this->flowManager->addFlows($flows);
+        }
+
         $router = $request->attributes->get('_router');
         $flows = !empty($router) && ($router instanceof Route) ? $router->flows : [];
         $this->flowManager->addFlows($flows);
