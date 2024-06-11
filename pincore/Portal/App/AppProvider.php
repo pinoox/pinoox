@@ -54,7 +54,7 @@ class AppProvider extends Portal
 		]);
 
         self::require();
-	}
+    }
 
     private static function require(): void
     {

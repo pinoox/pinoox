@@ -36,21 +36,12 @@ class Route
 
     )
     {
-        if ($this->path === '*') {
-            $this->path = '{parameters}';
-            $filters['parameters'] = '.*';
-            $this->path = $this->getPath();
-            $count = strlen($this->path);
-            $this->priority = -9999 + $count;
-        } else {
-            $this->path = $this->getPath();
-        }
-
+        $this->filters = array_merge($this->collection->filters, $filters);
+        $this->path = $this->getPath();
         $this->name = $this->buildName($name);
         $this->defaults = array_merge($this->collection->defaults, $defaults);
-        $this->filters = array_merge($this->collection->filters, $filters);
         $this->data = array_merge($this->collection->data, $this->data);
-        $this->flows = array_unique(array_merge($this->collection->flows,$flows));
+        $this->flows = array_unique(array_merge($this->collection->flows, $flows));
         $this->defaults['_controller'] = $action;
         $actionCollection = $this->collection->action;
         if (!empty($actionCollection)) {
@@ -99,7 +90,19 @@ class Route
      */
     public function getPath(): string
     {
-        return (new PathManager($this->collection->prefixPath))->get($this->path);
+        $basePath = Str::lastDelete($this->collection->prefixPath, '/');
+
+        if ($this->path === '/') {
+            return $basePath;
+        } else if ($this->path === '*') {
+            $path = '{parameters}';
+            $this->filters['parameters'] = '.*';
+            $count = strlen($this->collection->prefixPath);
+            $this->priority = -99999 + $count;
+            return $basePath . $path;
+        }
+
+        return (new PathManager($basePath))->get($this->path);
     }
 
     /**

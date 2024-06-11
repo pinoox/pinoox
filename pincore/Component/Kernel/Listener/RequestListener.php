@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
+use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Validation\Factory as FactoryValidation;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,13 +29,25 @@ class RequestListener implements EventSubscriberInterface
         $event->getRequest()->setValidation($this->validation);
     }
 
+    public function onRemoveTrailingSlash(RequestEvent $event): void
+    {
+        $request = $event->getRequest();
+        $uri = $request->getUri();
+
+        if ($request->isMethod('GET') && substr($uri, -1) === '/' && $uri !== $request->getUriForPath('/')) {
+            $newUri = rtrim($uri, '/');
+            $response = new RedirectResponse($newUri);
+            $event->setResponse($response);
+        }
+    }
 
     public static function getSubscribedEvents(): array
     {
         return [
             KernelEvents::REQUEST => [
+               // ['onRemoveTrailingSlash'],
                 ['onRequestSession'],
-                ['onRequestValidation']
+                ['onRequestValidation'],
             ],
         ];
     }

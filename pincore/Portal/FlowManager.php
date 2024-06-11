@@ -36,53 +36,60 @@ use Symfony\Component\HttpKernel\Event\RequestEvent as ObjectPortal1;
  */
 class FlowManager extends Portal
 {
-	public static function __register(): void
-	{
-		$flows = App::get('flow');
+    public static function __register(): void
+    {
+
+
+        self::__bind(\Pinoox\Component\Flow\FlowManager::class)->setArguments([
+            self::getDefaultFlows(),
+            App::aliases()
+        ]);
+    }
+
+
+    private static function getDefaultFlows(): array
+    {
+        $flows = App::get('flow');
         $flows = !empty($flows) && is_array($flows) ? $flows : [];
-		self::__bind(\Pinoox\Component\Flow\FlowManager::class)->setArguments([
-            $flows,
-		    App::aliases()
-		]);
-	}
+        return array_merge(App::defaultFlows(), $flows);
+    }
+
+    public static function __app(): string
+    {
+        return App::package();
+    }
 
 
-	public static function __app(): string
-	{
-		return App::package();
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'kernel.flow_manager';
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'kernel.flow_manager';
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
-
-
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'setFlows',
-		    'addFlow',
-		    'addFlows'
-		];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'setFlows',
+            'addFlow',
+            'addFlows'
+        ];
+    }
 }
