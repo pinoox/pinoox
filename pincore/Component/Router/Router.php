@@ -19,6 +19,7 @@ use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
 use Pinoox\Component\Package\App;
+use Pinoox\Component\Path\Manager\PathManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
@@ -446,7 +447,7 @@ class Router
     private function buildPrefixPathCollection(string $path): string
     {
         $prefix = $this->current > -1 ? $this->currentCollection()->prefixPath : '';
-        return $prefix . $path;
+        return (new PathManager($prefix))->get($path);
     }
 
     /**
