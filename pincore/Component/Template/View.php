@@ -12,6 +12,7 @@
 
 namespace Pinoox\Component\Template;
 
+use Pinoox\Component\Store\Config\Data\DataManager;
 use Pinoox\Component\Template\Engine\PhpEngine;
 use Pinoox\Component\Template\Engine\PhpTwigEngine;
 use Pinoox\Component\Template\Engine\TwigEngine;
@@ -30,6 +31,7 @@ class View implements ViewInterface
     protected TwigEngine $twigEngine;
     protected PhpTwigEngine $phpTwigEngine;
     private array $readyRenders = [];
+    private array $twigOptions = [];
     private string|array $folders = [];
     private string $pathTheme = '';
 
@@ -39,8 +41,9 @@ class View implements ViewInterface
      * @param string|array $folders
      * @param string $pathTheme
      */
-    public function __construct(string|array $folders, string $pathTheme)
+    public function __construct(string|array $folders, string $pathTheme, array $twigOptions = [])
     {
+        $this->twigOptions = $twigOptions;
         $this->setView($folders, $pathTheme);
     }
 
@@ -76,7 +79,8 @@ class View implements ViewInterface
         $this->twigEngine->addExtension(new StringLoaderExtension());
 
         // add twig functions
-        $this->twigEngine->addInternalFunction([
+        $internalFunctions = $this->twigOption('functions', []);
+        $this->twigEngine->addInternalFunction(array_merge($internalFunctions, [
             'url',
             'furl',
             'lang' => 't',
@@ -89,7 +93,7 @@ class View implements ViewInterface
             'vite',
             'user',
             'isLogin',
-        ]);
+        ]));
 
         // add custom functions
         @include $functions = $this->path()
@@ -98,6 +102,12 @@ class View implements ViewInterface
             ->addFunctionsFile($functions);
 
         return $this;
+    }
+
+    public function twigOption(?string $key = null, mixed $default = null): mixed
+    {
+        $data = new DataManager($this->twigOptions);
+        return $data->get($key, $default);
     }
 
     public function changeTheme(string|array $folders): static
@@ -246,7 +256,7 @@ class View implements ViewInterface
 
         if (is_array($name)) {
             foreach ($name as $n) {
-                $result .= $this->renderByEngine($n, $parameters,$exist);
+                $result .= $this->renderByEngine($n, $parameters, $exist);
             }
             return $result;
         }
