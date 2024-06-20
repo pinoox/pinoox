@@ -16,13 +16,10 @@ namespace Pinoox\Model;
 
 use Pinoox\Component\Database\Model;
 use Pinoox\Component\Date;
-use Pinoox\Component\Helpers\HelperHeader;
-use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Token;
 use Pinoox\Component\User;
 use Pinoox\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Url;
 
 class TokenModel extends Model
@@ -77,7 +74,7 @@ class TokenModel extends Model
         return $package ?? App::package();
     }
 
-    protected static function booted()
+    protected static function booted(): void
     {
         self::addAppGlobalScope();
     }

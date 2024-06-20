@@ -26,6 +26,6 @@ class AppScope implements Scope
 
     public function apply(Builder $builder, Model $model)
     {
-        $builder->where('app', $this->app);
+        return $builder->where('app', $this->app);
     }
 }

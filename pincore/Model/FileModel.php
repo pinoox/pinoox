@@ -86,7 +86,7 @@ class FileModel extends Model
         return $package ?? App::package();
     }
 
-    protected static function booted()
+    protected static function booted(): void
     {
         static::addGlobalScope('app', new AppScope(static::getPackage()));
 
