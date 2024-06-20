@@ -60,7 +60,7 @@ class Request extends RequestSymfony
     private function initJsonData(): void
     {
         $data = [];
-        if (!empty($this->getContent()))
+        if ($this->isJson() && !empty($this->getContent()))
             $data = $this->toArray();
 
         $this->json = new InputBag($data);

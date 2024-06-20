@@ -39,7 +39,7 @@ if (!function_exists('config')) {
      *
      * @param string $key
      * @param null $default
-     * @return mixed|ConfigInterface
+     * @return mixed|ConfigInterface|\Pinoox\Component\Store\Config\Config
      */
     function config(string $key, $default = null)
     {
