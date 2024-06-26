@@ -312,7 +312,7 @@ class Request extends RequestSymfony
 
     public function isJson(): bool
     {
-        return Str::contains($this->headers->get('CONTENT_TYPE') ?? '', ['/json', '+json']);
+        return Str::contains($this->headers->get('CONTENT_TYPE') ?? '', ['/json', '+json']) || Str::contains($this->headers->get('ACCEPT') ?? '', ['/json', '+json']);
     }
 
     public function input(): InputBag
