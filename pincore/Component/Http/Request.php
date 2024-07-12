@@ -30,6 +30,8 @@ class Request extends RequestSymfony
 {
     public InputBag $json;
     public ParameterBag $parameters;
+    public bool $isContentJson = false;
+
     /**
      * @var SessionInterface
      */
@@ -57,12 +59,17 @@ class Request extends RequestSymfony
         );
     }
 
+
     private function initJsonData(): void
     {
         $data = [];
-        if ($this->isJson() && !empty($this->getContent()))
-            $data = $this->toArray();
 
+        if (!empty($this->getContent())) {
+            $data = (array)@json_decode($this->getContent(), true);
+            $this->isContentJson = json_last_error() === JSON_ERROR_NONE;
+        }
+
+        $data = is_array($data) ? $data : [];
         $this->json = new InputBag($data);
     }
 
@@ -312,7 +319,7 @@ class Request extends RequestSymfony
 
     public function isJson(): bool
     {
-        return Str::contains($this->headers->get('CONTENT_TYPE') ?? '', ['/json', '+json']) || Str::contains($this->headers->get('ACCEPT') ?? '', ['/json', '+json']);
+        return Str::contains($this->headers->get('CONTENT_TYPE') ?? '', ['/json', '+json']);
     }
 
     public function input(): InputBag
