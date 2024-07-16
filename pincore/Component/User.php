@@ -59,7 +59,7 @@ class User
         self::$user = null;
     }
 
-    public static function login($username, $password, $isActive = true)
+    public static function login($username, $password, \Closure $custom = null, $isActive = true)
     {
         self::$msg = null;
 
@@ -81,6 +81,10 @@ class User
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
+        }
+
+        if ($custom) {
+            $custom($user, $username, $password);
         }
 
         $user->makeVisible('password');
