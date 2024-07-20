@@ -47,7 +47,7 @@ abstract class Controller
 
     protected function getRequest(): Request
     {
-        return $this->container->get('kernel.request_stack')->getCurrentRequest();
+        return app()->getRequest();
     }
 
     protected function redirect(string $url, int $status = 302): RedirectResponse

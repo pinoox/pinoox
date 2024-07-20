@@ -33,7 +33,7 @@ return new class extends MigrationBase
             $table->string('app', 50);
             $table->unsignedInteger('user_id')->nullable();
             $table->string('ip', 255)->nullable();
-            $table->string('user_agent', 255)->nullable();
+            $table->string('user_agent', 500)->nullable();
             $table->dateTime('expiration_date')->nullable();
             $table->string('remote_url', 255)->nullable();
             $table->timestamps();
