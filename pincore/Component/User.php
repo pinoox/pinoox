@@ -35,6 +35,8 @@ class User
     private static $user = null;
     private static $updateLifetime = true;
     private static $updateTokenKey = false;
+
+    private static $user_session_key = 'pinoox_user';
     private static $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
     public static function updateLifetime($status)
@@ -59,7 +61,7 @@ class User
         self::$user = null;
     }
 
-    public static function login($username, $password, \Closure $custom = null, $isActive = true)
+    public static function login($username, $password, $isActive = true)
     {
         self::$msg = null;
 
@@ -81,10 +83,6 @@ class User
         if (empty($user)) {
             self::$msg = Lang::get('~user.username_or_password_is_wrong');
             return false;
-        }
-
-        if ($custom) {
-            $custom($user, $username, $password);
         }
 
         $user->makeVisible('password');
@@ -123,13 +121,13 @@ class User
         if (!empty(self::$token_key)) return self::$token_key;
         switch (self::$type) {
             case self::COOKIE:
-                self::$token_key = Cookie::get('pinoox_user');
+                self::$token_key = Cookie::get(self::$user_session_key);
                 break;
             case self::JWT:
                 self::$token_key = self::authToken();
                 break;
             case self::SESSION:
-                self::$token_key = Session::get('pinoox_user');
+                self::$token_key = Session::get(self::$user_session_key);
                 break;
         }
         return self::$token_key;
@@ -146,7 +144,9 @@ class User
         }
         try {
             $payload = JWT::decode($token, new Key(self::$secret_key, 'HS256'));
-            $token_key = $payload->pinoox_user;
+            $payloadArray = (array)$payload;
+            $key = key($payloadArray);
+            $token_key = $payloadArray[$key];
 
             return $token_key;
 
@@ -156,12 +156,17 @@ class User
         return false;
     }
 
+    public static function setUserSessionKey($key)
+    {
+        self::$user_session_key = $key;
+    }
+
     public static function setToken(UserModel $user)
     {
         $user->makeHidden('password');
         $user_id = $user->user_id;
         $token_key = self::getTokenKey();
-        $token_key = Token::generate($user->toArray(), 'pinoox_user', $user_id, $token_key);
+        $token_key = Token::generate($user->toArray(), self::$user_session_key, $user_id, $token_key);
         self::setClientToken($token_key);
     }
 
@@ -169,20 +174,19 @@ class User
     {
         self::$token_key = $token_key;
         self::$login_key = $token_key;
-
         switch (self::$type) {
             case self::COOKIE:
-                Cookie::set('pinoox_user', $token_key, 999999999);
+                Cookie::set(self::$user_session_key, $token_key, 999999999);
                 break;
             case self::JWT:
                 $payloadArray = [
-                    'pinoox_user' => $token_key,
+                    self::$user_session_key => $token_key,
                 ];
                 self::$login_key = JWT::encode($payloadArray, self::$secret_key, 'HS256');
                 break;
             case self::SESSION:
                 Session::lifeTime(999999999);
-                Session::set('pinoox_user', $token_key);
+                Session::set(self::$user_session_key, $token_key);
                 break;
         }
     }
@@ -251,10 +255,10 @@ class User
         if (!TokenModel::where('token_key', $token_key)->first()) {
             switch (self::$type) {
                 case self::COOKIE:
-                    Cookie::destroy('pinoox_user');
+                    Cookie::destroy(self::$user_session_key);
                     break;
                 case self::SESSION:
-                    Session::remove('pinoox_user');
+                    Session::remove(self::$user_session_key);
                     if (Session::has())
                         Session::regenerateId(true);
                     break;
