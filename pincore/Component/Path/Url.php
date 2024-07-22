@@ -112,10 +112,23 @@ class Url implements UrlInterface
         else
             $site = $this->base();
 
-        if ($this->request->isSecure() && !str_contains($site, 'https')) {
+        if ($this->isSsl() && str_contains($site, 'http')) {
             $site = str_replace('http:', 'https:', $site);
         }
         return $site;
+    }
+
+    private function isSsl(): bool
+    {
+        if (isset($_SERVER['HTTPS'])) {
+            if ('on' == strtolower($_SERVER['HTTPS']))
+                return true;
+            if ('1' == $_SERVER['HTTPS'])
+                return true;
+        } elseif (isset($_SERVER['SERVER_PORT']) && ('443' == $_SERVER['SERVER_PORT'])) {
+            return true;
+        }
+        return false;
     }
 
     public function app(bool $isFullBase = true): string
