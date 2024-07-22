@@ -71,7 +71,7 @@ class FileUploader
         return $this;
     }
 
-    public function thumb($width = 100, $height = 100): self
+    public function thumb($width = 512, $height = 512): self
     {
         $this->isThumb = true;
         $this->thumbInfo['width'] = $width;
