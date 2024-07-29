@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Component\Path\Reference;
+namespace Pinoox\Component\Package\Reference;
 
 
 /**
@@ -30,7 +30,7 @@ interface ReferenceInterface
      * Returns the Path of the reference.
      * @return string|null The Path of the reference, or null if not available.
      */
-    public function getPath(): ?string;
+    public function getValue(): ?string;
 
     /**
      * Returns the reference.

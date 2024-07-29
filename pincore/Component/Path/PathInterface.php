@@ -14,7 +14,7 @@
 namespace Pinoox\Component\Path;
 
 
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 
 interface PathInterface
 {

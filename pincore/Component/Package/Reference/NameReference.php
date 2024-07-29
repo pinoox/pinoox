@@ -11,10 +11,10 @@
  */
 
 
-namespace Pinoox\Component\Path\Reference;
+namespace Pinoox\Component\Package\Reference;
 
 
-class PathReference implements ReferenceInterface
+class NameReference implements ReferenceInterface
 {
 
     /**
@@ -36,7 +36,7 @@ class PathReference implements ReferenceInterface
     /**
      * {@inheritDoc}
      */
-    public function getPath(): ?string
+    public function getValue(): ?string
     {
         return $this->path;
     }
@@ -60,6 +60,6 @@ class PathReference implements ReferenceInterface
     {
         $package = $this->getPackageName();
 
-        return !empty($package) ? $package . ':' . $this->getPath() : $this->getPath();
+        return !empty($package) ? $package . ':' . $this->getValue() : $this->getValue();
     }
 }

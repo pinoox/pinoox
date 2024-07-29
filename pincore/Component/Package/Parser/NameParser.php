@@ -11,14 +11,14 @@
  */
 
 
-namespace Pinoox\Component\Path\Parser;
+namespace Pinoox\Component\Package\Parser;
 
 
 use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Path\Reference\PathReference;
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Reference\NameReference;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 
-class PathParser implements ParserInterface
+class NameParser implements ParserInterface
 {
     public function parse(ReferenceInterface|string $name): ReferenceInterface
     {
@@ -40,6 +40,6 @@ class PathParser implements ParserInterface
 
         $path = Str::firstDelete($path, '~');
 
-        return new PathReference($app, $path);
+        return new NameReference($app, $path);
     }
 }

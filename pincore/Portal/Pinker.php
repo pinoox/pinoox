@@ -14,8 +14,8 @@
 
 namespace Pinoox\Portal;
 
-use Pinoox\Component\Path\Reference\PathReference;
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Reference\NameReference;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Baker\Pinker as ObjectPortal1;
 
@@ -57,11 +57,11 @@ class Pinker extends Portal
 	{
 		$mainFile = Path::createPath($fileName, 'pincore');
 		$mainFile = is_file($mainFile) ? $mainFile : '';
-		$bakedFileName = !is_string($fileName) ? $fileName->getPath() : $fileName;
+		$bakedFileName = !is_string($fileName) ? $fileName->getValue() : $fileName;
 		$bakedFileName = self::folder . '/' . $bakedFileName;
 
 		if (!is_string($fileName)) {
-		    $fileName = PathReference::create($fileName->getPackageName(), $bakedFileName);
+		    $fileName = NameReference::create($fileName->getPackageName(), $bakedFileName);
 		}
 
 		$bakedFile = Path::createPath($fileName, 'pincore');
