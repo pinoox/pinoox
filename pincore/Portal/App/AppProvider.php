@@ -22,6 +22,7 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Dumper;
 use Pinoox\Portal\Env;
+use Pinoox\Portal\Event;
 use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Kernel\Terminal;
 use Pinoox\Portal\Session;
@@ -45,13 +46,14 @@ use Symfony\Component\ErrorHandler\Debug;
 class AppProvider extends Portal
 {
     public static function __register(): void
-	{
-		self::__bind(\Pinoox\Component\Package\AppProvider::class)->setArguments([
-		    App::__ref(),
-		    HttpKernel::__ref(),
-		    Terminal::__ref(),
-            Session::__ref()
-		]);
+    {
+        self::__bind(\Pinoox\Component\Package\AppProvider::class)->setArguments([
+            App::__ref(),
+            HttpKernel::__ref(),
+            Terminal::__ref(),
+            Session::__ref(),
+            Event::__ref(),
+        ]);
 
         self::require();
     }
@@ -64,12 +66,12 @@ class AppProvider extends Portal
         DB::register();
     }
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'app.provider';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'app.provider';
+    }
 }

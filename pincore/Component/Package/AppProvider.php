@@ -16,11 +16,14 @@ namespace Pinoox\Component\Package;
 
 use Composer\Autoload\ClassLoader;
 use Exception;
+use Pinoox\Component\event\EventDispatcher;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\Terminal;
+use Pinoox\Portal\Event;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -34,6 +37,7 @@ class AppProvider
         public Kernel           $httpKernel,
         public Terminal         $terminal,
         public SessionInterface $session,
+        public EventDispatcher  $eventDispatcher,
     )
     {
     }
@@ -53,6 +57,22 @@ class AppProvider
         }
 
         $this->getClassLoader()->addClassMap($classMap);
+    }
+
+    private function events(): void
+    {
+        $events = $this->app->get('event');
+        if (empty($events))
+            return;
+
+        foreach ($events as $event => $listerner) {
+            if ($listerner instanceof EventSubscriberInterface) {
+                $this->eventDispatcher->addSubscriber($listerner);
+            } else {
+                $listerner = $this->app->alias($listerner, $listerner);
+                $this->eventDispatcher->addListener($event, $listerner);
+            }
+        }
     }
 
     private function resolveSession()
@@ -100,6 +120,7 @@ class AppProvider
             $this->lock();
             $this->loadComposer($this->app->path());
             $this->loader();
+            $this->events();
             $this->resolveSession();
         }
     }

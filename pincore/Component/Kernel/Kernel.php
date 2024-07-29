@@ -116,4 +116,8 @@ class Kernel extends HttpKernel
         return $response;
     }
 
+    public function getDispatcher(): \Symfony\Contracts\EventDispatcher\EventDispatcherInterface
+    {
+        return $this->dispatcher;
+    }
 }

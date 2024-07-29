@@ -4,7 +4,7 @@ namespace Pinoox\Component\Kernel\Event;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Contracts\EventDispatcher\Event;
+use Pinoox\Component\event\Event;
 
 class ResponseEvent extends Event
 {

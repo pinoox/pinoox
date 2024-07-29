@@ -12,13 +12,14 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Portal\Kernel;
+namespace Pinoox\Portal;
 
 use Pinoox\Component\Source\Portal;
+use Pinoox\Component\event\EventDispatcher;
 use Pinoox\Portal\App\App;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
+ * @method static Event listen(string $eventName, array|callable $listener, int $priority = 0)
  * @method static object dispatch(object $event, ?string $eventName = NULL)
  * @method static array getListeners(?string $eventName = NULL)
  * @method static int|null getListenerPriority(string $eventName, array|callable $listener)
@@ -27,25 +28,22 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  * @method static removeListener(string $eventName, array|callable $listener)
  * @method static addSubscriber(\Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber)
  * @method static removeSubscriber(\Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber)
- * @method static \Symfony\Component\EventDispatcher\EventDispatcher ___()
+ * @method static \Pinoox\Component\event\EventDispatcher ___()
  *
- * @see \Symfony\Component\EventDispatcher\EventDispatcher
+ * @see \Pinoox\Component\event\EventDispatcher
  */
-class Dispatcher extends Portal
+class Event extends Portal
 {
     public static function __register(): void
     {
-        self::__bind(EventDispatcher::class)
-            ->addMethodCall('addSubscriber', [Listener::__ref('request')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('router')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('routeEmpty')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('response')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('controller')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('transactional')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('exception')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('view')])
-            ->addMethodCall('addSubscriber', [Listener::__ref('core_exception')]);
+        self::__bind(EventDispatcher::class);
     }
+
+    public static function __app(): string
+    {
+        return App::package();
+    }
+
 
     /**
      * Get the registered name of the component.
@@ -53,7 +51,7 @@ class Dispatcher extends Portal
      */
     public static function __name(): string
     {
-        return 'kernel.dispatcher';
+        return 'event';
     }
 
 
@@ -73,6 +71,8 @@ class Dispatcher extends Portal
      */
     public static function __callback(): array
     {
-        return [];
+        return [
+            'listen'
+        ];
     }
 }
