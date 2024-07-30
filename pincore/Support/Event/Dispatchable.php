@@ -20,7 +20,14 @@ trait Dispatchable
     public static function dispatch(...$arguments): object
     {
         $instance = new static(...$arguments);
-        $name = $instance->eventName ?? $instance->name ?? null;
-        return Event::dispatch($instance, $name);
+        return Event::dispatch($instance, static::$eventName);
+    }
+
+    public static function subDispatch(string $subname, ...$arguments): object
+    {
+        $instance = new static(...$arguments);
+        $eventName = static::$eventName;
+        $eventName .= '.' . $subname;
+        return Event::dispatch($instance, $eventName);
     }
 }

@@ -11,11 +11,11 @@
  */
 
 
-namespace Pinoox\Component\event;
+namespace Pinoox\Component\Event;
 
 use Symfony\Contracts\EventDispatcher\Event as EventSymfony;
 
 class Event extends EventSymfony
 {
-
+    public static $eventName = null;
 }

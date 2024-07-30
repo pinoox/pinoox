@@ -18,8 +18,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 class Kernel extends HttpKernel
 {
-    const HANDLE_BEFORE = 'handle.before';
-    const HANDLE_AFTER = 'handle.after';
+    const HANDLE_BEFORE = 'kernel.handle.before';
+    const HANDLE_AFTER = 'kernel.handle.after';
 
     private ?FlowManager $flowManager = null;
 

@@ -2,8 +2,9 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
-use Pinoox\Component\Kernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class GoogleListener implements EventSubscriberInterface
 {
@@ -18,11 +19,11 @@ class GoogleListener implements EventSubscriberInterface
             return;
         }
 
-        $response->setContent($response->getContent().'GA CODE');
+        $response->setContent($response->getContent() . 'GA CODE');
     }
 
     public static function getSubscribedEvents(): array
     {
-        return ['response' => 'onResponse'];
+        return [KernelEvents::RESPONSE => 'onResponse'];
     }
 }

@@ -15,8 +15,9 @@
 namespace Pinoox\Portal;
 
 use Pinoox\Component\Source\Portal;
-use Pinoox\Component\event\EventDispatcher;
+use Pinoox\Component\Event\EventDispatcher;
 use Pinoox\Portal\App\App;
+use Pinoox\Portal\Kernel\Listener;
 
 /**
  * @method static Event listen(string $eventName, array|callable $listener, int $priority = 0)
@@ -28,20 +29,24 @@ use Pinoox\Portal\App\App;
  * @method static removeListener(string $eventName, array|callable $listener)
  * @method static addSubscriber(\Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber)
  * @method static removeSubscriber(\Symfony\Component\EventDispatcher\EventSubscriberInterface $subscriber)
- * @method static \Pinoox\Component\event\EventDispatcher ___()
+ * @method static \Pinoox\Component\Event\EventDispatcher ___()
  *
- * @see \Pinoox\Component\event\EventDispatcher
+ * @see \Pinoox\Component\Event\EventDispatcher
  */
 class Event extends Portal
 {
     public static function __register(): void
     {
-        self::__bind(EventDispatcher::class);
-    }
-
-    public static function __app(): string
-    {
-        return App::package();
+        self::__bind(EventDispatcher::class)
+            ->addMethodCall('addSubscriber', [Listener::__ref('request')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('router')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('routeEmpty')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('response')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('controller')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('transactional')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('exception')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('view')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('core_exception')]);
     }
 
 

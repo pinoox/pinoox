@@ -27,7 +27,7 @@ interface ReferenceInterface
     public function getPackageName(): ?string;
 
     /**
-     * Returns the Path of the reference.
+     * Returns value of the reference.
      * @return string|null The Path of the reference, or null if not available.
      */
     public function getValue(): ?string;

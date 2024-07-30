@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Component\event;
+namespace Pinoox\Component\Event;
 
 use Symfony\Component\EventDispatcher\EventDispatcher as EventDispatcherSymfony;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;

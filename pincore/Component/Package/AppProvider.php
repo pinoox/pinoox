@@ -16,7 +16,7 @@ namespace Pinoox\Component\Package;
 
 use Composer\Autoload\ClassLoader;
 use Exception;
-use Pinoox\Component\event\EventDispatcher;
+use Pinoox\Component\Event\EventDispatcher;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
@@ -65,12 +65,14 @@ class AppProvider
         if (empty($events))
             return;
 
-        foreach ($events as $event => $listerner) {
-            if ($listerner instanceof EventSubscriberInterface) {
-                $this->eventDispatcher->addSubscriber($listerner);
+        foreach ($events as $event => $listener) {
+            if (is_string($listener))
+                $listener = $this->app->alias($listener, $listener);
+
+            if (is_subclass_of ($listener,EventSubscriberInterface::class)) {
+                $this->eventDispatcher->addSubscriber(new $listener());
             } else {
-                $listerner = $this->app->alias($listerner, $listerner);
-                $this->eventDispatcher->addListener($event, $listerner);
+                $this->eventDispatcher->addListener($event, $listener);
             }
         }
     }

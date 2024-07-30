@@ -29,17 +29,17 @@ class NameParser implements ParserInterface
         $parts = explode(':', $name);
         if (count($parts) > 1) {
             $app = $parts[0];
-            $path = $parts[1];
+            $value = $parts[1];
         } else {
             $app = null;
-            $path = $parts[0];
-            if (Str::firstHas($path, '~')) {
+            $value = $parts[0];
+            if (Str::firstHas($value, '~')) {
                 $app = '~';
             }
         }
 
-        $path = Str::firstDelete($path, '~');
+        $value = Str::firstDelete($value, '~');
 
-        return new NameReference($app, $path);
+        return new NameReference($app, $value);
     }
 }

@@ -2,8 +2,9 @@
 
 namespace Pinoox\Component\Kernel\Listener;
 
-use Pinoox\Component\Kernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 class ContentLengthListener implements EventSubscriberInterface
 {
@@ -19,6 +20,6 @@ class ContentLengthListener implements EventSubscriberInterface
 
     public static function getSubscribedEvents(): array
     {
-        return ['response' => ['onResponse', -255]];
+        return [KernelEvents::RESPONSE => ['onResponse', -255]];
     }
 }
