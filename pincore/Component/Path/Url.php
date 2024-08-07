@@ -229,4 +229,23 @@ class Url implements UrlInterface
         }
         return false;
     }
+
+    /**
+     * @return Request
+     */
+    public function request(): Request
+    {
+        return $this->request;
+    }
+
+    public function referer()
+    {
+        return $this->request->headers->get('referer');
+    }
+
+    public function current()
+    {
+        return $this->request->getUri();
+    }
+
 }

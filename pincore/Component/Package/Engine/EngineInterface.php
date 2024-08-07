@@ -15,7 +15,7 @@ namespace Pinoox\Component\Package\Engine;
 
 
 use Pinoox\Component\Store\Config\ConfigInterface;
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Translator\Translator;
 use RuntimeException;

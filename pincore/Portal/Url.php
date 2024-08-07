@@ -14,6 +14,7 @@
 
 namespace Pinoox\Portal;
 
+use Pinoox\Component\Http\Request as ObjectPortal1;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
@@ -33,7 +34,7 @@ use Pinoox\Portal\App\AppRouter;
  * @method static array clientIps()
  * @method static string base()
  * @method static string params()
- * @method static string route($name, $parameters = [])
+ * @method static string route($name, $parameters = [], bool $isFullBase = true)
  * @method static array parameters()
  * @method static string site(bool $isFullBase = true)
  * @method static string app(bool $isFullBase = true)
@@ -42,6 +43,9 @@ use Pinoox\Portal\App\AppRouter;
  * @method static string path(string $path = '', bool $isFullBase = true)
  * @method static check($link, $default = NULL)
  * @method static bool existsFile($link)
+ * @method static ObjectPortal1 request()
+ * @method static referer()
+ * @method static current()
  * @method static \Pinoox\Component\Path\Url ___()
  *
  * @see \Pinoox\Component\Path\Url

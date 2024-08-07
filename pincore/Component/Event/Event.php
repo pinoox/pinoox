@@ -11,12 +11,11 @@
  */
 
 
-namespace Pinoox\Component\Path;
+namespace Pinoox\Component\Event;
 
+use Symfony\Contracts\EventDispatcher\Event as EventSymfony;
 
-use Pinoox\Component\Package\Reference\ReferenceInterface;
-
-interface PathInterface
+class Event extends EventSymfony
 {
-    public function get(string|ReferenceInterface $path = ''): string;
+    public static $eventName = null;
 }
