@@ -19,9 +19,9 @@ class NameReference implements ReferenceInterface
 
     /**
      * @param string|null $packageName
-     * @param string|null $path
+     * @param string|null $value
      */
-    public function __construct(private ?string $packageName, private ?string $path = null)
+    public function __construct(private ?string $packageName, private ?string $value = null)
     {
     }
 
@@ -38,19 +38,19 @@ class NameReference implements ReferenceInterface
      */
     public function getValue(): ?string
     {
-        return $this->path;
+        return $this->value;
     }
 
     /**
-     * create path reference
+     * create value reference
      *
      * @param string|null $packageName
-     * @param string|null $path
+     * @param string|null $value
      * @return static
      */
-    public static function create(?string $packageName, ?string $path = null): static
+    public static function create(?string $packageName, ?string $value = null): static
     {
-        return new static($packageName, $path);
+        return new static($packageName, $value);
     }
 
     /**
