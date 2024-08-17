@@ -11,12 +11,16 @@
  */
 
 
-namespace Pinoox\Component\Path;
+namespace Pinoox\Support\Event;
 
 
-use Pinoox\Component\Package\Reference\ReferenceInterface;
+use Pinoox\Portal\Event;
 
-interface PathInterface
+trait Subscriberable
 {
-    public function get(string|ReferenceInterface $path = ''): string;
+    public static function subscriber(...$arguments): object
+    {
+        $instance = new static(...$arguments);
+        return Event::addSubscriber($instance);
+    }
 }

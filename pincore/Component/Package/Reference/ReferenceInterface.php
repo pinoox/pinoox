@@ -11,12 +11,12 @@
  */
 
 
-namespace Pinoox\Component\Path\Reference;
+namespace Pinoox\Component\Package\Reference;
 
 
 /**
  *
- * The ReferenceInterface defines the methods for retrieving package name and Path of a reference.
+ * The ReferenceInterface defines the methods for retrieving package name and Value of a reference.
  */
 interface ReferenceInterface
 {
@@ -27,10 +27,10 @@ interface ReferenceInterface
     public function getPackageName(): ?string;
 
     /**
-     * Returns the Path of the reference.
-     * @return string|null The Path of the reference, or null if not available.
+     * Returns value of the reference.
+     * @return string|null The Value of the reference, or null if not available.
      */
-    public function getPath(): ?string;
+    public function getValue(): ?string;
 
     /**
      * Returns the reference.

@@ -18,13 +18,14 @@ use Illuminate\Contracts\Translation\Loader as ObjectPortal3;
 use Illuminate\Translation\MessageSelector as ObjectPortal2;
 use Illuminate\Translation\Translator as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Component\Translator\Translator;
 use Pinoox\Component\Translator\Loader\FileLoader;
+use Pinoox\Component\Translator\Translator;
 use Pinoox\Portal\App\App;
 
 /**
  * @method static Lang addPath(string $path)
- * @method static addJsonPath($path)
+ * @method static string replaceNested($key, array $replace = [], $locale = NULL, $fallback = true)
+ * @method static Lang addJsonPath($path)
  * @method static Lang addPathAndJson(string $path)
  * @method static bool hasForLocale($key, $locale = NULL)
  * @method static bool has($key, $locale = NULL, $fallback = true)

@@ -352,9 +352,9 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         return $this->dataAlias()->get();
     }
 
-    public function alias(string $name): mixed
+    public function alias(string $name,$default = null): mixed
     {
-        return $this->dataAlias()->get($name);
+        return $this->dataAlias()->get($name,$default);
     }
 }
 

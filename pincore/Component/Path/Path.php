@@ -15,10 +15,9 @@ namespace Pinoox\Component\Path;
 
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Package\Engine\EngineInterface;
-use Pinoox\Component\Path\Parser\ParserInterface;
-use Pinoox\Component\Path\Parser\PathParser;
-use Pinoox\Component\Path\Reference\PathReference;
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Parser\ParserInterface;
+use Pinoox\Component\Package\Reference\NameReference;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Manager\PathManager;
 
 class Path implements PathInterface
@@ -67,13 +66,13 @@ class Path implements PathInterface
     {
         $parser = $this->reference($path);
         $package = empty($package) ? $parser->getPackageName() : $package;
-        $key = $package . ':' . $parser->getPath();
+        $key = $package . ':' . $parser->getValue();
 
         if (isset($this->paths[$key]))
             return $this->paths[$key];
 
         $pathManager = $this->getManager($package);
-        $value = !empty($parser->getPath()) ? $parser->getPath() : '';
+        $value = !empty($parser->getValue()) ? $parser->getValue() : '';
         $value = $pathManager->get($value);
         return $this->paths[$key] = $value;
     }
@@ -130,9 +129,9 @@ class Path implements PathInterface
     {
         $ref = $this->reference($path);
 
-        $path = $prefix . '/' . $ref->getPath();
+        $path = $prefix . '/' . $ref->getValue();
 
-        return PathReference::create(
+        return NameReference::create(
             $ref->getPackageName(),
             $path);
     }

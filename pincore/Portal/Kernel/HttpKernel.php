@@ -14,14 +14,13 @@
 
 namespace Pinoox\Portal\Kernel;
 
-use Pinoox\Component\Kernel\Event\ResponseEvent;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Router\RouteCollection;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\Event;
 use Pinoox\Portal\FlowManager;
-use Symfony\Component\EventDispatcher\DependencyInjection\AddEventAliasesPass;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response as ObjectPortal1;
 
@@ -43,12 +42,11 @@ class HttpKernel extends Portal
     public static function __register(): void
     {
         self::setParams();
-        self::addEvents();
         self::__bind(RequestStack::class, 'request_stack');
 
         self::__bind(Kernel::class)
             ->setArguments([
-                Dispatcher::__ref(),
+                Event::__ref(),
                 Resolver::__ref('controller'),
                 self::__ref('request_stack'),
                 Resolver::__ref('argument'),
@@ -78,15 +76,6 @@ class HttpKernel extends Portal
     private static function setParams(): void
     {
         self::__param('charset', 'UTF-8');
-    }
-
-    private static function addEvents(): void
-    {
-        self::__container()->addCompilerPass(new AddEventAliasesPass(
-            [
-                ResponseEvent::class => 'response',
-            ]
-        ));
     }
 
 

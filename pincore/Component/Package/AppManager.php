@@ -16,7 +16,7 @@ namespace Pinoox\Component\Package;
 
 use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Package\Engine\EngineInterface;
-use Pinoox\Component\Path\Reference\ReferenceInterface;
+use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 
