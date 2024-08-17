@@ -71,7 +71,7 @@ class AppProvider
 
             if (is_subclass_of ($listener,EventSubscriberInterface::class)) {
                 $this->eventDispatcher->addSubscriber(new $listener());
-            } else {
+            } else if(is_string($event)) {
                 $this->eventDispatcher->addListener($event, $listener);
             }
         }
