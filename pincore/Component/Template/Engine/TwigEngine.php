@@ -151,8 +151,7 @@ class TwigEngine implements EngineInterface
                 $names = !empty($namespace) ? $namespace . '\\' . $names : $names;
                 $funcName = empty($replace) ? $names : $replace;
                 $this->addFunction($names, function () use ($funcName) {
-                    $result = call_user_func_array($funcName, func_get_args());
-                    return is_array($result)? json_encode($result) : $result;
+                    return call_user_func_array($funcName, func_get_args());
                 });
             } catch (\Exception) {
             }
