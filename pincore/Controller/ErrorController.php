@@ -12,6 +12,7 @@ class ErrorController extends Controller
     {
         $statusCode = $exception->getStatusCode();
         $message = $exception->getMessage();
+        $class = $exception->getClass();
         $file = $exception->getFile();
         $line = $exception->getLine();
         $trace = nl2br($exception->getTraceAsString());
@@ -31,14 +32,13 @@ class ErrorController extends Controller
                     display: flex;
                     justify-content: center;
                     align-items: center;
-                    height: 100vh;
                 }
                 .container {
                     background-color: #fff;
                     padding: 20px;
                     border-radius: 8px;
                     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                    max-width: 600px;
+                    max-width: 90%;
                     width: 100%;
                     box-sizing: border-box;
                 }
@@ -63,6 +63,8 @@ class ErrorController extends Controller
                 }
                 .line {
                     color: #555;
+                    font-weight: bold;
+                    font-size: 1.2rem;
                 }
                 .status-code {
                     text-align: center;
@@ -75,10 +77,10 @@ class ErrorController extends Controller
         <body>
             <div class="container">
                 <div class="status-code">$statusCode</div>
-                <h1>Something went wrong!</h1>
-                <p class="message"><strong>Message:</strong> $message</p>
-                <p class="file"><strong>File:</strong> $file</p>
+                <h1>$message</h1>
                 <p class="line"><strong>Line:</strong> $line</p>
+                <p class="class"><strong>Class:</strong> $class</p>
+                <p class="file"><strong>File:</strong> $file</p>
                 <h3>Trace:</h3>
                 <div class="trace">$trace</div>
             </div>
