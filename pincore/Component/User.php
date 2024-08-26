@@ -161,11 +161,12 @@ class User
         self::$user_session_key = $key;
     }
 
-    public static function setToken(UserModel $user)
+    public static function setToken(UserModel $user, $newKey = false)
     {
         $user->makeHidden('password');
         $user_id = $user->user_id;
         $token_key = self::getTokenKey();
+        if ($newKey) $token_key = null;
         $token_key = Token::generate($user->toArray(), self::$user_session_key, $user_id, $token_key);
         self::setClientToken($token_key);
     }

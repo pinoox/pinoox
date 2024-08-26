@@ -10,10 +10,27 @@ class ErrorController extends Controller
 {
     public function exception(FlattenException $exception)
     {
-        $msg = 'Something went wrong! (' . $exception->getMessage() . ')';
+        $statusCode = $exception->getStatusCode();
+        $message = $exception->getMessage();
+        $file = $exception->getFile();
+        $line = $exception->getLine();
+        $trace = $exception->getTraceAsString();
 
-        $response = new Response($msg, $exception->getStatusCode());
+        // Construct a detailed error message
+        $msg = <<<EOT
+                Something went wrong!
+                Message: $message
+                File: $file
+                Line: $line
+                Status Code: $statusCode
+                Trace: 
+                $trace
+                EOT;
+
+        // Create the response object with the detailed error message
+        $response = new Response($msg, $statusCode);
         $response->setResponseError(true);
+
         return $response;
     }
 }
