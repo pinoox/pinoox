@@ -31,6 +31,8 @@ class FileUploader
     private UploadedFile|null $file;
     private string|null $fileKey;
     private string $access;
+    private ?string $hashId = null;
+    private ?array $metadata = null;
     private string $group;
     private static array $events;
     private $result;
@@ -59,19 +61,19 @@ class FileUploader
         $this->setUploadPath();
     }
 
-    public function insert(): self
+    public function insert(): static
     {
         $this->isInsert = true;
         return $this;
     }
 
-    public function group($group): self
+    public function group($group): static
     {
         $this->group = $group;
         return $this;
     }
 
-    public function thumb($width = 512, $height = 512): self
+    public function thumb($width = 512, $height = 512): static
     {
         $this->isThumb = true;
         $this->thumbInfo['width'] = $width;
@@ -79,7 +81,7 @@ class FileUploader
         return $this;
     }
 
-    public function upload(): self
+    public function upload(): static
     {
         if (empty($this->file)) {
             $this->error = -1;
@@ -104,7 +106,7 @@ class FileUploader
         return $this;
     }
 
-    public function delete(FileModel $fileModel): self
+    public function delete(FileModel $fileModel): static
     {
         $this->fileModel = $fileModel;
         $path = path($fileModel->file_path, $fileModel->app);
@@ -129,15 +131,42 @@ class FileUploader
         return $this->file;
     }
 
-    public function setFile(UploadedFile $file): void
+    public function setFile(UploadedFile $file): static
     {
         $this->file = $file;
+
+        return $this;
     }
 
 
     public function getAccess(): string
     {
         return $this->access;
+    }
+
+    public function getHashId(): string
+    {
+        return $this->hashId;
+    }
+
+    public function getMetaData(): ?array
+    {
+        return $this->metadata;
+    }
+
+    public function setHashId($hash_id): static
+    {
+        $this->hashId = $hash_id;
+
+        return $this;
+
+    }
+
+    public function setMetaData($metadata): static
+    {
+        $this->metadata = $metadata;
+
+        return $this;
     }
 
     public function getFilename(): string
@@ -152,14 +181,16 @@ class FileUploader
 
     public static function addEvent(Event $type, \Closure $event): void
     {
-        self::$events[Event::getName($type)][] = $event;
+        static::$events[Event::getName($type)][] = $event;
     }
 
-    public function callEvents(Event $type, array $params = []): void
+    public function callEvents(Event $type, array $params = []): static
     {
-        foreach (self::$events[Event::getName($type)] ?? [] as $event) {
+        foreach (static::$events[Event::getName($type)] ?? [] as $event) {
             $event($this, ...$params);
         }
+
+        return $this;
     }
 
     public function getSize(): int
@@ -177,9 +208,11 @@ class FileUploader
         return $this->fileModel;
     }
 
-    public function setPath(string $path): void
+    public function setPath(string $path): static
     {
         $this->path = $path;
+
+        return $this;
     }
 
     public function getFileRealname(): string
@@ -192,9 +225,11 @@ class FileUploader
         return $this->uploadPath;
     }
 
-    private function setUploadPath(): void
+    private function setUploadPath(): static
     {
         $this->uploadPath = $this->path . '/' . $this->destination;
+
+        return $this;
     }
 
     public function getResult($key = null): mixed
@@ -202,9 +237,11 @@ class FileUploader
         return $this->result[$key] ?? $this->result;
     }
 
-    public function setResult($key, $value): void
+    public function setResult($key, $value): static
     {
         $this->result[$key] = $value;
+
+        return $this;
     }
 
     private function isImage(): bool
