@@ -38,6 +38,7 @@ class FileModel extends Model
     public $timestamps = true;
 
     protected $fillable = [
+        'hash_id',
         'user_id',
         'app',
         'file_group',
@@ -47,6 +48,11 @@ class FileModel extends Model
         'file_path',
         'file_size',
         'file_access',
+        'file_metadata',
+    ];
+
+    protected $casts = [
+        'file_metadata' => 'array',
     ];
 
     protected $hidden = [

@@ -61,6 +61,8 @@ class FileUploader extends Portal
             'file_path' => $uploader->getDestination(),
             'file_size' => $uploader->getSize(),
             'file_access' => $uploader->getAccess(),
+            'hash_id' => $uploader->getHashId(),
+            'file_metadata' => $uploader->getMetaData(),
             'file_group' => $uploader->getGroup(),
         ]);
         if ($model) {

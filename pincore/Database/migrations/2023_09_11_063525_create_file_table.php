@@ -26,6 +26,7 @@ return new class extends MigrationBase {
         $this->schema->disableForeignKeyConstraints();
         $this->schema->create(Table::FILE, function (Blueprint $table) {
             $table->increments('file_id');
+            $table->string('hash_id', 50)->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->string('app', 255)->nullable();
             $table->string('file_group', 255)->nullable();
@@ -35,6 +36,7 @@ return new class extends MigrationBase {
             $table->string('file_path', 255)->nullable();
             $table->double('file_size')->nullable();
             $table->string('file_access', 255)->nullable();
+            $table->json('file_metadata')->nullable();
             $table->timestamps();
 
             $table->index('user_id');
