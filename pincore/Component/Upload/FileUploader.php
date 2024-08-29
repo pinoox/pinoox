@@ -144,7 +144,7 @@ class FileUploader
         return $this->access;
     }
 
-    public function getHashId(): string
+    public function getHashId(): ?string
     {
         return $this->hashId;
     }
