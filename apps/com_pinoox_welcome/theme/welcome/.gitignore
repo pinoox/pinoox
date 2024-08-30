@@ -6,9 +6,6 @@ package-lock.json
 # Ignore Yarn's lock file (if using Yarn)
 yarn.lock
 
-# Ignore any build artifacts
-/dist/
-
 # Ignore environment files
 .env.local
 .env.*.local
