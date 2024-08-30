@@ -14,7 +14,6 @@
 namespace Pinoox\Component\Package\Engine;
 
 
-use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Package\AppManager;
 use Pinoox\Component\Package\Loader\ArrayLoader;
 use Pinoox\Component\Package\Loader\ChainLoader;
@@ -54,7 +53,7 @@ class AppEngine implements EngineInterface
     private array $appConfig;
 
     /**
-     * @var Lang[]
+     * @var Translator[]
      */
     private array $appLang;
 
