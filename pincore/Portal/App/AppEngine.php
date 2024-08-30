@@ -15,7 +15,6 @@
 namespace Pinoox\Portal\App;
 
 use Pinoox\Component\Kernel\Loader;
-use Pinoox\Component\Lang\Lang as ObjectPortal4;
 use Pinoox\Component\Package\AppManager;
 use Pinoox\Component\Router\Router as ObjectPortal2;
 use Pinoox\Component\Source\Portal;

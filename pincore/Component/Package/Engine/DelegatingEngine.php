@@ -13,10 +13,10 @@
 
 namespace Pinoox\Component\Package\Engine;
 
-use Pinoox\Component\Lang\Lang;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\Config;
+use Pinoox\Component\Translator\Translator;
 
 class DelegatingEngine implements EngineInterface
 {
@@ -83,7 +83,7 @@ class DelegatingEngine implements EngineInterface
         $this->getEngine($packageName)->path($packageName);
     }
 
-    public function lang(ReferenceInterface|string $packageName): Lang
+    public function lang(ReferenceInterface|string $packageName): Translator
     {
         $this->getEngine($packageName)->lang($packageName);
     }

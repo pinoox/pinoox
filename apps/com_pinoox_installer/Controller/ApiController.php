@@ -16,6 +16,7 @@ namespace App\com_pinoox_installer\Controller;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Migration\Migrator;
+use Pinoox\Component\Package\AppManager;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
@@ -142,25 +143,20 @@ class ApiController extends Controller
         $user = $data['user'];
         $db = $request->json->all('db');
 
+        // Add database core
         if (!$this->insertTables($db, $user)) {
             return $this->message(t('install.err_insert_tables'), false);
         }
 
+        // Set primary apps route
         $appRoutes = Config::name('app')->get();
         AppRouter::setData($appRoutes);
 
-        $lang = App::get('lang');
+        // Install exists apps
+        $this->installExistsApps();
+
+        // Disable installer app
         App::set('enable', false)
-            ->save();
-
-        // change lang app welcome
-        AppEngine::config('com_pinoox_welcome')
-            ->set('lang', $lang)
-            ->save();
-
-        // change lang app manager
-        AppEngine::config('com_pinoox_manager')
-            ->set('lang', $lang)
             ->save();
 
         return $this->message('success', true);
@@ -206,6 +202,29 @@ class ApiController extends Controller
             'password' => $u['password'],
             'email' => $u['email'],
         ]);
+    }
+
+    private function installExistsApps()
+    {
+        $packageInstaller = App::package();
+        $langInstaller = App::get('lang');
+        $apps = AppEngine::all();
+        foreach ($apps as $appManager) {
+            /**
+             * @var AppManager $appManager
+             */
+            if ($appManager->package() === $packageInstaller)
+                continue;
+
+            // migrate
+            $migrator = new Migrator($appManager->package(), 'run');
+            $migrator->run();
+
+            // default lang
+            if ($appManager->lang()->hasForLocale($langInstaller, '*')) {
+                $appManager->config()->set('lang', $langInstaller)->save();
+            }
+        }
     }
 
     private function message($result, $status)
