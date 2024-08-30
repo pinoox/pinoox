@@ -16,6 +16,7 @@ namespace App\com_pinoox_installer\Controller;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Migration\Migrator;
+use Pinoox\Component\Package\AppManager;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
@@ -193,6 +194,16 @@ class ApiController extends Controller
 
             $migrator = new Migrator('pincore', 'run');
             $migrator->run();
+
+            $apps = AppEngine::all();
+            foreach ($apps as $package => $appManager) {
+                /**
+                 * @var AppManager $appManager
+                 */
+
+                $migrator = new Migrator($package, 'run');
+                $migrator->run();
+            }
 
         } catch (\Exception $e) {
             return false;
