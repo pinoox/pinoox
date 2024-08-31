@@ -221,7 +221,7 @@ class ApiController extends Controller
             $migrator->run();
 
             // default lang
-            if ($appManager->lang()->hasForLocale($langInstaller, '*')) {
+            if ($appManager->lang()->existsLocale($langInstaller)) {
                 $appManager->config()->set('lang', $langInstaller)->save();
             }
         }

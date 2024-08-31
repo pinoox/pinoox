@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Translator\Loader;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Collection;
 use Illuminate\Translation\FileLoader as FileLoaderIlluminate;
 
 class FileLoader extends FileLoaderIlluminate
@@ -74,5 +75,17 @@ class FileLoader extends FileLoaderIlluminate
     public function addPath(string $path): void
     {
         $this->paths[] = $path;
+    }
+
+    public function getCollectAllPaths(): Collection
+    {
+        return collect(array_merge($this->jsonPaths, $this->paths));
+    }
+
+    public function existsLocale($locale): bool
+    {
+        return $this->getCollectAllPaths()->some(function ($path) use ($locale) {
+            return $this->files->exists("{$path}/{$locale}") || $this->files->exists("{$path}/{$locale}.json");
+        });
     }
 }
