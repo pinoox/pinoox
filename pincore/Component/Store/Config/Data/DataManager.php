@@ -18,10 +18,10 @@ namespace Pinoox\Component\Store\Config\Data;
  */
 class DataManager implements DataInterface
 {
-    private mixed $data;
+    private $data;
     private array $merge;
 
-    public function __construct(mixed $data = [])
+    public function __construct($data = [])
     {
         $this->setData($data);
     }
@@ -38,7 +38,7 @@ class DataManager implements DataInterface
         return $value !== null ? $value : $default;
     }
 
-    public function getData(): array
+    public function getData()
     {
         return $this->data;
     }
@@ -48,7 +48,7 @@ class DataManager implements DataInterface
         return $this->data;
     }
 
-    public function setData(mixed $data = []): void
+    public function setData($data = []): void
     {
         $this->data = $data;
     }
