@@ -27,6 +27,7 @@ use Pinoox\Portal\App\App;
  * @method static string replaceNested($key, array $replace = [], $locale = NULL, $fallback = true)
  * @method static Lang addJsonPath($path)
  * @method static Lang addPathAndJson(string $path)
+ * @method static bool existsLocale($locale)
  * @method static bool hasForLocale($key, $locale = NULL)
  * @method static bool has($key, $locale = NULL, $fallback = true)
  * @method static string|array get($key, array $replace = [], $locale = NULL, $fallback = true)
@@ -59,72 +60,66 @@ use Pinoox\Portal\App\App;
  */
 class Lang extends Portal
 {
-	private const localeFallback = 'en';
-	private const folder = 'lang';
-	private const ext = '.lang';
+    private const localeFallback = 'en';
+    private const folder = 'lang';
+    private const ext = '.lang';
 
-	public static function __register(): void
-	{
-		$localeFallback = App::get('lang_fallback') ?? self::localeFallback;
-		$paths = [
-		    Path::get(self::folder),
-		    View::asstes('lang'),
-		];
+    public static function __register(): void
+    {
+        $localeFallback = App::get('lang_fallback') ?? self::localeFallback;
+        $paths = [
+            Path::get(self::folder),
+            View::asstes('lang'),
+        ];
 
-		self::__bind(FileLoader::class, 'loader')
-		    ->setArgument('path', $paths)
-		    ->setArgument('postfix', self::ext);
+        self::__bind(FileLoader::class, 'loader')
+            ->setArgument('path', $paths)
+            ->setArgument('postfix', self::ext);
 
-		$definition = self::__bind(Translator::class)->setArguments([
-		    self::__ref('loader'),
-		    App::get('lang')
-		])->addMethodCall('setFallback', [
-		    $localeFallback
-		]);
-
-		foreach ($paths as $path) {
-		    $definition->addMethodCall('addJsonPath', [
-		        $path
-		    ]);
-		}
-	}
+        self::__bind(Translator::class)->setArguments([
+            self::__ref('loader'),
+            App::get('lang')
+        ])->addMethodCall('setFallback', [
+            $localeFallback
+        ]);
+    }
 
 
-	public static function __app(): string
-	{
-		return App::package();
-	}
+    public static function __app(): string
+    {
+        return App::package();
+    }
 
 
-	/**
-	 * Get the registered name of the component.
-	 * @return string
-	 */
-	public static function __name(): string
-	{
-		return 'lang';
-	}
+    /**
+     * Get the registered name of the component.
+     * @return string
+     */
+    public static function __name(): string
+    {
+        return 'lang';
+    }
 
 
-	/**
-	 * Get exclude method names .
-	 * @return string[]
-	 */
-	public static function __exclude(): array
-	{
-		return [];
-	}
+    /**
+     * Get exclude method names .
+     * @return string[]
+     */
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
 
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-		    'load',
-		    'setFallback'
-		];
-	}
+    /**
+     * Get method names for callback object.
+     * @return string[]
+     */
+    public static function __callback(): array
+    {
+        return [
+            'load',
+            'setFallback'
+        ];
+    }
 }

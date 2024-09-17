@@ -15,7 +15,7 @@ namespace Pinoox\Component\Store\Config\Data;
 
 interface DataInterface
 {
-    public function __construct(array $data = []);
+    public function __construct($data = []);
 
     public function get(?string $key = null, mixed $default = null): mixed;
 
@@ -29,7 +29,9 @@ interface DataInterface
 
     public function merge(array $data): void;
 
-    public function getData(): array;
+    public function getData();
+
+    public function setData($data = []): void;
 
     public function reset(): void;
 

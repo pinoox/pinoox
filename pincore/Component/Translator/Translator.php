@@ -101,4 +101,9 @@ class Translator extends TranslatorIlluminate
         $this->addPath($path);
         $this->addJsonPath($path);
     }
+
+    public function existsLocale($locale) : bool
+    {
+        return $this->loader->existsLocale($locale);
+    }
 }
