@@ -52,6 +52,7 @@ class UserModel extends Model
     protected $fillable = [
         'session_id',
         'avatar_id',
+        'personal_id',
         'app',
         'fname',
         'lname',
