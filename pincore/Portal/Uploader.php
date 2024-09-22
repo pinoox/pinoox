@@ -19,16 +19,16 @@ use Pinoox\Component\Upload\FileUploader as ObjectPortal2;
 use Pinoox\Component\Upload\FileUploaderBuilder as ObjectPortal1;
 
 /**
- * @method static ObjectPortal1 setPath(string $path)
- * @method static ObjectPortal1 setFileInputKey(string $fileInputKey)
- * @method static ObjectPortal1 setGroup(string $group)
+ * @method static ObjectPortal1 path(string $path)
+ * @method static ObjectPortal1 inputKey(string $fileInputKey)
+ * @method static ObjectPortal1 group(string $group)
  * @method static ObjectPortal1 setThumb(bool $isThumb = true)
- * @method static ObjectPortal1 setAllowedExtensions(array $allowedExtensions)
+ * @method static ObjectPortal1 extensions(array $allowedExtensions)
  * @method static ObjectPortal1 setFileIdAttribute(string $fileIdAttribute)
- * @method static ObjectPortal1 setMaxFileSizeWithUnit(string $sizeWithUnit)
- * @method static ObjectPortal1 setModelToUpdate(\Pinoox\Component\Database\Model $model, string $attribute = 'file_id')
+ * @method static ObjectPortal1 maxSize(string $sizeWithUnit)
+ * @method static ObjectPortal1 model(\Pinoox\Component\Database\Model $model, string $attribute = 'file_id')
  * @method static ObjectPortal2 upload()
- * @method static Uploader deleteAssociatedFiles(mixed $fileIds)
+ * @method static ObjectPortal1 deleteOldFiles()
  * @method static \Pinoox\Component\Upload\FileUploaderBuilder ___()
  *
  * @see \Pinoox\Component\Upload\FileUploaderBuilder

@@ -35,7 +35,7 @@ class FileUploaderBuilder
      * @param string $path
      * @return self
      */
-    public function setPath(string $path): self
+    public function path(string $path): self
     {
         $this->path = $path;
         return $this;
@@ -47,7 +47,7 @@ class FileUploaderBuilder
      * @param string $fileInputKey
      * @return self
      */
-    public function setFileInputKey(string $fileInputKey): self
+    public function inputKey(string $fileInputKey): self
     {
         $this->fileInputKey = $fileInputKey;
         return $this;
@@ -59,7 +59,7 @@ class FileUploaderBuilder
      * @param string $group
      * @return self
      */
-    public function setGroup(string $group): self
+    public function group(string $group): self
     {
         $this->group = $group;
         return $this;
@@ -83,7 +83,7 @@ class FileUploaderBuilder
      * @param array $allowedExtensions
      * @return self
      */
-    public function setAllowedExtensions(array $allowedExtensions): self
+    public function extensions(array $allowedExtensions): self
     {
         $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
         return $this;
@@ -108,7 +108,7 @@ class FileUploaderBuilder
      * @return self
      * @throws \InvalidArgumentException if the format is invalid.
      */
-    public function setMaxFileSizeWithUnit(string $sizeWithUnit): self
+    public function maxSize(string $sizeWithUnit): self
     {
         $this->maxFileSize = $this->convertToBytes($sizeWithUnit);
         return $this;
@@ -121,7 +121,7 @@ class FileUploaderBuilder
      * @param string $attribute The attribute to update with the file ID.
      * @return self
      */
-    public function setModelToUpdate(Model $model, string $attribute = 'file_id'): self
+    public function model(Model $model, string $attribute = 'file_id'): self
     {
         $this->model = $model;
         $this->modelAttribute = $attribute;
@@ -167,29 +167,6 @@ class FileUploaderBuilder
         return $uploader;
     }
 
-    /**
-     * Delete associated files based on file IDs.
-     *
-     * @param mixed $fileIds Single file ID or array of file IDs.
-     * @return void
-     * @throws \Exception
-     */
-    public function deleteAssociatedFiles(mixed $fileIds): void
-    {
-        if (is_array($fileIds)) {
-            foreach ($fileIds as $fileId) {
-                $this->deleteAssociatedFiles($fileId);
-            }
-        } else if (!empty($fileIds)) {
-            $file = FileModel::find($fileIds);
-            if ($file) {
-                FileUploader::delete($fileIds);
-                $file->delete(); // Delete from database as well
-            } else {
-                throw new \Exception('File not found.');
-            }
-        }
-    }
 
     /**
      * Convert human-readable size (e.g., "5MB", "500KB") to bytes.
@@ -210,5 +187,42 @@ class FileUploaderBuilder
         $unit = $matches[2];
 
         return $size * $units[$unit];
+    }
+
+    /**
+     * Handle the existing file before uploading a new one.
+     *
+     * @return self
+     */
+    public function deleteOldFiles(): self
+    {
+        if ($this->model && $this->model->{$this->modelAttribute}) {
+            // Delete associated files
+            $this->deleteAssociatedFiles($this->model->{$this->modelAttribute});
+            // Set the model attribute to null
+            $this->model->update([$this->modelAttribute => null]);
+        }
+        return $this;
+    }
+
+    /**
+     * Delete associated files based on file IDs.
+     *
+     * @param mixed $fileIds Single file ID or array of file IDs.
+     * @return void
+     */
+    private function deleteAssociatedFiles(mixed $fileIds): void
+    {
+        if (is_array($fileIds)) {
+            foreach ($fileIds as $fileId) {
+                $this->deleteAssociatedFiles($fileId);
+            }
+        } else if (!empty($fileIds)) {
+            $file = FileModel::find($fileIds);
+            if ($file) {
+                FileUploader::delete($fileIds);
+                $file->delete(); // Delete from database as well
+            }
+        }
     }
 }
