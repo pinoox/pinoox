@@ -40,7 +40,11 @@ class FileUploader
     private FileModel $fileModel;
     private $isThumb;
     private $thumbInfo;
-    private $error;
+    public $error;
+
+    private array $allowedExtensions = [];
+    private int $maxFileSize = 0;// Maximum file size in bytes
+
 
     public function __construct(string $path = '', string $destination = '', UploadedFile|string $fileKey = null, string $access = 'public')
     {
@@ -87,12 +91,25 @@ class FileUploader
             $this->error = -1;
             return $this;
         }
-
+ 
         $this->extension = $this->file->getClientOriginalExtension();
         $this->size = $this->file->getSize();
         $this->fileRealname = $this->file->getClientOriginalName();
         $this->filename = Str::generateLowRandom(16) . '.' . $this->extension;
 
+        // Check if the file extension is allowed
+        if (!empty($this->allowedExtensions) && !in_array($this->extension, $this->allowedExtensions)) {
+            $this->error = 'invalid_extension'; // Set custom error for invalid extension
+            return $this;
+        }
+
+        // Check if the file size exceeds the maximum allowed size
+        if ($this->maxFileSize > 0 && $this->size > $this->maxFileSize) {
+            $this->error = 'file_too_large'; // Set custom error for file size limit
+            return $this;
+        }
+
+        // Move the uploaded file to the destination
         $this->file->move($this->getUploadPath(), $this->filename);
 
         if ($this->isInsert) {
@@ -118,6 +135,18 @@ class FileUploader
 
         $this->callEvents(Event::Delete);
 
+        return $this;
+    }
+
+    /**
+     * Set the maximum allowed file size in bytes.
+     *
+     * @param int $maxFileSize
+     * @return static
+     */
+    public function setMaxFileSize(int $maxFileSize): static
+    {
+        $this->maxFileSize = $maxFileSize;
         return $this;
     }
 
@@ -267,6 +296,18 @@ class FileUploader
                 ->scale($this->thumbInfo['width'], $this->thumbInfo['height'])
                 ->save($thumbnailPath);
         }
+    }
+
+    /**
+     * Set the allowed file extensions for upload.
+     *
+     * @param array $extensions List of allowed extensions.
+     * @return static
+     */
+    public function setAllowedExtensions(array $extensions): static
+    {
+        $this->allowedExtensions = array_map('strtolower', $extensions);
+        return $this;
     }
 
     /**
