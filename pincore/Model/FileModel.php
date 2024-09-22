@@ -73,7 +73,9 @@ class FileModel extends Model
 
     public function getThumbLinkAttribute()
     {
-        if (in_array($this->file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+        if ($this->file_ext === 'svg') {
+            return Url::path($this->file_path . '/' . $this->file_name);
+        } else if (in_array($this->file_ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
             return Url::path($this->file_path . '/thumbs/thumb_' . $this->file_name);
         }
 

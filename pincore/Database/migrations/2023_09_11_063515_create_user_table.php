@@ -28,6 +28,7 @@ return new class extends MigrationBase {
             $table->increments('user_id');
             $table->unsignedInteger('session_id')->nullable();
             $table->unsignedInteger('avatar_id')->nullable();
+            $table->string('personal_id')->nullable();
             $table->string('app', 50)->nullable();
             $table->string('fname', 50)->nullable();
             $table->string('lname', 50)->nullable();
@@ -42,6 +43,7 @@ return new class extends MigrationBase {
 
             $table->index('user_id');
             $table->index('avatar_id');
+            $table->index('personal_id');
             $table->foreign('avatar_id')->references('file_id')->on(Table::FILE)->onDelete('set null')->onUpdate('cascade');
         });
     }
