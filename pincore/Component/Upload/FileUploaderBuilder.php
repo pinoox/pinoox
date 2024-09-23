@@ -12,6 +12,7 @@
 
 namespace Pinoox\Component\Upload;
 
+use InvalidArgumentException;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\FileModel;
 use Pinoox\Portal\FileUploader;
@@ -27,6 +28,7 @@ class FileUploaderBuilder
     protected int $maxFileSize = 0; // Maximum file size in bytes (0 means no limit)
     protected ?Model $model = null; // Model to be updated
     protected string $modelAttribute = 'file_id'; // Attribute in the model to store file ID
+    private string $mediaIdColumn;
 
 
     /**
@@ -78,14 +80,23 @@ class FileUploaderBuilder
     }
 
     /**
-     * Set the allowed file extensions for upload.
-     *
-     * @param array $allowedExtensions
-     * @return self
+     * Set allowed extensions.
+     * @param array|string $extensions
+     * @return $this
      */
-    public function extensions(array $allowedExtensions): self
+    public function extensions($extensions)
     {
-        $this->allowedExtensions = array_map('strtolower', $allowedExtensions);
+        if (is_string($extensions)) {
+            // Split the string into an array
+            $extensions = array_map('trim', explode(',', $extensions));
+        }
+
+        if (!is_array($extensions)) {
+            throw new InvalidArgumentException("The extensions must be an array or a comma-separated string.");
+        }
+
+        // Assign the extensions to the uploader
+        $this->allowedExtensions = $extensions;
         return $this;
     }
 
@@ -115,16 +126,25 @@ class FileUploaderBuilder
     }
 
     /**
-     * Set the model to be updated after file upload.
-     *
-     * @param Model $model The model instance.
-     * @param string $attribute The attribute to update with the file ID.
-     * @return self
+     * Set the model for the uploader.
+     * @param string|Model $model
+     * @param string $mediaIdColumn
+     * @return $this
      */
-    public function model(Model $model, string $attribute = 'file_id'): self
+    public function model($model, $mediaIdColumn)
     {
+        if (is_string($model) && is_subclass_of($model,  Model::class)) {
+            // Instantiate the model if the class name is provided
+            $model = new $model();
+        }
+
+        if (!$model instanceof  Model) {
+            throw new InvalidArgumentException("The model must be an instance of Pinoox\Component\Database\Model.");
+        }
+
+        // Assign the model and media ID column to the uploader
         $this->model = $model;
-        $this->modelAttribute = $attribute;
+        $this->mediaIdColumn = $mediaIdColumn;
         return $this;
     }
 
@@ -225,4 +245,5 @@ class FileUploaderBuilder
             }
         }
     }
+
 }

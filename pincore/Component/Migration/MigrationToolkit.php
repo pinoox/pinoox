@@ -12,8 +12,7 @@
 
 namespace Pinoox\Component\Migration;
 
-use Illuminate\Database\Capsule\Manager;
-use Pinoox\Component\Kernel\Exception;
+use Illuminate\Database\Schema\Builder;
 use Pinoox\Model\Table;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
@@ -21,21 +20,20 @@ use Symfony\Component\Finder\Finder;
 
 class MigrationToolkit
 {
-
-    private $schema = null;
     /**
-     * @var Manager;
+     * The schema manager instance.
+     * @var Builder
      */
+    private $schema;
 
     /**
-     * package name
+     * Package name
      * @var string
      */
     private string $package;
-    private string $tableName;
 
     /**
-     * path of migration files
+     * Path of migration files
      * @var string
      */
     private string $migrationPath;
@@ -45,26 +43,27 @@ class MigrationToolkit
     private string $migrationFolder = 'migrations';
 
     /**
-     * actions: rollback,run,init,status
+     * Actions: rollback, run, init, status
      * @var string
      */
     private string $action = 'run';
 
     /**
-     * errors
-     * @var array | string
+     * Errors
+     * @var array|string
      */
     private string|array $errors = [];
 
     /**
-     * migration files list
+     * Migration files list
      * @var array
      */
     private array $migrations = [];
 
     public function __construct()
     {
-        $this->schema = DB::schema();
+        // Use DB::schema() directly to get the schema manager
+        $this->schema = DB::schema(); // Make sure DB::schema() returns a valid schema instance
     }
 
     public function package($val): self
@@ -74,7 +73,16 @@ class MigrationToolkit
     }
 
     /**
-     * actions: init, run, rollback, create
+     * Provide access to the schema manager.
+     * @return Builder
+     */
+    public function schema(): Builder
+    {
+        return $this->schema;
+    }
+
+    /**
+     * Actions: init, run, rollback, create
      * @return $this
      */
     public function action($action): self
@@ -84,6 +92,7 @@ class MigrationToolkit
     }
 
     /**
+     * Load migration files.
      * @throws \Exception
      */
     public function load(): self
@@ -100,6 +109,7 @@ class MigrationToolkit
         if (!empty($migrations)) {
             foreach ($migrations as $m) {
                 list($fileName, $migrationFile) = $this->extract($m);
+                $tableName = $this->extractTableName($fileName); // Extract table name
 
                 if ($this->action === 'rollback' && empty($m['sync'])) continue;
                 if ($this->action === 'run' && !empty($m['sync'])) continue;
@@ -110,8 +120,9 @@ class MigrationToolkit
                         'packageName' => $this->package,
                         'migrationFile' => $migrationFile,
                         'fileName' => $fileName,
+                        'tableName' => $tableName, // Add the table name to the migration array
                     ];
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $this->setError($e);
                 }
             }
@@ -120,22 +131,20 @@ class MigrationToolkit
         return $this;
     }
 
-    private function getFromDB(): ?array
-    {
-        $batch = $this->action == 'rollback' ?
-            MigrationQuery::fetchLatestBatch($this->package) : null;
-
-        return MigrationQuery::fetchAllByBatch($batch, $this->package);
-    }
-
     /**
+     * Check if the migration table exists in the database.
      * @throws \Exception
      */
     public function isExistsMigrationTable(): bool
     {
+        // Use the schema manager to check if the migration table exists
         return $this->schema->hasTable(Table::MIGRATION);
     }
 
+    /**
+     * Load migration files from the migration path.
+     * @return array
+     */
     private function loadFiles(): array
     {
         if (!file_exists($this->migrationPath)) {
@@ -192,7 +201,6 @@ class MigrationToolkit
         return $this->migrationPath . '/' . $this->migrationName;
     }
 
-
     public function generateMigrationFileName($modelName): void
     {
         // Get the current timestamp in the required format
@@ -233,7 +241,6 @@ class MigrationToolkit
         return basename($file, '.php');
     }
 
-
     private function findMigrationPath(): void
     {
         if ($this->package == 'pincore')
@@ -242,6 +249,20 @@ class MigrationToolkit
             $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
     }
 
+    /**
+     * Extract the table name from the migration file name.
+     * Assumes file names follow the convention `timestamp_create_tableName_table`.
+     * @param string $fileName
+     * @return string|null
+     */
+    private function extractTableName(string $fileName): ?string
+    {
+        // Matches the table name in the format: `create_tableName_table`
+        if (preg_match('/create_(.+)_table/', $fileName, $matches)) {
+            return $matches[1]; // Return the table name
+        }
+        return null; // Return null if no table name could be extracted
+    }
 
     public function getMigrationPath(): string
     {
@@ -277,7 +298,7 @@ class MigrationToolkit
 
         $records = $this->getFromDB();
 
-        //find migrations in database
+        // Find migrations in database
         return array_map(function ($m) use ($records) {
             $index = array_search($m['migration'], array_column($records, 'migration'));
 
@@ -288,4 +309,11 @@ class MigrationToolkit
         }, $migrations);
     }
 
+    private function getFromDB(): ?array
+    {
+        $batch = $this->action == 'rollback' ?
+            MigrationQuery::fetchLatestBatch($this->package) : null;
+
+        return MigrationQuery::fetchAllByBatch($batch, $this->package);
+    }
 }
