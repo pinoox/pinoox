@@ -118,20 +118,23 @@ class UserModel extends Model
 
     public function getAvatarAttribute()
     {
+        $defaultImagePath = $this->defaultAvatarLink ?? furl('resources/avatar.png');
+
         $file = FileModel::where('file_id', $this->avatar_id)->first();
-        if (!is_null($this->defaultAvatarLink)) {
+
+
+        if ($file) {
             return [
                 'file_id' => $this->avatar_id,
-                'file_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
-                'thumb_link' => Url::check($file?->file_link, $this->defaultAvatarLink),
+                'file_link' => $file->file_link,
+                'thumb_link' => $file->thumb_link,
             ];
-        } else if (empty($this->avatar_id)) {
-            return null;
         } else {
+            // Return the default image path if no avatar is found
             return [
-                'file_id' => $this->avatar_id,
-                'file_link' => $file?->file_link,
-                'thumb_link' => $file?->thumb_link,
+                'file_id' => null,
+                'file_link' => $defaultImagePath,
+                'thumb_link' => $defaultImagePath,
             ];
         }
     }
