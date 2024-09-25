@@ -3,9 +3,20 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 
+# Check if the environment is local or not
+RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1) [NC]
+RewriteRule ^ - [S=1]
+
+# Redirect to HTTPS if not local
+RewriteCond %{HTTPS} off
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+
+# Skip index.php direct access rule
 RewriteRule ^index\.php$ - [L]
 
+# Route all requests to index.php if file or directory doesn't exist
 RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule .* index.php [L]
 
 </IfModule>
