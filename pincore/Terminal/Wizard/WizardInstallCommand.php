@@ -15,7 +15,7 @@ namespace Pinoox\Terminal\Wizard;
 
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\AppWizard;
+use Pinoox\Portal\Wizard\AppWizard;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;

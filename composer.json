@@ -45,7 +45,8 @@
         "symfony/serializer": "^6.0",
         "symfony/templating": "^6.0",
         "symfony/var-dumper": "^6.3",
-        "twig/twig": "^3"
+        "twig/twig": "^3",
+      "ext-zip": "*"
     },
     "autoload": {
         "psr-4": {
