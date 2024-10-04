@@ -24,7 +24,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class AppRouterCommand extends Terminal
 {
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('app:router')
