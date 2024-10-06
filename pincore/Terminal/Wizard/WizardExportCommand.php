@@ -69,7 +69,7 @@ class WizardExportCommand extends Terminal
         $extension = ($format === 'zip') ? 'zip' : 'pin';
 
         // Append version code to the export file name
-        $exportedFile = $exportDir . "{$packageName}_v{$versionCode}.$extension";
+        $exportedFile = $exportDir . "{$packageName}_v{$versionCode}_".date('Ymd_i').".$extension";
 
         $finder = new Finder();
         $this->configureFinder($finder, $packagePath, $buildConfig);
@@ -121,20 +121,39 @@ class WizardExportCommand extends Terminal
         // Handle exclude paths and wildcard expansion
         if (!empty($buildConfig['exclude'])) {
             foreach ($buildConfig['exclude'] as $excludePath) {
-                // Check if the path contains wildcards
                 if (str_contains($excludePath, '*')) {
                     $this->excludeWildcardPaths($finder, $packagePath, $excludePath);
                 } else {
-                    // Handle regular paths (check if it's a file or directory)
                     $absolutePath = $packagePath . '/' . $excludePath;
                     if (is_dir($absolutePath)) {
-                        // Exclude directories
                         $finder->notPath($excludePath);
                     } elseif (is_file($absolutePath)) {
-                        // Exclude specific files
-                        $finder->notPath($excludePath);
+                        $finder->notPath($absolutePath);
                     }
                 }
+            }
+        }
+
+        // Handle include_themes logic specifically for the theme directory
+        $themeBasePath = $packagePath . '/theme';
+
+        if (!empty($buildConfig['include_themes'])) {
+            // Find all subdirectories in the theme folder
+            $themeFinder = new Finder();
+            $themeFinder->in($themeBasePath)->directories()->depth(0);
+
+            $themesToExclude = [];
+            foreach ($themeFinder as $dir) {
+                $themeName = $dir->getRelativePathname();
+                // If the theme is not in include_themes, mark it for exclusion
+                if (!in_array($themeName, $buildConfig['include_themes'])) {
+                    $themesToExclude[] = 'theme/' . $themeName;
+                }
+            }
+
+            // Exclude the themes that are not in include_themes
+            foreach ($themesToExclude as $themeToExclude) {
+                $finder->notPath($themeToExclude);
             }
         }
     }
@@ -148,26 +167,25 @@ class WizardExportCommand extends Terminal
 
         // Use Finder to locate actual directories and files matching the pattern
         $subDirectories = (new Finder())
-            ->in($packagePath . '/' . $baseDir) // Start in the base directory
+            ->in($packagePath . '/' . $baseDir)
             ->directories()
-            ->depth(0) // Only top-level directories within the base
-            ->name('*') // Match any directory name (to replicate the wildcard behavior)
+            ->depth(0)
+            ->name('*')
             ->sortByName();
 
         foreach ($subDirectories as $dir) {
-            // Append the remaining path to each matched subdirectory
             $actualPath = $dir->getRealPath() . '/' . $remainingPath;
 
-            // Check if the expanded path is a directory or file and exclude accordingly
             if (is_dir($actualPath)) {
-                $relativePath = str_replace($packagePath . '/', '', $actualPath); // Get the relative path from the package root
+                $relativePath = str_replace($packagePath . '/', '', $actualPath);
                 $finder->notPath($relativePath);
             } elseif (is_file($actualPath)) {
-                $relativePath = str_replace($packagePath . '/', '', $actualPath); // Get the relative path from the package root
+                $relativePath = str_replace($packagePath . '/', '', $actualPath);
                 $finder->notPath($relativePath);
             }
         }
     }
+
 
     private function addFilesToZip(ZipArchive $zip, Finder $finder, ProgressBar $progressBar): void
     {
