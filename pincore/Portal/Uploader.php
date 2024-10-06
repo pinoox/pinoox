@@ -26,7 +26,7 @@ use Pinoox\Component\Upload\FileUploaderBuilder as ObjectPortal1;
  * @method static ObjectPortal1 extensions($extensions)
  * @method static ObjectPortal1 setFileIdAttribute(string $fileIdAttribute)
  * @method static ObjectPortal1 maxSize(string $sizeWithUnit)
- * @method static ObjectPortal1 model($model, $mediaIdColumn)
+ * @method static \Pinoox\Component\Upload\FileUploaderBuilder model($model, $mediaIdColumn, $method = 'update')
  * @method static ObjectPortal2 upload()
  * @method static ObjectPortal1 deleteOldFiles()
  * @method static \Pinoox\Component\Upload\FileUploaderBuilder ___()
