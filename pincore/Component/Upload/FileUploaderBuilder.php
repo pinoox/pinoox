@@ -12,7 +12,9 @@
 
 namespace Pinoox\Component\Upload;
 
+use App\com_pinoox_tutorial\Model\NoteMediaModel;
 use InvalidArgumentException;
+use MongoDB\BSON\ObjectId;
 use Pinoox\Component\Database\Model;
 use Pinoox\Model\FileModel;
 use Pinoox\Portal\FileUploader;
@@ -27,6 +29,7 @@ class FileUploaderBuilder
     protected string $fileIdAttribute = 'file_id';
     protected int $maxFileSize = 0; // Maximum file size in bytes (0 means no limit)
     protected ?Model $model = null; // Model to be updated
+    protected string $method = 'update';
     protected string $modelAttribute = 'file_id'; // Attribute in the model to store file ID
     private string $mediaIdColumn;
 
@@ -125,24 +128,21 @@ class FileUploaderBuilder
         return $this;
     }
 
-    /**
-     * Set the model for the uploader.
-     * @param string|Model $model
-     * @param string $mediaIdColumn
-     * @return $this
-     */
-    public function model($model, $mediaIdColumn)
+
+    public function model($model, $mediaIdColumn, $method = 'update'): static
     {
-        if (is_string($model) && is_subclass_of($model,  Model::class)) {
+
+        if (is_string($model) && is_subclass_of($model, Model::class)) {
             // Instantiate the model if the class name is provided
             $model = new $model();
         }
 
-        if (!$model instanceof  Model) {
+        if (!$model instanceof Model) {
             throw new InvalidArgumentException("The model must be an instance of Pinoox\Component\Database\Model.");
         }
 
         // Assign the model and media ID column to the uploader
+        $this->method = $method;
         $this->model = $model;
         $this->mediaIdColumn = $mediaIdColumn;
         return $this;
@@ -178,7 +178,26 @@ class FileUploaderBuilder
         if (!$uploader->isFail() && $this->model) {
             $fileId = $uploader->getResult('file_id');
             if ($fileId) {
-                $this->model->update([$this->modelAttribute => $fileId]);
+
+                $attributes = [$this->fileIdAttribute => $fileId];
+
+                // Handle different methods based on the provided method
+                switch ($this->method) {
+                    case 'update':
+                        $this->model->where($this->mediaIdColumn, $fileId)->update($attributes);
+                        break;
+                    case 'create':
+                        $this->model->create($attributes);
+                        break;
+                    case 'updateOrCreate':
+                    default:
+                        $this->model->updateOrCreate(
+                            [$this->mediaIdColumn => $fileId], // Condition to check for existing record
+                            $attributes // Values to update or create
+                        );
+                        break;
+                }
+
             }
         } elseif ($uploader->isFail()) {
             throw new \Exception('File upload failed: ' . $uploader->error);
