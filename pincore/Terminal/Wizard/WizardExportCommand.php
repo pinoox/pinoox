@@ -44,8 +44,12 @@ class WizardExportCommand extends Terminal
     {
         parent::execute($input, $output);
 
-        // Get version code from the app context
         $versionCode = app('version-code');
+        
+        $buildConfig = app('build', [
+            'gitignore' => true,  // default to true
+            'exclude' => [],      // default to an empty array
+        ]);
 
         $packageName = $input->getArgument('package');
         $format = $input->getOption('format');
@@ -55,7 +59,6 @@ class WizardExportCommand extends Terminal
 
         if (!is_dir($packagePath)) {
             $this->error("Package not found at: $packagePath");
-            return Command::FAILURE;
         }
 
         if (!is_dir($exportDir)) {
@@ -68,16 +71,18 @@ class WizardExportCommand extends Terminal
         // Append version code to the export file name
         $exportedFile = $exportDir . "{$packageName}_v{$versionCode}.$extension";
 
-        if (!$this->showExportDetails($packagePath, $exportedFile, $output)) {
+        $finder = new Finder();
+        $this->configureFinder($finder, $packagePath, $buildConfig);
+
+        if (!$this->showExportDetails($finder, $packagePath, $exportedFile, $output)) {
             $this->error('Export canceled by the user.');
-            return Command::FAILURE;
         }
 
         $zip = new ZipArchive();
         if ($zip->open($exportedFile, ZipArchive::CREATE | ZipArchive::OVERWRITE) === TRUE) {
 
             $finder = new Finder();
-            $this->configureFinder($finder, $packagePath);
+            $this->configureFinder($finder, $packagePath, $buildConfig);
 
             $fileCount = iterator_count($finder->files());
             $progressBar = new ProgressBar($output, $fileCount);
@@ -98,18 +103,70 @@ class WizardExportCommand extends Terminal
         }
 
         $this->error('Failed to create export file');
-        return Command::FAILURE;
     }
 
-    private function configureFinder(Finder $finder, string $packagePath): void
+    private function configureFinder(Finder $finder, string $packagePath, array $buildConfig): void
     {
         $finder
             ->in($packagePath)
             ->files()
             ->ignoreVCS(true)
-            ->ignoreDotFiles(false)
-            ->ignoreUnreadableDirs()
-            ->ignoreVCSIgnored(true);
+            ->ignoreUnreadableDirs();
+
+        // Check if gitignore should be respected
+        if (!empty($buildConfig['gitignore']) && $buildConfig['gitignore'] === true) {
+            $finder->ignoreVCSIgnored(true);
+        }
+
+        // Handle exclude paths and wildcard expansion
+        if (!empty($buildConfig['exclude'])) {
+            foreach ($buildConfig['exclude'] as $excludePath) {
+                // Check if the path contains wildcards
+                if (str_contains($excludePath, '*')) {
+                    $this->excludeWildcardPaths($finder, $packagePath, $excludePath);
+                } else {
+                    // Handle regular paths (check if it's a file or directory)
+                    $absolutePath = $packagePath . '/' . $excludePath;
+                    if (is_dir($absolutePath)) {
+                        // Exclude directories
+                        $finder->notPath($excludePath);
+                    } elseif (is_file($absolutePath)) {
+                        // Exclude specific files
+                        $finder->notPath($excludePath);
+                    }
+                }
+            }
+        }
+    }
+
+    private function excludeWildcardPaths(Finder $finder, string $packagePath, string $wildcardPath): void
+    {
+        // Convert wildcard path to a base directory and pattern (e.g., "theme/*/src" -> base: "theme", pattern: "*/src")
+        $parts = explode('/*', $wildcardPath, 2);
+        $baseDir = $parts[0];
+        $remainingPath = isset($parts[1]) ? trim($parts[1], '/') : '';
+
+        // Use Finder to locate actual directories and files matching the pattern
+        $subDirectories = (new Finder())
+            ->in($packagePath . '/' . $baseDir) // Start in the base directory
+            ->directories()
+            ->depth(0) // Only top-level directories within the base
+            ->name('*') // Match any directory name (to replicate the wildcard behavior)
+            ->sortByName();
+
+        foreach ($subDirectories as $dir) {
+            // Append the remaining path to each matched subdirectory
+            $actualPath = $dir->getRealPath() . '/' . $remainingPath;
+
+            // Check if the expanded path is a directory or file and exclude accordingly
+            if (is_dir($actualPath)) {
+                $relativePath = str_replace($packagePath . '/', '', $actualPath); // Get the relative path from the package root
+                $finder->notPath($relativePath);
+            } elseif (is_file($actualPath)) {
+                $relativePath = str_replace($packagePath . '/', '', $actualPath); // Get the relative path from the package root
+                $finder->notPath($relativePath);
+            }
+        }
     }
 
     private function addFilesToZip(ZipArchive $zip, Finder $finder, ProgressBar $progressBar): void
@@ -124,10 +181,9 @@ class WizardExportCommand extends Terminal
         }
     }
 
-    private function showExportDetails(string $packagePath, string $exportedFile, OutputInterface $output): bool
+    private function showExportDetails(Finder $finder, string $packagePath, string $exportedFile, OutputInterface $output): bool
     {
         // Show only top-level folders and use manual exclusion logic
-        $finder = new Finder();
         $finder->in($packagePath)->directories()->depth(0);
 
         $output->writeln("Package: <info>$packagePath</info>");
