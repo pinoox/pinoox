@@ -1,5 +1,4 @@
 <?php
-
 namespace Pinoox\Controller;
 
 use Pinoox\Component\Kernel\Controller\Controller;
@@ -16,12 +15,13 @@ class ErrorController extends Controller
         $file = $exception->getFile();
         $line = $exception->getLine();
         $trace = nl2br($exception->getTraceAsString());
+        $exceptionMessage = $exception->getMessage(); // Get the exception message
 
         // Construct a styled error message with improved visibility and custom messages
         $msg = <<<EOT
         <html>
         <head>
-            <title>Error $statusCode</title>
+            <title>$message (Error $statusCode)</title>
             <style>
                 * {
                     box-sizing: border-box;
@@ -106,6 +106,9 @@ class ErrorController extends Controller
             <div class="container">
                 <div class="status-code">$statusCode</div>
                 <h1>$message</h1>
+                <div class="message">
+                    <strong>Exception Message:</strong> $exceptionMessage
+                </div>
                 <div class="details">
                     <p><strong>Line:</strong> $line</p>
                     <p><strong>Class:</strong> $class</p>
