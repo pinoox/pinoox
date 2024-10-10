@@ -119,7 +119,8 @@ class Migrator
                 $messages[] = '✓ [' . $m['fileName'] . '] migrated successfully';
             } catch (QueryException $e) {
                 if ($this->isTableAlreadyExistsError($e)) {
-                    $messages[] = '⚠️ [' . $m['fileName'] . '] skipped (table already exists)';
+                    $error = $e->errorInfo[2] ?? $e->getMessage();
+                    $messages[] = '⚠️ [' . $m['fileName'] . '] skipped: ' . $error;
                     MigrationQuery::insert($m['fileName'], $m['packageName'], $batch); // Insert migration record
                 } else {
                     throw $e; // Re-throw the exception if it's not a table already exists error
