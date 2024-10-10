@@ -9,7 +9,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 namespace Pinoox\Component\Upload;
 
 use InvalidArgumentException;
@@ -24,12 +23,10 @@ class FileUploaderBuilder
     protected string $group;
     protected bool $isThumb = false;
     protected array $allowedExtensions = [];
-    protected string $fileIdAttribute = 'file_id';
     protected int $maxFileSize = 0; // Maximum file size in bytes (0 means no limit)
     protected ?Model $model = null; // Model to be updated
+    protected string $method = 'update';
     protected string $modelAttribute = 'file_id'; // Attribute in the model to store file ID
-    private string $mediaIdColumn;
-
 
     /**
      * Set the upload path.
@@ -87,7 +84,6 @@ class FileUploaderBuilder
     public function extensions($extensions)
     {
         if (is_string($extensions)) {
-            // Split the string into an array
             $extensions = array_map('trim', explode(',', $extensions));
         }
 
@@ -95,20 +91,7 @@ class FileUploaderBuilder
             throw new InvalidArgumentException("The extensions must be an array or a comma-separated string.");
         }
 
-        // Assign the extensions to the uploader
         $this->allowedExtensions = $extensions;
-        return $this;
-    }
-
-    /**
-     * Set the model attribute where the file ID will be stored.
-     *
-     * @param string $fileIdAttribute The model attribute to store the file ID.
-     * @return self
-     */
-    public function setFileIdAttribute(string $fileIdAttribute): self
-    {
-        $this->fileIdAttribute = $fileIdAttribute;
         return $this;
     }
 
@@ -126,25 +109,26 @@ class FileUploaderBuilder
     }
 
     /**
-     * Set the model for the uploader.
-     * @param string|Model $model
-     * @param string $mediaIdColumn
-     * @return $this
+     * Set the model and model attribute for file storage.
+     *
+     * @param Model|string $model The model class or instance.
+     * @param string $modelAttribute The column where the file ID should be stored.
+     * @param string $method The method to use ('update', 'create', or 'updateOrCreate').
+     * @return self
      */
-    public function model($model, $mediaIdColumn)
+    public function model($model, string $modelAttribute, string $method = 'update'): self
     {
-        if (is_string($model) && is_subclass_of($model,  Model::class)) {
-            // Instantiate the model if the class name is provided
+        if (is_string($model) && is_subclass_of($model, Model::class)) {
             $model = new $model();
         }
 
-        if (!$model instanceof  Model) {
+        if (!$model instanceof Model) {
             throw new InvalidArgumentException("The model must be an instance of Pinoox\Component\Database\Model.");
         }
 
-        // Assign the model and media ID column to the uploader
+        $this->method = $method;
         $this->model = $model;
-        $this->mediaIdColumn = $mediaIdColumn;
+        $this->modelAttribute = $modelAttribute;
         return $this;
     }
 
@@ -178,7 +162,24 @@ class FileUploaderBuilder
         if (!$uploader->isFail() && $this->model) {
             $fileId = $uploader->getResult('file_id');
             if ($fileId) {
-                $this->model->update([$this->modelAttribute => $fileId]);
+                $attributes = [$this->modelAttribute => $fileId];
+
+                // Handle different methods based on the provided method
+                switch ($this->method) {
+                    case 'update':
+                        $this->model->where($this->modelAttribute, $fileId)->update($attributes);
+                        break;
+                    case 'create':
+                        $this->model->create($attributes);
+                        break;
+                    case 'updateOrCreate':
+                    default:
+                        $this->model->updateOrCreate(
+                            [$this->modelAttribute => $fileId], // Condition to check for existing record
+                            $attributes // Values to update or create
+                        );
+                        break;
+                }
             }
         } elseif ($uploader->isFail()) {
             throw new \Exception('File upload failed: ' . $uploader->error);
@@ -186,7 +187,6 @@ class FileUploaderBuilder
 
         return $uploader;
     }
-
 
     /**
      * Convert human-readable size (e.g., "5MB", "500KB") to bytes.
@@ -200,7 +200,7 @@ class FileUploaderBuilder
         $units = ['B' => 1, 'KB' => 1024, 'MB' => 1048576, 'GB' => 1073741824];
         $sizeWithUnit = strtoupper($sizeWithUnit);
         if (!preg_match('/^(\d+)(B|KB|MB|GB)$/', $sizeWithUnit, $matches)) {
-            throw new \InvalidArgumentException("Invalid size format: $sizeWithUnit. Use a format like '5MB' or '500KB'.");
+            throw new InvalidArgumentException("Invalid size format: $sizeWithUnit. Use a format like '5MB' or '500KB'.");
         }
 
         $size = (int)$matches[1];
@@ -245,5 +245,4 @@ class FileUploaderBuilder
             }
         }
     }
-
 }

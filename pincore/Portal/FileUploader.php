@@ -52,6 +52,7 @@ class FileUploader extends Portal
 
     private static function insertFileModel(ObjectPortal2 $uploader): void
     {
+ 
         $model = FileModel::create([
             'user_id' => User::get('user_id'),
             'app' => App::package(),
@@ -65,6 +66,7 @@ class FileUploader extends Portal
             'file_metadata' => $uploader->getMetaData(),
             'file_group' => $uploader->getGroup(),
         ]);
+ 
         if ($model) {
             $uploader->setResult('file_id', $model->file_id);
         }
