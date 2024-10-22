@@ -9,6 +9,7 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
+
 namespace Pinoox\Component\Upload;
 
 use InvalidArgumentException;
@@ -26,7 +27,8 @@ class FileUploaderBuilder
     protected int $maxFileSize = 0; // Maximum file size in bytes (0 means no limit)
     protected ?Model $model = null; // Model to be updated
     protected string $method = 'update';
-    protected string $modelAttribute = 'file_id'; // Attribute in the model to store file ID
+    protected string $modelAttributeKey = 'file_id';
+    protected string $modelAttributeFileKey = 'file_id';
 
     /**
      * Set the upload path.
@@ -108,15 +110,23 @@ class FileUploaderBuilder
         return $this;
     }
 
+
+    public function modelColumns($primaryKey, $file_key)
+    {
+        $this->modelAttributeKey = $primaryKey;
+        $this->modelAttributeFileKey = $file_key;
+        return $this;
+    }
+
     /**
      * Set the model and model attribute for file storage.
      *
      * @param Model|string $model The model class or instance.
-     * @param string $modelAttribute The column where the file ID should be stored.
+     * @param string|null $modelAttributeKey The column where the file ID should be stored.
      * @param string $method The method to use ('update', 'create', or 'updateOrCreate').
      * @return self
      */
-    public function model($model, string $modelAttribute, string $method = 'update'): self
+    public function model($model, string $modelAttributeKey = null, string $method = 'update'): self
     {
         if (is_string($model) && is_subclass_of($model, Model::class)) {
             $model = new $model();
@@ -128,7 +138,8 @@ class FileUploaderBuilder
 
         $this->method = $method;
         $this->model = $model;
-        $this->modelAttribute = $modelAttribute;
+        if ($modelAttributeKey) $this->modelAttributeKey = $modelAttributeKey;
+
         return $this;
     }
 
@@ -161,24 +172,25 @@ class FileUploaderBuilder
         // If the upload was successful and a model is set, update the model
         if (!$uploader->isFail() && $this->model) {
             $fileId = $uploader->getResult('file_id');
+
             if ($fileId) {
-                $attributes = [$this->modelAttribute => $fileId];
+
+                $attributes = [$this->modelAttributeFileKey => $fileId];
 
                 // Handle different methods based on the provided method
                 switch ($this->method) {
                     case 'update':
-                        $this->model->where($this->modelAttribute, $fileId)->update($attributes);
+                        $modelAttributeValue = $this->model->{$this->modelAttributeKey};
+                        $this->model->where($this->modelAttributeKey, $modelAttributeValue)->update($attributes);
                         break;
                     case 'create':
                         $this->model->create($attributes);
                         break;
-                    case 'updateOrCreate':
                     default:
                         $this->model->updateOrCreate(
-                            [$this->modelAttribute => $fileId], // Condition to check for existing record
+                            [$this->modelAttributeKey => $fileId],
                             $attributes // Values to update or create
                         );
-                        break;
                 }
             }
         } elseif ($uploader->isFail()) {
@@ -216,11 +228,11 @@ class FileUploaderBuilder
      */
     public function deleteOldFiles(): self
     {
-        if ($this->model && $this->model->{$this->modelAttribute}) {
+        if ($this->model && $this->model->{$this->modelAttributeKey}) {
             // Delete associated files
-            $this->deleteAssociatedFiles($this->model->{$this->modelAttribute});
+            $this->deleteAssociatedFiles($this->model->{$this->modelAttributeKey});
             // Set the model attribute to null
-            $this->model->update([$this->modelAttribute => null]);
+            $this->model->update([$this->modelAttributeKey => null]);
         }
         return $this;
     }
@@ -245,4 +257,5 @@ class FileUploaderBuilder
             }
         }
     }
+
 }
