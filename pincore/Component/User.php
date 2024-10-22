@@ -180,6 +180,7 @@ class User
                 Cookie::set(self::$user_session_key, $token_key, 999999999);
                 break;
             case self::JWT:
+                self::lifeTime(30, 'day');
                 $payloadArray = [
                     self::$user_session_key => $token_key,
                 ];
