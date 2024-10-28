@@ -58,7 +58,6 @@ class TokenModel extends Model
             $token->user_id = $token->user_id ?? User::get('user_id');
             $token->ip = $token->ip ?? Url::clientIp();
             $token->user_agent = $token->user_agent ?? Url::userAgent();
-            $token->expiration_date = Date::g('Y-m-d H:i:s', time() + Token::$lifeTime);
         });
     }
 
