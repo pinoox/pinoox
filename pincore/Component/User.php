@@ -163,6 +163,8 @@ class User
 
     public static function setToken(UserModel $user, $newKey = false)
     {
+        Token::lifeTime(30, 'day');
+
         $user->makeHidden('password');
         $user_id = $user->user_id;
         $token_key = self::getTokenKey();
@@ -195,6 +197,7 @@ class User
 
     public static function lifeTime($lifeTime, $unitTime = null)
     {
+        self::$lifetime = $lifeTime;
         Token::lifeTime($lifeTime, $unitTime);
     }
 
@@ -228,8 +231,7 @@ class User
                 if (self::$updateTokenKey) {
                     $token_key = Token::changeKey($token['token_key'], true, false);
                     self::setClientToken($token_key);
-                } else if (self::$updateLifetime)
-                    Token::updateLifetime($token['token_key']);
+                }
             } else {
                 self::logout(null, false);
             }
