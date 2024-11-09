@@ -14,8 +14,6 @@
 namespace Pinoox\Component\Router;
 
 use Closure;
-use Pinoox\Component\Helpers\Str;
-use Pinoox\Component\Http\RedirectResponse;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Url\UrlGenerator;
 use Pinoox\Component\Package\App;
@@ -136,8 +134,9 @@ class Router
      * @param int|null $property
      * @param array $data
      * @param array $flows
+     * @param array $tags
      */
-    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = []): void
+    public function add(string|array $path, array|string|Closure $action = '', string $name = '', string|array $methods = [], array $defaults = [], array $filters = [], ?int $property = null, array $data = [], array $flows = [], array $tags = []): void
     {
         if (is_array($path)) {
             foreach ($path as $routeName => $p) {
@@ -150,7 +149,8 @@ class Router
                 $data = $p['data'] ?? $data;
                 $property = $p['property'] ?? $property;
                 $flows = $p['flows'] ?? $flows;
-                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data, $flows);
+                $tags = $p['tags'] ?? $tags;
+                $this->add($path, $action, $routeName, $methods, $defaults, $filters, $property, $data, $flows, $tags);
             }
         } else {
             $name = $this->buildName($name);
@@ -165,6 +165,7 @@ class Router
                 priority: is_null($property) ? $this->count() : $property,
                 data: $data,
                 flows: $flows,
+                tags: $tags,
             );
 
             $this->currentCollection()->add($route);
@@ -212,14 +213,16 @@ class Router
      * @param string $prefixName
      * @param array $data
      * @param array $flows
+     * @param array $tags
      * @return Collection
      */
-    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [], array $flows = []): Collection
+    public function collection(string $path = '', Router|string|array|callable|null $routes = null, mixed $controller = null, array|string $methods = [], array|string|Closure $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [], array $flows = [], array $tags = []): Collection
     {
         $cast = $this->current;
         $prefixName = $this->buildPrefixNameCollection($prefixName);
         $defaults = $this->buildDefaultsCollection($defaults);
         $flows = $this->buildFlowsCollection($flows);
+        $tags = $this->buildTagsCollection($tags);
         $filters = $this->buildFiltersCollection($filters);
         $data = $this->buildFiltersCollection($data);
         $controller = $this->buildControllerCollection($controller);
@@ -239,6 +242,7 @@ class Router
             data: $data,
             prefixController: 'App\\' . $this->app->package() . '\\Controller',
             flows: $flows,
+            tags: $tags,
         );
 
         $this->callRoutes($routes);
@@ -386,7 +390,7 @@ class Router
     }
 
     /**
-     * build prefix name for collection
+     * build flow for collection
      *
      * @param array $flows
      * @return array
@@ -397,6 +401,20 @@ class Router
             $flows = array_unique(array_merge($this->currentCollection()->flows, $flows));
         }
         return $flows;
+    }
+
+    /**
+     * build tags for collection
+     *
+     * @param array $tags
+     * @return array
+     */
+    private function buildTagsCollection(array $tags): array
+    {
+        if ($this->current > -1) {
+            $tags = array_unique(array_merge($this->currentCollection()->tags, $tags));
+        }
+        return $tags;
     }
 
     /**

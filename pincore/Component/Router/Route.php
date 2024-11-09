@@ -33,6 +33,7 @@ class Route
         private string               $prefixName = '',
         public array                 $data = [],
         public array                 $flows = [],
+        public array                 $tags = [],
 
     )
     {
@@ -42,6 +43,7 @@ class Route
         $this->defaults = array_merge($this->collection->defaults, $defaults);
         $this->data = array_merge($this->collection->data, $this->data);
         $this->flows = array_unique(array_merge($this->collection->flows, $flows));
+        $this->tags = array_unique(array_merge($this->collection->tags, $tags));
         $this->defaults['_controller'] = $action;
         $actionCollection = $this->collection->action;
         if (!empty($actionCollection)) {
@@ -53,6 +55,7 @@ class Route
 
         $this->methods = $this->collection->buildMethods($methods);
         $this->defaults['_router'] = $this;
+        $this->defaults['_tags'] = $this->tags;
     }
 
     public function get(): RouteCapsule
@@ -102,7 +105,7 @@ class Route
             return $basePath . $path;
         }
 
-        return (new PathManager($basePath))->get($this->path);
+        return (new PathManager($basePath))->get($path);
     }
 
     /**
