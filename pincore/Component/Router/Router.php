@@ -20,7 +20,7 @@ use Pinoox\Component\Package\App;
 use Pinoox\Component\Path\Manager\PathManager;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
-use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Pinoox\Component\Router\UrlMatcher;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Symfony\Component\Routing\RequestContext;
 

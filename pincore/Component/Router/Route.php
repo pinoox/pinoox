@@ -105,6 +105,7 @@ class Route
             return $basePath . $path;
         }
 
+        $path = Str::lastDelete($this->path, '/');
         return (new PathManager($basePath))->get($path);
     }
 
