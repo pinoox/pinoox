@@ -33,6 +33,7 @@ class Collection
         public array        $data = [],
         public string       $prefixController = '',
         public array        $flows = [],
+        public array        $tags = [],
     )
     {
 

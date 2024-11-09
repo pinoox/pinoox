@@ -12,7 +12,7 @@ return [
         'collation' => 'utf8mb4_bin',
         'prefix' => '',
         'strict' => true,
-        'engine' => null,
+        'engine' => 'InnoDB',
         'timezone' => '+03:30',
     ],
 ];
