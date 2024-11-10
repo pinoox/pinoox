@@ -91,9 +91,10 @@ class Router extends Portal
 		        array                 $filters = [],
 		        ?int                  $property = null,
 		        array                 $data = [],
-		        array                 $flows = []
+		        array                 $flows = [],
+		        array                 $tags = []
 		    ): Router {
-		        return self::add($path, $action, $name, self::$__method, $defaults, $filters,$property,$data,$flows);
+		        return self::add($path, $action, $name, self::$__method, $defaults, $filters,$property,$data,$flows,$tags);
 		    },
 		];
 	}
