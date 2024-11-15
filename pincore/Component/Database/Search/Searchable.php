@@ -55,11 +55,18 @@ trait Searchable
      */
     public function scopeAdvancedSearch(Builder $query, $data, ?array $rules = null, ?array $replaces = null, ?string $boolean = null): Builder
     {
-        $rules = !is_null($rules) ? $rules : $this->getSearchableRules();
-        $replaces = !is_null($replaces) ? $replaces : $this->getSearchableReplaces();
-        $boolean = !is_null($boolean) ? $boolean : $this->getLogicalOperator();
+        if (empty($data)) {
+            return $query;
+        }
+
+        $rules = $rules ?? $this->getSearchableRules();
+        $replaces = $replaces ?? $this->getSearchableReplaces();
+        $boolean = $boolean ?? $this->getLogicalOperator();
+
+        // Apply AdvancedSearch logic
         $advancedSearch = new AdvancedSearch($query, $data, $rules, $replaces, $boolean);
         $advancedSearch->apply();
+
         return $query;
     }
 
