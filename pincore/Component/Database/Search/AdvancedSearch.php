@@ -45,6 +45,7 @@ class AdvancedSearch
                 $this->applyRelations($query, $relation, $rules);
             }
         });
+
     }
 
     private function getAlias($table)
@@ -91,15 +92,21 @@ class AdvancedSearch
         $column = $hasCondition ? $column : $condition;
         $condition = $hasCondition ? $condition : '%like%';
 
-
-        // relations
+        // Relations
         if (str_contains($column, '.')) {
-            if ($this->addRelations($query, $column, $condition))
+            if ($this->addRelations($query, $column, $condition)) {
                 return;
+            }
         }
 
         $columns = explode(':', $column);
         $data = is_array($this->data) ? ($this->data[$columns[0]] ?? null) : $this->data;
+
+        // Skip empty or null data
+        if ($data === null || $data === '') {
+            return;
+        }
+
         $column = $columns[1] ?? $columns[0];
         $this->parseCondition($query, $column, $condition, $data);
     }
@@ -233,17 +240,12 @@ class AdvancedSearch
                 $query->whereNull($column, $logicalOperator);
                 break;
             case 'between':
-                if (is_array($inputs) && count($inputs) === 2) {
-                    $data = is_string($data) ? [$data] : $data;
-                    $query->whereRaw('? BETWEEN ' . $inputs[0] . ' AND ' . $inputs[1], $data, $logicalOperator);
-                } else if (empty($inputs) && is_array($data) && count($data) === 2) {
+                if (is_array($data) && count($data) === 2) {
                     $query->whereBetween($column, [$data[0], $data[1]], $logicalOperator);
                 }
                 break;
             case 'not between':
-                if (is_array($inputs) && count($inputs) === 2) {
-                    $query->whereRaw('? NOT BETWEEN ' . $inputs[0] . ' AND ' . $inputs[1], [$data], $logicalOperator);
-                } else if (empty($inputs) && is_array($data) && count($data) === 2) {
+                if (is_array($data) && count($data) === 2) {
                     $query->whereNotBetween($column, [$data[0], $data[1]], $logicalOperator);
                 }
                 break;
