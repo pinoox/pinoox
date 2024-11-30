@@ -44,6 +44,13 @@ trait Searchable
     protected string $logicalOperator = 'AND';
 
     /**
+     * logical operator searchable
+     *
+     * @var string
+     */
+    protected string $modeAdvancedSearch = 'default';
+
+    /**
      * Scope: search
      *
      * @param Builder $query
@@ -55,7 +62,7 @@ trait Searchable
      */
     public function scopeAdvancedSearch(Builder $query, $data, ?array $rules = null, ?array $replaces = null, ?string $boolean = null): Builder
     {
-        if (empty($data)) {
+        if ($this->modeAdvancedSearch === 'skip' && empty($data)) {
             return $query;
         }
 
@@ -65,6 +72,7 @@ trait Searchable
 
         // Apply AdvancedSearch logic
         $advancedSearch = new AdvancedSearch($query, $data, $rules, $replaces, $boolean);
+        $advancedSearch->mode($this->modeAdvancedSearch);
         $advancedSearch->apply();
 
         return $query;

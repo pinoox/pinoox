@@ -18,11 +18,15 @@ use Illuminate\Database\Query\Expression;
 
 class AdvancedSearch
 {
+    const MODE_DEFAULT = 'default';
+    const MODE_SKIP = 'skip';
+
     protected Builder $query;
     protected $data;
     protected array $rules;
     protected array $replace;
     protected string $logicalOperator = 'AND';
+    protected string $mode = 'default';
     protected array $relations = [];
 
     public function __construct(Builder $query, $data, array $rules, array $replace = [], $logicalOperator = 'AND')
@@ -103,7 +107,7 @@ class AdvancedSearch
         $data = is_array($this->data) ? ($this->data[$columns[0]] ?? null) : $this->data;
 
         // Skip empty or null data
-        if ($data === null || $data === '') {
+        if ($this->mode === self::MODE_SKIP && ($data === null || $data === '')) {
             return;
         }
 
@@ -394,5 +398,10 @@ class AdvancedSearch
     public function setQuery(Builder $query): void
     {
         $this->query = $query;
+    }
+
+    public function mode($name)
+    {
+        $this->mode = $name;
     }
 }
