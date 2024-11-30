@@ -45,7 +45,7 @@ class Kernel extends HttpKernel
             return parent::handle($request, $type, $catch);
         };
 
-        if ($this->flowManager !== null) {
+        if ($type === HttpKernelInterface::MAIN_REQUEST && $this->flowManager !== null) {
             $this->addRouteFlows($request);
             $this->flowManager->setRequestEvent($event);
             $response = $this->flowManager->handle($request, $next);
