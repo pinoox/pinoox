@@ -30,17 +30,17 @@ class ApiController extends Controller
     public function generateConfig($c): array
     {
         return [
-            'host' => $c['host'],
-            'database' => $c['database'],
-            'username' => $c['username'],
-            'password' => $c['password'],
-            'prefix' => $c['prefix'],
+            'host' => $c['host'] ?? null,
+            'database' => $c['database'] ?? null,
+            'username' => $c['username'] ?? null,
+            'password' => $c['password'] ?? null,
+            'prefix' => $c['prefix'] ?? null,
             'driver' => 'mysql',
             'port' => '3306',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_bin',
             'strict' => true,
-            'engine' => null,
+            'engine' => 'InnoDB',
         ];
     }
 
@@ -167,13 +167,7 @@ class ApiController extends Controller
         if (empty($c) || empty($u))
             return false;
 
-        $data = [
-            'host' => $c['host'],
-            'database' => $c['database'],
-            'username' => $c['username'],
-            'password' => $c['password'],
-            'prefix' => $c['prefix'],
-        ];
+        $data = $this->generateConfig($c);
 
         if (!$this->checkConnection($data)) return false;
 

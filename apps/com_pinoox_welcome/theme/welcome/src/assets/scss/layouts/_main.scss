@@ -23,12 +23,12 @@ body {
   background: linear-gradient(90deg, rgba(225, 231, 244, 1) 0%, rgba(225, 231, 244, 0.27) 100%);
   overflow-x: hidden;
 
-  .rtl {
+  &.rtl {
     direction: rtl;
     text-align: right;
   }
 
-  .ltr {
+  &.ltr {
     direction: ltr;
     text-align: left;
   }
