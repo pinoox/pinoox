@@ -18,4 +18,30 @@ app.use(VueSvgInlinePlugin, {
     remove: ["alt"]
   }
 });
+
+//---------------------------- Localization ----------------------------
+import {createI18n} from 'vue-i18n';
+import messages from "./assets/js/i18n";
+
+const i18n = createI18n({
+  locale: document.documentElement.lang,
+  legacy: false,
+  resolve: (locale, key, options) => {
+    const translation = i18n.messages[locale][key];
+    if (typeof translation === 'object') {
+      return translation;
+    }
+    return translation;
+  },
+  messages,
+})
+app.use(i18n);
+app.config.globalProperties.$t = i18n.global.t;
+app.config.globalProperties.$tm = i18n.global.tm;
+app.config.globalProperties.$te = i18n.global.te;
+app.config.globalProperties.$n = i18n.global.n;
+app.config.globalProperties.$rt = i18n.global.rt;
+app.config.globalProperties.$d = i18n.global.d;
+
+//---------------------------- Mount ----------------------------
 app.mount("#app");
