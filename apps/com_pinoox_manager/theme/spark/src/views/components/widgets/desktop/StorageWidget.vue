@@ -1,7 +1,7 @@
 <template>
   <DraggableWidget class="storageWidget"
-                   initialX="80%"
-                   initialY="10%">
+                   initialX="8%"
+                   initialY="12%">
     <template #header>
       <span>فضای ذخیره سازی سرور</span>
     </template>
