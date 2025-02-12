@@ -55,9 +55,13 @@
   }
 
   &__content {
-    margin-top: 38px;
+    margin-top: 0;
     padding: 1rem;
     overflow-y: auto;
     max-height: 90vh;
+
+    &.hasToolbar {
+      margin-top: 32px;
+    }
   }
 }

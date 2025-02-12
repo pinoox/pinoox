@@ -2,7 +2,6 @@
   <Page title="اپلیکیشن‌ها" class="pageApps">
     <template #toolbar>
       <Menu :icon="saxIcon.add" label="نصب اپلکیشن"/>
-      <Menu :icon="saxIcon.routes" label="مسیریابی"/>
     </template>
 
     <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">

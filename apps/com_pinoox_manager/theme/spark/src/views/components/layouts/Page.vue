@@ -3,17 +3,17 @@
     <div class="page__header">
       <div class="page__header-title">{{ title }}</div>
     </div>
-    <div class="page__toolbar">
+    <div v-if="hasToolbar" class="page__toolbar">
       <slot name="toolbar"></slot>
     </div>
-    <div class="page__content">
+    <div class="page__content" :class="{'hasToolbar':hasToolbar}">
       <slot></slot>
     </div>
   </section>
 </template>
 
 <script setup>
-import {onMounted, onUnmounted} from "vue";
+import {computed, onMounted, onUnmounted, useSlots} from "vue";
 import {useRouter} from "vue-router";
 
 const props = defineProps({
@@ -23,6 +23,9 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const slots = useSlots();
+
+const hasToolbar = computed(() => !!slots.toolbar);
 
 const handleKeyPress = (event) => {
   if (event.key === "Escape") {

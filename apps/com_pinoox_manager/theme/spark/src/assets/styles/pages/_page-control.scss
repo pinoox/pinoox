@@ -21,8 +21,9 @@
     width: calc(100% - $sidebar-width);
 
     &.collapsed {
-      right: 70px;
+      right: 66px;
       width: calc(100% - 70px);
+      margin: 0;
     }
   }
 }
