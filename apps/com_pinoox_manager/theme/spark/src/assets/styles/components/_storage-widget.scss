@@ -1,0 +1,28 @@
+.storageWidget {
+  &__info {
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    font-weight: 300;
+
+    strong {
+      margin: 0 0.2rem;
+    }
+  }
+
+  &__bar {
+    width: 100%;
+    height: 10px;
+    background: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+
+  .storage-segment {
+    @apply bg-primary;
+    height: 100%;
+    transition: width 0.5s ease-in-out;
+  }
+}
+
+
+

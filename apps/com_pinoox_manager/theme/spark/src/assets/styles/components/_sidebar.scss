@@ -1,0 +1,12 @@
+.sidebar {
+  background: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.v-sidebar-menu .vsm--mobile-bg{
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+.vsm--toggle-btn{
+  opacity: 0.5;
+}

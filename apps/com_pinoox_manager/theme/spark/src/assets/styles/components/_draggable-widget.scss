@@ -1,0 +1,19 @@
+.draggable-widget {
+  position: absolute;
+  width: 250px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  user-select: none;
+  cursor: grab;
+
+  .header {
+    text-align: center;
+    padding-bottom: 0.5rem;
+    color: #c9c9c9;
+    font-weight: 400;
+    font-size: 0.9em;
+  }
+}
+

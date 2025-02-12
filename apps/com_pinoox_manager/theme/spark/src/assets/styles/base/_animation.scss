@@ -1,0 +1,12 @@
+/* Slide-up animation */
+.slide-up-enter-active, .slide-up-leave-active {
+  transition: transform 0.4s ease-out, opacity 0.4s;
+}
+.slide-up-enter-from, .slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
+}
+.slide-up-enter-to, .slide-up-leave-from {
+  transform: translateY(0);
+  opacity: 1;
+}

@@ -1,0 +1,22 @@
+.toolbar {
+  min-height: $toolbar-height;
+  background: rgba(19, 13, 11, 0.5);
+  backdrop-filter: blur(10px);
+  z-index: 999;
+
+  &__brand {
+    a {
+      &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &__datetime {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.9em;
+    font-weight: 300;
+    letter-spacing: 1px;
+  }
+}
