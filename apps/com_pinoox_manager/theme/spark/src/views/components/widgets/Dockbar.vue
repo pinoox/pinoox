@@ -42,7 +42,7 @@
 import 'dockbar';
 import {ref, onMounted, defineProps} from 'vue';
 import {RouterLink, useRouter} from 'vue-router';
-import {saxIcon} from "../../../const/icons.js";
+import {saxIcon} from "@/const/icons.js";
 
 const props = defineProps({
   size: {type: Number, default: 55},
@@ -62,7 +62,7 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => [
-      {route: '/control/profile', icon: saxIcon.control, image: null},
+      {route: '/control/appearance', icon: saxIcon.control, image: null},
     ]
   },
 });

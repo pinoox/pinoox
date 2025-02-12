@@ -40,10 +40,7 @@ export default defineConfig(({command, mode}) => {
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
                 '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
                 '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
-                '@store': fileURLToPath(new URL('./src/store', import.meta.url)),
-                '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
                 '@views': fileURLToPath(new URL('./src/views', import.meta.url)),
-                '@sass': fileURLToPath(new URL('./src/assets/sass', import.meta.url)),
                 '@global': fileURLToPath(new URL('./src/utils/global.js', import.meta.url)),
             }
         },

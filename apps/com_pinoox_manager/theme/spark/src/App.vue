@@ -12,7 +12,4 @@ import {useBackground} from "./views/composables/useBackground.js";
 
 const { backgrounds, selectedBackground, changeBackground } = useBackground();
 
-onMounted(()=>{
-  changeBackground(backgrounds[3])
-})
 </script>

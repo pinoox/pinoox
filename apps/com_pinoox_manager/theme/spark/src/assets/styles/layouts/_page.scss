@@ -2,6 +2,7 @@
   margin: 0.5rem;
   border: 1px solid $color-border;
   border-radius: 0.5rem;
+  height: calc(100vh - $toolbar-height - 1rem);
   background: $bg-blur;
 
   &__header {
@@ -17,5 +18,7 @@
 
   &__content {
     padding: 1rem;
+    overflow-y: auto;
+    max-height: 90vh;
   }
 }
