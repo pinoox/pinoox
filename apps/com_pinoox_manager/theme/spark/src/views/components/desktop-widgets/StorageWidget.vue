@@ -17,7 +17,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import DraggableWidget from '../DraggableWidget.vue';
+import DraggableWidget from '../widgets/DraggableWidget.vue';
 
 const totalSpace = ref(256);
 const usedSpace = ref(153);
