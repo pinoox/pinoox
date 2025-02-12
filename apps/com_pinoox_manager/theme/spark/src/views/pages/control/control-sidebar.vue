@@ -2,14 +2,14 @@
   <sidebar-menu
       class="sidebar"
       :menu="menuItems"
-      :collapsed="isCollapsed"
+      :collapsed="sidebar.isCollapsed"
       :rtl="true"
       width="300px"
       :show-toggle="true"
-      @toggle-collapse="toggleSidebar"
+      @update:collapsed="onToggleCollapse"
   >
     <template v-slot:toggle-icon>
-      <Icon :is="isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight"/>
+      <Icon :is="sidebar.isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight"/>
     </template>
 
     <template #icon>
@@ -25,26 +25,32 @@ import {SidebarMenu} from 'vue-sidebar-menu';
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
 import {saxIcon as icons, saxIcon} from "../../../const/icons.js";
 import Icon from "../../components/widgets/Icon.vue";
+import {useSidebarStore} from "../../composables/useSidebar.js";
 
-const isCollapsed = ref(false);
+const sidebar = useSidebarStore();
 
-const toggleSidebar = (collapsed) => {
-  isCollapsed.value = collapsed;
+const onToggleCollapse = (collapsed) => {
+  sidebar.setCollapsed(collapsed);
 };
 
 const menuItems = ref([
   {
-    href: '/calendar',
-    title: 'حساب کاربری',
+    header: 'کنترل پنل',
+    hiddenOnCollapse: true,
+  },
+  {
+    href: '/',
+    title: 'برگشت',
+    class: 'back',
     icon: {
       element: Icon,
       attributes: {
-        is: icons.profile
+        is: icons.back
       }
     }
   },
   {
-    href: '/calendar',
+    href: '/control/appearance',
     title: 'ظاهری',
     icon: {
       element: Icon,
@@ -53,8 +59,9 @@ const menuItems = ref([
       }
     }
   },
+
   {
-    href: '/clients',
+    href: '/control/apps',
     title: 'اپلکیشن ها',
     icon: {
       element: Icon,
@@ -64,7 +71,7 @@ const menuItems = ref([
     }
   },
   {
-    href: '/animals',
+    href: '/control/routes',
     title: 'مسیریابی',
     icon: {
       element: Icon,
@@ -74,7 +81,17 @@ const menuItems = ref([
     }
   },
   {
-    href: '/stocks',
+    href: '/control/profile',
+    title: 'حساب کاربری',
+    icon: {
+      element: Icon,
+      attributes: {
+        is: icons.profile
+      }
+    }
+  },
+  {
+    href: '/control/pincore',
     title: 'پینوکس',
     icon: {
       element: Icon,

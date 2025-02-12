@@ -12,6 +12,7 @@ export const saxIcon = {
     arrowRight: sax.ArrowRight3Icon,
     apps: sax.BoxTickIcon,
     pincore: sax.CodeIcon,
+    back: sax.ArrowCircleRightIcon,
 };
 
 export const mdiIcon ={

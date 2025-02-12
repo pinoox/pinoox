@@ -1,12 +1,17 @@
 .sidebar {
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
+
+  .vsm--link.back {
+    background: rgba(255, 255, 255, 0.05);
+  }
 }
 
-.v-sidebar-menu .vsm--mobile-bg{
+.v-sidebar-menu .vsm--mobile-bg {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
 }
-.vsm--toggle-btn{
+
+.vsm--toggle-btn {
   opacity: 0.5;
 }

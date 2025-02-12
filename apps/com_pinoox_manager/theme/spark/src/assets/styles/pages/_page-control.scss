@@ -1,14 +1,28 @@
 .pageControl {
-  background: rgba(0, 0, 0, 0.15);
+  background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(10px);
   width: 100%;
-  height: calc(100vh - $toolbar-height);
-  top: $toolbar-height;
+  height: 100%;
   position: relative;
+  padding-top: $toolbar-height;
+  overflow: hidden;
 
   &__sidebar {
-    padding-top: 1rem;
+    margin-top: $toolbar-height;
     position: fixed;
-    right: 0;
+    transition: width 0.3s ease-in-out;
+  }
+
+  &__page {
+    position: relative;
+    height: 100%;
+    transition: width 0.3s ease-in-out;
+    right: $sidebar-width;
+    width: calc(100% - $sidebar-width);
+
+    &.collapsed {
+      right: 70px;
+      width: calc(100% - 70px);
+    }
   }
 }

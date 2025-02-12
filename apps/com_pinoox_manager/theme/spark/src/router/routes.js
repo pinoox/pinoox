@@ -1,7 +1,8 @@
 import PageDesktop from '@/views/pages/desktop/desktop-view.vue';
 
 import PageControl from '@/views/pages/control/control-view.vue';
-import PageProfile from '@/views/pages/control/profile/profile-view.vue';
+import PageProfile from '@/views/pages/control/profile/profile-home.vue';
+import PageAppearance from '@/views/pages/control/appearance/appearance-home.vue';
 
 // Define routes
 export const routes = [
@@ -14,6 +15,11 @@ export const routes = [
         path: '/control',
         component: PageControl,
         children: [
+            {
+                path: 'appearance',
+                name: 'appearance',
+                component: PageAppearance
+            },
             {
                 path: 'profile',
                 name: 'profile',
