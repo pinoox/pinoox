@@ -38,10 +38,10 @@ const handleKeyPress = (event) => {
 };
 
 onMounted(() => {
-  window.addEventListener("keydown", handleKeyPress);
+  //window.addEventListener("keydown", handleKeyPress);
 });
 
 onUnmounted(() => {
-  window.removeEventListener("keydown", handleKeyPress);
+  //window.removeEventListener("keydown", handleKeyPress);
 });
 </script>

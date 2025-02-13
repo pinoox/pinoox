@@ -4,7 +4,6 @@ import PageControl from '@/views/pages/control/control-view.vue';
 import PageProfile from '@/views/pages/control/profile/profile-home.vue';
 import PageAppearance from '@/views/pages/control/appearance/appearance-home.vue';
 import PageApps from '@/views/pages/control/apps/apps-home.vue';
-import PageAppsInstall from '@/views/pages/control/apps/apps-install.vue';
 
 // Define routes
 export const routes = [
@@ -26,11 +25,6 @@ export const routes = [
                 path: 'apps',
                 name: 'apps',
                 component: PageApps
-            },
-            {
-                path: 'apps/install',
-                name: 'apps-install',
-                component: PageAppsInstall
             },
             {
                 path: 'profile',

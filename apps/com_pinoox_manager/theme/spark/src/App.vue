@@ -4,12 +4,13 @@
     <Toolbar/>
     <RouterView/>
   </div>
+
+  <ModalTarget />
 </template>
 
 <script setup>
-import {onMounted, ref} from "vue";
 import {useBackground} from "./views/composables/useBackground.js";
 
-const { backgrounds, selectedBackground, changeBackground } = useBackground();
+const { selectedBackground } = useBackground();
 
 </script>

@@ -73,6 +73,11 @@ const menuItems = ref([
   {
     href: '/control/routes',
     title: 'مسیریابی',
+    disabled: true,
+    badge: {
+      text: 'به‌زودی',
+      class: 'vsm--badge_default'
+    },
     icon: {
       element: Icon,
       attributes: {
@@ -83,6 +88,11 @@ const menuItems = ref([
   {
     href: '/control/profile',
     title: 'حساب کاربری',
+    disabled: true,
+    badge: {
+      text: 'به‌زودی',
+      class: 'vsm--badge_default'
+    },
     icon: {
       element: Icon,
       attributes: {
@@ -93,6 +103,11 @@ const menuItems = ref([
   {
     href: '/control/pincore',
     title: 'پینوکس',
+    disabled: true,
+    badge: {
+      text: 'به‌زودی',
+      class: 'vsm--badge_default'
+    },
     icon: {
       element: Icon,
       attributes: {

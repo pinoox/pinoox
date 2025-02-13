@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import {ref, onMounted, defineProps, computed} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 
 const props = defineProps({
   initialX: {type: [Number, String], default: "100px"},

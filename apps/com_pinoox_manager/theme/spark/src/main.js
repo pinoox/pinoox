@@ -6,6 +6,7 @@ import store from "@/stores";
 import router from "./router";
 import "@/assets/styles/tailwind-config.css";
 import "@/assets/styles/main.scss";
+import { createModal } from '@kolirt/vue-modal'
 
 const app = createApp(App);
 
@@ -13,6 +14,21 @@ const app = createApp(App);
 app.use(VueAxios, axios);
 app.use(store);
 app.use(router);
+app.use(createModal({
+    transitionTime: 200,
+    animationType: 'fadeIn',
+    modalStyle: {
+        'background-color': 'rgba(0,0,0,0.1)',
+        padding: '2rem 2rem',
+        align: 'center',
+        'z-index': 201,
+    },
+    overlayStyle: {
+        'background-color': 'rgba(0,0,0,0.1)',
+        'backdrop-filter': 'blur(15px)',
+        'z-index': 200
+    }
+}))
 
 //---------------------------- Mixin ----------------------------
 

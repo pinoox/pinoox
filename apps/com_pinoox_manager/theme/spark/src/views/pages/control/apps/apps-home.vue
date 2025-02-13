@@ -1,7 +1,7 @@
 <template>
   <Page title="اپلیکیشن‌ها" class="pageApps">
     <template #toolbar>
-      <Menu :icon="saxIcon.add" label="نصب اپلکیشن"/>
+      <Menu @click="openModalInstallApp" :icon="saxIcon.add" label="نصب اپلکیشن"/>
     </template>
 
     <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">
@@ -22,9 +22,17 @@
 <script setup>
 import {ref} from "vue";
 import {saxIcon} from "@/const/icons.js";
+import {openModal} from "@kolirt/vue-modal";
+import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
 
 const apps = ref([
   {name: "Safari", icon: new URL('@/assets/media/icons/1.png', import.meta.url).href},
   {name: "Terminal", icon: new URL('@/assets/media/icons/2.png', import.meta.url).href},
 ]);
+
+function openModalInstallApp(){
+  openModal(ModalInstallApp,{}).then(res=>{
+
+  })
+}
 </script>
