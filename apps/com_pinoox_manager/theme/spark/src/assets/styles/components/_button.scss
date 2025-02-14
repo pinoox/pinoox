@@ -1,0 +1,108 @@
+/* Base button styles */
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  border: none;
+  text-decoration: none;
+  height: fit-content;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Mixin for button variants */
+@mixin button-variant($name, $color-var, $text-color: #fff) {
+  .btn-#{$name} {
+    background-color: rgba(var(--#{$color-var}-rgb), 0.2);
+    color: $text-color;
+    border: 1px solid rgba(var(--#{$color-var}-rgb), 0.3);
+
+    &:hover {
+      background-color: rgba(var(--#{$color-var}-rgb), 0.3);
+    }
+  }
+
+  .btn-outline-#{$name} {
+    background-color: transparent;
+    color: var(--#{$color-var});
+    border: 2px solid var(--#{$color-var});
+
+    &:hover {
+      background-color: var(--#{$color-var});
+      color: white;
+    }
+  }
+}
+
+/* Define RGB values for colors */
+:root {
+  --color-primary-rgb: 169, 73, 46;
+  --color-secondary-rgb: 58, 29, 33;
+  --color-success-rgb: 31, 146, 84;
+  --color-danger-rgb: 211, 47, 47;
+  --color-warning-rgb: 255, 193, 7;
+  --color-accent-rgb: 22, 120, 143;
+  --color-light-rgb: 166, 191, 202;
+  --color-dark-rgb: 19, 13, 11;
+}
+
+/* Generate button variants */
+@include button-variant('primary', 'color-primary');
+@include button-variant('secondary', 'color-secondary');
+@include button-variant('success', 'color-success');
+@include button-variant('danger', 'color-danger');
+@include button-variant('warning', 'color-warning');
+@include button-variant('accent', 'color-accent');
+@include button-variant('light', 'color-light', #000);
+@include button-variant('dark', 'color-dark');
+
+/* Size variants */
+.btn-sm {
+  font-size: 0.875rem;
+  padding: 0.375rem 0.75rem;
+}
+
+.btn-md {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+.btn-lg {
+  font-size: 1.25rem;
+  padding: 0.75rem 1.5rem;
+}
+
+/* Loading state */
+.btn-loading {
+  cursor: wait;
+}
+
+/* Disabled state */
+.btn-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner for loading state */
+.spinner {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid white;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,143 @@
+.file-uploader {
+  padding: 20px;
+  border-radius: 1rem;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  max-width: 500px;
+  margin: auto;
+  text-align: center;
+
+  &__title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: $color-title;
+  }
+
+  &__description {
+    font-size: 0.9rem;
+    color: $color-text;
+  }
+
+  &__drop-area {
+    border: 2px dashed $color-border;
+    padding: 30px;
+    margin-top: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: border 0.3s;
+    background: $color-border;
+
+    p{
+      margin-bottom: 1rem;
+    }
+
+    &:hover {
+      border-color: var(--color-primary);
+    }
+  }
+
+  &__upload-icon {
+    width: 40px;
+    margin-bottom: 10px;
+  }
+
+  &__file-info {
+    font-size: 0.8rem;
+    color: var(--color-dark);
+  }
+
+  &__file-list {
+    margin-top: 15px;
+  }
+
+  &__file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--color-light);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  &__file-icon {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 5px;
+    background: var(--color-accent);
+    border-radius: 4px;
+    margin-right: 10px;
+    color: white;
+  }
+
+  &__file-details {
+    display: flex;
+    align-items: center;
+  }
+
+  &__file-name {
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--color-darkest);
+  }
+
+  &__file-size {
+    font-size: 0.8rem;
+    color: var(--color-dark);
+  }
+
+  &__file-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  &__file-select {
+    padding: 5px;
+    border-radius: 4px;
+    background: var(--color-light);
+    border: 1px solid var(--color-dark);
+  }
+
+  &__button {
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+
+    &--install {
+      background: var(--color-success);
+      color: white;
+
+      &:hover {
+        background: color-mix(in srgb, var(--color-success), black 20%);
+      }
+    }
+
+    &--delete {
+      background: var(--color-danger);
+      color: white;
+
+      &:hover {
+        background: color-mix(in srgb, var(--color-danger), black 20%);
+      }
+    }
+
+    &--select {
+      background: var(--color-primary);
+      color: white;
+
+      &:hover {
+        background: color-mix(in srgb, var(--color-primary), black 20%);
+      }
+    }
+  }
+
+  &__footer {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+}

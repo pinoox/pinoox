@@ -1,0 +1,67 @@
+.page {
+  margin: 0.5rem;
+  border: 1px solid $color-border;
+  border-radius: 0.5rem;
+  height: calc(100vh - $toolbar-height - 1rem);
+  background: $bg-blur;
+
+  &__header {
+    padding: 1rem;
+    border-bottom: 1px solid $color-border;
+    border-radius: 0.5rem 0.5rem 0 0;
+
+    &-title {
+      color: $color-title;
+      font-size: 1.2rem;
+    }
+  }
+
+  &__toolbar {
+    height: 46px;
+    background: $bg-blur;
+    border-bottom: 1px solid $color-border;
+    display: flex;
+    align-items: center;
+    padding: 0.2rem;
+    gap: 0.4rem;
+
+    .toolbarMenu {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.25rem;
+      width: fit-content;
+      background: $bg-blur;
+      padding: 1rem;
+      border: 1px solid $color-border;
+      height: 40px;
+      transition: 0.2s ease-in-out;
+      border-radius: 5px;
+
+      &:hover {
+        cursor: pointer;
+        background: var(--color-primary);
+      }
+
+      &__icon {
+
+      }
+
+      &__label {
+        color: $color-text;
+      }
+    }
+
+  }
+
+  &__content {
+    margin-top: 0;
+    padding: 1rem;
+    overflow-y: auto;
+    max-height: 90vh;
+
+    &.hasToolbar {
+      margin-top: 32px;
+    }
+  }
+}

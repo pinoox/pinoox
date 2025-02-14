@@ -1,0 +1,48 @@
+*,
+::before,
+::after {
+  box-sizing: border-box;
+}
+
+svg {
+  &:focus {
+    outline: none;
+  }
+}
+
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 40px #758199 inset !important;
+  border: 0;
+  -webkit-text-fill-color: #fff;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+html {
+  scroll-behavior: smooth;
+
+}
+
+body {
+  font-family: $font;
+}
+
+*:not(i){
+  font-family: $font;
+}

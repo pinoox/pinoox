@@ -1,0 +1,19 @@
+.pageSection {
+
+  &__header {
+    padding: 1rem;
+
+    &-title {
+      color: $color-title;
+      font-size: 1rem;
+    }
+  }
+
+  &__content {
+    padding: 1rem;
+    border-radius: 0.5rem;
+    background: $bg-blur;
+    border: 1px solid $color-border;
+    color: $color-text;
+  }
+}

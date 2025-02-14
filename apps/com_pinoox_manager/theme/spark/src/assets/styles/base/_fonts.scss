@@ -1,0 +1,117 @@
+//--------------------------------------------------
+// All Custom Fonts
+//--------------------------------------------------
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 900;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Black.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Black.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+        url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Black.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+        url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Black.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 800;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-ExtraBold.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-ExtraBold.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-ExtraBold.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-ExtraBold.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 700;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Bold.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Bold.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Bold.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Bold.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 600;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-SemiBold.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-SemiBold.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-SemiBold.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-SemiBold.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 500;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Medium.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Medium.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Medium.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Medium.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Regular.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Regulareot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Regular.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Regular.woff') format('woff'),
+}
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Light.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Light.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Light.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Light.woff') format('woff'),
+}
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 200;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-ExtraLight.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-ExtraLight.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-ExtraLight.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-ExtraLight.woff') format('woff'),
+}
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 100;
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Thin.eot');
+    src: url('../fonts/kalameh/eot/KalamehWeb(FaNum)-Thin.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Thin.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Thin.woff') format('woff'),
+}
+@import url("https://fonts.googleapis.com/css?family=Montserrat:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900");
+
+@font-face {
+    font-family: tunisia;
+    font-style: normal;
+    src: url('../fonts/tunisia/Mj_Tunisia.eot');
+    src: url('../fonts/tunisia/Mj_Tunisia.eot?#iefix') format('embedded-opentype'),
+        /* IE6-8 */
+    url('../fonts/tunisia/Mj_Tunisia.woff2') format('woff2'),
+        /* FF39+,Chrome36+, Opera24+*/
+    url('../fonts/tunisia/Mj_Tunisia.woff') format('woff'),
+}

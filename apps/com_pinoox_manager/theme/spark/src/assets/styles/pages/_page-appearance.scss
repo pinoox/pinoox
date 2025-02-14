@@ -1,0 +1,26 @@
+.pageAppearance {
+
+  .gallery {
+    &__image {
+      border: 2px solid $color-border;
+      border-radius: 1rem;
+      overflow: hidden;
+      opacity: 0.6;
+
+      &.active {
+        border: 2px solid var(--color-primary);
+        box-shadow: 0 0 10px var(--color-primary);
+        opacity: 1;
+      }
+
+      img {
+        width: 6rem;
+        height: 6rem;
+        object-fit: cover;
+
+      }
+
+
+    }
+  }
+}

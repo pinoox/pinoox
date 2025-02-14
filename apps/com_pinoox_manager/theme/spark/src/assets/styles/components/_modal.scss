@@ -1,0 +1,16 @@
+.vue-modal {
+
+  &-header {
+    border-bottom: none !important;
+  }
+
+  &-footer {
+    border-top-color: $color-border !important;
+    gap: 1rem !important;
+  }
+
+  &-content {
+    background: rgba(0, 0, 0, 0.5) !important;
+    border: 1px solid $color-border;
+  }
+}
