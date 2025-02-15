@@ -6,6 +6,7 @@ import PageControl from '@/views/pages/control/control-view.vue';
 import PageProfile from '@/views/pages/control/profile/profile-home.vue';
 import PageAppearance from '@/views/pages/control/appearance/appearance-home.vue';
 import PageApps from '@/views/pages/control/apps/apps-home.vue';
+import PageRoutes from '@/views/pages/control/routes/routes-home.vue';
 
 // Define routes
 export const routes = [
@@ -27,6 +28,11 @@ export const routes = [
                 path: 'apps',
                 name: 'apps',
                 component: PageApps
+            },
+            {
+                path: 'routes',
+                name: 'routes',
+                component: PageRoutes
             },
             {
                 path: 'profile',

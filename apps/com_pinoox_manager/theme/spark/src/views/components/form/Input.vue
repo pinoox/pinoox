@@ -2,9 +2,9 @@
   <div class="inputWrapper flex flex-col gap-2 w-full" :class="{ 'text-red-500': error }">
     <label v-if="label">{{ label }}</label>
 
-    <component
-        :is="selectedInput"
+    <InputBase
         v-bind="props"
+        :prefix="prefix"
         @update:modelValue="emit('update:modelValue', $event)"
     />
 
@@ -13,16 +13,7 @@
 </template>
 
 <script setup>
-import {computed} from "vue";
-
-// Import input types
-import InputText from "./InputText.vue";
-import InputNumber from "./InputNumber.vue";
-
-const inputTypes = {
-  text: InputText,
-  number: InputNumber,
-};
+import InputBase from "./InputBase.vue";
 
 // Props
 const props = defineProps({
@@ -36,12 +27,14 @@ const props = defineProps({
   required: Boolean,
   disabled: Boolean,
   error: String,
-  options: Array,
+  direction: {
+    type: String,
+    default: "rtl",
+    validator: (value) => ["ltr", "rtl"].includes(value),
+  },
+  prefix: String, // New prop for prefix text
 });
 
 // Emits
 const emit = defineEmits(["update:modelValue"]);
-
-// Compute selected input component
-const selectedInput = computed(() => inputTypes[props.type] || InputText);
 </script>

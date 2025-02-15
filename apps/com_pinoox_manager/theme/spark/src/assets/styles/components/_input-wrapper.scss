@@ -12,6 +12,16 @@
   width: 100%;
   position: relative;
 
+  &__prefix {
+    &.rtl {
+      direction: rtl;
+    }
+
+    &.ltr {
+      direction: ltr;
+    }
+  }
+
   &__form {
     width: 100%;
     padding: 10px;
@@ -20,6 +30,14 @@
     font-size: 1rem;
     transition: border 0.3s ease, box-shadow 0.3s ease;
     background: $bg-blur;
+
+    &.text-right {
+      direction: rtl;
+    }
+
+    &.text-left {
+      direction: ltr;
+    }
 
     &:focus {
       outline: none;

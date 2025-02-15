@@ -6,7 +6,9 @@
   overflow: hidden;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding-top: 2rem;
+
   &__box {
     height: 33rem;
     max-width: 450px;
