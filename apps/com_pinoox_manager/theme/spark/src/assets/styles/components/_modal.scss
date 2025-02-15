@@ -14,3 +14,26 @@
     border: 1px solid $color-border;
   }
 }
+
+
+.modal-guide-content {
+  p {
+    line-height: normal;
+  }
+
+  h3 {
+    padding: 0.5rem 0;
+    font-weight: 600;
+    color: $color-title;
+    margin-top: 1rem;
+  }
+
+  ul {
+    margin: 1rem 0;
+    direction: ltr;
+
+    li {
+      color: var(--color-primary);
+    }
+  }
+}

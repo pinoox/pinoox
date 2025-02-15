@@ -80,12 +80,18 @@
 /* Loading state */
 .btn-loading {
   cursor: wait;
+  padding: 0.75rem 1rem;
 }
 
 /* Disabled state */
 .btn-disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* Full width style */
+.btn-full {
+  width: 100%;
 }
 
 /* Spinner for loading state */

@@ -15,6 +15,5 @@ import {closeModal, confirmModal} from '@kolirt/vue-modal'
 import {ref} from "vue";
 
 const props = defineProps({
-  test: {}
 })
 </script>

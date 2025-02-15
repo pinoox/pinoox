@@ -62,7 +62,7 @@ const props = defineProps({
     type: Array,
     required: true,
     default: () => [
-      {route: '/control/appearance', icon: saxIcon.control, image: null},
+      {route: '/control/apps', icon: saxIcon.control, image: null},
     ]
   },
 });
