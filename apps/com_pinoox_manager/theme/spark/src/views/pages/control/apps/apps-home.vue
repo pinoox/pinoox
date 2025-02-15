@@ -26,8 +26,8 @@ import {openModal} from "@kolirt/vue-modal";
 import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
 
 const apps = ref([
-  {name: "Safari", icon: new URL('@/assets/media/icons/1.png', import.meta.url).href},
-  {name: "Terminal", icon: new URL('@/assets/media/icons/2.png', import.meta.url).href},
+  {name: "اتوماسیون داخلی", icon: new URL('@/assets/media/icons/1.png', import.meta.url).href},
+  {name: "حسابداری شخصی", icon: new URL('@/assets/media/icons/2.png', import.meta.url).href},
 ]);
 
 function openModalInstallApp(){

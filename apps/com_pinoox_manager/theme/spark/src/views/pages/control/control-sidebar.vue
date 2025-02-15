@@ -50,23 +50,22 @@ const menuItems = ref([
     }
   },
   {
-    href: '/control/appearance',
-    title: 'ظاهری',
-    icon: {
-      element: Icon,
-      attributes: {
-        is: icons.appearance
-      }
-    }
-  },
-
-  {
     href: '/control/apps',
     title: 'اپلکیشن ها',
     icon: {
       element: Icon,
       attributes: {
         is: icons.apps
+      }
+    }
+  },
+  {
+    href: '/control/appearance',
+    title: 'ظاهری',
+    icon: {
+      element: Icon,
+      attributes: {
+        is: icons.appearance
       }
     }
   },

@@ -1,5 +1,7 @@
 import PageDesktop from '@/views/pages/desktop/desktop-view.vue';
 
+import PageLogin from '@/views/pages/account/login.vue';
+
 import PageControl from '@/views/pages/control/control-view.vue';
 import PageProfile from '@/views/pages/control/profile/profile-home.vue';
 import PageAppearance from '@/views/pages/control/appearance/appearance-home.vue';
@@ -33,6 +35,14 @@ export const routes = [
             }
         ]
 
+    },
+    {
+        path: '/login',
+        name: 'login',
+        component: PageLogin,
+        meta: {
+            toolbar: false
+        }
     },
     {
         path: '/:pathMatch(.*)*',

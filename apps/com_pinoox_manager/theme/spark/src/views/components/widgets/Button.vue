@@ -2,9 +2,13 @@
   <button
       :class="[
       'btn',
-      `btn-${variant}`,
       sizeClass,
-      { 'btn-loading': isLoading, 'btn-disabled': isDisabled || isLoading }
+      outline ? `btn-outline-${variant}` : `btn-${variant}`, // Conditional class for outline
+      {
+        'btn-loading': isLoading,
+        'btn-disabled': isDisabled || isLoading,
+        'btn-full': fullWidth
+      }
     ]"
       :disabled="isDisabled || isLoading"
       @click="handleClick"
@@ -15,7 +19,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { computed } from 'vue';
 
 const props = defineProps({
   label: {
@@ -24,7 +28,7 @@ const props = defineProps({
   },
   variant: {
     type: String,
-    default: 'primary', // e.g., 'primary', 'secondary', 'danger', etc.
+    default: 'primary', // e.g., 'primary', 'secondary', 'danger', 'warning', 'accent', 'light', 'dark'
   },
   size: {
     type: String,
@@ -37,6 +41,14 @@ const props = defineProps({
   isDisabled: {
     type: Boolean,
     default: false,
+  },
+  fullWidth: {
+    type: Boolean,
+    default: false, // New prop to make button 100% width
+  },
+  outline: {
+    type: Boolean,
+    default: false, // If true, use outline variant instead of solid
   },
 });
 

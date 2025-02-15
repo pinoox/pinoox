@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar fixed top-0 left-0 w-full flex items-center justify-between px-4">
+  <div class="toolbar fixed top-0 left-0 w-full flex items-center px-4">
     <div class="toolbar__brand">
       <a @click="navigate" class="cursor-pointer">PINOOX</a>
     </div>
@@ -7,6 +7,9 @@
     <div class="toolbar__datetime">
       <div class="toolbar__datetime-time">{{ formattedTime }}</div>
       <div class="toolbar__datetime-date">{{ formattedDate }}</div>
+    </div>
+    <div class="toolbar__account">
+      <span @click="logout">خروج</span>
     </div>
   </div>
 </template>
@@ -32,6 +35,10 @@ const navigate = () => {
   } else {
     router.push({ name: "desktop" });
   }
+};
+
+const logout = () => {
+  router.push("/login");
 };
 
 onMounted(() => {
