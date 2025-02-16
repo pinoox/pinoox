@@ -12,6 +12,7 @@ return [
     "same" => ":attribute و :other باید مانند هم باشند.",
     "confirmed" => ":attribute با تاییدیه مطابقت ندارد.",
     "mimes" => ":attribute با فرمت :values مجاز است.",
+    'uploaded' => 'فیلد :attribute به درستی اپلود نشد.',
 
     "min" => [
         "numeric" => ":attribute نباید کوچکتر از :min باشد.",

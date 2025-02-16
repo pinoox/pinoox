@@ -16,7 +16,7 @@ use function Pinoox\Router\{get, collection};
 
 get(
     path: '*',
-    action: fn() => View::render('index'),
+    action: fn() => View::render('main'),
 );
 
 get(

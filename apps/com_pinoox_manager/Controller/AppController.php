@@ -16,11 +16,17 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
 use App\com_pinoox_manager\Component\Wizard;
+use PHPUnit\Exception;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Path\Manager\PathManager;
+use Pinoox\Component\Validation\ValidationException;
+use Pinoox\Model\FileModel;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\FileUploader;
 use Pinoox\Portal\Path;
+use Pinoox\Portal\Wizard\AppWizard;
 
-class AppController extends ApiController
+class AppController extends Api
 {
     const manualPath = 'downloads/packages/manual/';
 
@@ -70,24 +76,50 @@ class AppController extends ApiController
         }
     }
 
-    public function install($packageName)
+    public function install(Request $request)
     {
-        if (empty($packageName))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
-
-        $pinFile = Wizard::getDownloaded($packageName);
-        if (!is_file($pinFile))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
-
-        if (Wizard::installApp($pinFile)) {
-            return $this->message(t('manager.done_successfully'), true);
-        } else {
-            $message = Wizard::getMessage();
-            if (empty($message))
-                return $this->message(t('manager.request_install_app_not_valid'), false);
-            else
-                return $this->message($message, false);
+        try {
+            $request->validate([
+                'file' => [
+                    'file',
+                    function ($attribute, $value, $fail) {
+                        if ($value->getClientOriginalExtension() !== 'pin') {
+                            $fail('آپلود فایل با پسوند .pin مجاز است!');
+                        }
+                    }
+                ],
+            ]);
+        } catch (ValidationException $e) {
+            return $this->error($e->first());
         }
+
+        $path = 'uploads/apps/';
+
+        $up = FileUploader::store($path, 'file')
+            ->upload();
+
+        $pin = $up->getResult('file');
+
+        try {
+            $wizard = AppWizard::open($pin);
+            $wizard->migration(true);
+            if(!$wizard->isInstalled())
+                $wizard->install();
+            else
+                return $this->error('manager.error_happened');
+
+
+        }catch (Exception $e){
+            return $this->error($e->getMessage());
+        }
+
+        return $this->message('manager.installed_successfully');
+
+    }
+
+    public function getAll(Request $request)
+    {
+        return AppHelper::getAll();
     }
 
     public function installPackage($filename)
