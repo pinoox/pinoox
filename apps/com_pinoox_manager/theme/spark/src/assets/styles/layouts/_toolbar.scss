@@ -5,8 +5,31 @@
   z-index: 999;
 
   &__brand {
+    flex-grow: 1;
+
     a {
+      transition: 0.2s ease-in-out;
       &:hover {
+        color: var(--color-primary);
+      }
+    }
+  }
+
+  &__account {
+    margin-right: 2rem;
+
+    span {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 3rem;
+      text-align: center;
+      transition: 0.2s ease-in-out;
+      font-size: 0.9em;
+      font-weight: 300;
+
+      &:hover {
+        cursor: pointer;
         color: var(--color-primary);
       }
     }

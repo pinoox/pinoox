@@ -50,17 +50,6 @@ const menuItems = ref([
     }
   },
   {
-    href: '/control/appearance',
-    title: 'ظاهری',
-    icon: {
-      element: Icon,
-      attributes: {
-        is: icons.appearance
-      }
-    }
-  },
-
-  {
     href: '/control/apps',
     title: 'اپلکیشن ها',
     icon: {
@@ -73,15 +62,20 @@ const menuItems = ref([
   {
     href: '/control/routes',
     title: 'مسیریابی',
-    disabled: true,
-    badge: {
-      text: 'به‌زودی',
-      class: 'vsm--badge_default'
-    },
     icon: {
       element: Icon,
       attributes: {
         is: icons.routes
+      }
+    }
+  },
+  {
+    href: '/control/appearance',
+    title: 'ظاهری',
+    icon: {
+      element: Icon,
+      attributes: {
+        is: icons.appearance
       }
     }
   },

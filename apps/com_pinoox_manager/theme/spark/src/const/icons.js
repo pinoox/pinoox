@@ -14,6 +14,10 @@ export const saxIcon = {
     pincore: sax.CodeIcon,
     back: sax.ArrowCircleRightIcon,
     add: sax.AddIcon,
+    guide: sax.MessageQuestionIcon,
+    tips: sax.ChartSuccessIcon,
+    edit: sax.EditIcon,
+    remove: sax.TrashIcon,
 };
 
 export const mdiIcon ={

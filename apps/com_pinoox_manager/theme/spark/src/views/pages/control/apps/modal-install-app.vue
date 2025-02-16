@@ -38,4 +38,5 @@ const install = () => {
         alert(error);
     });
 };
+
 </script>
