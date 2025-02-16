@@ -109,8 +109,20 @@ class FileUploader
             return $this;
         }
 
+        $mimetype = $this->file->getMimeType();
+
         // Move the uploaded file to the destination
         $this->file->move($this->getUploadPath(), $this->filename);
+
+        $this->result = [
+            'filename' => $this->filename,
+            'realname' => $this->fileRealname,
+            'extension' => $this->extension,
+            'mimetype' => $mimetype,
+            'size' => $this->size,
+            'path' => $this->getUploadPath(),
+            'file' => $this->getUploadPath() . $this->filename,
+        ];
 
         if ($this->isInsert) {
             $this->callEvents(Event::Insert);

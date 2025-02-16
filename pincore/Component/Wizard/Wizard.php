@@ -120,7 +120,7 @@ abstract class Wizard implements WizardInterface
     protected function setPackage(): void
     {
         $this->package = $this->info['package'];
-        $this->packagePath = $this->appEngine->path($this->package);
+        $this->packagePath = $this->appEngine->packageLoader->path($this->package);
     }
 
     /**

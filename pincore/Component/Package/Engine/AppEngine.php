@@ -36,8 +36,8 @@ use Pinoox\Component\Store\Config\ConfigInterface;
 class AppEngine implements EngineInterface
 {
     private LoaderInterface $loader;
-    private PackageLoader $packageLoader;
-    private ArrayLoader $arrayLoader;
+    public PackageLoader $packageLoader;
+    public ArrayLoader $arrayLoader;
     /**
      * @var PathManager[]
      */
