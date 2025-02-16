@@ -1,38 +1,47 @@
 <template>
-  <Page title="اپلیکیشن‌ها" class="pageApps">
-    <template #toolbar>
-      <Menu @click="openModalInstallApp" :icon="saxIcon.add" label="نصب اپلکیشن"/>
-    </template>
+    <Page title="اپلیکیشن‌ها" class="pageApps">
+        <template #toolbar>
+            <Menu @click="openModalInstallApp" :icon="saxIcon.add" label="نصب اپلکیشن"/>
+        </template>
 
-    <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">
-      <div
-          v-for="app in apps"
-          :key="app.name"
-          class="flex flex-col items-center justify-center space-y-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
-      >
-        <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg">
-          <img :src="app.icon" :alt="app.name" class="w-16 h-16 md:w-20 md:h-20">
+        <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">
+            <div
+                    v-for="app in apps"
+                    :key="app.name"
+                    class="flex flex-col items-center justify-center space-y-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
+            >
+                <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg">
+                    <img :src="app.icon" :alt="app.name" class="w-16 h-16 md:w-20 md:h-20">
+                </div>
+                <span class="text-sm text-gray-100">{{ app.name }}</span>
+            </div>
         </div>
-        <span class="text-sm text-gray-100">{{ app.name }}</span>
-      </div>
-    </div>
-  </Page>
+    </Page>
 </template>
 
 <script setup>
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import {saxIcon} from "@/const/icons.js";
 import {openModal} from "@kolirt/vue-modal";
 import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
+import {appAPI} from "@api/app.js";
 
-const apps = ref([
-  {name: "Safari", icon: new URL('@/assets/media/icons/1.png', import.meta.url).href},
-  {name: "Terminal", icon: new URL('@/assets/media/icons/2.png', import.meta.url).href},
-]);
+const apps = ref([]);
 
-function openModalInstallApp(){
-  openModal(ModalInstallApp,{}).then(res=>{
-
-  })
+function openModalInstallApp() {
+    openModal(ModalInstallApp, {}).then(res => {
+        getApps();
+    }).catch(() => {
+    })
 }
+
+const getApps = () => {
+    appAPI.getAll().then((response) => {
+        apps.value = Object.values(response.data);
+    })
+}
+
+onMounted(() => {
+    getApps();
+});
 </script>
