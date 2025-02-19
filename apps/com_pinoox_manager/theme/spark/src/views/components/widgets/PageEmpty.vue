@@ -3,7 +3,7 @@
     <component
         v-if="icon"
         :is="icon"
-        class="mb-4 opacity-70"
+        class="mb-4 opacity-70 text-gray-300"
         :style="{ width: '4rem', height: '4rem' }"
     />
     <h2 class="text-lg font-semibold text-gray-300">{{ title || "موردی یافت نشد" }}</h2>

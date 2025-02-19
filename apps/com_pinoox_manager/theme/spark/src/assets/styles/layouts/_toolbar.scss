@@ -3,12 +3,14 @@
   background: rgba(19, 13, 11, 0.5);
   backdrop-filter: blur(10px);
   z-index: 999;
+  color: $color-title;
 
   &__brand {
     flex-grow: 1;
 
     a {
       transition: 0.2s ease-in-out;
+
       &:hover {
         color: var(--color-primary);
       }
