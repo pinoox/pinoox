@@ -33,9 +33,9 @@ class Request extends RequestSymfony
     public bool $isContentJson = false;
 
     /**
-     * @var \Closure|SessionInterface|null
+     * @var Closure|SessionInterface|null
      */
-    public SessionInterface|\Closure|null $session;
+    public $session;
 
     public function initialize(array $query = [], $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): void
     {
