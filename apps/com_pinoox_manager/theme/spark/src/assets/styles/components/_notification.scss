@@ -1,0 +1,32 @@
+.vue-notification-group {
+  z-index: 9999999 !important;
+}
+
+.notification {
+  margin: 1rem;
+
+  .vue-notification {
+    margin-bottom: 0.5rem;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 5px 10px rgba(#222, 0.1);
+    border-left: initial;
+    border-right: 5px solid;
+
+    &.error {
+      background: var(--color-primary) !important;
+      border-color: var(--color-primary);
+    }
+
+    &.success {
+      background: var(--color-success) !important;
+      border-color: var(--color-success);
+    }
+  }
+
+  &-title {
+    font-size: 1rem;
+    text-align: right;
+    line-height: normal;
+  }
+}

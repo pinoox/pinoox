@@ -61,7 +61,7 @@ class Token implements BootInterface
     {
         $data = is_array($data) ? $data : [$data];
         self::$token_key = empty($token_key) ? self::generateUniqueKey() : $token_key;
-
+ 
         TokenModel::create([
             'token_key' => self::$token_key,
             'token_name' => $name,

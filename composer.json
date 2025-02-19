@@ -66,8 +66,8 @@
         "pinoox"
     ],
     "require-dev": {
-        "nikic/php-parser": "^4.15",
-        "pestphp/pest": "^1.23"
+        "nikic/php-parser": "^v4.19.4",
+        "pestphp/pest": "^v1.23.1"
     },
     "config": {
         "sort-packages": true,

@@ -43,7 +43,7 @@ class Config implements ConfigInterface
         return $this;
     }
 
-    public function get(string $key = null, $default = null): mixed
+    public function get(?string $key = null, $default = null): mixed
     {
         return $this->strategy->get($key, $default);
     }

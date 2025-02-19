@@ -17,7 +17,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import {useAuthStore} from "@/stores/modules/auth.js";
 
+const authStore = useAuthStore();
 const formattedTime = ref("");
 const formattedDate = ref("");
 const route = useRoute();
@@ -38,7 +40,9 @@ const navigate = () => {
 };
 
 const logout = () => {
-  router.push("/login");
+  authStore.logout().then(() => {
+    router.replace({name: 'login'});
+  });
 };
 
 onMounted(() => {

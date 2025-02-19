@@ -10,29 +10,22 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use App\com_pinoox_manager\Flow\LoginAuthFlow;
+use Pinoox\Component\User;
 use Pinoox\Portal\View;
 use function Pinoox\Router\{get, collection};
+
+User::type(User::JWT);
+
+collection(path: '/api/v1', routes: __DIR__ . '/public-api.php');
+collection(path: '/api/v1', routes: __DIR__ . '/private-api.php',
+    flows: [
+        'manager.auth',
+    ],
+);
+
 
 get(
     path: '*',
     action: fn() => View::render('main'),
 );
-
-get(
-    path: '/dist/pinoox.js',
-    action: fn() => View::jsResponse('pinoox')
-);
-
-collection(
-    path: '/api/v1',
-    routes: __DIR__ . '/api.php',
-);
-
-collection(
-    path: '/api/v1',
-    routes: __DIR__ . '/api-auth.php',
-    flows: [
-        LoginAuthFlow::class
-    ]
-);
+get(path: '/dist/pinoox.js', action: fn() => View::jsResponse('pinoox'));

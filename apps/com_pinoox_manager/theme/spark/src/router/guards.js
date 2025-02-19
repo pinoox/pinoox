@@ -1,17 +1,19 @@
-import { useAuthStore } from "../stores/modules/auth.js";
+import {useAuthStore} from "../stores/modules/auth.js";
+
+let isFirstSession = false;
 
 export async function authGuard(to, from, next) {
     const store = useAuthStore();
-
-    //await store.canUserAccess();
-
-    const isLoginRequired = !!to?.meta?.loginRequired;
+    if (!isFirstSession) {
+        isFirstSession = true;
+        await store.canUserAccess();
+    }
     const isAuth = store.isAuth;
 
-    if (isLoginRequired && !isAuth) {
-        next({ name: 'page-account-login' });
-    } else if (to.name === 'page-account-login' && isAuth) {
-        next({ name: 'page-profile-account' });
+    if (to.name !== 'login' && !isAuth) {
+        next({ name: 'login' });
+    } else if (to.name === 'login' && isAuth) {
+        next({ name: 'desktop' });
     } else {
         next();
     }

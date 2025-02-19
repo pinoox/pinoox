@@ -22,4 +22,8 @@ return [
     'login_account' => 'ورود به حساب کابری',
     'account' => 'حساب کاربری',
     'connect_to_pinoox' => 'اتصال به پینوکس',
+    'you_must_login' => 'باید لاگین کنید',
+    'username_or_password_is_wrong' => 'نام کاربری یا رمز عبور اشتباه است',
+    'logged_in_successfully' => 'با موفقیت وارد شدید',
+    'already_logged_in' => 'در حال حاضر لاگین هستید!',
 ];
