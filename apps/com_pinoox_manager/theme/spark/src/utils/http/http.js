@@ -3,7 +3,7 @@ import axios from "axios";
 const baseUrl = import.meta.env.MODE === 'production' ? PINOOX.URL.API : import.meta.env.VITE_API_PATH;
 
 function getTokenAuth() {
-    let token = localStorage.pinoox_user;
+    let token = localStorage.manager_pinoox;
     if (!!token) {
         return `${token}`;
     }

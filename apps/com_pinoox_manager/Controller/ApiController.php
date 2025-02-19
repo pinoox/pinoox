@@ -14,17 +14,34 @@
 namespace App\com_pinoox_manager\Controller;
 
 
+use Pinoox\Component\Http\JsonResponse;
+use Pinoox\Component\Http\ResponseException;
 use Pinoox\Component\Kernel\Controller\Controller;
 
 class ApiController extends Controller
 {
-    protected function message(mixed $result, bool $status = true): array
+
+    public static function message($message, $result = null, ?int $code = 200, bool $exception = false): JsonResponse
     {
-        return ["status" => $status, "result" => $result];
+        $message = is_string($message) ? t($message) : $message;
+        $data = ["message" => $message];
+        if (!is_null($result))
+            $data['result'] = $result;
+        $response = response()->json($data, $code);
+
+        if ($exception)
+            ResponseException::call($response);
+
+        return $response;
     }
 
-    public function notFoundError()
+    public static function error($error, ?int $code = 422, bool $exception = false): JsonResponse
     {
-        return $this->message('not found', 404);
+        $error = is_string($error) ? t($error) : $error;
+        $response = response()->json(["error" => $error], $code);
+        if ($exception)
+            ResponseException::call($response);
+
+        return $response;
     }
 }

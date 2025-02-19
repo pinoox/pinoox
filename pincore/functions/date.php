@@ -10,14 +10,13 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use Illuminate\Support\Carbon;
 use Pinoox\Portal\Date;
 
 if (!function_exists('now')) {
     /**
      * Create a new Carbon instance for the current time.
      */
-    function now(DateTimeZone|string|null $tz = null): \Illuminate\Support\Carbon
+    function now(DateTimeZone|string|null $tz = null)
     {
         return Date::now($tz);
     }
@@ -27,7 +26,8 @@ if (!function_exists('today')) {
     /**
      * Create a new Carbon instance for the current date.
      */
-    function today(DateTimeZone|string|null $tz = null): Carbon
+
+    function today(DateTimeZone|string|null $tz = null)
     {
         return Date::today($tz);
     }
@@ -42,7 +42,7 @@ if (!function_exists('format_date')) {
 }
 
 if (!function_exists('carbon')) {
-    function carbon($time = null, ?string $timezone = null): Carbon
+    function carbon($time = null, ?string $timezone = null)
     {
         return Date::parse($time, $timezone);
     }

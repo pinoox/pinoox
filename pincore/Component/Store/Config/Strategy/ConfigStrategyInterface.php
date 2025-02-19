@@ -46,7 +46,8 @@ interface ConfigStrategyInterface
      * @param null $default
      * @return array
      */
-    public function get(?string $key = null, $default = null): mixed;
+
+    public function get(?string $key = null,$default = null): mixed;
 
     public function all(): mixed;
 

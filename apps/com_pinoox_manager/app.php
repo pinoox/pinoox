@@ -1,22 +1,25 @@
 <?php
-//pinoox app file, generated at "2019-12-28 14:38"
+
+use App\com_pinoox_manager\Flow\ManagerAuthFlow;
 
 return array(
-    'package'=>'com_pinoox_manager',
+    'package' => 'com_pinoox_manager',
     'enable' => true,
     'theme' => 'spark',
-    'name' => 'setting',
-    'description' => 'Applications Management System (AMS)',
+    'name' => 'manager',
+    'description' => 'Manager',
     'icon' => 'icon.png',
-    'version-name' => '1.7.4',
-    'version-code' => 6,
+    'version-name' => '2.0.0',
+    'version-code' => 2,
     'developer' => 'Pinoox Team',
-    'minpin' => 1,
-    'open' => 'setting-dashboard',
+    'minpin' => 2,
     'sys-app' => true,
-    'flow' => [
-        \App\com_pinoox_manager\Flow\BootFlow::class
-    ]
+    'lang' => 'fa',
+    'alias' => [
+        'manager' => [
+            'auth' => ManagerAuthFlow::class,
+        ],
+    ],
 );
 
 //end of app

@@ -1,81 +1,81 @@
 {
-    "name": "pinoox/pinoox",
-    "description": "pinoox is a simple environment for web management and development. You can do whatever you want on the web and add your desire features to your website in a simple way",
-    "keywords": [
-        "PHP",
-        "PHP Framework",
-        "pinoox"
-    ],
-    "type": "project",
-    "homepage": "http://www.pinoox.com/",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Pinoox",
-            "email": "dev@pinoox.com"
-        }
-    ],
-    "require": {
-        "php": "^8.1",
-        "ext-mysqli": "*",
-        "doctrine/dbal": "^4.2.2",
-        "firebase/php-jwt": "^v6.11.0",
-        "illuminate/database": "^v11.43.0",
-        "illuminate/events": "^v11.43.0",
-        "illuminate/hashing": "^v11.43.0",
-        "illuminate/pagination": "^v11.43.0",
-        "illuminate/support": "^v11.43.0",
-        "illuminate/validation": "^v11.43.0",
-        "intervention/image": "^3.11.1",
-        "nelexa/zip": "^4.0.2",
-        "nette/php-generator": "^v4.1.7",
-        "symfony/asset": "^v7.2.0",
-        "symfony/console": "^v7.2.1",
-        "symfony/dependency-injection": "^v7.2.3",
-        "symfony/dotenv": "^v7.2.0",
-        "symfony/error-handler": "^v7.2.3",
-        "symfony/filesystem": "^v7.2.0",
-        "symfony/finder": "^v7.2.2",
-        "symfony/http-client": "^v7.2.3",
-        "symfony/http-foundation": "^v7.2.3",
-        "symfony/http-kernel": "^v7.2.3",
-        "symfony/process": "^v7.2.0",
-        "symfony/property-access": "^v7.2.3",
-        "symfony/routing": "^v7.2.3",
-        "symfony/serializer": "^v7.2.3",
-        "symfony/templating": "^v6.4.13",
-        "symfony/var-dumper": "^v7.2.3",
-        "twig/twig": "^3",
-      "ext-zip": "*"
+  "name": "pinoox/pinoox",
+  "description": "pinoox is a simple environment for web management and development. You can do whatever you want on the web and add your desire features to your website in a simple way",
+  "keywords": [
+    "PHP",
+    "PHP Framework",
+    "pinoox"
+  ],
+  "type": "project",
+  "homepage": "http://www.pinoox.com/",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Pinoox",
+      "email": "dev@pinoox.com"
+    }
+  ],
+  "require": {
+    "php": "^8.1",
+    "ext-mysqli": "*",
+    "doctrine/dbal": "^4.2.2",
+    "firebase/php-jwt": "^v6.11.0",
+    "illuminate/database": "^v11.43.0",
+    "illuminate/events": "^v11.43.0",
+    "illuminate/hashing": "^v11.43.0",
+    "illuminate/pagination": "^v11.43.0",
+    "illuminate/support": "^v11.43.0",
+    "illuminate/validation": "^v11.43.0",
+    "intervention/image": "^3.11.1",
+    "nelexa/zip": "^4.0.2",
+    "nette/php-generator": "^v4.1.7",
+    "symfony/asset": "^v7.2.0",
+    "symfony/console": "^v7.2.1",
+    "symfony/dependency-injection": "^v7.2.3",
+    "symfony/dotenv": "^v7.2.0",
+    "symfony/error-handler": "^v7.2.3",
+    "symfony/filesystem": "^v7.2.0",
+    "symfony/finder": "^v7.2.2",
+    "symfony/http-client": "^v7.2.3",
+    "symfony/http-foundation": "^v7.2.3",
+    "symfony/http-kernel": "^v7.2.3",
+    "symfony/process": "^v7.2.0",
+    "symfony/property-access": "^v7.2.3",
+    "symfony/routing": "^v7.2.3",
+    "symfony/serializer": "^v7.2.3",
+    "symfony/templating": "^v6.4.13",
+    "symfony/var-dumper": "^v7.2.3",
+    "twig/twig": "^3",
+    "ext-zip": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Pinoox\\": "pincore/",
+      "App\\": "apps/"
     },
-    "autoload": {
-        "psr-4": {
-            "Pinoox\\": "pincore/",
-            "App\\": "apps/"
-        },
-        "files": [
-            "pincore/functions/base.php"
-        ]
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Pinoox\\Test\\": "tests/"
-        }
-    },
-    "bin": [
-        "pinoox"
-    ],
-    "require-dev": {
-        "nikic/php-parser": "^v5.4.0",
-        "pestphp/pest": "^v3.7.4"
-    },
-    "config": {
-        "sort-packages": true,
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true,
-            "pestphp/pest-plugin": true
-        }
-    },
-    "minimum-stability": "dev",
-    "prefer-stable": true
+    "files": [
+      "pincore/functions/base.php"
+    ]
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Pinoox\\Test\\": "tests/"
+    }
+  },
+  "bin": [
+    "pinoox"
+  ],
+  "require-dev": {
+    "nikic/php-parser": "^v4.19.4",
+    "pestphp/pest": "^v1.23.1"
+  },
+  "config": {
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/package-versions-deprecated": true,
+      "pestphp/pest-plugin": true
+    }
+  },
+  "minimum-stability": "dev",
+  "prefer-stable": true
 }

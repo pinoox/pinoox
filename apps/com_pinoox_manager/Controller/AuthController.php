@@ -13,6 +13,7 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Token;
 use Pinoox\Component\User;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\Hash;
@@ -21,87 +22,49 @@ class AuthController extends ApiController
 {
     public function login(Request $request)
     {
-        if (User::isLoggedIn()) {
-            $isLock = User::getTokenData('isLock');
-            if ($isLock) {
-                return $this->checkLock($request);
-            } else {
-                $this->notFoundError();
-            }
-        }
-
+        if (User::isLoggedIn())
+            return $this->error(t('user.already_logged_in'), 401);
 
         $validation = $request->validation([
             'username' => 'required',
             'password' => 'required',
         ]);
 
-
         if ($validation->fails())
-            return $this->message($validation->errors()->first(), false);
+            return $this->error($validation->errors()->first());
 
         $input = $validation->validate();
 
-        if (User::login($input['username'], $input['password'])) {
-            $user = $this->getUser();
-            return $this->message($user);
+        $user = UserModel::where('username', $input['username'])->first();
+        $u = $user?->makeVisible('password');
+        if (!$u || !Hash::check($input['password'], $u->password)) {
+            return $this->error(t('user.username_or_password_is_wrong'));
         }
 
-        return $this->message(t('validation.username_or_password_is_wrong'), false);
-    }
+        $userToken = UserModel::where('user_id', $user->user_id)->first();
 
-
-    private function checkLock(Request $request)
-    {
-        $user_id = User::get('user_id');
-        $validation = $request->validation([
-            'password' => 'required',
-        ]);
-
-        if ($validation->fails())
-            return $this->message($validation->errors()->first(), false);
-
-        $input = $validation->validate();
-        $user = UserModel::where('user_id', $user_id)->first();
-        if (Hash::check($input['password'], $user->makeVisible('password')->password)) {
-            User::append('isLock', false);
-            $user = $this->getUser();
-            return $this->message($user);
+        if ($userToken) {
+            User::setUserSessionKey('pinoox_manager');
+            User::setToken($userToken);
+            return $this->message(t('user.logged_in_successfully'), User::$login_key);
+        } else {
+            return $this->error(t('user.username_or_password_is_wrong'));
         }
-
-        return $this->message(t('validation.username_or_password_is_wrong'), false);
     }
 
-    public function getUser()
+    public function get()
     {
         if (User::isLoggedIn()) {
-            $user = UserController::getDataUser();
-            return $this->message($user);
+            return User::get();
+        } else {
+            return $this->error(t('user.you_must_login'), 401);
         }
-
-        return $this->message([], false);
     }
-
-    public function getOptions()
-    {
-        $options = config('options')->all();
-        $options['lang'] = app('lang');
-        return $options;
-    }
-
 
     public function logout()
     {
         User::logout();
-        return $this->message(null);
-    }
 
-    public function lock()
-    {
-        if (User::isLoggedIn())
-            User::append('isLock', true);
-
-        $user = $this->getUser();
-        return $this->message($user);
+        return $this->message('logout');
     }
 }

@@ -40,8 +40,8 @@
 
 <script setup>
 import 'dockbar';
-import {ref, onMounted, defineProps} from 'vue';
-import {RouterLink, useRouter} from 'vue-router';
+import {ref, onMounted} from 'vue';
+import { useRouter} from 'vue-router';
 import {saxIcon} from "@/const/icons.js";
 
 const props = defineProps({

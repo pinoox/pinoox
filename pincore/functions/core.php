@@ -218,6 +218,7 @@ if (!function_exists('cookie')) {
      * @param bool $raw Raw cookie flag
      * @param string|null $sameSite SameSite attribute
      * @return CookieSymfony|InputBag Returns Cookie instance or InputBag if no name provided
+     * @throws Exception
      */
     function cookie(
         ?string $name = null,

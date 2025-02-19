@@ -11,7 +11,7 @@
         </div>
       </div>
 
-      <div class="pageLogin__box--body">
+      <div class="pageLogin__box--body" @keyup.enter="handleLogin">
         <div class="form">
           <Input v-model="params.username" type="text" label="نام کاربری"
                  placeholder="نام کاربری را وارد کنید"/>
@@ -37,19 +37,27 @@
 </template>
 
 <script setup>
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
+import {authAPI} from "@api/auth.js";
+import {useAuthStore} from "@/stores/modules/auth.js";
 
+const authStore = useAuthStore();
 const router = useRouter()
-const params = reactive({username: null, password: null});
 const isLoading = ref(false);
+const params = ref({
+  username: null,
+  password: null,
+})
 
 const handleLogin = () => {
   isLoading.value = true;
-
-  setTimeout(() => {
-    isLoading.value = false
-    router.push("/");
-  }, 1500);
+  authAPI.login(params.value).then((response) => {
+    let login_key = response.data.result;
+    authStore.login(login_key);
+  }).then(async () => {
+    await authAPI.get();
+    await router.push({name: 'desktop'});
+  }).finally(() => isLoading.value = false);
 };
 </script>

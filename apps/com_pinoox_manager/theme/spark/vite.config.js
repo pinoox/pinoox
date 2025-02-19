@@ -42,6 +42,7 @@ export default defineConfig(({command, mode}) => {
                 '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
                 '@views': fileURLToPath(new URL('./src/views', import.meta.url)),
                 '@global': fileURLToPath(new URL('./src/utils/global.js', import.meta.url)),
+                '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
             }
         },
         server: {

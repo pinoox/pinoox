@@ -1,62 +1,59 @@
-import {defineStore} from 'pinia';
-import {authAPI} from "@api/auth.js";
+import { defineStore } from 'pinia';
+import { authAPI } from "@api/auth.js";
+import {computed, ref} from "vue";
 
-const tokenKey = 'pinoox_user'
+const tokenKey = 'manager_pinoox';
 
-export const useAuthStore = defineStore({
-    id: 'auth',
-    state: () => ({
-        auth: false,
-        user: {},
-    }),
-    getters: {
-        isAuth() {
-            let loginKey = localStorage.getItem(tokenKey);
-            let auth = this.auth;
-            return !!loginKey && auth;
-        },
-        getUser() {
-            return this.user;
+export const useAuthStore = defineStore('auth', () => {
+    const auth = ref(false);
+    const user = ref({});
+
+    const isAuth = computed(() => {
+        let loginKey = localStorage.getItem(tokenKey);
+        return !!loginKey && auth.value;
+    });
+
+    const getUser = computed(() => user.value);
+
+    const logout = async () => {
+        try {
+            await authAPI.logout();
+            localStorage.removeItem(tokenKey);
+            auth.value = false;
+            user.value = {};
+        } catch (error) {
+            console.error("Logout failed:", error);
         }
-    },
-    actions: {
-        async logout() {
-            return new Promise((resolve, reject) => {
-                authAPI.logout().then(() => {
-                    localStorage.removeItem(tokenKey);
-                    this.setAuth(false);
-                    this.setUser({});
-                    resolve();
-                }).catch(error => {
-                    reject(error);
-                });
-            });
-        },
-        login(login_key) {
-            localStorage.setItem(tokenKey, login_key);
-            this.setAuth(true);
-        },
-        async canUserAccess(refresh = false) {
-            if (!refresh) {
-                if (!!localStorage[tokenKey] && this.auth) return true;
-                if (!localStorage[tokenKey]) return false;
-            }
+    };
 
-            try {
-                const response = await authAPI.get();
-                const userData = response.data;
-                this.setUser(userData);
-                this.setAuth(true);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        setAuth(newValue) {
-            this.auth = newValue;
-        },
-        setUser(newValue) {
-            this.user = newValue;
-        },
-    },
+    const login = (login_key) => {
+        localStorage.setItem(tokenKey, login_key);
+        auth.value = true;
+    };
+
+    const canUserAccess = async (refresh = false) => {
+        if (!refresh) {
+            if (!!localStorage[tokenKey] && auth.value) return true;
+            if (!localStorage[tokenKey]) return false;
+        }
+
+        try {
+            const response = await authAPI.get();
+            user.value = response.data;
+            auth.value = true;
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    return {
+        auth,
+        user,
+        isAuth,
+        getUser,
+        login,
+        logout,
+        canUserAccess
+    };
 });
