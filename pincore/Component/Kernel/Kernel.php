@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\HttpKernel;
 use Exception;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Throwable;
 
 class Kernel extends HttpKernel
 {
@@ -28,12 +29,15 @@ class Kernel extends HttpKernel
         $this->flowManager = $flowManager;
     }
 
+    /**
+     * @throws Throwable
+     */
     public function handle(Request $request, int $type = HttpKernelInterface::MAIN_REQUEST, bool $catch = true): ResponseSymfony
     {
         try {
             $event = new RequestEvent($this, $request, $type);
             $this->dispatcher->dispatch($event, self::HANDLE_BEFORE);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             if (false === $catch) {
                 throw $e;
             }
@@ -76,7 +80,7 @@ class Kernel extends HttpKernel
     /**
      * @param Request $request
      * @return ResponseSymfony
-     * @throws Exception
+     * @throws Throwable
      */
     public function handleSubRequest(Request $request): ResponseSymfony
     {
@@ -91,7 +95,7 @@ class Kernel extends HttpKernel
         return $this->requestStack;
     }
 
-    private function handleThrowable(\Throwable $e, Request $request, int $type): \Symfony\Component\HttpFoundation\Response
+    private function handleThrowable(Throwable $e, Request $request, int $type): \Symfony\Component\HttpFoundation\Response
     {
         $event = new ExceptionEvent($this, $request, $type, $e);
         $this->dispatcher->dispatch($event, KernelEvents::EXCEPTION);

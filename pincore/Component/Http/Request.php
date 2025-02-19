@@ -33,11 +33,11 @@ class Request extends RequestSymfony
     public bool $isContentJson = false;
 
     /**
-     * @var SessionInterface
+     * @var Closure|SessionInterface|null
      */
     public $session;
 
-    public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null)
+    public function initialize(array $query = [], $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): void
     {
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
         $this->convertFiles();
@@ -113,6 +113,7 @@ class Request extends RequestSymfony
             'REQUEST_TIME' => time(),
             'REQUEST_TIME_FLOAT' => microtime(true),
         ], $server);
+      
         return parent::create($uri, $method, $parameters, $cookies, $files, $server, $content);
     }
 
@@ -154,7 +155,7 @@ class Request extends RequestSymfony
             return true;
         }
 
-        if ($this->server->has('CONTENT_TYPE') && strpos($this->server->get('CONTENT_TYPE'), 'application/json') !== false) {
+        if ($this->server->has('CONTENT_TYPE') && str_contains($this->server->get('CONTENT_TYPE'), 'application/json')) {
             return true;
         }
 
@@ -248,7 +249,7 @@ class Request extends RequestSymfony
         return $this->validation;
     }
 
-    public function validate(array $rules, array $messages = [], array $attributes = [])
+    public function validate(array $rules, array $messages = [], array $attributes = []): array
     {
         return $this->validation($rules, $messages, $attributes)->validate();
     }
@@ -282,7 +283,7 @@ class Request extends RequestSymfony
         }, $files);
     }
 
-    protected function convertFiles()
+    protected function convertFiles(): void
     {
         $this->files = new FileBag($this->convertUploadedFiles($this->files->all()));
     }

@@ -154,9 +154,10 @@ if (!function_exists('transaction')) {
 
 if (!function_exists('session')) {
     /**
-     * @param $key
-     * @param $default
+     * @param null $key
+     * @param null $default
      * @return SessionInterface|mixed
+     * @throws Exception
      */
     function session($key = null, $default = null)
     {
@@ -182,6 +183,7 @@ if (!function_exists('app')) {
      * @param null $key
      * @param null $default
      * @return \Pinoox\Component\Package\App|mixed
+     * @throws Exception
      */
     function app($key = null, $default = null)
     {
@@ -202,28 +204,46 @@ if (!function_exists('app')) {
     }
 }
 
-
 if (!function_exists('cookie')) {
     /**
-     * Create a new cookie instance.
+     * Create a new cookie instance or get the cookie bag.
      *
-     * @param string|null $name
-     * @param string|null $value
-     * @param int|string|DateTimeInterface $expire
-     * @param string|null $path
-     * @param string|null $domain
-     * @param bool|null $secure
-     * @param bool $httpOnly
-     * @param bool $raw
-     * @param string|null $sameSite
-     * @return CookieSymfony|InputBag
+     * @param string|null $name Cookie name
+     * @param string|null $value Cookie value
+     * @param int|string|DateTimeInterface|null $expire Expiration time
+     * @param string|null $path Cookie path
+     * @param string|null $domain Cookie domain
+     * @param bool|null $secure Secure flag
+     * @param bool $httpOnly HTTP only flag
+     * @param bool $raw Raw cookie flag
+     * @param string|null $sameSite SameSite attribute
+     * @return CookieSymfony|InputBag Returns Cookie instance or InputBag if no name provided
+     * @throws Exception
      */
-    function cookie(string $name = null, ?string $value = null, int|string|\DateTimeInterface $expire = 0, ?string $path = '/', ?string $domain = null, ?bool $secure = null, bool $httpOnly = true, bool $raw = false, ?string $sameSite = CookieAlias::SAMESITE_LAX)
+    function cookie(
+        ?string $name = null,
+        ?string $value = null,
+        int|string|\DateTimeInterface|null $expire = 0,
+        ?string $path = '/',
+        ?string $domain = null,
+        ?bool $secure = null,
+        bool $httpOnly = true,
+        bool $raw = false,
+        ?string $sameSite = CookieAlias::SAMESITE_LAX
+    ): CookieSymfony|InputBag
     {
-        if (is_null($name)) {
-            return app()->cookie();
-        }
-
-        return Cookie::create($name, $value, $expire, $path, $domain, $secure, $httpOnly, $raw, $sameSite);
+        return $name === null
+            ? app()->cookie()
+            : Cookie::create(
+                name: $name,
+                value: $value,
+                expire: $expire,
+                path: $path,
+                domain: $domain,
+                secure: $secure,
+                httpOnly: $httpOnly,
+                raw: $raw,
+                sameSite: $sameSite
+            );
     }
 }

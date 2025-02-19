@@ -10,18 +10,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use App\com_pinoox_manager\Controller\AuthController;
+use function Pinoox\Router\{get, post};
 
-namespace App\com_pinoox_manager\Flow;
-
-
-use App\com_pinoox_shop\Flow\AuthFlow;
-use Pinoox\Component\Router\Route;
-use Pinoox\Component\Http\Request;
-
-class LoginAuthFlow extends AuthFlow
-{
-    protected function exit(Request $request, Route $route)
-    {
-        return response()->json(['error' => 'Access denied!'], 401);
-    }
-}
+// auth
+post(path: 'auth/login', action: [AuthController::class,'login']);
+get(path: 'auth/logout', action: [AuthController::class, 'logout']);
+get(path: 'auth/get', action: [AuthController::class, 'get']);

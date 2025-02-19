@@ -63,7 +63,7 @@ class AppRouter
         $apps = $this->get();
         $packageName = null;
         $path = null;
-
+ 
         // set app default
         if (isset($apps['/'])) {
             if ($this->stable($apps['/'])) {
@@ -71,7 +71,7 @@ class AppRouter
             }
             unset($apps['/']);
         }
-
+        
         // set app current
         $url = empty($url) ? $this->parts() : $url;
         $parts = !empty($url) ? Str::explodeDropping('/', $url) : [];

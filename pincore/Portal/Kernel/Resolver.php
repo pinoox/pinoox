@@ -35,7 +35,7 @@ class Resolver extends Portal
         self::__bind(ContainerControllerResolver::class, 'controller')->setArguments([
             Container::ref('service_container'),
         ]);
-
+ 
         $resolvers = [
             new RequestAttributeValueResolver(),
             new RequestValueResolver(),

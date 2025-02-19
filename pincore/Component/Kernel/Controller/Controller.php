@@ -77,6 +77,8 @@ abstract class Controller
      * @param array $headers
      * @param array $context
      * @return JsonResponse
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
      */
     protected function json(mixed $data, int $status = 200, array $headers = [], array $context = []): JsonResponse
     {

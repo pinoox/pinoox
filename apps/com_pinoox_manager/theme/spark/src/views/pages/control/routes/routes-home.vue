@@ -5,7 +5,7 @@
       <Menu @click="openModal(ModalGuide, { message: guideMessage })" :icon="saxIcon.guide" label="راهنما"/>
     </template>
 
-    <div v-if="routes.length" class="overflow-x-auto">
+    <div v-if="!!routes && routes.length" class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-800">
         <thead class="">
         <tr>

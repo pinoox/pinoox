@@ -43,10 +43,11 @@ interface ConfigStrategyInterface
      * Gets the value of a configuration key.
      *
      * @param string|null $key
-     *
+     * @param null $default
      * @return array
      */
-    public function get(string $key = null,$default = null): mixed;
+
+    public function get(?string $key = null,$default = null): mixed;
 
     public function all(): mixed;
 
@@ -55,7 +56,7 @@ interface ConfigStrategyInterface
      *
      * @param string|null $key
      *
-     * @return array
+     * @return array|string|null
      */
     public function getInfo(?string $key = null): array|string|null;
 

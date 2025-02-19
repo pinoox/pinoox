@@ -8,6 +8,6 @@
         }
     ],
     "require": {
-        "morilog/jalali": "^3.4"
+        "morilog/jalali": "^v3.4.1"
     }
 }

@@ -10,31 +10,22 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Flow;
 
-
-use App\com_pinoox_manager\Component\LangHelper;
-use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Router\Route;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Flow\Flow;
 use Pinoox\Component\User;
-use Pinoox\Portal\View;
 
-class BootFlow extends Flow
+class ManagerAuthFlow extends AuthFlow
 {
     protected function before(Request $request): void
     {
-        User::lifeTime(100, 'day');
-        $this->setLang();
+        User::type(User::JWT);
+        User::setUserSessionKey('manager_pinoox');
     }
 
-    private function setLang()
+    protected function exit(Request $request, Route $route)
     {
-        $lang = LangHelper::all();
-
-        View::set('_direction', @$lang['manager']['direction']);
-        View::set('_lang', Str::encodeJson($lang, true));
+        return response()->json(['error' => 'Access denied!'], 401);
     }
-
 }

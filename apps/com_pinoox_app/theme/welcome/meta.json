@@ -1,0 +1,18 @@
+{
+  "name": "welcome",
+  "package": "com_pinoox_welcome",
+  "cover": "cover.jpg",
+  "developer": "pinoox team",
+  "copyright": "MIT",
+  "version-name": "2.0",
+  "version-code": 2,
+  "version-package": 5,
+  "title": {
+    "en": "welcome",
+    "fa": "خوش آمدگویی"
+  },
+  "description": {
+    "en": "default welcome template",
+    "fa": "قالب پیش فرض خوش آمدگویی"
+  }
+}

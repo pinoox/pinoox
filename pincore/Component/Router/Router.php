@@ -299,6 +299,7 @@ class Router
      * load route file
      *
      * @param string|array $routes
+     * @throws \Exception
      */
     private function loadFiles(string|array $routes): void
     {
