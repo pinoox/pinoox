@@ -2,6 +2,7 @@
 //pinoox app file, generated at "2019-12-28 14:38"
 
 return array(
+    'package'=>'com_pinoox_manager',
     'enable' => true,
     'theme' => 'spark',
     'name' => 'setting',

@@ -37,14 +37,14 @@ class Pinker
      */
     private array $objs = [];
 
-    public function __construct(string $mainFile = '', string $bakedFile = '', FileHandlerInterface $fileHandler = null)
+    public function __construct(?string $mainFile = '', ?string $bakedFile = '', ?FileHandlerInterface $fileHandler = null)
     {
         $this->mainFile = $mainFile;
         $this->bakedFile = $bakedFile;
         $this->fileHandler = $fileHandler ?? new FileHandler();
     }
 
-    public static function create(string $mainFile = '', string $bakedFile = '', FileHandlerInterface $fileHandler = null): static
+    public static function create(?string $mainFile = '', ?string $bakedFile = ''): static
     {
         return new static($mainFile, $bakedFile);
     }

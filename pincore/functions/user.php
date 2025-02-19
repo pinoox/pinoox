@@ -14,7 +14,7 @@
 use Pinoox\Component\User;
 
 if (!function_exists('user')) {
-    function user(string $key = null): mixed
+    function user(?string $key = null): mixed
     {
         return User::get($key);
     }

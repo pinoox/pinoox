@@ -30,8 +30,14 @@ class RouterListener implements EventSubscriberInterface
 
     private RouterListenerSymfony $routerListener;
 
-    public function __construct(UrlMatcherInterface|RequestMatcherInterface $matcher, RequestStack $requestStack, RequestContext $context = null, LoggerInterface $logger = null, string $projectDir = null, bool $debug = true)
-    {
+    public function __construct(
+        UrlMatcherInterface|RequestMatcherInterface $matcher,
+        RequestStack $requestStack,
+        ?RequestContext $context = null,
+        ?LoggerInterface $logger = null,
+        ?string $projectDir = null,
+        bool $debug = true
+    ) {
         $this->routerListener = new RouterListenerSymfony($matcher, $requestStack, $context, $logger, $projectDir, $debug);
     }
 

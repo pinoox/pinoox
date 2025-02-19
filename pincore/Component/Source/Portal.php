@@ -457,7 +457,7 @@ abstract class Portal
      * @param string|null $name
      * @return Definition|null
      */
-    final public static function __bind(string|object|null $class = null, string $name = null): ?Definition
+    final public static function __bind(string|object|null $class = null, ?string $name = null): ?Definition
     {
         if (!empty($name) && !empty($class)) {
             static::$__subNameClasses[] = $name;

@@ -27,7 +27,7 @@ if (!function_exists('today')) {
     /**
      * Create a new Carbon instance for the current date.
      */
-    function today(DateTimeZone|string $tz = null): Carbon
+    function today(DateTimeZone|string|null $tz = null): Carbon
     {
         return Date::today($tz);
     }

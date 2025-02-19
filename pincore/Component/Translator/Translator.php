@@ -19,7 +19,7 @@ use Illuminate\Translation\Translator as TranslatorIlluminate;
 
 class Translator extends TranslatorIlluminate
 {
-    public function addPath(string $path): void
+    public function addPath($path): void
     {
         $this->loader->addPath($path);
     }
@@ -102,7 +102,7 @@ class Translator extends TranslatorIlluminate
         $this->addJsonPath($path);
     }
 
-    public function existsLocale($locale) : bool
+    public function existsLocale($locale): bool
     {
         return $this->loader->existsLocale($locale);
     }
