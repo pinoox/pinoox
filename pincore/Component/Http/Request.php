@@ -37,7 +37,7 @@ class Request extends RequestSymfony
      */
     public SessionInterface|\Closure|null $session;
 
-    public function initialize(array $query = [], array $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): void
+    public function initialize(array $query = [], $request = [], array $attributes = [], array $cookies = [], array $files = [], array $server = [], $content = null): void
     {
         parent::initialize($query, $request, $attributes, $cookies, $files, $server, $content);
         $this->convertFiles();
@@ -113,6 +113,7 @@ class Request extends RequestSymfony
             'REQUEST_TIME' => time(),
             'REQUEST_TIME_FLOAT' => microtime(true),
         ], $server);
+      
         return parent::create($uri, $method, $parameters, $cookies, $files, $server, $content);
     }
 

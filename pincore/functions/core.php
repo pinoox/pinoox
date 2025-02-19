@@ -154,9 +154,10 @@ if (!function_exists('transaction')) {
 
 if (!function_exists('session')) {
     /**
-     * @param $key
-     * @param $default
+     * @param null $key
+     * @param null $default
      * @return SessionInterface|mixed
+     * @throws Exception
      */
     function session($key = null, $default = null)
     {
@@ -182,6 +183,7 @@ if (!function_exists('app')) {
      * @param null $key
      * @param null $default
      * @return \Pinoox\Component\Package\App|mixed
+     * @throws Exception
      */
     function app($key = null, $default = null)
     {

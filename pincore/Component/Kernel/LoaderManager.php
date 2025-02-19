@@ -13,7 +13,6 @@
 namespace Pinoox\Component\Kernel;
 
 use Composer\Autoload\ClassLoader;
-use Pinoox\Component\Database\Model;
 
 /**
  * Class LoaderManager
