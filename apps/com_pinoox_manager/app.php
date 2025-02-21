@@ -1,5 +1,6 @@
 <?php
 
+use App\com_pinoox_manager\Flow\BootFlow;
 use App\com_pinoox_manager\Flow\ManagerAuthFlow;
 
 return array(
@@ -15,6 +16,9 @@ return array(
     'minpin' => 2,
     'sys-app' => true,
     'lang' => 'fa',
+    'flow' => [
+        BootFlow::class,
+    ],
     'alias' => [
         'manager' => [
             'auth' => ManagerAuthFlow::class,

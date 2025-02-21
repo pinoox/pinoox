@@ -21,13 +21,14 @@ use Pinoox\Portal\App\AppRouter;
 
 class RouterController extends ApiController
 {
-    public function get()
+    public function getAll()
     {
 
         $routes = AppRouter::get();
         if (!empty($routes)) {
             foreach ($routes as $alias => $packageName) {
                 $app = AppHelper::getOne($packageName);
+                $app['path'] = $alias;
                 $app['package'] = $packageName;
                 $app['is_lock'] = ($alias === 'manager');
                 $routes[$alias] = $app;
