@@ -10,11 +10,8 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-use Pinoox\Component\User;
 use Pinoox\Portal\View;
 use function Pinoox\Router\{get, collection};
-
-User::type(User::JWT);
 
 collection(path: '/api/v1', routes: __DIR__ . '/public-api.php');
 collection(path: '/api/v1', routes: __DIR__ . '/private-api.php',
@@ -22,7 +19,6 @@ collection(path: '/api/v1', routes: __DIR__ . '/private-api.php',
         'manager.auth',
     ],
 );
-
 
 get(
     path: '*',

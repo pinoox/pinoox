@@ -1,5 +1,5 @@
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
+import {computed} from 'vue';
+import {useRoute} from 'vue-router';
 
 export function useRouteMeta() {
     const route = useRoute();
@@ -8,5 +8,9 @@ export function useRouteMeta() {
         return route.meta?.toolbar !== false;
     });
 
-    return { hasToolbar };
+    const isSingle = computed(() => {
+        return !!route.meta?.single;
+    });
+
+    return {hasToolbar, isSingle};
 }

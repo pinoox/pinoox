@@ -56,7 +56,7 @@ const handleLogin = () => {
     let login_key = response.data.result;
     authStore.login(login_key);
   }).then(async () => {
-    await authAPI.get();
+    await authStore.canUserAccess();
     await router.push({name: 'desktop'});
   }).finally(() => isLoading.value = false);
 };
