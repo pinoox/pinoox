@@ -5,7 +5,7 @@
             <Menu @click="openModal(ModalGuide, { message: guideMessage })" :icon="saxIcon.guide" label="راهنما"/>
         </template>
 
-        <div v-if="routeFilters.length" class="overflow-x-auto">
+        <div v-if="routeStore.routeList.length" class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-800">
                 <thead class="">
                 <tr>
@@ -20,21 +20,22 @@
                 </tr>
                 </thead>
                 <tbody class=" divide-gray-200">
-                <tr v-for="(route,index) in routeFilters" :key="index">
+                <tr v-for="(route,index) in routeStore.routeList" :key="index">
                     <td class="px-4 whitespace-nowrap text-sm text-gray-200">
                         <div class="flex items-center">
-                            <img :src="route.icon" :alt="route.name" class="w-8 h-8 mr-2"/>
-                            <span class="pr-4">{{ route.name }}</span>
+                            <img :src="app(route.package).icon" :alt="app(route.package).name" class="w-8 h-8 mr-2"/>
+                            <span class="pr-4">{{ app(route.package).name }}</span>
                         </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 ltr">
                         {{ currentSite }}/{{ route.path }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        <button @click="editRoute(route)" class=" hover:text-blue-300 ml-4">
+                        <button @click="editRoute(route)" v-if="!route.is_lock" class=" hover:text-blue-300 ml-4">
                             <Icon :is="saxIcon.edit"></Icon>
                         </button>
-                        <button @click="deleteRoute(route.id)" class="hover:text-red-700 ml-4">
+                        <button @click="deleteRoute(route.path)" v-if="!route.is_lock && route.path !== '/'"
+                                class="hover:text-red-700 ml-4">
                             <Icon :is="saxIcon.remove"></Icon>
                         </button>
                     </td>
@@ -59,11 +60,11 @@ import {openModal} from '@kolirt/vue-modal';
 import ModalGuide from '@views/components/commons/ModalGuide.vue';
 import ModalAddEditRoute from '@views/pages/control/routes/modal-add-edit-route.vue';
 import {routerAPI} from "@api/router.js";
+import {useRouteStore} from "@/stores/modules/route.js";
+import {useAppStore} from "@/stores/modules/app.js";
 
-const routes = ref([]);
-const routeFilters = computed(() => {
-    return Object.values(routes.value);
-});
+const routeStore = useRouteStore();
+const appStore = useAppStore();
 
 const currentSite = PINOOX.URL.SITE;
 
@@ -88,21 +89,21 @@ function editRoute(route) {
     openModalAddEditRoute(route);
 }
 
-function deleteRoute(routeId) {
-    routes.value = routes.value.filter((route) => route.id !== routeId);
-}
+function deleteRoute(path) {
+    routerAPI.remove({
+        path: path,
+    }).then(() => {
+        routeStore.deleteRouteByPath(path);
+    })
 
-const getAll = () => {
-    routerAPI.getAll().then((response) => {
-        routes.value = response.data;
-    });
 }
 
 const add = () => {
     routerAPI.add()
 }
 
-onMounted(() => {
-    getAll();
-})
+const app = (packageName) => {
+    return appStore.fetchAppByPackage(packageName);
+}
+
 </script>

@@ -22,22 +22,29 @@ import {httpEvent} from "@global";
 import {computed, watch} from "vue";
 import {useAuthStore} from "@/stores/modules/auth.js";
 import {useAppStore} from "@/stores/modules/app.js";
+import {useRouteStore} from "@/stores/modules/route.js";
 
 const {selectedBackground} = useBackground();
 const {hasToolbar, isSingle} = useRouteMeta();
 const authStore = useAuthStore();
 const appStore = useAppStore();
+const routeStore = useRouteStore();
 const isShowApp = computed(() => {
-    return authStore.isAuth && appStore.isLoaded;
+    return authStore.isAuth;
+   // return authStore.isAuth && appStore.isLoaded && routeStore.isLoaded;
 });
 
 
 httpEvent('error_response', showErrorAlert);
 httpEvent('response', showSuccessAlert);
 watch(() => authStore.isAuth, async () => {
-    if (authStore.isAuth)
+    if (authStore.isAuth) {
         await appStore.getApps();
-    else
+        await routeStore.getRoutes();
+    } else
+    {
         appStore.destroyApps();
+        routeStore.destroyRoutes();
+    }
 });
 </script>
