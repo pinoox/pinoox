@@ -47,7 +47,7 @@ export const routes = [
         name: 'login',
         component: PageLogin,
         meta: {
-            toolbar: false
+            single: true
         }
     },
     {
