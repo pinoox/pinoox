@@ -19,7 +19,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\App\AppRouter;
 
-class RouterController extends ApiController
+class RouterController extends Api
 {
     public function getAll()
     {
@@ -37,55 +37,47 @@ class RouterController extends ApiController
         return $routes;
     }
 
-    public function add(Request $request)
-    {
-        $alias = $request->json->get('alias');
-        if (empty($alias) || Str::has($alias, ['?', '\\', '>', '<', '!', '=', '~', '*', '#']))
-            return $this->message(t('setting/router.write_correct_url'), false);
-
-        if (AppRouter::exists($alias))
-            return $this->message(t('setting/router.this_url_exists_before'), false);
-
-        $alias = '/' . Str::firstDelete($alias, '/');
-        AppRouter::set($alias, '');
-        return $this->message('');
-    }
-
     public function remove(Request $request)
     {
-        $path = $request->json->get('path','');
+        $path = $request->json->get('path', '');
 
         if ($path == '/' || empty($path))
-            return $this->message(t('manager.request_not_valid'), false);
+            return $this->error('manager.request_not_valid');
 
         AppRouter::delete($path);
-        return $this->message(t('manager.deleted_successfully'), true);
+        return $this->message('manager.deleted_successfully');
     }
 
-    public function setPackageName(Request $request)
+    public function save(Request $request)
     {
         $data = $request->json('path,packageName,oldPath');
         $isEdit = !empty($data['oldPath']);
 
-        if ($data['path'] == 'manager')
-            return $this->message(t('manager.request_not_valid'), false);
+        if (empty($data['path'])) {
+            return $this->error('setting/router.no_choose_any_route');
+        }
+
+        $data['path'] = !Str::firstHas($data['path'], '/') ? '/' . $data['path'] : $data['path'];
+
+        if ($data['path'] == '/manager')
+            return $this->error('manager.request_not_valid');
 
         $package = AppHelper::getOne($data['packageName']);
-        if (empty($package) || !$package['router'])
-            return $this->message(t('manager.request_not_valid'), false);
+        if (empty($package) || (isset($package['router']) && !$package['router']))
+            return $this->error('setting/router.no_can_route_package');
 
 
         if ($package['router']['type'] !== 'multiple' && AppRouter::existByPackage($data['packageName']))
-            return $this->message(t('manager.request_not_valid'), false);
+            return $this->error('setting/router.no_multiple_package');
 
         if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
-            return $this->message(t('setting/router.no_choose_any_route'), false);
+            return $this->error('setting/router.this_url_exists_before');
 
 
         if ($isEdit) {
             AppRouter::delete($data['oldPath']);
         }
         AppRouter::set($data['path'], $data['packageName']);
-        return $this->message($isEdit ? t('manager.edited_successfully') : t('manager.added_successfully'), true);
+        return $this->message($isEdit ? 'manager.edited_successfully' : 'manager.added_successfully');
     }
 }
