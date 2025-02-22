@@ -22,7 +22,7 @@
                 <tbody class=" divide-gray-200">
                 <tr v-for="(route,index) in routeStore.routeList" :key="index">
                     <td class="px-4 whitespace-nowrap text-sm text-gray-200">
-                        <div class="flex items-center">
+                        <div class="flex items-center hover:scale-110 transition-transform duration-300 cursor-pointer" @click="openModalEditApp(route)">
                             <img :src="app(route.package).icon" :alt="app(route.package).name" class="w-8 h-8 mr-2"/>
                             <span class="pr-4">{{ app(route.package).name }}</span>
                         </div>
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import {ref} from 'vue';
 import {saxIcon} from '@/const/icons.js';
 import {openModal} from '@kolirt/vue-modal';
 import ModalGuide from '@views/components/commons/ModalGuide.vue';
@@ -80,8 +80,18 @@ const guideMessage = ref(
 );
 
 function openModalAddEditRoute(route = null) {
-    openModal(ModalAddEditRoute, {payload: route}).then((res) => {
-        console.log(payload, res);
+    if (route.path === '/') {
+        openModalEditApp(route);
+    } else {
+        openModal(ModalAddEditRoute, {payload: route}).then((res) => {
+        }).catch(() => {
+        });
+    }
+}
+
+function openModalEditApp(route = null) {
+    openModal(ModalAddEditRoute, {payload: route, hasSelectApp: true}).then((res) => {
+    }).catch(() => {
     });
 }
 

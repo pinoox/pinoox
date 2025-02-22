@@ -40,7 +40,8 @@
                 </div>
             </div>
             <div class="flex justify-between mt-4">
-                <Button @click="goToPreviousStep" label="بازگشت" variant="dark"/>
+                <Button v-if="!props.hasSelectApp" @click="goToPreviousStep" label="بازگشت" variant="dark"/>
+                <Button v-else @click="closeModal" label="بستن" variant="dark"/>
                 <Button @click="save" :disabled="!params.packageName" label="ذخیره" variant="primary"/>
             </div>
         </div>
@@ -58,6 +59,10 @@ const props = defineProps({
     payload: {
         type: Object,
         default: null,
+    },
+    hasSelectApp: {
+        type: Boolean,
+        default: false,
     },
 });
 
@@ -100,11 +105,18 @@ watch(() => props.payload, (data) => {
         packageName: data.package,
         oldPath: data.path,
     }
-},{
-    immediate:true,
+}, {
+    immediate: true,
 });
+
+watch(() => props.hasSelectApp, (status) => {
+    currentStep.value = status ? 2 : 1;
+}, {
+    immediate: true,
+});
+
 const save = () => {
-    routerAPI.setPackageName(params.value).then(() => {
+    routerAPI.save(params.value).then(() => {
         routeStore.saveRoute(params.value.path, params.value.packageName, params.value.oldPath);
         closeModal();
     })

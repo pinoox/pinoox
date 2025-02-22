@@ -9,7 +9,7 @@ export const useRouteStore = defineStore({
     }),
     getters: {
         routeList() {
-            return Object.values(this.routes);
+            return Object.values(this.routes).sort((a, b) => a.path.length - b.path.length);
         },
     },
     actions: {

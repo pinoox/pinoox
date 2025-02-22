@@ -45,16 +45,11 @@ get(
 );
 
 post(
-    path: 'router/add',
-    action: [RouterController::class, 'add']
-);
-
-post(
     path: 'router/remove',
     action: [RouterController::class, 'remove']
 );
 
 post(
-    path: 'router/setPackageName',
-    action: [RouterController::class, 'setPackageName']
+    path: 'router/save',
+    action: [RouterController::class, 'save']
 );
