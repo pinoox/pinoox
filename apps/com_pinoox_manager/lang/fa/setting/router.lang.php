@@ -9,4 +9,6 @@ return [
     'no_choose_any_route' => 'هیچ آدرسی انتخاب نشده است',
     'write_correct_url' => 'یک آدرس صحیح وارد کنید',
     'this_url_exists_before' => 'این آدرس قبلا ثبت شده است',
+    'no_add_multiple_package' => 'این اپ قبلاً مسیردهی شده و امکان افزودن آدرس جدید نیست!',
+    'no_can_route_package' => 'امکان مسیریابی برای این اپ وجود ندارد!',
 ];
