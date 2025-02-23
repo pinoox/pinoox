@@ -7,7 +7,7 @@
                     label="آدرس مسیر"
                     direction="ltr"
                     placeholder="نام مسیر"
-                    prefix="pinoox.com/"
+                    :prefix="domain + '/'"
             />
             <div class="flex justify-end mt-4">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
@@ -69,6 +69,8 @@ const props = defineProps({
 const appStore = useAppStore();
 const routeStore = useRouteStore();
 
+const domain = computed(()=> window.location.hostname);
+
 const params = ref({
     path: '',
     packageName: null,
@@ -100,10 +102,11 @@ const goToPreviousStep = () => {
 };
 
 watch(() => props.payload, (data) => {
+
     params.value = {
-        path: data.path,
-        packageName: data.package,
-        oldPath: data.path,
+        path: data?.path,
+        packageName: data?.package,
+        oldPath: data?.path,
     }
 }, {
     immediate: true,
