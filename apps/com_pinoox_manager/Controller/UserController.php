@@ -23,7 +23,7 @@ use Pinoox\Portal\FileUploader;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Url;
 
-class UserController extends ApiController
+class UserController extends Api
 {
     public function deleteAvatar()
     {

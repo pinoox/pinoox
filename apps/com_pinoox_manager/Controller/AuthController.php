@@ -13,12 +13,11 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Token;
 use Pinoox\Component\User;
 use Pinoox\Model\UserModel;
 use Pinoox\Portal\Hash;
 
-class AuthController extends ApiController
+class AuthController extends Api
 {
     public function login(Request $request)
     {

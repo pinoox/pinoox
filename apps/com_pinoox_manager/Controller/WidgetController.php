@@ -19,7 +19,7 @@ use Morilog\Jalali\Jalalian;
 use Pinoox\Component\Date;
 use Pinoox\Component\File;
 
-class WidgetController
+class WidgetController extends Api
 {
     public function clock()
     {

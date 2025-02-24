@@ -15,12 +15,11 @@ namespace App\com_pinoox_manager\Controller;
 
 
 use App\com_pinoox_manager\Component\LangHelper;
-use App\com_pinoox_manager\Model\LangModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Lang;
 
-class OptionController extends ApiController
+class OptionController extends Api
 {
     public function changeBackground($name)
     {
