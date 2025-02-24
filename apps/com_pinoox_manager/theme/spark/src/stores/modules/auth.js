@@ -1,16 +1,16 @@
 import { defineStore } from 'pinia';
 import { authAPI } from "@api/auth.js";
-import {computed, ref} from "vue";
+import { computed, ref, watch } from "vue";
 
 const tokenKey = 'manager_pinoox';
 
 export const useAuthStore = defineStore('auth', () => {
     const auth = ref(false);
     const user = ref({});
+    const token = ref(localStorage.getItem(tokenKey) || null);
 
     const isAuth = computed(() => {
-        let loginKey = localStorage.getItem(tokenKey);
-        return !!loginKey && auth.value;
+        return !!token.value && auth.value;
     });
 
     const getUser = computed(() => user.value);
@@ -18,7 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     const logout = async () => {
         try {
             await authAPI.logout();
-            localStorage.removeItem(tokenKey);
+            token.value = null;
             auth.value = false;
             user.value = {};
         } catch (error) {
@@ -27,14 +27,14 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const login = (login_key) => {
-        localStorage.setItem(tokenKey, login_key);
+        token.value = login_key;
         auth.value = true;
     };
 
     const canUserAccess = async (refresh = false) => {
         if (!refresh) {
-            if (!!localStorage[tokenKey] && auth.value) return true;
-            if (!localStorage[tokenKey]) return false;
+            if (!!token.value && auth.value) return true;
+            if (!token.value) return false;
         }
 
         try {
@@ -47,6 +47,14 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
+    watch(token, (newToken) => {
+        if (newToken) {
+            localStorage.setItem(tokenKey, newToken);
+        } else {
+            localStorage.removeItem(tokenKey);
+        }
+    });
+
     return {
         auth,
         user,
@@ -54,6 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
         getUser,
         login,
         logout,
-        canUserAccess
+        canUserAccess,
+        token,
     };
 });

@@ -17,7 +17,7 @@ use Pinoox\Component\Http\Http;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Url;
 
-class AccountController extends ApiController
+class AccountController extends Api
 {
     public function getPinooxAuth()
     {
