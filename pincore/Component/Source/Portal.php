@@ -498,7 +498,7 @@ abstract class Portal
         return $name;
     }
 
-    public static function __app(): string
+    public static function __app(): ?string
     {
         return '~';
     }

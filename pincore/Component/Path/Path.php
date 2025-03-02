@@ -31,7 +31,7 @@ class Path implements PathInterface
         private readonly string          $basePath,
         private readonly ParserInterface $parser,
         private readonly EngineInterface $appEngine,
-        private string                   $package
+        private ?string                   $package
     )
     {
     }
@@ -62,7 +62,7 @@ class Path implements PathInterface
      * @return string
      * @throws \Exception
      */
-    public function get(string|ReferenceInterface $path = '', string $package = ''): string
+    public function get(string|ReferenceInterface $path = '', ?string $package = ''): string
     {
         $parser = $this->reference($path);
         $package = empty($package) ? $parser->getPackageName() : $package;
@@ -77,7 +77,7 @@ class Path implements PathInterface
         return $this->paths[$key] = $value;
     }
 
-    public function params(string|ReferenceInterface $path = '', string $package = ''): string
+    public function params(string|ReferenceInterface $path = '', ?string $package = ''): string
     {
         $basePath = $this->get('~');
         $path = $this->get($path, $package);
@@ -93,8 +93,9 @@ class Path implements PathInterface
 
     private function getManager(?string $packageName = null): PathManager
     {
+
         $pathManager = new PathManager();
-        if ($packageName === '~') {
+        if (empty($this->package )|| $packageName === '~') {
             $pathManager->setBasePath($this->basePath);
         } else if ($packageName && $this->appEngine->exists($packageName)) {
             $pathManager->setBasePath($this->appEngine->path($packageName));
