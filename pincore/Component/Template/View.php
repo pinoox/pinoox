@@ -273,8 +273,10 @@ class View implements ViewInterface
         }
 
         if ($exist) {
+            $folders = !is_array($this->folders) ? [$this->folders] : $this->folders;
+            $folders = implode(', ',$folders);
             $template = $this->parser->parse($name);
-            throw new \InvalidArgumentException(sprintf('The template "%s" does not exist.', $template));
+            throw new \InvalidArgumentException(sprintf('The template "%s" in "%s" theme does not exist.', $template,$folders));
         }
 
         return $result;

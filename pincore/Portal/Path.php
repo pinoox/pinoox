@@ -48,14 +48,15 @@ class Path extends Portal
 		    ->setArgument('parser', self::__ref('parser'))
 		    ->setArgument('appEngine', AppEngine::__instance())
 		    ->setArgument('package', App::package());
+
+
 	}
 
 
-	public static function __app(): string
+	public static function __app(): ?string
 	{
 		return App::package();
 	}
-
 
 	public static function createPath(string|ReferenceInterface $fileName, string $default = 'pincore'): string
 	{

@@ -15,8 +15,8 @@
             <div class="image"><img src="{{ url('~pincore/resource/images/logo.png') }}" alt="logo"></div>
             <div class="title">Welcome to <h2>Pinoox 2</h2></div>
             <div class="text">
-                <div class="path">c:\wamp\www\pinoox</div>
-                <div class="description">Your application is now ready and you can start working on it.</div>
+                <div class="path">{{ app().path() }}</div>
+                <div class="description">Your application is ready, but no routes are defined. Please set them up.</div>
             </div>
         </section>
 

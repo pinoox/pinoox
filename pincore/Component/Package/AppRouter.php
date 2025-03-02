@@ -87,7 +87,8 @@ class AppRouter
             }
         }
 
-        $path = !empty($path) ? $path : '';
+        $path = !empty($path) ? $path : '/';
+        $packageName = !empty($packageName) ? $packageName : 'com_pinoox_welcome';
         return new AppLayer($path, $packageName);
     }
 
