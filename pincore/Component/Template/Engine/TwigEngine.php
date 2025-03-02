@@ -24,7 +24,7 @@ use Twig\Error\LoaderError;
 use Twig\Extension\ExtensionInterface;
 use Twig\Loader\ArrayLoader;
 use Twig\Loader\ChainLoader;
-use Twig\Loader\FilesystemLoader;
+use Pinoox\Component\Template\Loader\FilesystemLoader;
 use Twig\Loader\LoaderInterface;
 use Twig\TwigFunction;
 use Twig\Error\RuntimeError;
@@ -46,11 +46,14 @@ class TwigEngine implements EngineInterface
      */
     public function __construct(TemplateNameParserInterface $parser, LoaderInterface|string|array $folder, ?string $rootPath = null)
     {
+
         if ($folder instanceof LoaderInterface) {
             $this->fileLoader = $folder;
         } else {
             $this->fileLoader = new FilesystemLoader($folder, $rootPath);
         }
+
+
         $this->arrayLoader = new ArrayLoader();
         $this->loader = new ChainLoader([
             $this->arrayLoader,
