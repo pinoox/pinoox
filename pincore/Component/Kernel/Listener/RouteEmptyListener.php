@@ -10,6 +10,7 @@ use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\Routing\Exception\NoConfigurationException;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 
 class RouteEmptyListener implements EventSubscriberInterface
 {
@@ -17,7 +18,7 @@ class RouteEmptyListener implements EventSubscriberInterface
     {
         $e = $event->getThrowable();
 
-        if ($e instanceof NotFoundHttpException && $e->getPrevious() instanceof NoConfigurationException) {
+        if ($e instanceof NotFoundHttpException && ($e->getPrevious() instanceof NoConfigurationException || $e->getPrevious() instanceof ResourceNotFoundException)) {
             $event->setResponse($this->createWelcomeResponse());
         }
     }
