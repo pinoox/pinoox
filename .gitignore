@@ -19,4 +19,10 @@ vendor
 
 # MacOS
 .DS_Store
- 
+
+# Apps - exclude all except welcome, manager, installer
+/apps/com_*
+!/apps/com_pinoox_welcome
+!/apps/com_pinoox_manager
+!/apps/com_pinoox_installer
+
