@@ -5,4 +5,6 @@ return [
     '~console',
     '~database',
     '~boot',
+    '~cache',
+    '~logger',
 ];
