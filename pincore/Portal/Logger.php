@@ -8,6 +8,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Level;
 use Monolog\Logger as MonologLogger;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Portal\App\App;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -53,7 +54,7 @@ class Logger extends Portal
 		$config = config('~pinoox')->get('log');
 
 		$path = $config['path'] ?? sys_get_temp_dir() . '/pinoox.log';
-		$channel = $config['channel'] ?? 'app';
+		$channel = ($config['channel'] ?? 'app') .'.'. App::package();;
 		$level = $config['level'] ?? Level::Debug;
 
 		// Register Monolog as the logger service
