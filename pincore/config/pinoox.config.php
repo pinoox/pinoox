@@ -15,6 +15,5 @@ return [
     'log' => [
         'path' => sys_get_temp_dir() . '/pinoox.log',
         'channel' => 'app',
-        'level' => \Monolog\Logger::DEBUG,
     ],
 ];

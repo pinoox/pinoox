@@ -5,7 +5,7 @@ namespace Pinoox\Portal;
 use DateTimeZone as ObjectPortal3;
 use Monolog\Handler\HandlerInterface as ObjectPortal1;
 use Monolog\Handler\StreamHandler;
-use Monolog\Level as ObjectPortal2;
+use Monolog\Level;
 use Monolog\Logger as MonologLogger;
 use Pinoox\Component\Source\Portal;
 use Psr\Log\LoggerInterface;
@@ -50,11 +50,11 @@ class Logger extends Portal
 	public static function __register(): void
 	{
 		// Load logger configuration
-		$config = Config::file('pinoox')->get('log');
+		$config = config('~pinoox')->get('log');
 
 		$path = $config['path'] ?? sys_get_temp_dir() . '/pinoox.log';
 		$channel = $config['channel'] ?? 'app';
-		$level = $config['level'] ?? MonologLogger::DEBUG;
+		$level = $config['level'] ?? Level::Debug;
 
 		// Register Monolog as the logger service
 		self::__bind(MonologLogger::class)

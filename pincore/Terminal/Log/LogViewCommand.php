@@ -1,6 +1,6 @@
 <?php
 
-namespace Pinoox\Terminal\Pincore;
+namespace Pinoox\Terminal\Log;
 
 use Pinoox\Component\Terminal;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -148,6 +148,11 @@ class LogViewCommand extends Terminal
     {
         $result = [];
         $f = fopen($filePath, "r");
+        
+        if (filesize($filePath) === 0) {
+            fclose($f);
+            return [];
+        }
         
         // Jump to the end of the file
         fseek($f, 0, SEEK_END);
