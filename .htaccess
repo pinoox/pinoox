@@ -4,12 +4,12 @@
 RewriteEngine On
 
 # Check if the environment is local or not
-RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1) [NC]
-RewriteRule ^ - [S=1]
+# RewriteCond %{HTTP_HOST} ^(localhost|127\.0\.0\.1) [NC]
+# RewriteRule ^ - [S=1]
 
 # Redirect to HTTPS if not local
-RewriteCond %{HTTPS} off
-RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
+# RewriteCond %{HTTPS} off
+# RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R,L]
 
 # Skip index.php direct access rule
 RewriteRule ^index\.php$ - [L]
