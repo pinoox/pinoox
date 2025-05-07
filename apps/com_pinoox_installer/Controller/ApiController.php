@@ -226,4 +226,4 @@ class ApiController extends Controller
         return ["status" => $status, "result" => $result];
     }
 }
-    
+

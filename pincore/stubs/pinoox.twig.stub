@@ -1,0 +1,14 @@
+const PINOOX = {
+    URL: {
+        CURRENT: window.location.href,
+        BASE: '{{ url("^/") }}',
+        API: '{{ url("^api/v1/") }}',
+        SITE: '{{ url("~") }}',
+        THEME: '{{ assets("/") }}',
+    },
+    OPTIONS: {
+        lang: '{{ currentLang }}',
+        version: '{{ config("~pinoox.version_name") }}',
+    },
+    LANG: {{ _lang|raw }},
+}; 
