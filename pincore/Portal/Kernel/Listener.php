@@ -25,6 +25,8 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Controller\ErrorController;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Database\DB;
+use Pinoox\Portal\Cache;
+use Pinoox\Portal\Logger;
 use Pinoox\Portal\Validation;
 use Symfony\Component\HttpKernel\EventListener\ErrorListener;
 use Symfony\Component\HttpKernel\EventListener\ResponseListener;
@@ -37,7 +39,7 @@ class Listener extends Portal
             ->setArgument('matcher', App::__ref())
             ->setArgument('requestStack', HttpKernel::__ref('request_stack'))
             ->setArgument('context', App::__ref('context'))
-            ->setArgument('logger', null)
+            ->setArgument('logger', Logger::__ref())
             ->setArgument('projectDir', null)
             ->setArgument('debug', false);
 

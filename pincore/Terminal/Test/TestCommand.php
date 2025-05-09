@@ -15,6 +15,7 @@ namespace Pinoox\Terminal\Test;
 
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\Path;
+use Pinoox\Portal\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -33,17 +34,21 @@ class TestCommand extends Terminal
         $this->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Filter tests by name or annotation')
             ->addOption('unit', 'u', InputOption::VALUE_NONE, 'Run only unit tests')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Run tests belonging to specific groups')
-            ->addOption('coverage', 'c', InputOption::VALUE_NONE, 'Generate code coverage report');
+            ->addOption('coverage', 'c', InputOption::VALUE_NONE, 'Generate code coverage report')
+            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'Run tests for specific app');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
+        // Set environment to test mode
+        Config::name('~pinoox')->set('mode', 'test');
+
         $this->info('Running tests...');
 
         $command = Path::get('~')  . '/vendor/bin/pest ';
-
+ 
         if ($input->getOption('filter'))
             $command .= ' --filter=' . $input->getOption('filter');
 
@@ -56,6 +61,16 @@ class TestCommand extends Terminal
         if ($input->getOption('unit'))
             $command .= ' --group=unit';
 
+        if ($input->getOption('app')) {
+            $appName = $input->getOption('app');
+            $appPath = Path::get('~') . '/apps/' . $appName;
+            
+            if (!is_dir($appPath)) {
+                $this->error("App '{$appName}' not found!");
+            }
+            
+            $command .= ' ' . $appPath . '/tests';
+        }
 
         // Execute the Pest tests
         passthru($command);

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="{{ currentLang|default('en') }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{appName}} - Pinoox App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.1.0/modern-normalize.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f0f2f5; margin:0; }
+        .wrapper { display:flex; justify-content:center; align-items:center; height:100vh; }
+        .card { background:#fff; padding:2rem; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.1); max-width:480px; text-align:center; }
+        .card h1 { margin-bottom:1rem; color:#333; }
+        .card p { margin-bottom:1.5rem; color:#555; }
+        .links a { margin:0 0.5rem; color:#007bff; text-decoration:none; }
+        .links a:hover { text-decoration:underline; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="card">
+            <h1>Welcome to {{appName}}</h1>
+            <p>Your Pinoox application is up and running.</p>
+            <div class="links">
+                <a href="https://pinoox.com" target="_blank">Official Website</a> |
+                <a href="https://github.com/pinoox/pinoox" target="_blank">GitHub</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
