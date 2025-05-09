@@ -6,6 +6,7 @@ const PINOOX = {
         API: '{{ url("^api/v1/") }}',
         SITE: '{{ url("~") }}',
         THEME: '{{ assets() }}',
+        MANAGER: '{{ getAppUrlFirst('com_pinoox_manager') }}',
         AVATAR: '{{ furl("resources/avatar.png") }}',
         APP_ICON: '{{ furl("resources/default.png") }}',
     },

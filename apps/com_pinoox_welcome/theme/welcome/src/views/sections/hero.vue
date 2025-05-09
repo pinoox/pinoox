@@ -9,7 +9,7 @@
                 <h2 class="title">{{ $t('title') }}</h2>
                 <h2 class="gradient-text gradientAnim">{{ $t('welcome') }}</h2>
 
-                <a class="btn btn-primary" href="">{{ $t('goToManager') }}</a>
+                <a class="btn btn-primary" :href="_url.MANAGER">{{ $t('goToManager') }}</a>
 
                 <p class="text">{{ $t('managerDescription') }}</p>
 

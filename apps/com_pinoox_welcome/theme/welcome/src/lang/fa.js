@@ -19,6 +19,7 @@ export default {
     github: 'گیت هاب',
     discord: 'دیسکورد',
     telegram: 'تلگرام',
+    instagram: 'اینستاگرام',
     youtube: 'یوتیوب',
     qAndA: 'پرسش و پاسخ',
     resources: 'منابع',

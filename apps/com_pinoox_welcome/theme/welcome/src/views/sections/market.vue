@@ -8,7 +8,7 @@
                     <h2 class="gradient-text">{{ $t('downloadApp') }}</h2>
                     <p class="text-dark">{{ $t('marketDescription') }}</p>
 
-                    <div class="btn btn-primary-outline">{{ $t('goToMarket') }}</div>
+                    <a target="_blank" class="btn btn-primary-outline" href="https://pinoox.com/market">{{ $t('goToMarket') }}</a>
 
                 </div>
                 <div class="section__market-solar">
