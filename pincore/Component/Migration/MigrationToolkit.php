@@ -99,7 +99,7 @@ class MigrationToolkit
     {
         $this->findMigrationPath();
         $migrations = $this->loadFiles();
-
+ 
         if (empty($migrations)) return $this;
 
         if ($this->action != 'create' && $this->action != 'init' && $this->isExistsMigrationTable()) {
@@ -113,6 +113,11 @@ class MigrationToolkit
 
                 if ($this->action === 'rollback' && empty($m['sync'])) continue;
                 if ($this->action === 'run' && !empty($m['sync'])) continue;
+
+                if ($this->tableExists($tableName) && $this->migrationRecordExists($fileName, $this->package)) {
+                    $messages[] = '⚠️ [' . $fileName . '] skipped (table already exists and record present)';
+                    continue;
+                }
 
                 try {
                     $this->migrations[] = [
@@ -257,11 +262,16 @@ class MigrationToolkit
      */
     private function extractTableName(string $fileName): ?string
     {
-        // Matches the table name in the format: `create_tableName_table`
         if (preg_match('/create_(.+)_table/', $fileName, $matches)) {
-            return $matches[1]; // Return the table name
+            $baseName = $matches[1];
+            // Add prefix based on package
+            if ($this->package === 'pincore') {
+                return 'pincore_' . $baseName;
+            } else {
+                return $this->package . '_' . $baseName;
+            }
         }
-        return null; // Return null if no table name could be extracted
+        return null;
     }
 
     public function getMigrationPath(): string
@@ -315,5 +325,22 @@ class MigrationToolkit
             MigrationQuery::fetchLatestBatch($this->package) : null;
 
         return MigrationQuery::fetchAllByBatch($batch, $this->package);
+    }
+
+    /**
+     * Check if a table exists in the database.
+     * @param string $tableName
+     * @return bool
+     */
+    private function tableExists(string $tableName): bool
+    {
+        echo "Checking for table: $tableName\n";
+        return $this->schema->hasTable($tableName);
+    }
+
+    private function migrationRecordExists(string $fileName, string $packageName): bool
+    {
+        echo "Checking migration record: $fileName, $packageName\n";
+        return MigrationQuery::is_exists($fileName, $packageName);
     }
 }
