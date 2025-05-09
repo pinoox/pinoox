@@ -46,6 +46,7 @@ use Pinoox\Portal\App\AppRouter;
  * @method static ObjectPortal1 request()
  * @method static referer()
  * @method static current()
+ * @method static array getAppUrls(string $packageName)
  * @method static \Pinoox\Component\Path\Url ___()
  *
  * @see \Pinoox\Component\Path\Url
