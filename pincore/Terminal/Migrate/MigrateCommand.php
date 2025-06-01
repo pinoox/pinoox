@@ -36,13 +36,22 @@ class MigrateCommand extends Terminal
     protected function configure(): void
     {
         $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to migrate schemas', $this->getDefaultPackage());
-        $this->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints');;
+        $this->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints');
+        $this->addOption('dbconfig', null, null, 'Show current database configuration');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
         $ignoreFk = $input->getOption('ignore-fk');
+        if ($input->getOption('dbconfig')) {
+            $config = \Pinoox\Portal\Database\DB::connection()->getConfig();
+            $output->writeln('<info>Current Database Configuration:</info>');
+            foreach ($config as $key => $value) {
+                $output->writeln("$key: $value");
+            }
+            return 0;
+        }
         try {
             $package = $input->getArgument('package');
 
