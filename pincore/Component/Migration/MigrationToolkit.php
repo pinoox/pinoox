@@ -20,175 +20,100 @@ use Symfony\Component\Finder\Finder;
 
 class MigrationToolkit
 {
-    /**
-     * The schema manager instance.
-     * @var Builder
-     */
-    private $schema;
+    // Constants for actions
+    private const ACTION_RUN = 'run';
+    private const ACTION_ROLLBACK = 'rollback';
+    private const ACTION_INIT = 'init';
+    private const ACTION_CREATE = 'create';
 
-    /**
-     * Package name
-     * @var string
-     */
-    private string $package;
+    // Constants for patterns
+    private const TIMESTAMP_PATTERN = '/^\d{4}_\d{2}_\d{2}_\d{6}_/';
+    private const MIGRATION_FILENAME_PATTERN = '/(\d{4}_\d{2}_\d{2}_\d{6})/';
 
-    /**
-     * Path of migration files
-     * @var string
-     */
-    private string $migrationPath;
+    // Table name extraction patterns (order matters - more specific patterns first)
+    private const TABLE_NAME_PATTERNS = [
+        'create_table' => '/^create_(.+)_table$/',
+        'drop_table' => '/^drop_(.+)_table$/',
+        'alter_table' => '/^alter_(.+)_table$/',
+        'add_to' => '/^add_.+_to_(.+)$/',
+        'drop_from' => '/^drop_.+_from_(.+)$/',
+        'remove_from' => '/^remove_.+_from_(.+)$/',
+        'modify_in' => '/^modify_.+_in_(.+)$/',
+        'update_in' => '/^update_.+_in_(.+)$/',
+        'rename_in' => '/^rename_.+_in_(.+)$/',
+    ];
 
-    private string $migrationName;
-
+    private Builder $schema;
+    private string $package = '';
+    private string $migrationPath = '';
+    private string $migrationName = '';
+    private string $tableName = '';
     private string $migrationFolder = 'migrations';
-
-    /**
-     * Actions: rollback, run, init, status
-     * @var string
-     */
-    private string $action = 'run';
-
-    /**
-     * Errors
-     * @var array|string
-     */
-    private string|array $errors = [];
-
-    /**
-     * Migration files list
-     * @var array
-     */
+    private string $action = self::ACTION_RUN;
+    private array $errors = [];
     private array $migrations = [];
 
     public function __construct()
     {
-        // Use DB::schema() directly to get the schema manager
-        $this->schema = DB::schema(); // Make sure DB::schema() returns a valid schema instance
+        $this->schema = DB::schema();
     }
 
-    public function package($val): self
+    public function package(string $package): self
     {
-        $this->package = $val;
+        $this->package = $package;
         return $this;
     }
 
-    /**
-     * Provide access to the schema manager.
-     * @return Builder
-     */
     public function schema(): Builder
     {
         return $this->schema;
     }
 
-    /**
-     * Actions: init, run, rollback, create
-     * @return $this
-     */
-    public function action($action): self
+    public function action(string $action): self
     {
+        $validActions = [self::ACTION_RUN, self::ACTION_ROLLBACK, self::ACTION_INIT, self::ACTION_CREATE];
+
+        if (!in_array($action, $validActions)) {
+            throw new \InvalidArgumentException("Invalid action: {$action}. Valid actions are: " . implode(', ', $validActions));
+        }
+
         $this->action = $action;
         return $this;
     }
 
     /**
-     * Load migration files.
-     * @throws \Exception
+     * Load migration files and prepare them for execution
      */
     public function load(): self
     {
-        $this->findMigrationPath();
-        $migrations = $this->loadFiles();
+        try {
+            $this->initializeMigrationPath();
+            $migrations = $this->loadMigrationFiles();
 
-        if (empty($migrations)) return $this;
-
-        if ($this->action != 'create' && $this->action != 'init' && $this->isExistsMigrationTable()) {
-            $migrations = $this->syncWithDB($migrations);
-        }
-
-        if (!empty($migrations)) {
-            foreach ($migrations as $m) {
-                list($fileName, $migrationFile) = $this->extract($m);
-                $tableName = $this->extractTableName($fileName); // Extract table name
-
-                if ($this->action === 'rollback' && empty($m['sync'])) continue;
-                if ($this->action === 'run' && !empty($m['sync'])) continue;
-
-                try {
-                    $this->migrations[] = [
-                        'sync' => $m['sync'],
-                        'packageName' => $this->package,
-                        'migrationFile' => $migrationFile,
-                        'fileName' => $fileName,
-                        'tableName' => $tableName, // Add the table name to the migration array
-                    ];
-                } catch (\Exception $e) {
-                    $this->setError($e);
-                }
+            if (empty($migrations)) {
+                return $this;
             }
+
+            if ($this->shouldSyncWithDatabase()) {
+                $migrations = $this->syncWithDatabase($migrations);
+            }
+
+            $this->processMigrations($migrations);
+        } catch (\Exception $e) {
+            $this->addError($e);
         }
 
         return $this;
     }
 
-    /**
-     * Check if the migration table exists in the database.
-     * @throws \Exception
-     */
     public function isExistsMigrationTable(): bool
     {
-        // Use the schema manager to check if the migration table exists
-        return $this->schema->hasTable(Table::MIGRATION);
-    }
-
-    /**
-     * Load migration files from the migration path.
-     * @return array
-     */
-    private function loadFiles(): array
-    {
-        if (!file_exists($this->migrationPath)) {
-            mkdir($this->migrationPath, 0755, true);
+        try {
+            return $this->schema->hasTable(Table::MIGRATION);
+        } catch (\Exception $e) {
+            $this->addError($e);
+            return false;
         }
-
-        $files = [];
-        $finder = new Finder();
-        $finder->in($this->migrationPath)->files();
-
-        foreach ($finder as $f) {
-            $filename = $f->getBasename('.php');
-
-            if ($this->action == 'init' && !str_contains($filename, 'migration')
-                || $this->action == 'run' && str_contains($filename, 'migration')) {
-                continue;
-            }
-
-            preg_match('/(\d{4}_\d{2}_\d{2}_\d{6})/', $filename, $matches);
-            $timestamp = $matches[1] ?? null;
-            if (!$timestamp) continue;
-
-            $files[] = [
-                'sync' => false,
-                'path' => $f->getRealPath(),
-                'migration' => $filename,
-                'timestamp' => $timestamp,
-            ];
-        }
-
-        // Sort files based on the timestamp in ascending order
-        usort($files, function ($a, $b) {
-            return strcmp($a['timestamp'], $b['timestamp']);
-        });
-
-        return $files;
-    }
-
-    private function extract($item): array
-    {
-        $fileName = $this->getFileName($item);
-        $migrationFile = $this->migrationPath . '/' . $fileName . '.php';
-
-        return [$fileName, $migrationFile];
     }
 
     public function getMigrations(): array
@@ -201,67 +126,19 @@ class MigrationToolkit
         return $this->migrationPath . '/' . $this->migrationName;
     }
 
-    public function generateMigrationFileName($modelName): void
+    public function generateMigrationFileName(string $modelName): void
     {
-        // Get the current timestamp in the required format
         $timestamp = date('Y_m_d_His');
-        $modelName = $this->snakeCase($modelName);
-
-        // Convert the model name to snake_case and add "create_" prefix
+        $modelName = $this->toSnakeCase($modelName);
         $name = 'create_' . $modelName . '_table';
 
         $this->migrationName = $timestamp . '_' . $name;
         $this->tableName = $this->makeTableName($modelName);
     }
 
-    private function makeTableName($modelName): string
-    {
-        return AppEngine::config($this->package)->get('package') . '_' . $this->snakeCase($modelName);
-    }
-
     public function getTableName(): string
     {
         return $this->tableName;
-    }
-
-    private function snakeCase($string): string
-    {
-        // Replace spaces and underscores with dashes
-        $string = str_replace([' ', '_'], '_', $string);
-
-        // Convert the string to lowercase
-        return strtolower($string);
-    }
-
-    private function getFileName($file): string
-    {
-        if (is_array($file)) {
-            return $file['migration'];
-        }
-        return basename($file, '.php');
-    }
-
-    private function findMigrationPath(): void
-    {
-        if ($this->package == 'pincore')
-            $this->migrationPath = path('~pincore') . '/Database/' . $this->migrationFolder;
-        else
-            $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
-    }
-
-    /**
-     * Extract the table name from the migration file name.
-     * Assumes file names follow the convention `timestamp_create_tableName_table`.
-     * @param string $fileName
-     * @return string|null
-     */
-    private function extractTableName(string $fileName): ?string
-    {
-        // Matches the table name in the format: `create_tableName_table`
-        if (preg_match('/create_(.+)_table/', $fileName, $matches)) {
-            return $matches[1]; // Return the table name
-        }
-        return null; // Return null if no table name could be extracted
     }
 
     public function getMigrationPath(): string
@@ -274,45 +151,283 @@ class MigrationToolkit
         return $this->migrationName;
     }
 
-    public function getErrors($end = true)
+    public function getErrors(bool $latest = true): array|string
     {
-        if ($end) return end($this->errors);
+        if ($latest) {
+            return end($this->errors) ?: '';
+        }
         return $this->errors;
     }
 
     public function isSuccess(): bool
     {
-        if (empty($this->getErrors()))
+        return empty($this->errors);
+    }
+
+    /**
+     * Initialize migration path based on package
+     */
+    private function initializeMigrationPath(): void
+    {
+        if ($this->package === 'pincore') {
+            $this->migrationPath = path('~pincore') . '/Database/' . $this->migrationFolder;
+        } else {
+            $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
+        }
+    }
+
+    /**
+     * Load migration files from the migration directory
+     */
+    private function loadMigrationFiles(): array
+    {
+        $this->ensureMigrationDirectoryExists();
+
+        $files = [];
+        $finder = new Finder();
+
+        if (!is_dir($this->migrationPath)) {
+            return $files;
+        }
+
+        $finder->in($this->migrationPath)->files()->name('*.php');
+
+        foreach ($finder as $file) {
+            $filename = $file->getBasename('.php');
+
+            if ($this->shouldSkipFile($filename)) {
+                continue;
+            }
+
+            $timestamp = $this->extractTimestamp($filename);
+            if (!$timestamp) {
+                continue;
+            }
+
+            $files[] = [
+                'sync' => false,
+                'path' => $file->getRealPath(),
+                'migration' => $filename,
+                'timestamp' => $timestamp,
+            ];
+        }
+
+        return $this->sortFilesByTimestamp($files);
+    }
+
+    /**
+     * Check if we should sync migrations with database
+     */
+    private function shouldSyncWithDatabase(): bool
+    {
+        return !in_array($this->action, [self::ACTION_CREATE, self::ACTION_INIT])
+            && $this->isExistsMigrationTable();
+    }
+
+    /**
+     * Process loaded migrations based on action
+     */
+    private function processMigrations(array $migrations): void
+    {
+        foreach ($migrations as $migration) {
+            if ($this->shouldSkipMigration($migration)) {
+                continue;
+            }
+
+            try {
+                [$fileName, $migrationFile] = $this->extractMigrationInfo($migration);
+                $tableName = $this->extractTableName($fileName);
+
+                $this->migrations[] = [
+                    'sync' => $migration['sync'],
+                    'packageName' => $this->package,
+                    'migrationFile' => $migrationFile,
+                    'fileName' => $fileName,
+                    'tableName' => $tableName,
+                ];
+            } catch (\Exception $e) {
+                $this->addError($e);
+            }
+        }
+    }
+
+    /**
+     * Check if a migration file should be skipped based on action
+     */
+    private function shouldSkipFile(string $filename): bool
+    {
+        if ($this->action === self::ACTION_INIT && !str_contains($filename, 'migration')) {
             return true;
+        }
+
+        if ($this->action === self::ACTION_RUN && str_contains($filename, 'migration')) {
+            return true;
+        }
+
         return false;
     }
 
-    private function setError($err): void
+    /**
+     * Check if a migration should be skipped based on sync status
+     */
+    private function shouldSkipMigration(array $migration): bool
     {
-        $this->errors[] = $err;
+        if ($this->action === self::ACTION_ROLLBACK && empty($migration['sync'])) {
+            return true;
+        }
+
+        if ($this->action === self::ACTION_RUN && !empty($migration['sync'])) {
+            return true;
+        }
+
+        return false;
     }
 
-    private function syncWithDB($migrations): array
+    /**
+     * Extract timestamp from migration filename
+     */
+    private function extractTimestamp(string $filename): ?string
     {
-        if (empty($migrations)) return [];
+        if (preg_match(self::MIGRATION_FILENAME_PATTERN, $filename, $matches)) {
+            return $matches[1];
+        }
+        return null;
+    }
 
-        $records = $this->getFromDB();
+    /**
+     * Sort migration files by timestamp in ascending order
+     */
+    private function sortFilesByTimestamp(array $files): array
+    {
+        usort($files, fn($a, $b) => strcmp($a['timestamp'], $b['timestamp']));
+        return $files;
+    }
 
-        // Find migrations in database
-        return array_map(function ($m) use ($records) {
-            $index = array_search($m['migration'], array_column($records, 'migration'));
+    /**
+     * Extract migration info from migration item
+     */
+    private function extractMigrationInfo(array $migration): array
+    {
+        $fileName = $this->getFileName($migration);
+        $migrationFile = $this->migrationPath . '/' . $fileName . '.php';
+        return [$fileName, $migrationFile];
+    }
+
+    /**
+     * Extract the table name from migration filename using pattern matching
+     */
+    private function extractTableName(string $fileName): ?string
+    {
+        // Remove timestamp prefix
+        $cleanFileName = preg_replace(self::TIMESTAMP_PATTERN, '', $fileName);
+
+        // Try each pattern until we find a match
+        foreach (self::TABLE_NAME_PATTERNS as $patternName => $pattern) {
+            if (preg_match($pattern, $cleanFileName, $matches)) {
+                return $matches[1];
+            }
+        }
+
+        // Fallback: use the last meaningful part
+        return $this->extractTableNameFallback($cleanFileName);
+    }
+
+    /**
+     * Fallback method to extract table name when no pattern matches
+     */
+    private function extractTableNameFallback(string $fileName): ?string
+    {
+        $parts = explode('_', $fileName);
+
+        if (count($parts) >= 2) {
+            // Return the last part as potential table name
+            return end($parts);
+        }
+
+        return null;
+    }
+
+    /**
+     * Ensure migration directory exists
+     */
+    private function ensureMigrationDirectoryExists(): void
+    {
+        if (!file_exists($this->migrationPath)) {
+            mkdir($this->migrationPath, 0755, true);
+        }
+    }
+
+    /**
+     * Convert string to snake_case
+     */
+    private function toSnakeCase(string $string): string
+    {
+        $string = str_replace([' ', '_'], '_', $string);
+        return strtolower($string);
+    }
+
+    /**
+     * Create table name with package prefix
+     */
+    private function makeTableName(string $modelName): string
+    {
+        $packageName = AppEngine::config($this->package)->get('package');
+        return $packageName . '_' . $this->toSnakeCase($modelName);
+    }
+
+    /**
+     * Get filename from migration array or string
+     */
+    private function getFileName(array|string $file): string
+    {
+        if (is_array($file)) {
+            return $file['migration'];
+        }
+        return basename($file, '.php');
+    }
+
+    /**
+     * Add error to the errors array
+     */
+    private function addError(\Exception|\Throwable|string $error): void
+    {
+        if ($error instanceof \Exception || $error instanceof \Throwable) {
+            $this->errors[] = $error->getMessage();
+        } else {
+            $this->errors[] = $error;
+        }
+    }
+
+    /**
+     * Sync migrations with database records
+     */
+    private function syncWithDatabase(array $migrations): array
+    {
+        if (empty($migrations)) {
+            return [];
+        }
+
+        $records = $this->getFromDatabase();
+
+        return array_map(function ($migration) use ($records) {
+            $index = array_search($migration['migration'], array_column($records, 'migration'));
 
             if ($index !== false) {
-                $m['sync'] = $records[$index] ?? null;
+                $migration['sync'] = $records[$index] ?? null;
             }
-            return $m;
+
+            return $migration;
         }, $migrations);
     }
 
-    private function getFromDB(): ?array
+    /**
+     * Get migration records from database
+     */
+    private function getFromDatabase(): ?array
     {
-        $batch = $this->action == 'rollback' ?
-            MigrationQuery::fetchLatestBatch($this->package) : null;
+        $batch = $this->action === self::ACTION_ROLLBACK
+            ? MigrationQuery::fetchLatestBatch($this->package)
+            : null;
 
         return MigrationQuery::fetchAllByBatch($batch, $this->package);
     }
