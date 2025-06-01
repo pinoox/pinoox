@@ -25,6 +25,7 @@ class MigrationToolkit
     private const ACTION_ROLLBACK = 'rollback';
     private const ACTION_INIT = 'init';
     private const ACTION_CREATE = 'create';
+    private const ACTION_STATUS = 'status';
 
     // Constants for patterns
     private const TIMESTAMP_PATTERN = '/^\d{4}_\d{2}_\d{2}_\d{6}_/';
@@ -71,7 +72,7 @@ class MigrationToolkit
 
     public function action(string $action): self
     {
-        $validActions = [self::ACTION_RUN, self::ACTION_ROLLBACK, self::ACTION_INIT, self::ACTION_CREATE];
+        $validActions = [self::ACTION_RUN, self::ACTION_ROLLBACK, self::ACTION_INIT, self::ACTION_CREATE, self::ACTION_STATUS];
 
         if (!in_array($action, $validActions)) {
             throw new \InvalidArgumentException("Invalid action: {$action}. Valid actions are: " . implode(', ', $validActions));
