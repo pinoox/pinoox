@@ -226,11 +226,11 @@ class File
         if (is_array($file)) {
             foreach ($file as $f) {
                 if (is_file($f))
-                    unlink($f);
+                    @unlink($f);
             }
         } else {
             if (is_file($file))
-                unlink($file);
+                @unlink($file);
         }
     }
 
