@@ -169,7 +169,8 @@ class Pinker
 
     public function remove(): void
     {
-        $this->fileHandler->remove($this->bakedFile);
+        if(is_file($this->bakedFile))
+            $this->fileHandler->remove($this->bakedFile);
     }
 
     public function getInfo(?string $key = null): array|string|null

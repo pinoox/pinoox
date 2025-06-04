@@ -221,7 +221,8 @@ class User
     public static function get($field = null)
     {
         $token = self::getToken();
-        $user_id = @$token['user_id'];
+        $tokenData = self::getTokenData();
+        $user_id = @$tokenData['user_id'];
         if ($user_id && empty(self::$user)) {
             $user = UserModel::where('user_id', $user_id)
                 ->first();

@@ -34,7 +34,7 @@ class FileHandler implements FileHandlerInterface
     public function retrieve(string $file)
     {
         if (is_file($file)) {
-            return include $file;
+            return @include $file;
         }
 
         return null;
