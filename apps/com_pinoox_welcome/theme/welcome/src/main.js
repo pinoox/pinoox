@@ -42,6 +42,7 @@ app.config.globalProperties.$te = i18n.global.te;
 app.config.globalProperties.$n = i18n.global.n;
 app.config.globalProperties.$rt = i18n.global.rt;
 app.config.globalProperties.$d = i18n.global.d;
+app.config.globalProperties._url = PINOOX.URL;
 
 //---------------------------- Mount ----------------------------
 app.mount("#app");

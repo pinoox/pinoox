@@ -93,6 +93,8 @@ class View implements ViewInterface
             'vite',
             'user',
             'isLogin',
+            'getAppUrls',
+            'getAppUrlFirst',
         ]));
 
         // add custom functions

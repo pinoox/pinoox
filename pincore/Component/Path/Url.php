@@ -14,7 +14,6 @@
 namespace Pinoox\Component\Path;
 
 
-use Pinoox\Component\Dir;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Package\App;
@@ -248,4 +247,23 @@ class Url implements UrlInterface
         return $this->request->getUri();
     }
 
+    /**
+     * Get all URLs for a specific app
+     * 
+     * @param string $packageName The package name of the app
+     * @return array Array of URLs for the app
+     */
+    public function getAppUrls(string $packageName): array
+    {
+        $routes = $this->appRouter->get();
+        $appUrls = [];
+        
+        foreach ($routes as $path => $app) {
+            if ($app === $packageName) {
+                $appUrls[] = $this->site() . $path;
+            }
+        }
+        
+        return $appUrls;
+    }
 }

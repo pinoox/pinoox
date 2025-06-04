@@ -42,3 +42,18 @@ if (!function_exists('path')) {
         return Path::get($path, $package);
     }
 }
+
+if (!function_exists('getAppUrls')) {
+    function getAppUrls($package)
+    {
+        return Url::getAppUrls($package);
+    }
+}
+
+if (!function_exists('getAppUrlFirst')) {
+    function getAppUrlFirst($package)
+    {
+        $urls = Url::getAppUrls($package);
+        return $urls[0] ?? '#';
+    }
+}

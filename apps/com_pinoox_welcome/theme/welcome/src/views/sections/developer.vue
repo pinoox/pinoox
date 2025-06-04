@@ -23,7 +23,7 @@
                             <div class="gradient-text">{{ $t('becomeDeveloper') }}</div>
                             <p class="text">{{ $t('developerDescription') }}</p>
 
-                            <div class="btn btn-primary-outline">{{ $t('register') }}</div>
+                            <a target="_blank" href="https://pinoox.com/developer" class="btn btn-primary-outline">{{ $t('register') }}</a>
                         </div>
 
 
