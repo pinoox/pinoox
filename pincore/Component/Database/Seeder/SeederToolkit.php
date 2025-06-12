@@ -19,7 +19,7 @@ class SeederToolkit
 {
     private string $package = '';
     private string $seederPath = '';
-    private string $seederFolder = 'seeders';
+    private string $seederFolder = 'Database/Seeders';
     private array $errors = [];
     private array $seeders = [];
 
@@ -62,7 +62,7 @@ class SeederToolkit
     private function initializeSeederPath(): void
     {
         if ($this->package === 'pincore') {
-            $this->seederPath = path('~pincore') . '/Database/' . $this->seederFolder;
+            $this->seederPath = path('~pincore') . '/' . $this->seederFolder;
         } else {
             $this->seederPath = AppEngine::path($this->package) . '/' . $this->seederFolder;
         }
