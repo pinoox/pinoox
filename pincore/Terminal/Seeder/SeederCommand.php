@@ -41,41 +41,71 @@ class SeederCommand extends Terminal
         
         $package = $input->getArgument('package');
         $class = $input->getOption('class');
-
+ 
         try {
             $toolkit = new SeederToolkit();
             $toolkit->package($package)->load();
 
             if (!$toolkit->isSuccess()) {
-                $output->writeln("<e>" . $toolkit->getErrors() . "</e>");
+                $this->error($toolkit->getErrors());
                 return Command::FAILURE;
             }
 
             $seeders = $toolkit->getSeeders();
             if (empty($seeders)) {
-                $output->writeln("<comment>No seeders found.</comment>");
+                $this->warning('No seeders found in package: ' . $package);
+                $this->info('Create a seeder using: php pinoox seeder:create YourSeederName ' . $package);
+                $this->newLine();
                 return Command::SUCCESS;
             }
 
+            // Show seeding start message
+            $this->newLine();
+            $this->info('🌱 Running seeders for package: ' . $package);
+            $this->newLine();
+
+            $successCount = 0;
+            $failCount = 0;
+
             foreach ($seeders as $seeder) {
+                // Skip if specific class is requested and this isn't it
                 if ($class && $seeder['class'] !== $class) {
                     continue;
                 }
 
                 try {
+                    // Extract seeder name from full class name
+                    $seederName = basename(str_replace('\\', '/', $seeder['class']));
+                    
+                    $this->info('  Running: ' . $seederName . '...');
                     $seeder['instance']->run();
-                    $output->writeln("<info>✓ Seeded: " . $seeder['class'] . "</info>");
+                    $this->success('  ✓ ' . $seederName . ' completed successfully');
+                    $this->newLine();
+                    $successCount++;
                 } catch (\Exception $e) {
-                    $output->writeln("<e>✗ Failed to seed " . $seeder['class'] . ": " . $e->getMessage() . "</e>");
+                    $this->error('  ✗ ' . $seederName . ' failed: ' . $e->getMessage());
+                    $this->newLine();
+                    $failCount++;
                     if (!$input->getOption('force')) {
                         return Command::FAILURE;
                     }
                 }
             }
 
-            return Command::SUCCESS;
+            // Show summary
+            $this->newLine();
+            $this->info('📊 Seeding Summary:');
+            $this->info('  Total seeders: ' . count($seeders));
+            $this->success('  Successful: ' . $successCount);
+            if ($failCount > 0) {
+                $this->error('  Failed: ' . $failCount);
+            }
+            $this->newLine();
+
+            return $failCount === 0 ? Command::SUCCESS : Command::FAILURE;
+
         } catch (\Exception $e) {
-            $output->writeln("<e>" . $e->getMessage() . "</e>");
+            $this->error($e->getMessage());
             return Command::FAILURE;
         }
     }
