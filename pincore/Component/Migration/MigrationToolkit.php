@@ -14,6 +14,7 @@ namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Schema\Builder;
 use Pinoox\Model\Table;
+use Pinoox\Model\MigrationModel;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
 use Symfony\Component\Finder\Finder;
@@ -95,6 +96,24 @@ class MigrationToolkit
                 return $this;
             }
 
+            // If migration table doesn't exist, create it first
+            if (!$this->isExistsMigrationTable()) {
+                $migrationTableMigration = null;
+                foreach ($migrations as $migration) {
+                    $migrationInfo = $this->extractMigrationInfo($migration);
+                    if (strpos($migrationInfo['fileName'], 'create_migration_table') !== false) {
+                        $migrationTableMigration = $migrationInfo;
+                        break;
+                    }
+                }
+
+                if ($migrationTableMigration !== null) {
+                    $this->migrations = [$migrationTableMigration];
+                    return $this;
+                }
+            }
+
+            // For other cases, proceed normally
             if ($this->shouldSyncWithDatabase()) {
                 $migrations = $this->syncWithDatabase($migrations);
             }
@@ -206,9 +225,9 @@ class MigrationToolkit
             }
 
             $files[] = [
-                'sync' => false,
+                'file' => $filename,
                 'path' => $file->getRealPath(),
-                'migration' => $filename,
+                'sync' => false,
                 'timestamp' => $timestamp,
             ];
         }
@@ -226,29 +245,37 @@ class MigrationToolkit
     }
 
     /**
-     * Process loaded migrations based on action
+     * Process migration files and prepare them for execution
      */
     private function processMigrations(array $migrations): void
     {
+        $this->migrations = [];
+        $migrationTableMigration = null;
+
         foreach ($migrations as $migration) {
             if ($this->shouldSkipMigration($migration)) {
                 continue;
             }
 
-            try {
-                [$fileName, $migrationFile] = $this->extractMigrationInfo($migration);
-                $tableName = $this->extractTableName($fileName);
+            $migrationInfo = $this->extractMigrationInfo($migration);
 
-                $this->migrations[] = [
-                    'sync' => $migration['sync'],
-                    'packageName' => $this->package,
-                    'migrationFile' => $migrationFile,
-                    'fileName' => $fileName,
-                    'tableName' => $tableName,
-                ];
-            } catch (\Exception $e) {
-                $this->addError($e);
+            // If this is the migration table creation migration, handle it separately
+            if (strpos($migrationInfo['fileName'], 'create_migration_table') !== false) {
+                $migrationTableMigration = $migrationInfo;
+                continue;
             }
+
+            $this->migrations[] = $migrationInfo;
+        }
+
+        // Sort all other migrations by timestamp
+        if (!empty($this->migrations)) {
+            $this->migrations = $this->sortFilesByTimestamp($this->migrations);
+        }
+
+        // If we found the migration table creation migration, put it first
+        if ($migrationTableMigration !== null) {
+            array_unshift($this->migrations, $migrationTableMigration);
         }
     }
 
@@ -296,22 +323,38 @@ class MigrationToolkit
     }
 
     /**
-     * Sort migration files by timestamp in ascending order
+     * Sort files by timestamp
      */
     private function sortFilesByTimestamp(array $files): array
     {
-        usort($files, fn($a, $b) => strcmp($a['timestamp'], $b['timestamp']));
+        usort($files, function ($a, $b) {
+            return strcmp($a['timestamp'] ?? '', $b['timestamp'] ?? '');
+        });
+
         return $files;
     }
 
     /**
-     * Extract migration info from migration item
+     * Extract migration information from a migration file
      */
     private function extractMigrationInfo(array $migration): array
     {
-        $fileName = $this->getFileName($migration);
-        $migrationFile = $this->migrationPath . '/' . $fileName . '.php';
-        return [$fileName, $migrationFile];
+        try {
+            $fileName = $this->getFileName($migration);
+            $migrationFile = $migration['path'];
+            $tableName = $this->extractTableName($fileName);
+
+            return [
+                'sync' => $migration['sync'] ?? false,
+                'packageName' => $this->package,
+                'migrationFile' => $migrationFile,
+                'fileName' => $fileName,
+                'tableName' => $tableName,
+            ];
+        } catch (\Exception $e) {
+            $this->addError($e);
+            throw $e;
+        }
     }
 
     /**
@@ -377,14 +420,14 @@ class MigrationToolkit
     }
 
     /**
-     * Get filename from migration array or string
+     * Get filename from migration item
      */
     private function getFileName(array|string $file): string
     {
-        if (is_array($file)) {
-            return $file['migration'];
+        if (is_string($file)) {
+            return $file;
         }
-        return basename($file, '.php');
+        return $file['file'];
     }
 
     /**
@@ -404,32 +447,39 @@ class MigrationToolkit
      */
     private function syncWithDatabase(array $migrations): array
     {
-        if (empty($migrations)) {
-            return [];
+        $dbMigrations = $this->getFromDatabase();
+
+        if (empty($dbMigrations)) {
+            return $migrations;
         }
 
-        $records = $this->getFromDatabase();
-
-        return array_map(function ($migration) use ($records) {
-            $index = array_search($migration['migration'], array_column($records, 'migration'));
-
-            if ($index !== false) {
-                $migration['sync'] = $records[$index] ?? null;
+        foreach ($migrations as &$migration) {
+            $fileName = $this->getFileName($migration);
+            foreach ($dbMigrations as $dbMigration) {
+                if ($fileName === $dbMigration['migration']) {
+                    $migration['sync'] = true;
+                    break;
+                }
             }
+        }
 
-            return $migration;
-        }, $migrations);
+        return $migrations;
     }
 
     /**
-     * Get migration records from database
+     * Get migrations from database
      */
     private function getFromDatabase(): ?array
     {
-        $batch = $this->action === self::ACTION_ROLLBACK
-            ? MigrationQuery::fetchLatestBatch($this->package)
-            : null;
+        try {
+            if (!$this->isExistsMigrationTable()) {
+                return null;
+            }
 
-        return MigrationQuery::fetchAllByBatch($batch, $this->package);
+            return MigrationModel::where('app', $this->package)->get()->toArray();
+        } catch (\Exception $e) {
+            $this->addError($e);
+            return null;
+        }
     }
 }

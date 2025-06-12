@@ -15,6 +15,7 @@ namespace Pinoox\Component\Migration;
 use Exception;
 use Illuminate\Database\QueryException;
 use Pinoox\Portal\Database\DB;
+use Pinoox\Model\MigrationModel;
 
 /**
  * Enhanced Migrator class with comprehensive migration management
@@ -112,6 +113,16 @@ class Migrator
     public function init(): array
     {
         try {
+            // For pincore package, we don't need locking
+            if ($this->package === 'pincore') {
+                $this->log('Initializing migration system...');
+                $this->toolkit->package('pincore')->action('init')->load();
+                if (!$this->toolkit->isSuccess()) {
+                    throw new Exception($this->toolkit->getErrors());
+                }
+                return $this->executeMigrations();
+            }
+
             $this->acquireLock();
             $this->log('Initializing migration system...');
 
@@ -134,7 +145,9 @@ class Migrator
             $this->log('Initialization failed: ' . $e->getMessage(), 'error');
             throw $e;
         } finally {
-            $this->releaseLock();
+            if ($this->package !== 'pincore') {
+                $this->releaseLock();
+            }
         }
     }
 
@@ -144,6 +157,20 @@ class Migrator
     public function run(): array
     {
         try {
+            // For pincore package, we don't need locking or foreign key checks
+            if ($this->package === 'pincore') {
+                // If migration table doesn't exist, initialize it first
+                if (!$this->toolkit->isExistsMigrationTable()) {
+                    $this->init();
+                }
+
+                $this->toolkit->package($this->package)->action($this->action)->load();
+                if (!$this->toolkit->isSuccess()) {
+                    throw new Exception($this->toolkit->getErrors());
+                }
+                return $this->executeMigrations();
+            }
+
             $this->acquireLock();
             $this->log("Starting migration run for package: {$this->package}");
 
@@ -151,9 +178,8 @@ class Migrator
                 $this->createBackup();
             }
 
-            if ($this->toolkit->isExistsMigrationTable()) {
-                $this->synchronizeMigrationRecords();
-            }
+            // Reset first to ensure clean state
+            $this->reset();
 
             $this->toolkit->package($this->package)->action($this->action)->load();
 
@@ -161,16 +187,31 @@ class Migrator
                 throw new Exception($this->toolkit->getErrors());
             }
 
-            return $this->executeMigrations();
+            // Disable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+            try {
+                // Drop all existing tables for this package
+                $tables = DB::select("SHOW TABLES LIKE '{$this->package}_%'");
+                foreach ($tables as $table) {
+                    $tableName = reset($table);
+                    DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
+                }
+
+                $result = $this->executeMigrations();
+                return $result;
+            } finally {
+                // Re-enable foreign key checks
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                $this->releaseLock();
+                $this->finalizeStatistics();
+            }
         } catch (Exception $e) {
             $this->log('Migration run failed: ' . $e->getMessage(), 'error');
             if ($this->options['create_backup']) {
                 $this->log('Consider restoring from backup if needed.', 'warning');
             }
             throw $e;
-        } finally {
-            $this->releaseLock();
-            $this->finalizeStatistics();
         }
     }
 
@@ -258,8 +299,36 @@ class Migrator
     {
         $this->log('Starting migration reset (rollback all)');
 
-        $allMigrations = MigrationQuery::fetchAllByBatch(null, $this->package);
-        return $this->rollback(count($allMigrations));
+        try {
+            // Load migrations first
+            $this->toolkit->package($this->package)->action('status')->load();
+            $migrations = array_reverse($this->toolkit->getMigrations());
+
+            // Disable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+            try {
+                // Get all tables in the database
+                $tables = DB::select("SHOW TABLES LIKE '{$this->package}_%'");
+                
+                // Drop all matching tables
+                foreach ($tables as $table) {
+                    $tableName = reset($table);
+                    $this->log("Dropping table: {$tableName}");
+                    DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
+                }
+
+                // Delete all migration records for this package
+                MigrationModel::where('app', $this->package)->delete();
+
+                return ['Successfully reset all migrations for package: ' . $this->package];
+            } finally {
+                // Re-enable foreign key checks
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
+            }
+        } catch (Exception $e) {
+            throw new Exception("Failed to reset migrations: " . $e->getMessage());
+        }
     }
 
     /**
@@ -311,84 +380,85 @@ class Migrator
         $batch = $this->getNextBatchNumber();
         $messages = [];
 
-        foreach ($migrations as $migration) {
-            try {
-                if ($this->shouldSkipMigration($migration)) {
-                    $messages[] = "⚠️ Skipped: {$migration['fileName']} (already exists)";
-                    $this->statistics['skipped_migrations']++;
-                    continue;
-                }
+        // Only use transactions if the migration table exists and we're not creating it
+        $useTransactions = $this->useTransactions && 
+            ($this->toolkit->isExistsMigrationTable() || 
+            !$this->isMigrationTableCreation($migrations[0]));
 
-                if ($this->dryRun) {
-                    $messages[] = "[DRY RUN] Would migrate: {$migration['fileName']}";
-                    continue;
-                }
-
-                $this->executeSingleMigration($migration, $batch);
-                $messages[] = "✓ Migrated: {$migration['fileName']}";
-                $this->statistics['successful_migrations']++;
-
-            } catch (Exception $e) {
-                $messages[] = "✗ Failed: {$migration['fileName']} - " . $e->getMessage();
-                $this->statistics['failed_migrations']++;
-                $this->log("Migration failed: {$migration['fileName']} - " . $e->getMessage(), 'error');
-
-                if (!$this->options['force']) {
-                    throw $e;
-                }
-            }
+        if ($useTransactions) {
+            DB::beginTransaction();
         }
 
-        return $messages;
+        try {
+            foreach ($migrations as $migration) {
+                try {
+                    if ($this->shouldSkipMigration($migration)) {
+                        $messages[] = "⚠️ Skipped: {$migration['fileName']} (already exists)";
+                        $this->statistics['skipped_migrations']++;
+                        continue;
+                    }
+
+                    if ($this->dryRun) {
+                        $messages[] = "[DRY RUN] Would migrate: {$migration['fileName']}";
+                        continue;
+                    }
+
+                    $this->executeSingleMigration($migration, $batch);
+                    $messages[] = "✓ Migrated: {$migration['fileName']}";
+                    $this->statistics['successful_migrations']++;
+
+                } catch (Exception $e) {
+                    $messages[] = "✗ Failed: {$migration['fileName']} - " . $e->getMessage();
+                    $this->statistics['failed_migrations']++;
+                    $this->log("Migration failed: {$migration['fileName']} - " . $e->getMessage(), 'error');
+
+                    if (!$this->options['force']) {
+                        throw $e;
+                    }
+                }
+            }
+
+            if ($useTransactions) {
+                DB::commit();
+            }
+
+            return $messages;
+        } catch (Exception $e) {
+            if ($useTransactions) {
+                DB::rollback();
+            }
+            throw $e;
+        }
     }
 
     /**
-     * Execute a single migration with transaction support
+     * Execute a single migration
      */
     private function executeSingleMigration(array $migration, int $batch): void
     {
         $startTime = microtime(true);
 
-        if ($this->useTransactions) {
-            DB::beginTransaction();
-        }
-
         try {
             // Set execution timeout
             set_time_limit($this->timeout);
 
-            $class = require_once $migration['migrationFile'];
+            // Include the migration file and get the class instance
+            $migrationClass = require_once $migration['migrationFile'];
 
-            if (!method_exists($class, 'up')) {
-                throw new Exception("Migration {$migration['fileName']} does not have an 'up' method");
+            if (!is_object($migrationClass) || !method_exists($migrationClass, 'up')) {
+                throw new Exception("Migration {$migration['fileName']} does not have a valid 'up' method");
             }
 
-            $class->up();
+            // Execute the migration
+            $migrationClass->up();
 
+            // Only record the migration if it was successful
             MigrationQuery::insert($migration['fileName'], $migration['packageName'], $batch);
-
-            if ($this->useTransactions) {
-                DB::commit();
-            }
 
             $executionTime = microtime(true) - $startTime;
             $this->log("Executed {$migration['fileName']} in " . round($executionTime, 2) . "s");
 
-        } catch (QueryException $e) {
-            if ($this->useTransactions) {
-                DB::rollback();
-            }
-
-            if ($this->isTableAlreadyExistsError($e)) {
-                $this->log("Table already exists for {$migration['fileName']}, inserting record only");
-                MigrationQuery::insert($migration['fileName'], $migration['packageName'], $batch);
-            } else {
-                throw $e;
-            }
         } catch (Exception $e) {
-            if ($this->useTransactions) {
-                DB::rollback();
-            }
             throw $e;
         }
     }
@@ -409,10 +479,15 @@ class Migrator
                 throw new Exception("Migration file not found for: {$migration['migration']}");
             }
 
-            $class = require_once $migrationFile;
+            // Include the migration file and get the class instance
+            $migrationClass = require_once $migrationFile;
 
-            if (method_exists($class, 'down')) {
-                $class->down();
+            if (!is_object($migrationClass)) {
+                throw new Exception("Migration {$migration['migration']} does not return a valid class instance");
+            }
+
+            if (method_exists($migrationClass, 'down')) {
+                $migrationClass->down();
             } else {
                 $this->log("Warning: Migration {$migration['migration']} does not have a 'down' method", 'warning');
             }
@@ -475,8 +550,7 @@ class Migrator
      */
     private function shouldSkipMigration(array $migration): bool
     {
-        return $this->tableExists($migration['tableName']) &&
-            $this->migrationRecordExists($migration['fileName'], $migration['packageName']);
+        return $this->migrationRecordExists($migration['fileName'], $migration['packageName']);
     }
 
     /**
@@ -514,7 +588,7 @@ class Migrator
 
         if (file_exists($this->lockFile)) {
             $lockTime = filemtime($this->lockFile);
-            if (time() - $lockTime > $this->timeout) {
+            if (time() - $lockTime > 60) { // 1 minute timeout
                 unlink($this->lockFile);
                 $this->log('Removed stale migration lock', 'warning');
             } else {
@@ -522,7 +596,7 @@ class Migrator
             }
         }
 
-        file_put_contents($this->lockFile, getmypid());
+        file_put_contents($this->lockFile, time());
     }
 
     /**
@@ -620,5 +694,13 @@ class Migrator
         $this->statistics['execution_time'] = microtime(true) - $this->statistics['start_time'];
         $this->statistics['peak_memory'] = memory_get_peak_usage(true);
         $this->statistics['end_memory'] = memory_get_usage(true);
+    }
+
+    /**
+     * Check if a migration is for creating the migration table
+     */
+    private function isMigrationTableCreation(array $migration): bool
+    {
+        return strpos($migration['fileName'], 'create_migration_table') !== false;
     }
 }

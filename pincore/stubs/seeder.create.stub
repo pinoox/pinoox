@@ -1,0 +1,17 @@
+<?php
+{{ copyright }}
+
+namespace {{namespace}};
+
+use Pinoox\Component\Database\Seeder\SeederBase;
+
+return new class extends SeederBase
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Your seeding logic here
+    }
+}; 
