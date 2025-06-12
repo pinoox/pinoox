@@ -25,4 +25,7 @@ vendor
 !/apps/com_pinoox_welcome
 !/apps/com_pinoox_manager
 !/apps/com_pinoox_installer
+ 
 
+# Settings and Configs - only ignore config in settings
+/apps/**/setting/config/**
