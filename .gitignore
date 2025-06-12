@@ -26,3 +26,10 @@ vendor
 !/apps/com_pinoox_manager
 !/apps/com_pinoox_installer
 
+# Settings and Configs
+**/setting/config/
+**/setting/config/*
+**/config/*.local.php
+**/config/*.local.ini
+**/config/*.local.json
+

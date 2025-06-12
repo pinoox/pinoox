@@ -32,7 +32,7 @@ const props = defineProps({
     default: "rtl",
     validator: (value) => ["ltr", "rtl"].includes(value),
   },
-  prefix: String, // New prop for prefix text
+  prefix: String, 
 });
 
 // Emits
