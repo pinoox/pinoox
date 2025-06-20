@@ -482,4 +482,12 @@ class MigrationToolkit
             return null;
         }
     }
+
+    /**
+     * Get migration files for execution
+     */
+    public function getMigrationFiles(): array
+    {
+        return $this->loadMigrationFiles();
+    }
 }
