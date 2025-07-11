@@ -157,13 +157,14 @@ class Migrator
     public function run(): array
     {
         try {
+            // Check if migration table exists for all packages, initialize if needed
+            if (!$this->toolkit->isExistsMigrationTable()) {
+                $this->log("Migration table doesn't exist, initializing...");
+                $this->init();
+            }
+
             // For pincore package, we don't need locking or foreign key checks
             if ($this->package === 'pincore') {
-                // If migration table doesn't exist, initialize it first
-                if (!$this->toolkit->isExistsMigrationTable()) {
-                    $this->init();
-                }
-
                 $this->toolkit->package($this->package)->action($this->action)->load();
                 if (!$this->toolkit->isSuccess()) {
                     throw new Exception($this->toolkit->getErrors());
@@ -178,40 +179,28 @@ class Migrator
                 $this->createBackup();
             }
 
-            // Reset first to ensure clean state
-            $this->reset();
-
+            // Load migrations without resetting - we want to preserve existing data
             $this->toolkit->package($this->package)->action($this->action)->load();
 
             if (!$this->toolkit->isSuccess()) {
                 throw new Exception($this->toolkit->getErrors());
             }
 
-            // Disable foreign key checks
-            DB::statement('SET FOREIGN_KEY_CHECKS=0');
-
-            try {
-                // Drop all existing tables for this package
-                $tables = DB::select("SHOW TABLES LIKE '{$this->package}_%'");
-                foreach ($tables as $table) {
-                    $tableName = reset($table);
-                    DB::statement("DROP TABLE IF EXISTS `{$tableName}`");
-                }
-
-                $result = $this->executeMigrations();
-                return $result;
-            } finally {
-                // Re-enable foreign key checks
-                DB::statement('SET FOREIGN_KEY_CHECKS=1');
-                $this->releaseLock();
-                $this->finalizeStatistics();
-            }
+            // Execute migrations normally - don't drop existing tables
+            $result = $this->executeMigrations();
+            return $result;
+            
         } catch (Exception $e) {
             $this->log('Migration run failed: ' . $e->getMessage(), 'error');
             if ($this->options['create_backup']) {
                 $this->log('Consider restoring from backup if needed.', 'warning');
             }
             throw $e;
+        } finally {
+            if ($this->package !== 'pincore') {
+                $this->releaseLock();
+            }
+            $this->finalizeStatistics();
         }
     }
 
@@ -285,7 +274,6 @@ class Migrator
                 'table' => $migration['tableName'],
                 'status' => $record ? 'migrated' : 'pending',
                 'batch' => $record['batch'] ?? null,
-                'executed_at' => $record['executed_at'] ?? null,
             ];
         }
 
@@ -376,59 +364,108 @@ class Migrator
             return ['Nothing to migrate.'];
         }
 
-        $this->statistics['total_migrations'] = count($migrations);
-        $batch = $this->getNextBatchNumber();
-        $messages = [];
-
-        // Only use transactions if the migration table exists and we're not creating it
-        $useTransactions = $this->useTransactions && 
-            ($this->toolkit->isExistsMigrationTable() || 
-            !$this->isMigrationTableCreation($migrations[0]));
-
-        if ($useTransactions) {
-            DB::beginTransaction();
-        }
-
+        $executed = [];
+        $skipped = [];
+        
         try {
+            // Disable foreign key checks for this session
+            DB::statement('SET FOREIGN_KEY_CHECKS=0');
+            
             foreach ($migrations as $migration) {
+                $migrationName = $migration['fileName'];
+                
+                // Check if this migration has already been run
+                if ($this->hasBeenRun($migrationName)) {
+                    $skipped[] = $migrationName;
+                    $this->log("Skipping already executed migration: {$migrationName}");
+                    continue;
+                }
+                
+                // Skip if migration is marked as sync (already run)
+                if (!empty($migration['sync'])) {
+                    $skipped[] = $migrationName;
+                    $this->log("Skipping synchronized migration: {$migrationName}");
+                    continue;
+                }
+                
                 try {
-                    if ($this->shouldSkipMigration($migration)) {
-                        $messages[] = "⚠️ Skipped: {$migration['fileName']} (already exists)";
-                        $this->statistics['skipped_migrations']++;
-                        continue;
-                    }
-
-                    if ($this->dryRun) {
-                        $messages[] = "[DRY RUN] Would migrate: {$migration['fileName']}";
-                        continue;
-                    }
-
-                    $this->executeSingleMigration($migration, $batch);
-                    $messages[] = "✓ Migrated: {$migration['fileName']}";
-                    $this->statistics['successful_migrations']++;
-
+                    $this->log("Executing migration: {$migrationName}");
+                    
+                    // Execute the migration
+                    $migrationInstance = require $migration['migrationFile'];
+                    $migrationInstance->up();
+                    
+                    // Record that this migration has been run
+                    $this->recordMigration($migrationName);
+                    
+                    $executed[] = $migrationName;
+                    $this->log("Successfully executed migration: {$migrationName}");
+                    
                 } catch (Exception $e) {
-                    $messages[] = "✗ Failed: {$migration['fileName']} - " . $e->getMessage();
-                    $this->statistics['failed_migrations']++;
-                    $this->log("Migration failed: {$migration['fileName']} - " . $e->getMessage(), 'error');
-
-                    if (!$this->options['force']) {
-                        throw $e;
-                    }
+                    $this->log("Failed to execute migration {$migrationName}: " . $e->getMessage(), 'error');
+                    throw new Exception("Migration {$migrationName} failed: " . $e->getMessage());
                 }
             }
-
-            if ($useTransactions) {
-                DB::commit();
-            }
-
-            return $messages;
+            
+        } finally {
+            // Re-enable foreign key checks
+            DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        }
+        
+        return [
+            'executed' => $executed,
+            'skipped' => $skipped,
+            'total' => count($executed) + count($skipped)
+        ];
+    }
+    
+    private function hasBeenRun(string $migrationName): bool
+    {
+        try {
+            return DB::table('pincore_migration')
+                ->where('migration', $migrationName)
+                ->where('app', $this->package)
+                ->exists();
         } catch (Exception $e) {
-            if ($useTransactions) {
-                DB::rollback();
-            }
+            // If any error occurs (like table doesn't exist), assume migration hasn't been run
+            $this->log("Error checking migration status for {$migrationName}: " . $e->getMessage(), 'warning');
+            return false;
+        }
+    }
+    
+    private function recordMigration(string $migrationName): void
+    {
+        try {
+            DB::table('pincore_migration')->insert([
+                'migration' => $migrationName,
+                'app' => $this->package,
+                'batch' => $this->getBatchNumber(),
+            ]);
+            
+            $this->log("Successfully recorded migration: {$migrationName}");
+        } catch (Exception $e) {
+            $this->log("Failed to record migration {$migrationName}: " . $e->getMessage(), 'error');
             throw $e;
         }
+    }
+    
+    private function getBatchNumber(): int
+    {
+        try {
+            $lastBatch = DB::table('pincore_migration')
+                ->where('app', $this->package)
+                ->max('batch');
+            return ($lastBatch ?? 0) + 1;
+        } catch (Exception $e) {
+            $this->log("Error getting batch number: " . $e->getMessage(), 'warning');
+            return 1;
+        }
+    }
+    
+    private function extractMigrationName(string $filename): string
+    {
+        // Extract migration name from filename (remove .php extension)
+        return pathinfo($filename, PATHINFO_FILENAME);
     }
 
     /**

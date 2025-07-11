@@ -48,11 +48,14 @@ class MigrationQuery
         if (!self::tableExists()) {
             return null;
         }
-        return MigrationModel::create([
+        
+        $data = [
             'migration' => $fileName,
             'batch' => $batch + 1,
             'app' => $app,
-        ]);
+        ];
+        
+        return MigrationModel::create($data);
     }
 
     public static function is_exists($migration, $app)
