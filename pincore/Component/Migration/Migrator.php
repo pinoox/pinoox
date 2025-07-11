@@ -157,13 +157,14 @@ class Migrator
     public function run(): array
     {
         try {
+            // Check if migration table exists for all packages, initialize if needed
+            if (!$this->toolkit->isExistsMigrationTable()) {
+                $this->log("Migration table doesn't exist, initializing...");
+                $this->init();
+            }
+
             // For pincore package, we don't need locking or foreign key checks
             if ($this->package === 'pincore') {
-                // If migration table doesn't exist, initialize it first
-                if (!$this->toolkit->isExistsMigrationTable()) {
-                    $this->init();
-                }
-
                 $this->toolkit->package($this->package)->action($this->action)->load();
                 if (!$this->toolkit->isSuccess()) {
                     throw new Exception($this->toolkit->getErrors());
@@ -196,7 +197,9 @@ class Migrator
             }
             throw $e;
         } finally {
-            $this->releaseLock();
+            if ($this->package !== 'pincore') {
+                $this->releaseLock();
+            }
             $this->finalizeStatistics();
         }
     }
@@ -271,7 +274,6 @@ class Migrator
                 'table' => $migration['tableName'],
                 'status' => $record ? 'migrated' : 'pending',
                 'batch' => $record['batch'] ?? null,
-                'executed_at' => $record['executed_at'] ?? null,
             ];
         }
 
@@ -387,9 +389,6 @@ class Migrator
                 }
                 
                 try {
-                    // Start transaction for this migration
-                    DB::beginTransaction();
-                    
                     $this->log("Executing migration: {$migrationName}");
                     
                     // Execute the migration
@@ -399,15 +398,10 @@ class Migrator
                     // Record that this migration has been run
                     $this->recordMigration($migrationName);
                     
-                    // Commit this migration
-                    DB::commit();
-                    
                     $executed[] = $migrationName;
                     $this->log("Successfully executed migration: {$migrationName}");
                     
                 } catch (Exception $e) {
-                    // Rollback this migration on error
-                    DB::rollback();
                     $this->log("Failed to execute migration {$migrationName}: " . $e->getMessage(), 'error');
                     throw new Exception("Migration {$migrationName} failed: " . $e->getMessage());
                 }
@@ -433,7 +427,8 @@ class Migrator
                 ->where('app', $this->package)
                 ->exists();
         } catch (Exception $e) {
-            // If migration table doesn't exist, assume migration hasn't been run
+            // If any error occurs (like table doesn't exist), assume migration hasn't been run
+            $this->log("Error checking migration status for {$migrationName}: " . $e->getMessage(), 'warning');
             return false;
         }
     }
@@ -445,8 +440,9 @@ class Migrator
                 'migration' => $migrationName,
                 'app' => $this->package,
                 'batch' => $this->getBatchNumber(),
-                'executed_at' => now()
             ]);
+            
+            $this->log("Successfully recorded migration: {$migrationName}");
         } catch (Exception $e) {
             $this->log("Failed to record migration {$migrationName}: " . $e->getMessage(), 'error');
             throw $e;
@@ -461,6 +457,7 @@ class Migrator
                 ->max('batch');
             return ($lastBatch ?? 0) + 1;
         } catch (Exception $e) {
+            $this->log("Error getting batch number: " . $e->getMessage(), 'warning');
             return 1;
         }
     }

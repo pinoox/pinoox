@@ -42,7 +42,8 @@ class MigrateCommand extends Terminal
             ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints')
             ->addOption('dbconfig', null, InputOption::VALUE_NONE, 'Show current database configuration')
             ->addOption('status', 's', InputOption::VALUE_NONE, 'Show migration status')
-            ->addOption('reset', 'r', InputOption::VALUE_NONE, 'Reset all migrations');
+            ->addOption('reset', 'r', InputOption::VALUE_NONE, 'Reset all migrations')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Force migration even if tables exist');
     }
 
     /**
@@ -54,6 +55,7 @@ class MigrateCommand extends Terminal
         $ignoreFk = $input->getOption('ignore-fk');
         $showStatus = $input->getOption('status');
         $reset = $input->getOption('reset');
+        $force = $input->getOption('force');
 
         if ($input->getOption('dbconfig')) {
             $config = \Pinoox\Portal\Database\DB::connection()->getConfig();
@@ -82,7 +84,11 @@ class MigrateCommand extends Terminal
             }
 
             $migrator = new Migrator($package);
-            $result = $migrator->run();
+            if ($force) {
+                $result = $migrator->runWithForce();
+            } else {
+                $result = $migrator->run();
+            }
             foreach ($result as $message) {
                 $output->writeln($message);
             }
