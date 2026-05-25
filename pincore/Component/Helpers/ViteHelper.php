@@ -21,7 +21,7 @@ class ViteHelper
     protected string $fileManifest;
     protected string $mainDirectory;
     protected string $themePath;
-    protected array $outputBuffer = [];
+    protected array $processedFiles = [];
 
     public function __construct(string $themePath, string $fileManifest = 'dist/.vite/manifest.json')
     {
@@ -38,12 +38,14 @@ class ViteHelper
 
     public function vite(string $name, ?string $fileManifest = null): array
     {
+        $this->outputBuffer = [];
         $fileManifest = $fileManifest ?? $this->fileManifest;
         $manifest = $this->loadManifest($fileManifest);
 
         $mainDirectory = !empty($fileManifest) ? $this->findMainDirectory($fileManifest) : $this->mainDirectory;
+        
         if (!empty($manifest[$name])) {
-            $this->processFile($manifest[$name], $mainDirectory);
+            $this->processFile($manifest[$name], $manifest, $mainDirectory);
         }
 
         return $this->outputBuffer;
@@ -65,12 +67,24 @@ class ViteHelper
         return [];
     }
 
-    protected function processFile(array $fileData, string $dir): void
+    protected function processFile(array $fileData, array $manifest, string $dir, array $processed = []): void
     {
+        // Process imports first (dependencies)
+        if (!empty($fileData['imports'])) {
+            foreach ($fileData['imports'] as $importKey) {
+                if (empty($processed[$importKey]) && !empty($manifest[$importKey])) {
+                    $processed[$importKey] = true;
+                    $this->processFile($manifest[$importKey], $manifest, $dir, $processed);
+                }
+            }
+        }
+
+        // Add main file
         if (!empty($fileData['file'])) {
             $this->addFile($fileData['file'], $dir);
         }
 
+        // Add CSS files (after main file to ensure proper order)
         if (!empty($fileData['css'])) {
             foreach ($fileData['css'] as $css) {
                 $this->addFile($css, $dir);
@@ -80,22 +94,30 @@ class ViteHelper
 
     protected function addFile(string $fileName, string $dir): void
     {
+        $extension = pathinfo($fileName, PATHINFO_EXTENSION);
+        
+        // Only process JS and CSS files
+        if (!in_array($extension, ['js', 'css'])) {
+            return;
+        }
+
         $url = assets($dir . '/' . $fileName);
-        $this->outputBuffer[] = match (pathinfo($fileName, PATHINFO_EXTENSION)) {
-            'js' => '<script type="module"  src="' . $url . '"></script>',
-            'css' => '<link rel="stylesheet" href="' . $url . '">',
+        $this->outputBuffer[] = match ($extension) {
+            'js' => '<script type="module" src="' . $url . '"></script>',
+            'css' => '<link rel="stylesheet" href="' . $url . '"/>',
             default => $url,
         };
     }
 
     protected function printOutputBuffer(array $output): void
     {
-        foreach ($output as $index => $item) {
-            if ($index === 0)
-                echo $item;
-            else
-                echo "\n\t" . $item;
+        if (empty($output)) {
+            return;
+        }
 
+        echo $output[0];
+        for ($i = 1; $i < count($output); $i++) {
+            echo "\n\t" . $output[$i];
         }
     }
 
