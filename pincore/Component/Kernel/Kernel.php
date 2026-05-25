@@ -3,6 +3,7 @@
 namespace Pinoox\Component\Kernel;
 
 use Pinoox\Component\Flow\FlowManager;
+use Pinoox\Component\Http\Response;
 use Pinoox\Component\Router\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -106,7 +107,7 @@ class Kernel extends HttpKernel
         $response = $event->getResponse();
 
         // the developer asked for a specific status code
-        if (!$event->isAllowingCustomResponseCode() && !$response->isClientError() && !$response->isServerError() && !$response->isRedirect()) {
+        if ($response && !$event?->isAllowingCustomResponseCode() && !$response?->isClientError() && !$response?->isServerError() && !$response?->isRedirect()) {
             // ensure that we actually have an error response
             if ($e instanceof HttpExceptionInterface) {
                 // keep the HTTP status code and headers
@@ -117,7 +118,7 @@ class Kernel extends HttpKernel
             }
         }
 
-        return $response;
+        return $response ?? new Response('');
     }
 
     public function getDispatcher(): \Symfony\Contracts\EventDispatcher\EventDispatcherInterface

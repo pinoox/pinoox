@@ -15,7 +15,8 @@ namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
-use Pinoox\Component\Terminal; 
+use Pinoox\Component\Terminal;
+use Pinoox\Portal\Database\DB;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -58,7 +59,7 @@ class MigrateCommand extends Terminal
         $force = $input->getOption('force');
 
         if ($input->getOption('dbconfig')) {
-            $config = \Pinoox\Portal\Database\DB::connection()->getConfig();
+            $config = DB::connection()->getConfig();
             $output->writeln(json_encode($config, JSON_PRETTY_PRINT));
             return 0;
         }
@@ -80,7 +81,7 @@ class MigrateCommand extends Terminal
             }
 
             if ($ignoreFk) {
-                \Pinoox\Portal\Database\DB::statement('SET FOREIGN_KEY_CHECKS=0');
+                DB::statement('SET FOREIGN_KEY_CHECKS=0');
             }
 
             $migrator = new Migrator($package);
@@ -94,7 +95,7 @@ class MigrateCommand extends Terminal
             }
 
             if ($ignoreFk) {
-                \Pinoox\Portal\Database\DB::statement('SET FOREIGN_KEY_CHECKS=1');
+                DB::statement('SET FOREIGN_KEY_CHECKS=1');
             }
 
             return Command::SUCCESS;
