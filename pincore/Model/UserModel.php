@@ -102,7 +102,8 @@ class UserModel extends Model
         static::creating(function (UserModel $user) {
             $user->app = $user->app ?: self::getPackage();
             $user->status = $user->status ?: self::ACTIVE;
-            $user->password = self::hashPassword($user->password);
+            if($user->password)
+                $user->password = self::hashPassword($user->password);
         });
 
         static::updating(function (UserModel $user) {
