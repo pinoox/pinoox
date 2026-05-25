@@ -237,6 +237,29 @@ class Url implements UrlInterface
         return $this->request;
     }
 
+    /**
+     * Get request path without app base path
+     * 
+     * @return string
+     */
+    public function pathWithoutBase(): string
+    {
+        $path = $this->request->getPathInfo();
+        
+        // Remove app base path if exists
+        $basePath = $this->app->pathRoute();
+        if (!empty($basePath) && str_starts_with($path, $basePath)) {
+            $path = substr($path, strlen($basePath));
+        }
+        
+        // Ensure path starts with /
+        if (empty($path) || $path[0] !== '/') {
+            $path = '/' . $path;
+        }
+        
+        return $path;
+    }
+
     public function referer()
     {
         return $this->request->headers->get('referer');
