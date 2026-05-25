@@ -166,9 +166,16 @@ abstract class FormRequest
         return [];
     }
 
-    protected function prepend()
+    protected function prepend(): void
     {
-        // ...
+        $this->prepareForValidation();
+    }
+
+    /**
+     * Normalize request input before validation rules run (Laravel-style hook).
+     */
+    protected function prepareForValidation(): void
+    {
     }
 
     public function input(): InputBag
