@@ -74,6 +74,9 @@
     "pestphp/pest": "^v1.23.1",
     "nunomaduro/collision": "^v6.4.0"
   },
+  "scripts": {
+    "check-platform": "@php pincore/bootstrap/check.php"
+  },
   "config": {
     "sort-packages": true,
     "allow-plugins": {

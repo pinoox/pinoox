@@ -15,12 +15,7 @@ use App\com_pinoox_installer\Controller\ApiController;
 
 route(
     path: [
-        '/',
-        '/lang',
-        '/setup',
-        '/rules',
-        '/prerequisites',
-        '/db'
+        '*',
     ],
     action: '@home',
     methods: 'GET'

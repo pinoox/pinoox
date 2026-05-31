@@ -15,6 +15,7 @@ namespace Pinoox\Component\Http;
 use Illuminate\Support\Str;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
+use Pinoox\Component\Router\QueryRouteResolver;
 use Pinoox\Component\Upload\FileUploader;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
 use Pinoox\Component\Http\File\UploadedFile;
@@ -234,9 +235,74 @@ class Request extends RequestSymfony
         );
     }
 
+    public static function createFromGlobals(): static
+    {
+        $request = RequestSymfony::createFromGlobals();
+
+        return new static(
+            $request->query->all(),
+            $request->request->all(),
+            $request->attributes->all(),
+            $request->cookies->all(),
+            $request->files->all(),
+            $request->server->all(),
+            $request->getContent()
+        );
+    }
+
     public static function take(): static
     {
-        return static::createFromGlobals();
+        QueryRouteResolver::applyToGlobals();
+
+        $request = static::createFromGlobals();
+
+        if (QueryRouteResolver::wasApplied()) {
+            $resolvedPath = QueryRouteResolver::resolvedPath();
+
+            $request->attributes->set('_query_route', QueryRouteResolver::rawRoute());
+            $request->attributes->set('_query_route_path', $resolvedPath);
+
+            if (is_string($resolvedPath) && $resolvedPath !== '') {
+                $request->server->set('PATH_INFO', $resolvedPath);
+                $request->pathInfo = $resolvedPath;
+            }
+        }
+
+        return $request;
+    }
+
+    public function getPathInfo(): string
+    {
+        $queryRoutePath = $this->attributes->get('_query_route_path');
+
+        if (is_string($queryRoutePath) && $queryRoutePath !== '') {
+            return $queryRoutePath;
+        }
+
+        if (QueryRouteResolver::wasApplied() && is_string($path = QueryRouteResolver::resolvedPath()) && $path !== '') {
+            return $path;
+        }
+
+        return parent::getPathInfo();
+    }
+
+    public function isQueryRoute(): bool
+    {
+        if ($this->attributes->has('_query_route')) {
+            return true;
+        }
+
+        return QueryRouteResolver::wasApplied();
+    }
+
+    public function queryRouteRaw(): ?string
+    {
+        return $this->attributes->get('_query_route') ?? QueryRouteResolver::rawRoute();
+    }
+
+    public function queryRoutePath(): ?string
+    {
+        return $this->attributes->get('_query_route_path') ?? QueryRouteResolver::resolvedPath();
     }
 
     public function setValidation(ValidationFactory $validation): void

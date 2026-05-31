@@ -32,6 +32,11 @@ class RequestListener implements EventSubscriberInterface
     public function onRemoveTrailingSlash(RequestEvent $event): void
     {
         $request = $event->getRequest();
+
+        if ($request instanceof \Pinoox\Component\Http\Request && $request->isQueryRoute()) {
+            return;
+        }
+
         $uri = $request->getUri();
 
         if ($request->isMethod('GET') && substr($uri, -1) === '/' && $uri !== $request->getUriForPath('/')) {

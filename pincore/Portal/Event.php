@@ -39,6 +39,7 @@ class Event extends Portal
     {
         self::__bind(EventDispatcher::class)
             ->addMethodCall('addSubscriber', [Listener::__ref('request')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('queryRoute')])
             ->addMethodCall('addSubscriber', [Listener::__ref('router')])
             ->addMethodCall('addSubscriber', [Listener::__ref('routeEmpty')])
             ->addMethodCall('addSubscriber', [Listener::__ref('response')])
