@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="{{ currentLang }}">
+<html lang="{{ currentLang }}" dir="{{ _direction }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
@@ -8,12 +8,9 @@
     <title>{{ lang('install.title_page') }}</title>
     <link rel="icon" href="{{ assets('dist/images/logo-64.png') }}">
     <script src="{{ url('dist/pinoox.js') }}"></script>
-    {{ webpack_manifest('main.js') }}
-    {{ webpack_manifest('main.css') }}
+    {{ vite('src/main.js') }}
 </head>
 <body class="{{ _direction }}">
-<h1></h1>
-
 <div id="app"></div>
 </body>
 </html>

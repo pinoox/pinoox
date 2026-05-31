@@ -13,6 +13,10 @@
 
 namespace App\com_pinoox_installer\Controller;
 
+use App\com_pinoox_installer\Component\BootstrapDiagnostics;
+use App\com_pinoox_installer\Component\HtaccessManager;
+use App\com_pinoox_installer\Component\LangHelper;
+use App\com_pinoox_installer\Component\PrerequisitesChecker;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Migration\Migrator;
@@ -55,13 +59,10 @@ class ApiController extends Controller
     protected function getLang($lang = null): array
     {
         $lang = empty($lang) ? App::get('lang') : $lang;
+
         return [
-            'direction' => in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr',
-            'lang' => [
-                'install' => t('install'),
-                'user' => t('user'),
-                'language' => t('language'),
-            ]
+            'direction' => LangHelper::direction($lang),
+            'lang' => LangHelper::forFrontend($lang),
         ];
     }
 
@@ -89,36 +90,41 @@ class ApiController extends Controller
         return $this->message('disconnect', false);
     }
 
-    public function checkPrerequisites($type)
+    public function ping(): array
     {
-        $status = false;
-        switch ($type) {
-            case 'php' :
-                $status = (bool)version_compare(phpversion(), '8.1.0', '>=');
-                break;
-            case 'mysql' :
-                /**
-                 * fixme: Version mysql cannot be found on all operating systems
-                 */
-                // $vMysql = System::mysqlVersion();
-                $status = true;//(!empty($vMysql)) ? version_compare($vMysql, '5.5', '>=') : true;
-                break;
-            case 'free_space' :
-                /**
-                 * fixme: The required space cannot be found on all operating systems
-                 */
-                $status = true;//(System::freeSpace('MB') > 50);
-                break;
-            case 'mod_rewrite' :
-                /**
-                 * fixme: The mod_rewrite status cannot be found on all operating systems
-                 */
-                $status = true;//System::hasModuleApache('mod_rewrite');
-                break;
-        }
+        return [
+            'ok' => true,
+            'routing' => true,
+            'timestamp' => time(),
+        ];
+    }
 
+    public function bootstrapDiagnostics(): array
+    {
+        return (new BootstrapDiagnostics())->run();
+    }
 
-        return $this->message($type, $status);
+    public function checkAllPrerequisites(): array
+    {
+        return (new PrerequisitesChecker())->checkAll();
+    }
+
+    public function checkPrerequisites($type): array
+    {
+        $checker = new PrerequisitesChecker();
+        $result = $checker->check($type);
+
+        return array_merge(['type' => $type], $result);
+    }
+
+    public function htaccessStatus(): array
+    {
+        return (new HtaccessManager())->status();
+    }
+
+    public function htaccessCreate(): array
+    {
+        return (new HtaccessManager())->create();
     }
 
     public function agreement()

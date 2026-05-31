@@ -13,7 +13,7 @@
 
 namespace App\com_pinoox_installer\Flow;
 
-
+use App\com_pinoox_installer\Component\LangHelper;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Flow\Flow;
@@ -30,15 +30,9 @@ class BootFlow extends Flow
     private function setLang()
     {
         $lang = App::get('lang');
-        $direction = in_array($lang, ['fa', 'ar']) ? 'rtl' : 'ltr';
-        $data = Str::encodeJson([
-            'install' => t('install'),
-            'user' => t('user'),
-            'language' => t('language'),
-        ], true);
 
-        View::set('_lang', $data);
-        View::set('_direction', $direction);
+        View::set('_lang', Str::encodeJson(LangHelper::forFrontend(), true));
+        View::set('_direction', LangHelper::direction());
         View::set('currentLang', $lang);
     }
 }
