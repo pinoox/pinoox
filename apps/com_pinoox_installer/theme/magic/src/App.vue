@@ -4,10 +4,10 @@
         <div class="steps" v-if="$route.name !== 'lang' && $route.name !== 'setup' && $route.name !== 'bootstrap'">
             <ul>
                 <li class="done" v-show="false"></li>
-                <li :class="steps[0] ? 'done' : ''"><span> {{ LANG?.install?.agreement }}</span></li>
-                <li :class="steps[1] ? 'done' : ''"><span> {{ LANG?.install?.prerequisites }}</span></li>
-                <li :class="steps[2] ? 'done' : ''"><span> {{ LANG?.install?.db_info }}</span></li>
-                <li :class="steps[3] ? 'done' : ''"><span> {{ LANG?.user?.info_admin }}</span></li>
+                <li :class="stepClass(0)"><span>{{ LANG?.install?.agreement }}</span></li>
+                <li :class="stepClass(1)"><span>{{ LANG?.install?.prerequisites }}</span></li>
+                <li :class="stepClass(2)"><span>{{ LANG?.install?.db_info }}</span></li>
+                <li :class="stepClass(3)"><span>{{ LANG?.user?.info_admin }}</span></li>
             </ul>
         </div>
         <router-view v-slot="{ Component }">
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import {onMounted, ref} from 'vue'
+import {computed, onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {useInstallStore} from '@/stores/install.js'
@@ -58,6 +58,17 @@ const router = useRouter()
 const store = useInstallStore()
 const {LANG, OPTIONS, isLoading, preflightLoading} = storeToRefs(store)
 const steps = ref([])
+
+const stepRoutes = ['rules', 'prerequisites', 'db', 'user']
+
+const currentStepIndex = computed(() => stepRoutes.indexOf(route.name))
+
+function stepClass(index) {
+    return {
+        done: Boolean(steps.value[index]),
+        current: currentStepIndex.value === index,
+    }
+}
 
 onMounted(() => {
     if (route.name === undefined || route.name === null) {

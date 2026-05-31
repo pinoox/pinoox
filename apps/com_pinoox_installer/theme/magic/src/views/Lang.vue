@@ -1,27 +1,32 @@
 <template>
     <div id="page">
-        <div class="text-center">
+        <header class="page-header">
             <h1 class="title">{{ LANG.install.select_lang }}</h1>
-        </div>
+        </header>
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
-                    <div class="box">
-                        <ul class="lang" data-simplebar data-simplebar-auto-hide="false">
+                    <div class="page-panel">
+                        <ul class="lang">
                             <li v-for="item in items" :key="item.lang">
-                                <span v-if="item.lang !== OPTIONS.lang" @click="selectLang(item.lang)">
-                                    <i class="flag-icon" :class="item.icon"></i> {{ getLabel(item) }}
-                                </span>
-                                <span v-else class="active">
-                                    <i class="flag-icon" :class="item.icon"></i> {{ getLabel(item) }}
-                                </span>
+                                <button
+                                    type="button"
+                                    class="lang-option"
+                                    :class="{ active: item.lang === OPTIONS.lang }"
+                                    @click="selectLang(item.lang)"
+                                >
+                                    <i class="flag-icon" :class="item.icon" aria-hidden="true"></i>
+                                    <span>{{ getLabel(item) }}</span>
+                                </button>
                             </li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="page-actions page-actions--center">
-                <span class="btn btn-light pin-btn pin-next" @click="continueInstall">{{ LANG.install.continue }}</span>
+                <button type="button" class="btn btn-light pin-btn pin-next" @click="continueInstall">
+                    {{ LANG.install.continue }}
+                </button>
             </div>
         </div>
     </div>

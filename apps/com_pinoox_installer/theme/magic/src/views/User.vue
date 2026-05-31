@@ -3,63 +3,96 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="page">
-                    <h1 class="title">{{ LANG.user.info_admin }}</h1>
-                    <h2 class="description">{{ LANG.user.info_admin_description }}</h2>
-                    <div class="box">
-                        <div v-if="isErr" class="row col-sm-12">
-                            <span class="badge badge-danger mt-2 mb-4">{{ err }}</span>
+                    <header class="page-header">
+                        <h1 class="title">{{ LANG.user.info_admin }}</h1>
+                        <p class="description">{{ LANG.user.info_admin_description }}</p>
+                    </header>
+                    <div class="page-panel">
+                        <div v-if="isErr" class="page-alert page-alert--error" role="alert">
+                            <Icon name="times"/>
+                            <span>{{ err }}</span>
                         </div>
                         <div class="form" data-simplebar data-simplebar-auto-hide="false">
-                            <div class="container" @keypress.enter="next()">
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.user.name }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="user.fname" type="text" name="fname"
-                                               class="pin-input form-control ltr"
-                                               placeholder="first name">
-                                    </div>
+                            <div @keypress.enter="next()">
+                                <div class="install-field">
+                                    <label for="user-fname">{{ LANG.user.name }}</label>
+                                    <input
+                                        id="user-fname"
+                                        v-model="user.fname"
+                                        type="text"
+                                        name="fname"
+                                        class="pin-input form-control ltr"
+                                        placeholder="first name"
+                                        autocomplete="given-name"
+                                    >
                                 </div>
-
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.user.family_name }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="user.lname" type="text" name="lname"
-                                               class="pin-input form-control ltr"
-                                               placeholder="last name">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="user-lname">{{ LANG.user.family_name }}</label>
+                                    <input
+                                        id="user-lname"
+                                        v-model="user.lname"
+                                        type="text"
+                                        name="lname"
+                                        class="pin-input form-control ltr"
+                                        placeholder="last name"
+                                        autocomplete="family-name"
+                                    >
                                 </div>
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.user.email }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="user.email" type="text" name="email"
-                                               class="pin-input form-control ltr"
-                                               placeholder="email">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="user-email">{{ LANG.user.email }}</label>
+                                    <input
+                                        id="user-email"
+                                        v-model="user.email"
+                                        type="email"
+                                        name="email"
+                                        class="pin-input form-control ltr"
+                                        placeholder="email"
+                                        autocomplete="email"
+                                    >
                                 </div>
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.user.username }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="user.username" type="text" name="username"
-                                               class="pin-input form-control ltr"
-                                               placeholder="username">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="user-username">{{ LANG.user.username }}</label>
+                                    <input
+                                        id="user-username"
+                                        v-model="user.username"
+                                        type="text"
+                                        name="username"
+                                        class="pin-input form-control ltr"
+                                        placeholder="username"
+                                        autocomplete="username"
+                                    >
                                 </div>
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.user.password }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="user.password" type="text" name="password"
-                                               class="pin-input form-control ltr"
-                                               placeholder="password">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="user-password">{{ LANG.user.password }}</label>
+                                    <input
+                                        id="user-password"
+                                        v-model="user.password"
+                                        type="password"
+                                        name="password"
+                                        class="pin-input form-control ltr"
+                                        placeholder="password"
+                                        autocomplete="new-password"
+                                    >
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="page-actions">
-                        <span @click="prev()" class="btn btn-outline-light pin-btn">{{ LANG.install.back }}</span>
-                        <span v-if="!isLoading" @click="next()" class="btn btn-light pin-btn">{{ LANG.install.setup }}</span>
-                        <span v-else class="btn btn-light pin-btn pin-loading"><Icon name="spinner" spin/></span>
+                        <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
+                            {{ LANG.install.back }}
+                        </button>
+                        <button
+                            v-if="!isLoading"
+                            type="button"
+                            class="btn btn-light pin-btn"
+                            @click="next()"
+                        >
+                            {{ LANG.install.setup }}
+                        </button>
+                        <span v-else class="btn btn-light pin-btn pin-loading" aria-busy="true">
+                            <Icon name="spinner" spin/>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -101,6 +134,7 @@ onMounted(() => {
 
 function next() {
     isLoading.value = true
+    err.value = null
     installAPI.setup({
         db: db.value,
         user: user.value,

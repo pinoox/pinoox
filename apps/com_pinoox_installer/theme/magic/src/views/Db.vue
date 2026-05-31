@@ -3,53 +3,83 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="page">
-                    <h1 class="title">{{ LANG.install.db_info }}</h1>
-                    <h2 class="description">{{ LANG.install.db_info_description }}</h2>
-                    <div class="box">
-                        <div v-if="isErr" class="row col-sm-12">
-                            <span class="badge badge-danger mt-2 mb-4">{{ LANG.install.err_connect_to_database }}</span>
+                    <header class="page-header">
+                        <h1 class="title">{{ LANG.install.db_info }}</h1>
+                        <p class="description">{{ LANG.install.db_info_description }}</p>
+                    </header>
+                    <div class="page-panel">
+                        <div v-if="isErr" class="page-alert page-alert--error" role="alert">
+                            <Icon name="times"/>
+                            <span>{{ LANG.install.err_connect_to_database }}</span>
                         </div>
                         <div class="form" data-simplebar data-simplebar-auto-hide="false">
-                            <div class="container" @keypress.enter="next()">
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.install.db_host }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="params.host" type="text" name="host"
-                                               class="pin-input form-control ltr"
-                                               placeholder="localhost">
-                                    </div>
+                            <div @keypress.enter="next()">
+                                <div class="install-field">
+                                    <label for="db-host">{{ LANG.install.db_host }}</label>
+                                    <input
+                                        id="db-host"
+                                        v-model="params.host"
+                                        type="text"
+                                        name="host"
+                                        class="pin-input form-control ltr"
+                                        placeholder="localhost"
+                                        autocomplete="off"
+                                    >
                                 </div>
-
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.install.db_name }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="params.database" type="text" name="database"
-                                               class="pin-input form-control ltr" placeholder="database">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="db-name">{{ LANG.install.db_name }}</label>
+                                    <input
+                                        id="db-name"
+                                        v-model="params.database"
+                                        type="text"
+                                        name="database"
+                                        class="pin-input form-control ltr"
+                                        placeholder="database"
+                                        autocomplete="off"
+                                    >
                                 </div>
-
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.install.db_username }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="params.username" type="text" name="username"
-                                               class="pin-input form-control ltr"
-                                               placeholder="username">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="db-user">{{ LANG.install.db_username }}</label>
+                                    <input
+                                        id="db-user"
+                                        v-model="params.username"
+                                        type="text"
+                                        name="username"
+                                        class="pin-input form-control ltr"
+                                        placeholder="username"
+                                        autocomplete="off"
+                                    >
                                 </div>
-                                <div class="row form-group">
-                                    <label class="col-sm-3">{{ LANG.install.db_password }}</label>
-                                    <div class="col-sm-6 offset-sm-3">
-                                        <input v-model="params.password" type="text" name="password"
-                                               class="pin-input form-control ltr" placeholder="password">
-                                    </div>
+                                <div class="install-field">
+                                    <label for="db-pass">{{ LANG.install.db_password }}</label>
+                                    <input
+                                        id="db-pass"
+                                        v-model="params.password"
+                                        type="password"
+                                        name="password"
+                                        class="pin-input form-control ltr"
+                                        placeholder="password"
+                                        autocomplete="new-password"
+                                    >
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="page-actions">
-                        <span @click="prev()" class="btn btn-outline-light pin-btn">{{ LANG.install.back }}</span>
-                        <span v-if="!isLoading" @click="next()" class="btn btn-light pin-btn">{{ LANG.install.continue }}</span>
-                        <span v-else class="btn btn-light pin-btn pin-loading"><Icon name="spinner" spin/></span>
+                        <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
+                            {{ LANG.install.back }}
+                        </button>
+                        <button
+                            v-if="!isLoading"
+                            type="button"
+                            class="btn btn-light pin-btn"
+                            @click="next()"
+                        >
+                            {{ LANG.install.continue }}
+                        </button>
+                        <span v-else class="btn btn-light pin-btn pin-loading" aria-busy="true">
+                            <Icon name="spinner" spin/>
+                        </span>
                     </div>
                 </div>
             </div>
@@ -94,6 +124,7 @@ onMounted(() => {
 
 function next() {
     isLoading.value = true
+    isErr.value = false
     installAPI.checkDB(params.value).then((data) => {
         isLoading.value = false
         if (data.status) {
@@ -103,6 +134,7 @@ function next() {
         }
     }).catch(() => {
         isLoading.value = false
+        isErr.value = true
     })
 }
 

@@ -3,9 +3,9 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="page" class="prerequisites-page">
-                    <header class="prerequisites-header">
+                    <header class="prerequisites-header page-header">
                         <h1 class="title">{{ LANG.install.prerequisites }}</h1>
-                        <h2 class="description">{{ LANG.install.prerequisites_description }}</h2>
+                        <p class="description">{{ LANG.install.prerequisites_description }}</p>
                     </header>
 
                     <InstallConnectionAlert
@@ -156,11 +156,14 @@
                     </div>
 
                     <div class="page-actions">
-                        <span @click="prev()" class="btn btn-outline-light pin-btn">{{ LANG.install.back }}</span>
+                        <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
+                            {{ LANG.install.back }}
+                        </button>
                         <button
-                            @click="next()"
+                            type="button"
                             class="btn btn-light pin-btn"
                             :disabled="!canContinue || isChecking"
+                            @click="next()"
                         >
                             {{ LANG.install.continue }}
                         </button>

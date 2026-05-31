@@ -3,8 +3,10 @@
         <div class="row">
             <div class="col-md-12">
                 <div id="page">
-                    <h1 class="title">{{ LANG.install.agreement }}</h1>
-                    <div class="box bg-w">
+                    <header class="page-header">
+                        <h1 class="title">{{ LANG.install.agreement }}</h1>
+                    </header>
+                    <div class="box bg-w page-panel">
                         <div ref="rulesScroller" class="rules-scroll">
                             <ul class="rules" v-html="agreementHtml"></ul>
                         </div>
@@ -32,8 +34,10 @@
                         <span class="acceptance__text">{{ LANG.install.rules_agree }}</span>
                     </div>
                     <div class="page-actions">
-                        <span @click="prev()" class="btn btn-outline-light pin-btn">{{ LANG.install.back }}</span>
-                        <button @click="next()" class="btn btn-light pin-btn" :disabled="!isAgree">
+                        <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
+                            {{ LANG.install.back }}
+                        </button>
+                        <button type="button" class="btn btn-light pin-btn" :disabled="!isAgree" @click="next()">
                             {{ LANG.install.continue }}
                         </button>
                     </div>

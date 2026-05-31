@@ -158,8 +158,10 @@ body {
 }
 
 .pin-btn {
-  padding: 4px 35px;
+  padding: 0.55rem 1.75rem;
   cursor: pointer;
+  border-radius: 999px;
+  font-weight: 600;
 }
 
 .pin-input {
@@ -258,6 +260,17 @@ body {
 
       &.done {
         color: #fff;
+      }
+
+      &.current {
+        color: #fff;
+        font-weight: 600;
+
+        &::before {
+          background: rgba(255, 255, 255, 0.22);
+          border-color: rgba(255, 255, 255, 0.85);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+        }
       }
     }
   }
@@ -816,34 +829,101 @@ body {
   min-height: 100vh;
   z-index: 1;
   position: relative;
-  padding: 50px 20px;
+  padding: 2.5rem 1.25rem 1rem;
+  max-width: 52rem;
+  margin-inline: auto;
 
-  h1.title {
-    margin-top: 40px;
-    color: #fff;
-    font-size: 1.5rem;
+  .page-header {
+    margin-bottom: 1.25rem;
+    text-align: center;
+
+    .title {
+      margin: 2rem 0 0.5rem;
+    }
+
+    .description {
+      max-width: 36rem;
+      margin-inline: auto;
+    }
   }
 
-  h2.description {
-    font-size: 1rem;
-    color: #dbdbdb;
-    font-weight: 300;
+  h1.title {
+    margin-top: 2rem;
+    margin-bottom: 0.5rem;
+    color: #fff;
+    font-size: clamp(1.35rem, 3vw, 1.75rem);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  h2.description,
+  p.description {
+    font-size: 0.98rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 400;
+    line-height: 1.65;
+    margin: 0 0 0.25rem;
+  }
+
+  .page-panel {
+    margin-top: 1.25rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.16);
+    padding: 1.25rem;
+  }
+
+  .page-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+    margin-bottom: 1rem;
+    padding: 0.75rem 0.9rem;
+    border-radius: 0.75rem;
+    font-size: 0.88rem;
+    line-height: 1.55;
+
+    .icon-svg {
+      flex-shrink: 0;
+      width: 1.1rem;
+      height: 1.1rem;
+      margin-top: 0.1rem;
+    }
+
+    &--error {
+      color: #ffd0d0;
+      background: rgba(255, 80, 80, 0.16);
+      border: 1px solid rgba(255, 120, 120, 0.32);
+    }
   }
 
   .app {
     text-align: center;
-    margin: auto;
-    margin-top: 10%;
+    margin: 2.5rem auto 0;
+  }
+
+  .setup-hint {
+    margin-top: 1.25rem;
+    text-align: center;
+    font-size: 0.88rem;
+    color: rgba(255, 255, 255, 0.72);
+    line-height: 1.6;
   }
 
   .box {
-    margin-top: 20px;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 20px;
+    margin-top: 1.25rem;
+    border-radius: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.14);
+    padding: 1.25rem;
 
     &.bg-w {
-      background: rgba(255, 255, 255, 0.67);
+      background: rgba(255, 255, 255, 0.88);
+      border-color: rgba(255, 255, 255, 0.35);
     }
   }
 
@@ -851,39 +931,60 @@ body {
     @include box-style;
     padding: 0;
     margin: 0;
-    text-align: center;
+    list-style: none;
+    display: grid;
+    gap: 0.75rem;
 
-    li span {
-      font-weight: 300;
-      display: inline-block;
-      color: #fff;
-      cursor: pointer;
-      padding: 8px 20px;
-      margin-bottom: 10px;
+    @media (min-width: 480px) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    li {
+      margin: 0;
+    }
+
+    .lang-option {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 0.95rem 1.15rem;
+      border: 2px solid rgba(255, 255, 255, 0.18);
       border-radius: 1rem;
-      background: rgba(0, 0, 0, 0.25);
-      text-decoration: none;
+      background: rgba(0, 0, 0, 0.22);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease, border-color 0.2s ease, transform 0.15s ease, box-shadow 0.2s ease;
       @include trans;
 
+      .flag-icon {
+        width: 1.5rem;
+        line-height: 1.5rem;
+        border-radius: 2px;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+      }
+
+      &:hover:not(.active) {
+        background: rgba(0, 0, 0, 0.38);
+        border-color: rgba(255, 255, 255, 0.32);
+        transform: translateY(-1px);
+      }
+
       &.active {
-        background: rgba(23, 28, 5, 0.67);
-        text-decoration: none;
+        background: rgba(72, 199, 142, 0.2);
+        border-color: rgba(72, 199, 142, 0.55);
+        box-shadow: 0 0 0 1px rgba(72, 199, 142, 0.25);
         cursor: default;
-      }
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.69);
-        text-decoration: none;
-      }
-
-      &.active:hover {
-        background: rgba(23, 28, 5, 0.67);
       }
     }
   }
 
   .rules-scroll {
-    max-height: 40vh;
+    max-height: min(42vh, 22rem);
+    border-radius: 0.65rem;
   }
 
   .rules {
@@ -1678,6 +1779,51 @@ body {
   .form {
     @include box-style;
     color: #fff;
+    max-height: none;
+    padding: 0.25rem 0;
+
+    .install-field {
+      margin-bottom: 1.1rem;
+
+      label {
+        display: block;
+        margin-bottom: 0.4rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .pin-input {
+        border-radius: 0.65rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 0.65rem 0.85rem;
+        font-size: 0.95rem;
+        transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+        &:focus {
+          border-color: rgba(255, 255, 255, 0.55);
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.12);
+        }
+      }
+    }
+
+    .row.form-group {
+      margin-bottom: 1.1rem;
+      align-items: flex-start;
+
+      > label {
+        padding-top: 0.55rem;
+        font-size: 0.88rem;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .pin-input {
+        border-radius: 0.65rem;
+        border: 1px solid rgba(255, 255, 255, 0.22);
+        padding: 0.65rem 0.85rem;
+      }
+    }
   }
 
   .acceptance {
@@ -1765,7 +1911,14 @@ body {
   color: #fff !important;
   transition: 0.2s;
   text-decoration: none;
+  border: 2px solid rgba(255, 255, 255, 0.12);
   @include box-shadow;
+  outline: none;
+
+  &:focus-visible {
+    border-color: rgba(255, 255, 255, 0.45);
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.15), 0 8px 24px rgba(0, 0, 0, 0.28);
+  }
 
   .icon {
     width: 55%;
@@ -1884,11 +2037,19 @@ body {
 }
 
 @media (max-width: 768px) {
+  #page {
+    padding-inline: 1rem;
+  }
+
   .steps ul li {
     padding: 0 25px;
 
     span {
       display: none;
+    }
+
+    &.current::before {
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
     }
   }
 }
