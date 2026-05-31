@@ -1,13 +1,13 @@
 <template>
     <div class="art-cloud">
         <div class="moving-clouds"></div>
-        <div class="steps" v-if="$route.name !== 'lang' && $route.name !== 'setup'">
+        <div class="steps" v-if="$route.name !== 'lang' && $route.name !== 'setup' && $route.name !== 'bootstrap'">
             <ul>
                 <li class="done" v-show="false"></li>
-                <li :class="steps[0] ? 'done' : ''"><span>{{ LANG?.install?.agreement }}</span></li>
-                <li :class="steps[1] ? 'done' : ''"><span>{{ LANG?.install?.prerequisites }}</span></li>
-                <li :class="steps[2] ? 'done' : ''"><span>{{ LANG?.install?.db_info }}</span></li>
-                <li :class="steps[3] ? 'done' : ''"><span>{{ LANG?.user?.info_admin }}</span></li>
+                <li :class="steps[0] ? 'done' : ''"><span> {{ LANG?.install?.agreement }}</span></li>
+                <li :class="steps[1] ? 'done' : ''"><span> {{ LANG?.install?.prerequisites }}</span></li>
+                <li :class="steps[2] ? 'done' : ''"><span> {{ LANG?.install?.db_info }}</span></li>
+                <li :class="steps[3] ? 'done' : ''"><span> {{ LANG?.user?.info_admin }}</span></li>
             </ul>
         </div>
         <router-view v-slot="{ Component }">
@@ -20,7 +20,7 @@
             </transition>
         </router-view>
 
-        <div class="loading" v-if="isLoading">
+        <div class="loading" v-if="isLoading || preflightLoading">
             <div class="lds-roller">
                 <div></div>
                 <div></div>
@@ -56,7 +56,7 @@ import Icon from '@/components/icons/Icon.vue'
 const route = useRoute()
 const router = useRouter()
 const store = useInstallStore()
-const {LANG, OPTIONS, isLoading} = storeToRefs(store)
+const {LANG, OPTIONS, isLoading, preflightLoading} = storeToRefs(store)
 const steps = ref([])
 
 onMounted(() => {

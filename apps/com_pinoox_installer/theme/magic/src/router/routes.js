@@ -1,4 +1,5 @@
 import Lang from '@/views/Lang.vue'
+import BootstrapError from '@/components/BootstrapError.vue'
 import Setup from '@/views/Setup.vue'
 import Rules from '@/views/Rules.vue'
 import Prerequisites from '@/views/Prerequisites.vue'
@@ -7,9 +8,14 @@ import User from '@/views/User.vue'
 
 export const routes = [
     {
-        path: '/lang',
+        path: '/',
         name: 'lang',
         component: Lang,
+    },
+    {
+        path: '/?error',
+        name: 'bootstrap',
+        component: BootstrapError,
     },
     {
         path: '/setup',

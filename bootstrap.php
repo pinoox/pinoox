@@ -10,6 +10,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+require_once __DIR__ . '/pincore/bootstrap/requirements.php';
+pinoox_check_runtime_requirements();
+
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Portal\App\AppProvider;
 

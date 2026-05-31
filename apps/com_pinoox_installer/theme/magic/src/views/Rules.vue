@@ -10,8 +10,17 @@
                         </div>
                     </div>
 
-                    <div class="acceptance">
-                        <div class="pretty p-svg p-round p-jelly">
+                    <div
+                        class="acceptance"
+                        :class="{'acceptance--checked': isAgree}"
+                        role="checkbox"
+                        :aria-checked="isAgree"
+                        tabindex="0"
+                        @click="isAgree = !isAgree"
+                        @keydown.enter.prevent="isAgree = !isAgree"
+                        @keydown.space.prevent="isAgree = !isAgree"
+                    >
+                        <div class="acceptance__control pretty p-svg p-round p-jelly" @click.stop>
                             <input type="checkbox" v-model="isAgree" name="agree"/>
                             <div class="state p-success">
                                 <div class="svg">
@@ -20,7 +29,7 @@
                                 <label></label>
                             </div>
                         </div>
-                        <p @click="isAgree = !isAgree" class="text">{{ LANG.install.rules_agree }}</p>
+                        <span class="acceptance__text">{{ LANG.install.rules_agree }}</span>
                     </div>
                     <div class="page-actions">
                         <span @click="prev()" class="btn btn-outline-light pin-btn">{{ LANG.install.back }}</span>

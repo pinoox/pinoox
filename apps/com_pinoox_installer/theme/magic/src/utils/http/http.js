@@ -1,5 +1,6 @@
 import axios from 'axios'
 import axiosMethodOverride from 'axios-method-override'
+import {resolveInstallerApiUrl, resolvePingApiUrl, shouldUseQueryRoute} from '../resolveInstallerApi.js'
 
 const baseUrl = import.meta.env.MODE === 'production'
     ? (typeof PINOOX !== 'undefined' ? PINOOX.URL.API : '')
@@ -39,6 +40,32 @@ const trackLoading = (config, delta) => {
     }
 }
 
+function applyQueryRoute(config) {
+    if (!config.url || String(config.url).includes('?route=')) {
+        return
+    }
+
+    const rawUrl = String(config.url)
+
+    if (/^https?:\/\//i.test(rawUrl)) {
+        return
+    }
+
+    const endpoint = rawUrl.replace(/^\//, '')
+
+    if (endpoint === 'ping') {
+        config.baseURL = ''
+        config.url = resolvePingApiUrl()
+        return
+    }
+
+    if (!shouldUseQueryRoute()) {
+        return
+    }
+
+    config.baseURL = ''
+    config.url = resolveInstallerApiUrl(endpoint)
+}
 const http = axios.create({
     baseURL: baseUrl,
     headers: {
@@ -55,6 +82,7 @@ export const event = (eventName, func) => {
 http.event = event
 
 http.interceptors.request.use((config) => {
+    applyQueryRoute(config)
     callActions('request', config)
     trackLoading(config, 1)
     return config

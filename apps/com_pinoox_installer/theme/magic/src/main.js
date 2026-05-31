@@ -8,11 +8,11 @@ import '@/assets/css/fonts.css'
 import './assets/scss/main.scss'
 
 import App from './App.vue'
-import BootstrapError from './components/BootstrapError.vue'
 import router from './router'
 import pinia from './stores'
 import {httpEvent} from '@global'
 import {useInstallStore} from '@/stores/install.js'
+import {pingInstallerApi} from '@/utils/resolveInstallerApi.js'
 
 function initSimpleBar() {
     nextTick(() => {
@@ -23,22 +23,35 @@ function initSimpleBar() {
     })
 }
 
-const app = createApp(typeof PINOOX === 'undefined' ? BootstrapError : App)
+async function boot() {
+    const app = createApp(App)
 
-app.use(pinia)
-app.use(router)
+    app.use(pinia)
+    app.use(router)
 
-useInstallStore().syncDirection()
+    const store = useInstallStore(pinia)
 
-httpEvent('start', () => {
-    useInstallStore().isLoading = true
-})
+    store.syncDirection()
 
-httpEvent('stop', () => {
-    useInstallStore().isLoading = false
-})
+    httpEvent('start', () => {
+        store.isLoading = true
+    })
 
-app.mount('#app')
+    httpEvent('stop', () => {
+        store.isLoading = false
+    })
 
-router.isReady().then(initSimpleBar)
-router.afterEach(initSimpleBar)
+    app.mount('#app')
+
+    try {
+        const ping = await pingInstallerApi()
+        store.setPreflightPing(ping)
+    } finally {
+        store.preflightLoading = false
+    }
+
+    router.isReady().then(initSimpleBar)
+    router.afterEach(initSimpleBar)
+}
+
+boot()

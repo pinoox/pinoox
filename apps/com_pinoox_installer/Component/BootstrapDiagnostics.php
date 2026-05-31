@@ -12,6 +12,8 @@
 
 namespace App\com_pinoox_installer\Component;
 
+use Pinoox\Component\Router\QueryRouteResolver;
+
 class BootstrapDiagnostics
 {
     public function run(): array
@@ -44,7 +46,7 @@ class BootstrapDiagnostics
 
     private function viaQueryRoute(): bool
     {
-        return isset($_GET['route']) && is_string($_GET['route']) && $_GET['route'] !== '';
+        return QueryRouteResolver::wasApplied();
     }
 
     private function isRewriteOk(array $rewrite): bool

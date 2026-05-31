@@ -46,6 +46,9 @@ use Pinoox\Portal\App\AppRouter;
  * @method static string pathWithoutBase()
  * @method static referer()
  * @method static current()
+ * @method static bool isQueryRoute()
+ * @method static string queryRoute(string $path = '', bool $isFullBase = true)
+ * @method static string queryRouteForApp(string $path, ?string $package = NULL, bool $isFullBase = true)
  * @method static array getAppUrls(string $packageName)
  * @method static \Pinoox\Component\Path\Url ___()
  *

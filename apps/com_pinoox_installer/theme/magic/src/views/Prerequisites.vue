@@ -106,26 +106,47 @@
                                         </div>
                                     </div>
 
-                                    <p v-if="helpText(item.key)" class="prerequisite-card__help">
+                                    <p
+                                        v-if="helpText(item.key)"
+                                        class="prerequisite-card__help"
+                                        :class="{ 'is-warn': item.state === 'unknown' }"
+                                    >
                                         {{ helpText(item.key) }}
                                     </p>
                                 </div>
                             </article>
                         </div>
 
+                        <div
+                            v-if="rewriteNotice"
+                            class="prerequisites-notice"
+                            role="note"
+                        >
+                            <Icon name="warning"/>
+                            <div>
+                                <strong>{{ LANG.install.prerequisites_rewrite_notice_title }}</strong>
+                                <p>{{ rewriteNotice }}</p>
+                            </div>
+                        </div>
+
                         <details
                             v-if="showRewriteGuide"
                             class="prerequisites-guide"
+                            :open="rewriteGuideOpen"
                         >
                             <summary>
-                                <Icon name="info"/>
+                                <Icon name="warning"/>
                                 <span>{{ LANG.install.prerequisites_guide_title }}</span>
                             </summary>
+                            <p v-if="detectedServerLabel" class="prerequisites-guide__detected">
+                                {{ detectedServerHint }}
+                            </p>
                             <div class="prerequisites-guide__grid">
                                 <div
                                     v-for="guide in rewriteGuides"
                                     :key="guide.tag"
                                     class="prerequisites-guide__item"
+                                    :class="{ 'is-detected': guide.detected }"
                                 >
                                     <span class="prerequisites-guide__tag">{{ guide.tag }}</span>
                                     <p>{{ guide.text }}</p>
@@ -192,6 +213,7 @@ const defaultItem = () => ({
     current: null,
     routingActive: false,
     server: null,
+    serverType: null,
     serverDetected: null,
 })
 
@@ -239,6 +261,10 @@ const overviewClass = computed(() => {
         return 'is-fail'
     }
 
+    if (canContinue.value && stats.value.unknown > 0) {
+        return 'is-pending'
+    }
+
     if (canContinue.value) {
         return 'is-ready'
     }
@@ -255,6 +281,10 @@ const overviewTitle = computed(() => {
 
     if (connectionError.value || stats.value.fail > 0) {
         return install.prerequisites_overview_issues
+    }
+
+    if (stats.value.unknown > 0) {
+        return install.prerequisites_overview_manual_check
     }
 
     return install.prerequisites_overview_ready
@@ -306,17 +336,74 @@ const showRewriteGuide = computed(() => {
     return rewrite.state === 'fail' || rewrite.state === 'unknown'
 })
 
+const rewriteGuideOpen = computed(() => prerequisites.mod_rewrite.state === 'unknown')
+
+const detectedServerLabel = computed(() => {
+    const rewrite = prerequisites.mod_rewrite
+
+    return rewrite.server || rewrite.serverType || null
+})
+
+const detectedServerHint = computed(() => {
+    const install = LANG.value.install
+    const label = detectedServerLabel.value
+
+    if (!label) {
+        return install.prerequisites_help_rewrite_unknown
+    }
+
+    return (install.prerequisites_help_rewrite_unknown_server ?? install.prerequisites_help_rewrite_unknown)
+        .replaceAll(':server', label)
+})
+
+const rewriteNotice = computed(() => {
+    const rewrite = prerequisites.mod_rewrite
+
+    if (rewrite.state !== 'unknown') {
+        return ''
+    }
+
+    return LANG.value.install.prerequisites_rewrite_notice_body
+})
+
+const rewriteGuideDefinitions = [
+    {type: 'apache', tagKey: null, fallbackTag: 'Apache', key: 'prerequisites_guide_apache'},
+    {type: 'nginx', tagKey: null, fallbackTag: 'nginx', key: 'prerequisites_guide_nginx'},
+    {type: 'iis', tagKey: null, fallbackTag: 'IIS', key: 'prerequisites_guide_iis'},
+    {type: 'litespeed', tagKey: null, fallbackTag: 'LiteSpeed', key: 'prerequisites_guide_litespeed'},
+    {type: 'caddy', tagKey: null, fallbackTag: 'Caddy', key: 'prerequisites_guide_caddy'},
+    {type: 'lighttpd', tagKey: null, fallbackTag: 'lighttpd', key: 'prerequisites_guide_lighttpd'},
+    {type: 'shared', tagKey: 'prerequisites_guide_tag_shared', fallbackTag: 'Shared hosting', key: 'prerequisites_guide_shared_hosting'},
+    {type: 'other', tagKey: null, fallbackTag: null, key: 'prerequisites_guide_other'},
+]
+
 const rewriteGuides = computed(() => {
     const install = LANG.value.install
+    const detectedType = prerequisites.mod_rewrite.serverType
+    const detectedLabel = prerequisites.mod_rewrite.server
 
-    return [
-        {tag: 'Apache', text: install.prerequisites_guide_apache},
-        {tag: 'nginx', text: install.prerequisites_guide_nginx},
-        {tag: 'IIS', text: install.prerequisites_guide_iis},
-        {tag: 'LiteSpeed', text: install.prerequisites_guide_litespeed},
-        {tag: 'Caddy', text: install.prerequisites_guide_caddy},
-        {tag: install.prerequisites_status_unknown, text: install.prerequisites_guide_other},
-    ]
+    const guides = rewriteGuideDefinitions.map((entry) => {
+        const tag = entry.tagKey
+            ? install[entry.tagKey]
+            : (entry.fallbackTag ?? install.prerequisites_status_unknown)
+
+        return {
+            type: entry.type,
+            tag,
+            text: install[entry.key] ?? '',
+            detected: entry.type === detectedType
+                || (entry.type === 'shared' && detectedType === 'apache' && prerequisites.mod_rewrite.state === 'unknown')
+                || (entry.fallbackTag && detectedLabel && entry.fallbackTag.toLowerCase() === detectedLabel.toLowerCase()),
+        }
+    })
+
+    return guides.sort((left, right) => {
+        if (left.detected === right.detected) {
+            return 0
+        }
+
+        return left.detected ? -1 : 1
+    })
 })
 
 onMounted(() => {
@@ -338,12 +425,28 @@ function toggleTip(key) {
 function markUnreachableChecks() {
     for (const item of prerequisiteItems) {
         if (item.key === 'mod_rewrite') {
-            prerequisites.mod_rewrite = {state: 'fail', detail: null, current: 'disabled', routingActive: false, server: null, serverDetected: null}
+            prerequisites.mod_rewrite = {
+                state: 'unknown',
+                detail: 'manual_verify',
+                current: 'manual_verify',
+                routingActive: false,
+                server: null,
+                serverType: null,
+                serverDetected: null,
+            }
             continue
         }
 
         if (prerequisites[item.key].state === 'loading') {
-            prerequisites[item.key] = {state: 'unknown', detail: null, current: null, routingActive: false, server: null, serverDetected: null}
+            prerequisites[item.key] = {
+                state: 'unknown',
+                detail: null,
+                current: null,
+                routingActive: false,
+                server: null,
+                serverType: null,
+                serverDetected: null,
+            }
         }
     }
 }
@@ -416,6 +519,7 @@ async function loadPrerequisites() {
                     current: result.current ?? result.detail ?? null,
                     routingActive: Boolean(result.routing_active),
                     server: result.server ?? null,
+                    serverType: result.server_type ?? null,
                     serverDetected: result.server_detected ?? null,
                 }
             }
@@ -450,7 +554,7 @@ function getIcon(type) {
 
     if (state === 'loading') return 'spinner'
     if (state === 'fail') return 'times'
-    if (state === 'unknown') return 'help'
+    if (state === 'unknown') return 'warning'
     if (state === 'pass') return 'check-circle'
 
     return 'spinner'
@@ -496,8 +600,22 @@ function currentValue(type) {
             return install.prerequisites_current_api_ok
         }
 
+        if (item.state === 'unknown' && (item.current === 'manual_verify' || item.detail === 'manual_verify')) {
+            if (item.server) {
+                return `${item.server} — ${install.prerequisites_current_manual_verify}`
+            }
+
+            return install.prerequisites_current_manual_verify
+        }
+
         if (item.state === 'unknown' && !item.server && item.serverDetected === false) {
             return install.prerequisites_current_server_unknown
+        }
+    }
+
+    if (type === 'free_space' && item.state === 'unknown') {
+        if (item.detail === 'shared_hosting') {
+            return install.prerequisites_current_cannot_detect_space
         }
     }
 
@@ -541,7 +659,22 @@ function helpText(type) {
         return ''
     }
 
+    if (type === 'free_space' && item.state === 'unknown') {
+        return install.prerequisites_help_space_unknown
+    }
+
     if (type === 'mod_rewrite' && item.state === 'unknown') {
+        if (item.routingActive) {
+            return install.prerequisites_help_rewrite_unknown_api_ok
+        }
+
+        const server = item.server || item.serverType
+
+        if (server) {
+            return (install.prerequisites_help_rewrite_unknown_server ?? install.prerequisites_help_rewrite_unknown)
+                .replaceAll(':server', server)
+        }
+
         return install.prerequisites_help_rewrite_unknown
     }
 

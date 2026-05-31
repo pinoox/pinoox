@@ -1,13 +1,18 @@
 import {defineStore} from 'pinia'
 import {applyDirection} from '@/utils/direction.js'
+import {syncBootstrapQueryRoute} from '@/utils/resolveInstallerApi.js'
 
 const bootstrap = typeof PINOOX !== 'undefined' ? PINOOX : null
+
+syncBootstrapQueryRoute(bootstrap === null)
 
 export const useInstallStore = defineStore('install', {
     state: () => ({
         LANG: bootstrap?.LANG ?? {},
         OPTIONS: bootstrap?.OPTIONS ?? {lang: 'en', direction: 'ltr', version: ''},
         bootstrapError: bootstrap === null,
+        preflightPing: null,
+        preflightLoading: true,
         isLoading: false,
         db: {
             host: 'localhost',
@@ -43,6 +48,17 @@ export const useInstallStore = defineStore('install', {
 
         syncDirection() {
             applyDirection(this.OPTIONS.direction, this.OPTIONS.lang)
+        },
+
+        setPreflightPing(ping) {
+            this.preflightPing = ping
+            this.bootstrapError = !ping?.ok || typeof PINOOX === 'undefined'
+            syncBootstrapQueryRoute(this.bootstrapError)
+        },
+
+        refreshBootstrapError() {
+            this.bootstrapError = !this.preflightPing?.ok || typeof PINOOX === 'undefined'
+            syncBootstrapQueryRoute(this.bootstrapError)
         },
     },
 })

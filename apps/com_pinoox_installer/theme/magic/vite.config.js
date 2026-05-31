@@ -34,8 +34,9 @@ export default defineConfig(({mode}) => {
         },
         server: {
             proxy: {
+                '/?route=': env.VITE_SERVER_URL || 'http://localhost',
                 '/api/v1': env.VITE_SERVER_URL || 'http://localhost',
-                '/dist/pinoox.js': env.VITE_SERVER_URL || 'http://localhost',
+                '/dist/pinoox.js': (env.VITE_SERVER_URL || 'http://localhost') + '/?route=',
             },
         },
     }

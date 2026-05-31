@@ -41,7 +41,7 @@
                         {{ feedback.text }}
                     </p>
 
-                    <pre class="htaccess-modal__preview"><code>{{ preview }}</code></pre>
+                    <pre class="htaccess-modal__preview" dir="ltr"><code>{{ preview }}</code></pre>
 
                     <div class="htaccess-modal__actions">
                         <button
@@ -92,7 +92,7 @@ const copy = computed(() => {
             create: 'ایجاد .htaccess',
             close: 'بستن',
             exists: 'فایل .htaccess از قبل وجود دارد.',
-            created: 'فایل .htaccess با موفقیت ایجاد شد. صفحه را دوباره بارگذاری کنید.',
+            created: 'فایل .htaccess با موفقیت ایجاد شد.',
             occupied: 'فایل .htaccess از قبل محتوا دارد و بازنویسی نشد.',
             not_writable: 'پوشه ریشه سایت قابل نوشتن نیست. دسترسی‌ها را بررسی کنید.',
             write_failed: 'ایجاد فایل .htaccess ناموفق بود.',
@@ -107,7 +107,7 @@ const copy = computed(() => {
         create: 'Create .htaccess',
         close: 'Close',
         exists: '.htaccess already exists.',
-        created: '.htaccess was created successfully. Reload the page.',
+        created: '.htaccess was created successfully.',
         occupied: '.htaccess already contains other rules and was not overwritten.',
         not_writable: 'The site root is not writable. Check folder permissions.',
         write_failed: 'Could not create .htaccess.',

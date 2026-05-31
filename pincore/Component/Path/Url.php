@@ -20,6 +20,7 @@ use Pinoox\Component\Package\App;
 use Pinoox\Component\Package\AppRouter;
 use Pinoox\Component\Path\Manager\PathManager;
 use Pinoox\Component\Path\Manager\UrlManager;
+use Pinoox\Component\Router\QueryRouteResolver;
 
 class Url implements UrlInterface
 {
@@ -84,7 +85,13 @@ class Url implements UrlInterface
 
     public function base(): string
     {
-        return $this->request->getBaseUrl();
+        $basePath = $this->request->getBasePath();
+
+        if ($basePath !== '') {
+            return $basePath;
+        }
+
+        return $this->stripFrontController($this->request->getBaseUrl());
     }
 
     public function params(): string
@@ -106,15 +113,34 @@ class Url implements UrlInterface
 
     public function site(bool $isFullBase = true): string
     {
-        if ($isFullBase)
+        if ($isFullBase) {
             $site = $_ENV['HOST_PROXY'] ?? $this->request->getUriForPath('');
-        else
+        } else {
             $site = $this->base();
+        }
 
         if ($this->isSsl() && str_contains($site, 'http')) {
             $site = str_replace('http:', 'https:', $site);
         }
+
+        $site = $this->stripFrontController($site);
+
+        if ($isFullBase && str_contains($site, '://') && !str_ends_with($site, '/')) {
+            $site .= '/';
+        }
+
         return $site;
+    }
+
+    private function stripFrontController(string $value): string
+    {
+        if ($value === '' || !str_contains($value, 'index.php')) {
+            return $value;
+        }
+
+        $stripped = preg_replace('#/index\.php(?=/|$)#', '', $value);
+
+        return is_string($stripped) && $stripped !== '' ? $stripped : $value;
     }
 
     private function isSsl(): bool
@@ -268,6 +294,23 @@ class Url implements UrlInterface
     public function current()
     {
         return $this->request->getUri();
+    }
+
+    public function isQueryRoute(): bool
+    {
+        return $this->request->isQueryRoute();
+    }
+
+    public function queryRoute(string $path = '', bool $isFullBase = true): string
+    {
+        return QueryRouteResolver::buildUrl($this->site($isFullBase), $path);
+    }
+
+    public function queryRouteForApp(string $path, ?string $package = null, bool $isFullBase = true): string
+    {
+        $package = $package ?? $this->app->package();
+
+        return QueryRouteResolver::buildUrl($this->app($isFullBase), $path);
     }
 
     /**

@@ -16,6 +16,7 @@ namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
 use Pinoox\Component\Kernel\Listener\ExceptionListener;
+use Pinoox\Component\Kernel\Listener\QueryRouteListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
 use Pinoox\Component\Kernel\Listener\RouteEmptyListener;
 use Pinoox\Component\Kernel\Listener\RouterListener;
@@ -44,6 +45,7 @@ class Listener extends Portal
             ->setArgument('debug', false);
 
         self::__bind(RouteEmptyListener::class, 'routeEmpty');
+        self::__bind(QueryRouteListener::class, 'queryRoute');
         self::__bind(ViewListener::class, 'view');
         self::__bind(RequestListener::class, 'request')->setArguments([
             Validation::__ref(),
