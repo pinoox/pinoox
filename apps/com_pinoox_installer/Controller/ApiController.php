@@ -81,13 +81,25 @@ class ApiController extends Controller
 
     public function checkDB(Request $request)
     {
-        $data = $request->json('host,database,username,password,prefix', '', '!empty');
+        $data = $this->readDbInput($request);
 
         if ($this->checkConnection($data)) {
             return $this->message('connect', true);
         }
 
         return $this->message('disconnect', false);
+    }
+
+    private function readDbInput(Request $request): array
+    {
+        $keys = 'host,database,username,password,prefix';
+        $data = $request->request($keys, '', '!empty');
+
+        if (empty($data['host']) && empty($data['database'])) {
+            $data = $request->json($keys, '', '!empty');
+        }
+
+        return is_array($data) ? $data : [];
     }
 
     public function ping(): array
@@ -147,7 +159,7 @@ class ApiController extends Controller
 
         $data = $validation->validate();
         $user = $data['user'];
-        $db = $request->json->all('db');
+        $db = $request->request->all('db') ?: $request->json->all('db');
 
         // Add database core
         if (!$this->insertTables($db, $user)) {
