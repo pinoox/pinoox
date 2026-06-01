@@ -1,19 +1,26 @@
 .draggable-widget {
   position: absolute;
   width: 250px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(22, 22, 26, 0.82);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
   color: white;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
   user-select: none;
   cursor: grab;
 
   .header {
     text-align: center;
-    padding-bottom: 0.5rem;
-    color: #c9c9c9;
-    font-weight: 400;
-    font-size: 0.9em;
+    padding-bottom: 0.55rem;
+    color: rgba(255, 255, 255, 0.82);
+    font-weight: 500;
+    font-size: 0.88em;
+  }
+
+  .content {
+    color: rgba(255, 255, 255, 0.92);
   }
 }
-

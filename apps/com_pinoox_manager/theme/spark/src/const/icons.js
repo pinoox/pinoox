@@ -17,7 +17,12 @@ export const saxIcon = {
     guide: sax.MessageQuestionIcon,
     tips: sax.ChartSuccessIcon,
     edit: sax.EditIcon,
+    setting: sax.Setting2Icon,
+    close: sax.CloseCircleIcon,
     remove: sax.TrashIcon,
+    upload: sax.DocumentUploadIcon,
+    market: sax.ShopIcon,
+    widgets: sax.Element3Icon,
 };
 
 export const mdiIcon ={

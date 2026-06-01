@@ -1,8 +1,8 @@
 import {defineStore} from 'pinia';
 import {routerAPI} from "@api/router.js";
+import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 
-export const useRouteStore = defineStore({
-    id: 'route',
+export const useRouteStore = defineStore('route', {
     state: () => ({
         routes: {},
         isLoaded: false,
@@ -16,7 +16,7 @@ export const useRouteStore = defineStore({
         async getRoutes() {
             return new Promise((resolve, reject) => {
                 routerAPI.getAll().then((response) => {
-                    this.setRoutes(response.data);
+                    this.setRoutes(unwrapResponse(response) ?? {});
                     this.isLoaded = true;
                     resolve();
                 }).catch(error => {

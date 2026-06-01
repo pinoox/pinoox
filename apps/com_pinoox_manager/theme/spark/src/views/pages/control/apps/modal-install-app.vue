@@ -11,11 +11,14 @@
 </template>
 
 <script setup>
-import {closeModal, confirmModal} from '@kolirt/vue-modal'
+defineOptions({modalGroup: 'default'});
+
+import {closeModal, useModalContext} from '@kolirt/vue-modal'
 import {ref} from "vue";
 import {appAPI} from "@api/app.js";
 import {toast} from "@global";
 
+const {confirm} = useModalContext();
 
 const fileUploaderRef = ref(null);
 const file = ref(null);
@@ -45,7 +48,7 @@ const install = () => {
       title: 'با موفقیت نصب شد',
       type: 'success',
     });
-    confirmModal();
+    confirm();
   }).catch((error) => {
     console.error("خطا در ارسال فایل:", error);
     toast({

@@ -63,11 +63,14 @@ class RouterController extends Api
             return $this->error('manager.request_not_valid');
 
         $package = AppHelper::getOne($data['packageName']);
-        if (empty($package) || (isset($package['router']) && !$package['router']))
+        if (empty($package) || empty($package['router']))
             return $this->error('setting/router.no_can_route_package');
 
+        $routerMode = is_array($package['router'])
+            ? ($package['router']['type'] ?? 'single')
+            : $package['router'];
 
-        if ($package['router']['type'] !== 'multiple' && AppRouter::existByPackage($data['packageName']))
+        if ($routerMode !== 'multiple' && AppRouter::existByPackage($data['packageName']))
             return $this->error('setting/router.no_multiple_package');
 
         if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))

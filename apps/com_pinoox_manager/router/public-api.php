@@ -11,9 +11,13 @@
  */
 
 use App\com_pinoox_manager\Controller\AuthController;
+use App\com_pinoox_manager\Controller\OptionController;
 use function Pinoox\Router\{get, post};
 
 // auth
 post(path: 'auth/login', action: [AuthController::class,'login']);
 get(path: 'auth/logout', action: [AuthController::class, 'logout']);
 get(path: 'auth/get', action: [AuthController::class, 'get']);
+
+// wallpapers (public — used in img src without auth header)
+get(path: 'wallpapers/{name}', action: [OptionController::class, 'wallpaper']);

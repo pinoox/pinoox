@@ -12,5 +12,9 @@ export function useRouteMeta() {
         return !!route.meta?.single;
     });
 
-    return {hasToolbar, isSingle};
+    const showDock = computed(() => {
+        return route.meta?.showDock === true;
+    });
+
+    return {hasToolbar, isSingle, showDock};
 }

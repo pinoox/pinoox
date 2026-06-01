@@ -1,50 +1,129 @@
 <template>
+
     <Notifications class="notification"/>
 
-    <div v-if="isSingle" :style="{ backgroundImage: `url(${selectedBackground})` }"
-         class="w-full h-screen bg-cover bg-center">
+
+
+    <div v-if="isSingle" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
+
         <RouterView/>
-    </div>
-    <div v-else-if="isShowApp" :style="{ backgroundImage: `url(${selectedBackground})` }"
-         class="w-full h-screen bg-cover bg-center">
-        <Toolbar v-if="hasToolbar"/>
-        <RouterView/>
+
     </div>
 
-    <ModalTarget/>
+    <div v-else-if="authStore.isAuth && isBooting" class="desktop-loading">
+
+        در حال بارگذاری...
+
+    </div>
+
+    <div v-else-if="authStore.isAuth" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
+
+        <Toolbar v-if="hasToolbar"/>
+
+        <RouterView/>
+
+        <Dockbar v-if="showDock" :apps="dockApps"/>
+
+    </div>
+
+
+
+    <ModalTarget group="default">
+
+        <ModalOverlay class="vue-modal-overlay"/>
+
+    </ModalTarget>
+
 </template>
 
+
+
 <script setup>
+
+import {ModalOverlay, ModalTarget} from '@kolirt/vue-modal';
+
 import {useBackground} from "./views/composables/useBackground.js";
+
 import {useRouteMeta} from "@views/composables/useRouteMeta.js";
+
 import {showSuccessAlert, showErrorAlert} from "@utils/helpers/alertHelper.js";
+
 import {httpEvent} from "@global";
-import {computed, watch} from "vue";
+
+import {computed, ref, watch} from "vue";
+
 import {useAuthStore} from "@/stores/modules/auth.js";
+
 import {useAppStore} from "@/stores/modules/app.js";
+
 import {useRouteStore} from "@/stores/modules/route.js";
 
+import {useOptionsStore} from "@/stores/modules/options.js";
+import {useDockApps} from "@/views/composables/useDockApps.js";
+import Dockbar from "@/views/components/widgets/Dockbar.vue";
+
+
+
 const {selectedBackground} = useBackground();
-const {hasToolbar, isSingle} = useRouteMeta();
+
+const {hasToolbar, isSingle, showDock} = useRouteMeta();
+
 const authStore = useAuthStore();
+
 const appStore = useAppStore();
+
 const routeStore = useRouteStore();
-const isShowApp = computed(() => {
-    return authStore.isAuth;
-   // return authStore.isAuth && appStore.isLoaded && routeStore.isLoaded;
-});
+
+const optionsStore = useOptionsStore();
+const { dockApps } = useDockApps();
+const isBooting = ref(false);
+
+
+
+const bgStyle = computed(() => ({
+
+    backgroundImage: selectedBackground.value ? `url(${selectedBackground.value})` : undefined,
+
+}));
+
 
 
 httpEvent('error_response', showErrorAlert);
+
 httpEvent('response', showSuccessAlert);
-watch(() => authStore.isAuth, async () => {
-    if (authStore.isAuth) {
-        await appStore.getApps();
-        await routeStore.getRoutes();
-    } else
-    {
+
+
+
+watch(() => authStore.isAuth, async (loggedIn) => {
+
+    if (loggedIn) {
+
+        isBooting.value = true;
+
+        try {
+
+            await optionsStore.load();
+
+            await Promise.all([appStore.getApps(), routeStore.getRoutes()]);
+
+        } finally {
+
+            isBooting.value = false;
+
+        }
+
+    } else {
+
+        optionsStore.reset();
+
         appStore.destroyApps();
+
         routeStore.destroyRoutes();
+
     }
-});
+
+}, {immediate: true});
+
 </script>
+
+

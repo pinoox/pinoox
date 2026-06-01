@@ -1,4 +1,5 @@
 import { createApp } from "vue";
+import 'dockbar';
 import App from "./App.vue";
 import axios from "axios";
 import VueAxios from "vue-axios";
@@ -17,19 +18,9 @@ app.use(store);
 app.use(router);
 app.use(Notifications);
 app.use(createModal({
-    transitionTime: 200,
-    animationType: 'fadeIn',
-    modalStyle: {
-        'background-color': 'rgba(0,0,0,0.1)',
-        padding: '2rem 2rem',
-        align: 'center',
-        'z-index': 201,
+    groups: {
+        default: {},
     },
-    overlayStyle: {
-        'background-color': 'rgba(0,0,0,0.1)',
-        'backdrop-filter': 'blur(15px)',
-        'z-index': 200
-    }
 }))
 
 //---------------------------- Mixin ----------------------------

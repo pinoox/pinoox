@@ -44,71 +44,72 @@ const menuItems = ref([
     class: 'back',
     icon: {
       element: Icon,
-      attributes: {
-        is: icons.back
-      }
-    }
-  },
-  {
-    href: '/control/apps',
-    title: 'اپلکیشن ها',
-    icon: {
-      element: Icon,
-      attributes: {
-        is: icons.apps
-      }
-    }
-  },
-  {
-    href: '/control/routes',
-    title: 'مسیریابی',
-    icon: {
-      element: Icon,
-      attributes: {
-        is: icons.routes
-      }
-    }
+      attributes: { is: icons.back },
+    },
   },
   {
     href: '/control/appearance',
     title: 'ظاهری',
     icon: {
       element: Icon,
-      attributes: {
-        is: icons.appearance
-      }
-    }
+      attributes: { is: icons.appearance },
+    },
+  },
+  {
+    href: '/control/widgets',
+    title: 'ویجت‌ها',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.widgets },
+    },
+  },
+  {
+    href: '/control/apps',
+    title: 'اپلیکیشن‌ها',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.apps },
+    },
+  },
+  {
+    href: '/control/apps/manual',
+    title: 'نصب دستی',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.upload },
+    },
+  },
+  {
+    href: '/control/routes',
+    title: 'مسیریابی',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.routes },
+    },
   },
   {
     href: '/control/profile',
     title: 'حساب کاربری',
-    disabled: true,
-    badge: {
-      text: 'به‌زودی',
-      class: 'vsm--badge_default'
-    },
     icon: {
       element: Icon,
-      attributes: {
-        is: icons.profile
-      }
-    }
+      attributes: { is: icons.profile },
+    },
   },
   {
     href: '/control/pincore',
     title: 'پینوکس',
-    disabled: true,
-    badge: {
-      text: 'به‌زودی',
-      class: 'vsm--badge_default'
-    },
     icon: {
       element: Icon,
-      attributes: {
-        is: icons.pincore
-      }
-    }
+      attributes: { is: icons.pincore },
+    },
+  },
+  {
+    href: '/market',
+    title: 'مارکت',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.market },
+    },
   },
 ]);
 </script>
-

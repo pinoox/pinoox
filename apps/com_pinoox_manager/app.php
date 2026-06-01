@@ -16,6 +16,9 @@ return array(
     'minpin' => 2,
     'sys-app' => true,
     'lang' => 'fa',
+    'transport' => [
+        'user' => 'pincore',
+    ],
     'flow' => [
         BootFlow::class,
     ],

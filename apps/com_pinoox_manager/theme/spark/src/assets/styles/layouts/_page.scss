@@ -1,11 +1,17 @@
+@use '../base/variable' as *;
+
 .page {
   margin: 0.5rem;
   border: 1px solid $color-border;
   border-radius: 0.5rem;
-  height: calc(100vh - $toolbar-height - 1rem);
+  height: calc(100vh - $toolbar-height - 1.5rem);
+  display: flex;
+  flex-direction: column;
   background: $bg-blur;
+  overflow: hidden;
 
   &__header {
+    flex-shrink: 0;
     padding: 1rem;
     border-bottom: 1px solid $color-border;
     border-radius: 0.5rem 0.5rem 0 0;
@@ -17,6 +23,7 @@
   }
 
   &__toolbar {
+    flex-shrink: 0;
     height: 46px;
     background: $bg-blur;
     border-bottom: 1px solid $color-border;
@@ -51,17 +58,12 @@
         color: $color-text;
       }
     }
-
   }
 
   &__content {
-    margin-top: 0;
+    flex: 1;
+    min-height: 0;
     padding: 1rem;
     overflow-y: auto;
-    max-height: 90vh;
-
-    &.hasToolbar {
-      margin-top: 32px;
-    }
   }
 }
