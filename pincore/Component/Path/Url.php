@@ -123,13 +123,7 @@ class Url implements UrlInterface
             $site = str_replace('http:', 'https:', $site);
         }
 
-        $site = $this->stripFrontController($site);
-
-        if ($isFullBase && str_contains($site, '://') && !str_ends_with($site, '/')) {
-            $site .= '/';
-        }
-
-        return $site;
+        return $this->stripFrontController($site);
     }
 
     private function stripFrontController(string $value): string
