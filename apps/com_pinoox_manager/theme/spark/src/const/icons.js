@@ -23,6 +23,7 @@ export const saxIcon = {
     upload: sax.DocumentUploadIcon,
     market: sax.ShopIcon,
     widgets: sax.Element3Icon,
+    refresh: sax.Refresh2Icon,
 };
 
 export const mdiIcon ={

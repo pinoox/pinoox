@@ -1,7 +1,8 @@
 <template>
   <div class="storageSettings">
     <p class="storageSettings__intro">
-      پیش‌فرض: خودکار — فضای کل دیسک سرور نمایش داده می‌شود. برای محدودیت دستی، حالت «دستی» را انتخاب کنید.
+      پیش‌فرض: <strong>خودکار</strong> — فضای مصرف‌شده و کل دیسک سرور (ریشه پینوکس) در ویجت نمایش داده می‌شود.
+      برای محاسبه دستی، حالت «پوشه» یا «دیتابیس» را انتخاب و ذخیره کنید.
     </p>
 
     <div class="storageSettings__mode-toggle" role="group" aria-label="حالت محاسبه">
@@ -16,18 +17,32 @@
       <button
           type="button"
           class="storageSettings__mode-btn"
-          :class="{ 'is-active': form.mode === 'manual' }"
-          @click="setMode('manual')"
+          :class="{ 'is-active': form.mode === 'directory' }"
+          @click="setMode('directory')"
       >
-        دستی
+        پوشه
+      </button>
+      <button
+          type="button"
+          class="storageSettings__mode-btn"
+          :class="{ 'is-active': form.mode === 'database' }"
+          :disabled="!databaseAvailable"
+          @click="setMode('database')"
+      >
+        دیتابیس
       </button>
     </div>
 
     <div v-if="form.mode === 'auto'" class="storageSettings__auto-note">
-      فضای کل دیسک سرور (مسیر ریشه پینوکس) در ویجت نمایش داده می‌شود.
+      تا زمانی که حالت «پوشه» یا «دیتابیس» را ذخیره نکنید، ویجت همیشه در حالت خودکار باقی می‌ماند.
     </div>
 
-    <template v-else>
+    <template v-else-if="form.mode === 'directory'">
+      <p class="storageSettings__manual-note">
+        مرور از <strong>ریشه پروژه</strong> شروع می‌شود؛ در صورت داشتن دسترسی می‌توانید به پوشه‌های بالاتر هم بروید.
+        حجم مصرف‌شده از پوشه انتخابی و حجم کل از مقداری است که شما وارد می‌کنید.
+      </p>
+
       <div class="storageSettings__browser">
         <div class="storageSettings__browser-toolbar">
           <button
@@ -39,6 +54,15 @@
           >
             ↑
           </button>
+          <button
+              type="button"
+              class="storageSettings__browser-home"
+              :disabled="browsing || browse.current_path === browse.project_root_path"
+              title="ریشه پروژه"
+              @click="goProjectRoot"
+          >
+            ⌂
+          </button>
           <div class="storageSettings__browser-path" :title="browse.current_path">
             {{ browse.current_path || '...' }}
           </div>
@@ -48,7 +72,7 @@
 
         <ul v-else class="storageSettings__folder-list">
           <li v-if="!browse.folders?.length" class="storageSettings__folder-empty">
-            زیرپوشه‌ای یافت نشد
+            زیرپوشه‌ای قابل دسترس یافت نشد
           </li>
           <li v-for="folder in browse.folders" :key="folder.path">
             <button
@@ -67,7 +91,7 @@
         <button
             type="button"
             class="storageSettings__select-current"
-            :disabled="!browse.current_path || browsing"
+            :disabled="!browse.can_select_current || browsing"
             @click="selectCurrentFolder"
         >
           انتخاب این پوشه
@@ -82,20 +106,45 @@
             class="form-control storageSettings__input-readonly"
             dir="ltr"
             readonly
+            placeholder="یک پوشه از لیست بالا انتخاب کنید"
         />
       </label>
 
       <label class="storageSettings__field">
-        <span>محدودیت (GB)</span>
+        <span>حجم کل (GB)</span>
         <input
             v-model.number="form.limit_gb"
             type="number"
             min="0.1"
             step="0.1"
             class="form-control"
+            placeholder="مثلاً 50"
         />
       </label>
     </template>
+
+    <template v-else-if="form.mode === 'database'">
+      <p class="storageSettings__manual-note">
+        حجم مصرف‌شده از مجموع ستون <code dir="ltr">file_size</code> در جدول
+        <code dir="ltr">pincore_file</code> (همه اپ‌ها) محاسبه می‌شود — سریع و بدون اسکن پوشه.
+      </p>
+
+      <label class="storageSettings__field">
+        <span>حجم کل (GB)</span>
+        <input
+            v-model.number="form.limit_gb"
+            type="number"
+            min="0.1"
+            step="0.1"
+            class="form-control"
+            placeholder="مثلاً 50"
+        />
+      </label>
+    </template>
+
+    <p v-if="form.mode === 'database' && !databaseAvailable" class="storageSettings__error">
+      جدول فایل‌ها در دیتابیس یافت نشد یا در دسترس نیست.
+    </p>
 
     <div class="storageSettings__actions">
       <button type="button" class="btn btn-primary" :disabled="saving || !canSave" @click="saveSettings">
@@ -112,6 +161,7 @@ import { unwrapResponse } from '@utils/helpers/apiHelper.js';
 
 const saving = ref(false);
 const browsing = ref(false);
+const databaseAvailable = ref(true);
 
 const form = ref({
   mode: 'auto',
@@ -121,8 +171,10 @@ const form = ref({
 
 const browse = ref({
   root_path: '',
+  project_root_path: '',
   current_path: '',
   parent_path: null,
+  can_select_current: false,
   folders: [],
 });
 
@@ -130,13 +182,39 @@ const canSave = computed(() => {
   if (form.value.mode === 'auto')
     return true;
 
-  return Boolean(form.value.path) && form.value.limit_gb > 0;
+  if (form.value.mode === 'database')
+    return databaseAvailable.value && Number(form.value.limit_gb) > 0;
+
+  return Boolean(form.value.path?.trim()) && Number(form.value.limit_gb) > 0;
 });
 
+function normalizeMode(mode) {
+  if (mode === 'manual')
+    return 'directory';
+
+  return ['auto', 'directory', 'database'].includes(mode) ? mode : 'auto';
+}
+
 function applyStorage(data) {
-  form.value.mode = data.mode ?? 'auto';
-  form.value.path = data.resolved_path ?? data.path ?? data.default_path ?? '';
-  form.value.limit_gb = data.limit_gb ?? 10;
+  databaseAvailable.value = data.database_available !== false;
+  const mode = normalizeMode(data.mode);
+
+  form.value.mode = mode;
+
+  if (mode === 'directory') {
+    form.value.path = data.resolved_path ?? data.path ?? '';
+    form.value.limit_gb = Number(data.limit_gb) > 0 ? Number(data.limit_gb) : 10;
+    return;
+  }
+
+  if (mode === 'database') {
+    form.value.path = '';
+    form.value.limit_gb = Number(data.limit_gb) > 0 ? Number(data.limit_gb) : 10;
+    return;
+  }
+
+  form.value.path = data.saved_path ?? '';
+  form.value.limit_gb = Number(data.saved_limit_gb) > 0 ? Number(data.saved_limit_gb) : 10;
 }
 
 async function loadBrowse(path) {
@@ -147,14 +225,13 @@ async function loadBrowse(path) {
     const data = unwrapResponse(response) ?? {};
 
     browse.value = {
-      root_path: data.root_path ?? '',
+      root_path: data.root_path ?? data.project_root_path ?? '',
+      project_root_path: data.project_root_path ?? data.root_path ?? '',
       current_path: data.current_path ?? '',
       parent_path: data.parent_path ?? null,
+      can_select_current: Boolean(data.can_select_current),
       folders: data.folders ?? [],
     };
-
-    if (!form.value.path && browse.value.current_path)
-      form.value.path = browse.value.current_path;
   } finally {
     browsing.value = false;
   }
@@ -166,15 +243,18 @@ async function loadSettings() {
 
   applyStorage(data.storage ?? {});
 
-  if (form.value.mode === 'manual')
-    await loadBrowse(form.value.path);
+  if (form.value.mode === 'directory')
+    await loadBrowse(form.value.path || undefined);
 }
 
 async function setMode(mode) {
   form.value.mode = mode;
 
-  if (mode === 'manual')
-    await loadBrowse(form.value.path);
+  if (mode !== 'directory')
+    return;
+
+  const startPath = form.value.path?.trim() || undefined;
+  await loadBrowse(startPath);
 }
 
 async function enterFolder(folder) {
@@ -186,8 +266,17 @@ async function goUp() {
   if (!browse.value.parent_path)
     return;
 
-  form.value.path = browse.value.parent_path;
   await loadBrowse(browse.value.parent_path);
+}
+
+async function goProjectRoot() {
+  const root = browse.value.project_root_path || browse.value.root_path;
+
+  if (!root)
+    return;
+
+  form.value.path = root;
+  await loadBrowse(root);
 }
 
 function selectCurrentFolder() {
@@ -199,11 +288,15 @@ async function saveSettings() {
   saving.value = true;
 
   try {
-    await widgetAPI.saveStorageSettings({
+    const response = await widgetAPI.saveStorageSettings({
       mode: form.value.mode,
       path: form.value.path,
       limit_gb: form.value.limit_gb,
     });
+    const data = unwrapResponse(response) ?? {};
+
+    if (data.settings)
+      applyStorage(data.settings);
   } finally {
     saving.value = false;
   }

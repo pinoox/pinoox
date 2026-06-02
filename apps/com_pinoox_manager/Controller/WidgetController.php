@@ -16,30 +16,47 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\StorageHelper;
 use App\com_pinoox_manager\Component\WidgetHelper;
-use Carbon\Carbon;
 use Morilog\Jalali\Jalalian;
 use Pinoox\Component\Http\Request;
+use Pinoox\Portal\Date;
 
 class WidgetController extends Api
 {
     public function clock()
     {
-        if ((app('lang') === 'fa')) {
-            $now = Jalalian::now(new \DateTimeZone('Asia/Tehran'));
+        $timezone = 'Asia/Tehran';
+        $isFa = app('lang') === 'fa';
+
+        if ($isFa) {
+            $now = Jalalian::now(new \DateTimeZone($timezone));
+            $date = $now->format('%A %d %B %Y');
+            $moment = $now->format('H:i');
+            $timestamp = $now->toCarbon()->getTimestamp();
         } else {
-            $now = Carbon::now();
+            $now = Date::now($timezone);
+            $date = $now->format('l d F Y');
+            $moment = $now->format('H:i');
+            $timestamp = $now->getTimestamp();
         }
 
         return [
-            'time' => time(),
-            'date' => t('widget/clock.today') . ' ' . $now->format('d F Y'),
-            'moment' => $now->format('H:i'),
+            'time' => $timestamp,
+            'timestamp' => $timestamp,
+            'timezone' => $timezone,
+            'date' => $date,
+            'moment' => $moment,
         ];
     }
 
     public function storage()
     {
-        $stats = StorageHelper::stats();
+        $stats = StorageHelper::stats(cacheOnly: true);
+
+        if (!empty($stats['size_pending'])) {
+            @set_time_limit(30);
+            $stats = StorageHelper::stats();
+        }
+
         $settings = StorageHelper::settings();
 
         return array_merge($stats, [
@@ -62,6 +79,9 @@ class WidgetController extends Api
         $path = (string) $request->getPayload()->get('path', '');
         $limitGb = (float) $request->getPayload()->get('limit_gb', 0);
 
+        if (in_array($mode, ['directory', 'database', 'manual'], true))
+            @set_time_limit(120);
+
         $result = StorageHelper::saveSettings($mode, $path, $limitGb);
 
         if (empty($result['saved']))
@@ -83,7 +103,7 @@ class WidgetController extends Api
 
     public function saveWidgets(Request $request)
     {
-        $widgets = $request->getPayload()->get('widgets', []);
+        $widgets = $request->get('widgets', []);
 
         if (!is_array($widgets))
             return self::error('فرمت داده نامعتبر است');
