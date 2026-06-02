@@ -134,6 +134,85 @@ function pinoox_vendor_installed(): bool
     return is_file(pinoox_vendor_autoload_path());
 }
 
+function pinoox_requirement_locales(): array
+{
+    static $cache = null;
+
+    if (is_array($cache)) {
+        return $cache;
+    }
+
+    $locales = [];
+    $pattern = pinoox_core_path() . '/lang/*/requirements.lang.php';
+
+    foreach (glob($pattern) ?: [] as $file) {
+        $code = basename(dirname($file));
+
+        if (!preg_match('/^[a-z]{2}$/', $code)) {
+            continue;
+        }
+
+        $data = require $file;
+        $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
+        $locales[$code] = (string) ($meta['name'] ?? strtoupper($code));
+    }
+
+    if ($locales === []) {
+        $locales = ['en' => 'English'];
+    }
+
+    ksort($locales);
+
+    return $cache = $locales;
+}
+
+function pinoox_requirement_normalize_locale(string $locale): string
+{
+    $locale = strtolower(trim($locale));
+    $available = array_keys(pinoox_requirement_locales());
+
+    return in_array($locale, $available, true) ? $locale : 'en';
+}
+
+function pinoox_requirement_locale(): string
+{
+    static $resolved = null;
+
+    if (is_string($resolved)) {
+        return $resolved;
+    }
+
+    $available = array_keys(pinoox_requirement_locales());
+
+    if (isset($_GET['lang']) && is_string($_GET['lang'])) {
+        $requested = pinoox_requirement_normalize_locale($_GET['lang']);
+
+        if (in_array($requested, $available, true) && !headers_sent()) {
+            setcookie('pinoox_requirement_lang', $requested, [
+                'expires' => time() + 86400 * 365,
+                'path' => '/',
+                'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                'httponly' => false,
+                'samesite' => 'Lax',
+            ]);
+        }
+
+        if (in_array($requested, $available, true)) {
+            return $resolved = $requested;
+        }
+    }
+
+    if (isset($_COOKIE['pinoox_requirement_lang']) && is_string($_COOKIE['pinoox_requirement_lang'])) {
+        $cookieLocale = pinoox_requirement_normalize_locale($_COOKIE['pinoox_requirement_lang']);
+
+        if (in_array($cookieLocale, $available, true)) {
+            return $resolved = $cookieLocale;
+        }
+    }
+
+    return $resolved = pinoox_preferred_locale();
+}
+
 function pinoox_preferred_locale(): string
 {
     $accept = strtolower((string) ($_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? ''));
@@ -147,7 +226,7 @@ function pinoox_preferred_locale(): string
 
 function pinoox_requirement_lang_path(string $locale): string
 {
-    $locale = in_array($locale, ['fa', 'en'], true) ? $locale : 'en';
+    $locale = pinoox_requirement_normalize_locale($locale);
 
     return pinoox_core_path() . '/lang/' . $locale . '/requirements.lang.php';
 }
@@ -194,6 +273,18 @@ function pinoox_load_requirement_renderer(): void
     require_once __DIR__ . '/render-requirement-error.php';
 }
 
+function pinoox_load_composer_helper(): void
+{
+    static $loaded = false;
+
+    if ($loaded) {
+        return;
+    }
+
+    require_once __DIR__ . '/composer-helper.php';
+    $loaded = true;
+}
+
 function pinoox_check_runtime_requirements(): void
 {
     if (!pinoox_php_version_ok()) {
@@ -202,7 +293,7 @@ function pinoox_check_runtime_requirements(): void
         exit(1);
     }
 
-    if (PHP_SAPI !== 'cli' && !pinoox_vendor_installed()) {
+    if (!pinoox_vendor_installed()) {
         pinoox_load_requirement_renderer();
         pinoox_render_vendor_missing_error();
         exit(1);

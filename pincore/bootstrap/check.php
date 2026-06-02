@@ -21,7 +21,10 @@ if (pinoox_php_version_ok()) {
         fwrite(STDOUT, 'PHP ' . PHP_VERSION . ' satisfies composer.json (>= ' . pinoox_min_php_version() . ').' . PHP_EOL);
 
         if (!pinoox_vendor_installed()) {
-            fwrite(STDOUT, 'vendor/ is missing — run: composer install' . PHP_EOL);
+            pinoox_load_requirement_renderer();
+            pinoox_load_composer_helper();
+            fwrite(STDOUT, 'Project directory: ' . pinoox_project_path() . PHP_EOL);
+            fwrite(STDOUT, 'Run in terminal: ' . pinoox_composer_terminal_command() . PHP_EOL);
             exit(2);
         }
 
