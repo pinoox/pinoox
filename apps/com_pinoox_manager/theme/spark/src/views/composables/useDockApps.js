@@ -13,6 +13,8 @@ export function resolveAppRoute(app) {
         return `/app-manager/${app.package_name}/users`;
     if (app.open === 'app-config')
         return `/app-manager/${app.package_name}/config`;
+    if (app.open === 'app-view')
+        return { name: 'app-view', params: { package_name: app.package_name } };
     if (app.open)
         return { name: app.open, params: { package_name: app.package_name } };
     return `/app-manager/${app.package_name}/details`;

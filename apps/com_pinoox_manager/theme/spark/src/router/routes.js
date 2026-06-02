@@ -11,6 +11,7 @@ import PageRoutes from '@/views/pages/control/routes/routes-home.vue';
 import PagePincore from '@/views/pages/control/pincore/pincore-home.vue';
 import PageWidgets from '@/views/pages/control/widgets/widgets-home.vue';
 import PageWidgetDetail from '@/views/pages/control/widgets/widget-detail.vue';
+import PageAppView from '@/views/pages/app-view/app-view.vue';
 
 import AppManagerView from '@/views/pages/app-manager/app-manager-view.vue';
 import AppDetails from '@/views/pages/app-manager/app-details.vue';
@@ -19,7 +20,6 @@ import AppUsers from '@/views/pages/app-manager/app-users.vue';
 import AppTemplates from '@/views/pages/app-manager/app-templates.vue';
 
 import MarketHome from '@/views/pages/market/market-home.vue';
-import MarketDetails from '@/views/pages/market/market-details.vue';
 
 export const routes = [
     {
@@ -28,6 +28,16 @@ export const routes = [
         component: PageDesktop,
         meta: {
             showDock: true,
+        },
+    },
+    {
+        path: '/demo/:package_name',
+        name: 'app-view',
+        component: PageAppView,
+        props: true,
+        meta: {
+            toolbar: false,
+            showDock: false,
         },
     },
     {
@@ -120,12 +130,13 @@ export const routes = [
         path: '/market',
         name: 'market-home',
         component: MarketHome,
+        meta: {
+            showDock: true,
+        },
     },
     {
         path: '/market/:package_name',
-        name: 'market-details',
-        component: MarketDetails,
-        props: true,
+        redirect: { name: 'market-home' },
     },
     {
         path: '/login',
