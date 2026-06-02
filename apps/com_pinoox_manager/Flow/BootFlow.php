@@ -20,7 +20,6 @@ class BootFlow extends Flow
 {
     protected function before(Request $request): void
     {
-        User::type(User::JWT);
-        User::setUserSessionKey('manager_pinoox');
+        //User::setUserSessionKey('manager_pinoox');
     }
 }

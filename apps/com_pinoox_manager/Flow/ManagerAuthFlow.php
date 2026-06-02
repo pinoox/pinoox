@@ -20,8 +20,7 @@ class ManagerAuthFlow extends AuthFlow
 {
     protected function before(Request $request): void
     {
-        User::type(User::JWT);
-        User::setUserSessionKey('manager_pinoox');
+       // User::setUserSessionKey('manager_pinoox');
     }
 
     protected function exit(Request $request, Route $route)
