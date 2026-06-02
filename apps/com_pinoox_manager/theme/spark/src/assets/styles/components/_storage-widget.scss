@@ -1,29 +1,255 @@
-.storageWidget {
+.draggable-widget.storageWidget {
+  width: min(21rem, calc(100vw - 2rem));
+  max-width: calc(100vw - 2rem);
+  overflow: visible;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  background: linear-gradient(145deg, rgba(28, 28, 34, 0.92) 0%, rgba(18, 18, 22, 0.88) 100%);
+  border-color: rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 
-  &__info {
-    font-size: 0.8em;
-    margin-bottom: 10px;
-    font-weight: 300;
-
-    strong {
-      margin: 0 0 0 0.5rem;
-    }
+  .header {
+    padding-bottom: 0.55rem;
+    margin-bottom: 0.15rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: visible;
   }
 
-  &__bar {
-    width: 100%;
-    height: 10px;
-    background: #ddd;
-    border-radius: 5px;
-    overflow: hidden;
-  }
-
-  .storage-segment {
-    @apply bg-primary;
-    height: 100%;
-    transition: width 0.5s ease-in-out;
+  .content {
+    min-width: 0;
+    overflow: visible;
   }
 }
 
+.storageWidget {
+  &__head {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    min-width: 0;
+  }
 
+  &__icon {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    padding: 0.38rem;
+    border-radius: 0.55rem;
+    color: #9ae6b4;
+    background: linear-gradient(135deg, rgba(110, 203, 143, 0.22) 0%, rgba(110, 203, 143, 0.06) 100%);
+    border: 1px solid rgba(110, 203, 143, 0.28);
+    box-shadow: 0 2px 8px rgba(110, 203, 143, 0.12);
 
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  &__title {
+    font-weight: 600;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.92);
+    letter-spacing: -0.01em;
+  }
+
+  &__warning {
+    margin-bottom: 0.55rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 0.55rem;
+    background: rgba(255, 90, 90, 0.14);
+    border: 1px solid rgba(255, 120, 120, 0.24);
+    color: #ffd4d4;
+    font-size: 0.68rem;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0.85rem;
+    min-width: 0;
+    padding-top: 0.15rem;
+  }
+
+  &__ring {
+    position: relative;
+    flex-shrink: 0;
+    align-self: center;
+    width: 4.75rem;
+    height: 4.75rem;
+    padding: 0.28rem;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 0 14px rgba(0, 0, 0, 0.18);
+
+    &.is-safe {
+      --ring-color: #72d492;
+      --ring-glow: rgba(110, 203, 143, 0.5);
+    }
+
+    &.is-warning {
+      --ring-color: #ffb84d;
+      --ring-glow: rgba(245, 166, 35, 0.45);
+    }
+
+    &.is-danger {
+      --ring-color: #ff7070;
+      --ring-glow: rgba(239, 83, 80, 0.45);
+    }
+  }
+
+  &__ring-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 7px var(--ring-glow));
+  }
+
+  &__ring-track {
+    stroke: rgba(255, 255, 255, 0.12);
+  }
+
+  &__ring-progress {
+    stroke: var(--ring-color);
+    transition: stroke-dasharray 0.65s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.25s ease;
+  }
+
+  &__ring-value {
+    position: absolute;
+    inset: 0.28rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+  }
+
+  &__details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.35rem;
+
+    &.is-safe {
+      --accent: rgba(110, 203, 143, 0.35);
+      --accent-soft: rgba(110, 203, 143, 0.1);
+      --bar-glow: rgba(110, 203, 143, 0.4);
+    }
+
+    &.is-warning {
+      --accent: rgba(245, 166, 35, 0.4);
+      --accent-soft: rgba(245, 166, 35, 0.1);
+      --bar-glow: rgba(245, 166, 35, 0.38);
+    }
+
+    &.is-danger {
+      --accent: rgba(239, 83, 80, 0.4);
+      --accent-soft: rgba(239, 83, 80, 0.1);
+      --bar-glow: rgba(239, 83, 80, 0.38);
+    }
+  }
+
+  &__stats {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  &__stat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.55rem;
+    min-width: 0;
+    padding: 0.5rem 0.62rem;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    transition: background 0.2s ease, border-color 0.2s ease;
+
+    &:first-child {
+      background: var(--accent-soft, rgba(110, 203, 143, 0.1));
+      border-color: var(--accent, rgba(110, 203, 143, 0.22));
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.06);
+    }
+  }
+
+  &__stat-label {
+    flex: 1;
+    min-width: 0;
+    font-size: 0.76rem;
+    font-weight: 500;
+    line-height: 1.35;
+    color: rgba(255, 255, 255, 0.68);
+    white-space: nowrap;
+  }
+
+  &__stat-value {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    flex-shrink: 0;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    line-height: 1;
+    padding: 0.2rem 0.48rem;
+    border-radius: 0.4rem;
+    background: rgba(0, 0, 0, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+
+    &.is-used {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+      .storageWidget__num {
+        font-size: 0.92rem;
+      }
+    }
+
+    &.is-total {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+
+      .storageWidget__num {
+        font-size: 0.84rem;
+      }
+    }
+  }
+
+  &__unit {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: rgba(255, 255, 255, 0.52);
+  }
+
+  &__num {
+    font-weight: inherit;
+  }
+}

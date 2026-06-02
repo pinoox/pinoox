@@ -6,7 +6,7 @@
     <div v-if="hasToolbar" class="page__toolbar">
       <slot name="toolbar"></slot>
     </div>
-    <div class="page__content" :class="{'hasToolbar':hasToolbar}">
+    <div class="page__content">
       <slot></slot>
     </div>
   </section>

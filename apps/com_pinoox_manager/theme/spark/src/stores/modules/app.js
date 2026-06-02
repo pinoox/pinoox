@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
 import { appAPI } from "@api/app.js";
+import { unwrapResponse } from "@utils/helpers/apiHelper.js";
 
-export const useAppStore = defineStore({
-    id: 'app',
+export const useAppStore = defineStore('app', {
     state: () => ({
         apps: {},
         isLoaded: false,
@@ -16,7 +16,7 @@ export const useAppStore = defineStore({
         async getApps() {
             return new Promise((resolve, reject) => {
                 appAPI.getAll().then((response) => {
-                    this.setApps(response.data);
+                    this.setApps(unwrapResponse(response) ?? {});
                     this.isLoaded = true;
                     resolve();
                 }).catch(error => {

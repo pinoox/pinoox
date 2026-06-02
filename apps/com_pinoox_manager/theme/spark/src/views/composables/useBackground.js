@@ -1,28 +1,254 @@
-import { ref, watch, provide, inject } from "vue";
+import { ref, watch, provide, inject, computed } from "vue";
+import { useOptionsStore } from "@/stores/modules/options.js";
+
+import { wallpaperUrl } from "@utils/helpers/backgroundHelper.js";
+
+
+
+function preloadImage(url) {
+
+    if (!url)
+
+        return Promise.resolve();
+
+
+
+    return new Promise((resolve) => {
+
+        const image = new Image();
+
+        image.onload = () => resolve();
+
+        image.onerror = () => resolve();
+
+        image.src = url;
+
+    });
+
+}
+
+
 
 export function useBackground() {
+
+    const optionsStore = useOptionsStore();
+
     let selectedBackground = inject("selectedBackground", ref(null));
 
-    const backgrounds = [
-        new URL('@/assets/media/bg/1.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/2.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/3.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/4.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/5.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/6.webp', import.meta.url).href,
-        new URL('@/assets/media/bg/7.webp', import.meta.url).href,
-    ];
+    const changingBackgroundId = ref(null);
 
-    if (!selectedBackground.value) {
-        selectedBackground.value = localStorage.getItem("selectedBackground") || backgrounds[0];
-    }
+    const uploadingWallpaper = ref(false);
 
-    const changeBackground = (image) => {
-        selectedBackground.value = image;
-        localStorage.setItem("selectedBackground", image);
+    const deletingBackgroundId = ref(null);
+
+
+
+    const isBusy = computed(() => Boolean(
+
+        changingBackgroundId.value || uploadingWallpaper.value || deletingBackgroundId.value,
+
+    ));
+
+
+
+    const backgrounds = computed(() => optionsStore.wallpapers);
+
+
+
+    const selectedId = computed(() => String(optionsStore.background || optionsStore.defaultBackground || ''));
+
+
+
+    const syncBackground = () => {
+
+        selectedBackground.value = optionsStore.backgroundUrl || null;
+
     };
+
+
+
+    if (!selectedBackground.value)
+
+        syncBackground();
+
+
+
+    watch(() => optionsStore.isLoaded, syncBackground);
+
+    watch(() => optionsStore.background, syncBackground);
+
+    watch(() => optionsStore.wallpapers, syncBackground, { deep: true });
+
+
+
+    const changeBackground = async (item) => {
+
+        const name = String(typeof item === 'object' ? item.id : item);
+
+
+
+        if (isBusy.value || selectedId.value === name)
+
+            return;
+
+
+
+        changingBackgroundId.value = name;
+
+
+
+        try {
+
+            await optionsStore.changeBackground(name);
+
+
+
+            const url = wallpaperUrl(
+
+                optionsStore.wallpapers,
+
+                optionsStore.background,
+
+                optionsStore.defaultBackground,
+
+            );
+
+
+
+            await preloadImage(url);
+
+            selectedBackground.value = url || null;
+
+        } finally {
+
+            changingBackgroundId.value = null;
+
+        }
+
+    };
+
+
+
+    const uploadWallpaper = async (file, { select = true } = {}) => {
+
+        if (!file || isBusy.value)
+
+            return null;
+
+
+
+        uploadingWallpaper.value = true;
+
+
+
+        try {
+
+            const wallpaper = await optionsStore.uploadWallpaper(file);
+
+            if (!wallpaper)
+
+                return null;
+
+
+
+            if (select) {
+
+                uploadingWallpaper.value = false;
+
+                await changeBackground(wallpaper);
+
+            }
+
+
+
+            return wallpaper;
+
+        } finally {
+
+            uploadingWallpaper.value = false;
+
+        }
+
+    };
+
+
+
+    const deleteWallpaper = async (item) => {
+
+        const id = String(typeof item === 'object' ? item.id : item);
+
+
+
+        if (isBusy.value)
+
+            return;
+
+
+
+        deletingBackgroundId.value = id;
+
+
+
+        try {
+
+            await optionsStore.deleteWallpaper(id);
+
+
+
+            const url = wallpaperUrl(
+
+                optionsStore.wallpapers,
+
+                optionsStore.background,
+
+                optionsStore.defaultBackground,
+
+            );
+
+
+
+            await preloadImage(url);
+
+            selectedBackground.value = url || null;
+
+        } finally {
+
+            deletingBackgroundId.value = null;
+
+        }
+
+    };
+
+
 
     provide("selectedBackground", selectedBackground);
 
-    return { backgrounds, selectedBackground, changeBackground };
+
+
+    return {
+
+        backgrounds,
+
+        selectedBackground,
+
+        selectedId,
+
+        changingBackgroundId,
+
+        uploadingWallpaper,
+
+        deletingBackgroundId,
+
+        isBusy,
+
+        changeBackground,
+
+        uploadWallpaper,
+
+        deleteWallpaper,
+
+    };
+
 }
+
+

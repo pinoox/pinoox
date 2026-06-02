@@ -14,58 +14,105 @@
 namespace App\com_pinoox_manager\Controller;
 
 
-use Carbon\Carbon;
+use App\com_pinoox_manager\Component\StorageHelper;
+use App\com_pinoox_manager\Component\WidgetHelper;
 use Morilog\Jalali\Jalalian;
-use Pinoox\Component\Date;
-use Pinoox\Component\File;
+use Pinoox\Component\Http\Request;
+use Pinoox\Portal\Date;
 
 class WidgetController extends Api
 {
     public function clock()
     {
-        if ((app('lang') === 'fa')) {
-            $now = Jalalian::now(new \DateTimeZone('Asia/Tehran'));
+        $timezone = 'Asia/Tehran';
+        $isFa = app('lang') === 'fa';
+
+        if ($isFa) {
+            $now = Jalalian::now(new \DateTimeZone($timezone));
+            $date = $now->format('%A %d %B %Y');
+            $moment = $now->format('H:i');
+            $timestamp = $now->toCarbon()->getTimestamp();
         } else {
-            $now = Carbon::now();
+            $now = Date::now($timezone);
+            $date = $now->format('l d F Y');
+            $moment = $now->format('H:i');
+            $timestamp = $now->getTimestamp();
         }
 
         return [
-            'time' => time(),
-            'date' => t('widget/clock.today') . ' ' . $now->format('d F Y'),
-            'moment' => $now->format('a'),
+            'time' => $timestamp,
+            'timestamp' => $timestamp,
+            'timezone' => $timezone,
+            'date' => $date,
+            'moment' => $moment,
         ];
     }
 
     public function storage()
     {
-        $totalSpace = $this->totalSpace();
-        $freeSpace = $this->freeSpace();
-        $useSpace = $this->useSpace();
-        $percent = round($useSpace / ($totalSpace / 100));
+        $stats = StorageHelper::stats(cacheOnly: true);
 
+        if (!empty($stats['size_pending'])) {
+            @set_time_limit(30);
+            $stats = StorageHelper::stats();
+        }
+
+        $settings = StorageHelper::settings();
+
+        return array_merge($stats, [
+            'limit_gb' => $settings['limit_gb'],
+            'default_path' => StorageHelper::defaultPath(),
+            'mode' => $settings['mode'],
+        ]);
+    }
+
+    public function browseStorage(Request $request)
+    {
+        $path = $request->query->get('path');
+
+        return StorageHelper::browse(is_string($path) ? $path : null);
+    }
+
+    public function saveStorageSettings(Request $request)
+    {
+        $mode = (string) $request->getPayload()->get('mode', 'auto');
+        $path = (string) $request->getPayload()->get('path', '');
+        $limitGb = (float) $request->getPayload()->get('limit_gb', 0);
+
+        if (in_array($mode, ['directory', 'database', 'manual'], true))
+            @set_time_limit(120);
+
+        $result = StorageHelper::saveSettings($mode, $path, $limitGb);
+
+        if (empty($result['saved']))
+            return self::error($result['message'] ?? 'ذخیره تنظیمات انجام نشد');
+
+        return $result;
+    }
+
+    public function settings()
+    {
         return [
-            'total' => round($totalSpace, 1),
-            'free' => round($freeSpace, 1),
-            'use' => round($useSpace, 1),
-            'percent' => $percent,
+            'widgets' => WidgetHelper::all(),
+            'storage' => array_merge(
+                StorageHelper::settings(),
+                ['default_path' => StorageHelper::defaultPath()]
+            ),
         ];
     }
 
-
-    private function freeSpace($unit = 'GB', $round = 1)
+    public function saveWidgets(Request $request)
     {
-        $freeSpace = disk_free_space(path('~'));
-        return File::convert_size($freeSpace, 'B', $unit, $round);
-    }
+        $widgets = $request->get('widgets', []);
 
-    private function totalSpace($unit = 'GB', $round = 1)
-    {
-        $totalSpace = disk_total_space(path('~'));
-        return File::convert_size($totalSpace, 'B', $unit, $round);
-    }
+        if (!is_array($widgets))
+            return self::error('فرمت داده نامعتبر است');
 
-    private function useSpace($unit = 'GB', $round = 1)
-    {
-        return self::totalSpace($unit, $round) - self::freeSpace($unit, $round);
+        $result = WidgetHelper::save($widgets);
+
+        if (empty($result['saved']))
+            return self::error($result['message'] ?? 'ذخیره تنظیمات انجام نشد');
+
+        return $result;
     }
 }

@@ -1,0 +1,15 @@
+{
+  "name": "default",
+  "app": "dev_armin_comingsoon",
+  "cover": "cover.jpg",
+  "developer": "armindev",
+  "copyright": "armindev",
+  "version": "1.0",
+  "app_version": "1.0",
+  "title": {
+    "fa": "قالب پیش فرض"
+  },
+  "description": {
+    "fa": "قالب پیش فرض برای بستن سایت"
+  }
+}

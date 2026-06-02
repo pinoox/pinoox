@@ -1,0 +1,110 @@
+@keyframes widgetLoadingShimmer {
+  0% {
+    background-position: 100% 0;
+  }
+
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.widgetLoading {
+  &__shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: widgetLoadingShimmer 1.2s ease-in-out infinite;
+  }
+
+  &__header-line {
+    display: block;
+    width: 72%;
+    height: 0.65rem;
+    margin: 0 auto;
+    border-radius: 999px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: widgetLoadingShimmer 1.2s ease-in-out infinite;
+  }
+
+  &--ring {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.25rem 0;
+  }
+
+  &__ring {
+    flex-shrink: 0;
+    width: 4.75rem;
+    height: 4.75rem;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.12) 50%,
+      rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: widgetLoadingShimmer 1.2s ease-in-out infinite;
+  }
+
+  &__lines {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+
+    span {
+      display: block;
+      width: 100%;
+      height: 0.95rem;
+      border-radius: 0.45rem;
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.04) 25%,
+        rgba(255, 255, 255, 0.1) 50%,
+        rgba(255, 255, 255, 0.04) 75%
+      );
+      background-size: 200% 100%;
+      animation: widgetLoadingShimmer 1.2s ease-in-out infinite;
+
+      &:last-child {
+        width: 78%;
+        opacity: 0.75;
+        animation-delay: 0.15s;
+      }
+    }
+  }
+
+  &--clock {
+    display: flex;
+    justify-content: center;
+    padding: 0.35rem 0 0.15rem;
+  }
+
+  &__clock-time {
+    width: 5.5rem;
+    height: 2rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 25%,
+      rgba(255, 255, 255, 0.14) 50%,
+      rgba(255, 255, 255, 0.04) 75%
+    );
+    background-size: 200% 100%;
+    animation: widgetLoadingShimmer 1.2s ease-in-out infinite;
+  }
+}

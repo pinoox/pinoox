@@ -1,0 +1,42 @@
+<?php
+/**
+ *      ****  *  *     *  ****  ****  *    *
+ *      *  *  *  * *   *  *  *  *  *   *  *
+ *      ****  *  *  *  *  *  *  *  *    *
+ *      *     *  *   * *  *  *  *  *   *  *
+ *      *     *  *    **  ****  ****  *    *
+ * @author   Pinoox
+ * @license  https://opensource.org/licenses/MIT MIT License
+ */
+
+namespace App\com_pinoox_comingsoon\Controller;
+
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\Controller;
+use Pinoox\Component\User;
+
+class MainController extends Controller
+{
+
+    public function main()
+    {
+        return render('home', [
+            'background' => assets('assets/images/tehran.jpg'),
+        ]);
+    }
+
+    public function panel()
+    {
+        if (!User::isLoggedIn())
+            redirect('/');
+
+        return render('panel');
+    }
+
+    public function save(Request $request)
+    {
+        $form = $request->request('title,description,twitter,instagram,linkedin,telegram', null);
+        config('app')->setData($form)->save();
+        return url();
+    }
+}

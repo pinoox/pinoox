@@ -10,15 +10,23 @@
  * @copyright  pinoox
  */
 
-
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Http;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Url;
+use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class AccountController extends Api
 {
+    private function decodeResponse(?ResponseInterface $response): array
+    {
+        if (!$response)
+            return [];
+
+        return json_decode($response->getContent(), true) ?? [];
+    }
+
     public function getPinooxAuth()
     {
         $token_key = config('connect.token_key');
@@ -29,10 +37,9 @@ class AccountController extends Api
             ],
         ]);
 
-        $data = $response->toArray();
-        if ($data['status']) {
+        $data = $this->decodeResponse($response);
+        if (!empty($data['status']))
             return $data['result'];
-        }
 
         return null;
     }
@@ -45,7 +52,7 @@ class AccountController extends Api
             ],
         ]);
 
-        $array = $response->toArray();
+        $array = $this->decodeResponse($response);
         if (!empty($array['token_key'])) {
             Config::name('connect')
                 ->set('token_key', $array['token_key'])
@@ -59,8 +66,8 @@ class AccountController extends Api
 
     public function getConnectData()
     {
-        $connect =  Config::name('connect')->get();
-        return !empty($connect)? $connect : '';
+        $connect = Config::name('connect')->get();
+        return !empty($connect) ? $connect : '';
     }
 
     public function logout()
@@ -68,5 +75,7 @@ class AccountController extends Api
         Config::name('connect')
             ->set('token_key', null)
             ->save();
+
+        return $this->message('logout');
     }
 }

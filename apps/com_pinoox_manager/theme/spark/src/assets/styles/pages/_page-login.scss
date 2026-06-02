@@ -1,3 +1,5 @@
+@use '../base/variable' as *;
+
 .pageLogin {
   backdrop-filter: blur(10px);
   width: 100%;

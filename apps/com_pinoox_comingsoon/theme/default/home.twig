@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ config('app.title') }}</title>
+
+    <link rel="stylesheet" href="{{ assets('assets/css/style.css') }}">
+</head>
+<body class="rtl">
+
+
+<div class="home"
+     style="background: linear-gradient(rgba(74,13,187,0.75), rgba(37,39,50,0.71)), url('{{ background }}') no-repeat;">
+    {% if isLogin() %}
+    <div class="alert-login">
+        {{ t('default.login_to_setting_info') }} <br>
+        <a href="{{ url('panel') }}" class="btn"> {{ t('default.login_to_setting') }}</a>
+    </div>
+    {% endif %}
+
+    <div class="text">
+        <h2 class="title">{{ config('app.title') }}</h2>
+        <h4 class="message">{{ config('app.description') }}</h4>
+    </div>
+
+    <div class="socials">
+        {% if config('app.twitter') %}
+        <a target="_blank" href="{{ config('app.twitter') }}">
+            <img src="{{ assets('assets/images/socials/twitter.svg') }}" alt="twitter">
+        </a>
+        {% endif %}
+
+        {% if config('app.linkedin') %}
+            <a target="_blank" href="{{ config('app.linkedin') }}">
+                <img src="{{ assets('assets/images/socials/linkedin.svg') }}" alt="twitter">
+            </a>
+        {% endif %}
+
+        {% if config('app.instagram') %}
+            <a target="_blank" href="{{ config('app.instagram') }}">
+                <img src="{{ assets('assets/images/socials/instagram.svg') }}" alt="twitter">
+            </a>
+        {% endif %}
+
+
+        {% if config('app.telegram') %}
+            <a target="_blank" href="{{ config('app.telegram') }}">
+                <img src="{{ assets('assets/images/socials/telegram.svg') }}" alt="twitter">
+            </a>
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

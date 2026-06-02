@@ -10,7 +10,9 @@
 </template>
 
 <script setup>
-import {closeModal, confirmModal} from '@kolirt/vue-modal'
+defineOptions({modalGroup: 'default'});
+
+import {closeModal} from '@kolirt/vue-modal'
 
 const props = defineProps({
   message: {type: String}

@@ -1,0 +1,181 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+/* font */
+@font-face {
+    font-family: shabnam;
+    font-style: normal;
+    font-weight: 300;
+    src: url('../fonts/shabnam/Shabnam-Light-FD.eot');
+    src: url('../fonts/shabnam/Shabnam-Light-FD.eot?#iefix') format('embedded-opentype'), /* IE6-8 */ url('../fonts/shabnam/Shabnam-Light-FD.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ url('../fonts/shabnam/Shabnam-Light-FD.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: shabnam;
+    font-style: normal;
+    font-weight: normal;
+    src: url('../fonts/shabnam/Shabnam-FD.eot');
+    src: url('../fonts/shabnam/Shabnam-FD.eot?#iefix') format('embedded-opentype'), /* IE6-8 */ url('../fonts/shabnam/Shabnam-FD.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ url('../fonts/shabnam/Shabnam-FD.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: shabnam;
+    font-style: normal;
+    font-weight: bold;
+    src: url('../fonts/shabnam/Shabnam-Bold-FD.eot');
+    src: url('../fonts/shabnam/Shabnam-Bold-FD.eot?#iefix') format('embedded-opentype'), /* IE6-8 */ url('../fonts/shabnam/Shabnam-Bold-FD.woff') format('woff'), /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ url('../fonts/shabnam/Shabnam-Bold-FD.ttf') format('truetype');
+}
+
+body {
+    background: #ffffff;
+    font-family: "shabnam";
+    overflow: hidden;
+}
+
+.rtl {
+    direction: rtl;
+}
+
+.ltr {
+    direction: ltr;
+}
+
+.container {
+    padding: 2rem;
+}
+
+.home {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-size: cover !important;
+    height: 100vh;
+    width: 100vw;
+    color: #fff;
+    text-align: center;
+}
+
+.home .text {
+    padding: 0 20px;
+}
+
+.home .title {
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.home .message {
+    font-weight: 300;
+    font-size: 1.2rem;
+
+}
+
+.home .socials {
+    position: absolute;
+    bottom: 40px;
+
+}
+
+.home .socials a {
+    margin: 0 5px;
+    display: inline-block;
+    background: rgba(241, 241, 241, 0.15);
+    border-radius: 5px;
+    width: 40px;
+    height: 34px;
+    padding-top: 8px;
+}
+
+.home .socials a img {
+    width: 24px;
+}
+
+.alert-login {
+    position: absolute;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    top: 5%;
+    width: 500px;
+    border-radius: 5px;
+    background: rgba(249, 249, 249, 0.22);
+    color: #fff;
+    padding: 15px;
+}
+
+.alert-login .btn {
+    background: #ffc10a;
+    color: #000;
+    border-radius: 2px;
+    padding: 5px;
+    margin-right: 15px;
+    text-decoration: none;
+}
+
+.alert-login .btn:hover {
+    background: #ffde37;
+    cursor: pointer;
+    display: block;
+}
+
+.panel {
+    margin: auto;
+    margin-top: 50px;
+    max-width: 750px;
+    border: 2px dashed #d3d3d3;
+    background: #f9f9f9;
+    border-radius: 5px;
+    padding: 20px;
+}
+
+.panel-container{
+    overflow-y: scroll;
+}
+
+.form {
+    margin-top: 50px;
+    padding: 20px;
+}
+
+input, textarea {
+    font-family: "shabnam";
+    display: block;
+    width: 95%;
+    margin-bottom: 15px;
+    padding: 12px;
+    border-radius: 4px;
+    border: 1px solid #d4d4d4;
+}
+
+.form .btn{
+    padding: 8px 18px;
+    border-radius: 4px;
+    display: inline-block;
+    background: #4a0dbb;
+    color: #fff;
+    border: none;
+    text-decoration: none;
+    font-family: "shabnam";
+}
+
+.form .btn.white{
+    background: #e9e9e9;
+    color: #000;
+}
+
+.form .btn:hover{
+    background: #5910e3;
+    cursor: pointer;
+}
+
+
+.form .btn.white:hover{
+    background: #bababa;
+    cursor: pointer;
+}

@@ -17,6 +17,7 @@ namespace Pinoox\Portal\App;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response as ObjectPortal2;
 use Pinoox\Component\Kernel\Kernel as ObjectPortal3;
+use Pinoox\Component\Kernel\SessionStarter;
 use Pinoox\Component\Package\App as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\Database\DB;
@@ -60,6 +61,7 @@ class AppProvider extends Portal
 
     private static function require(): void
     {
+        SessionStarter::configureSavePath();
         Dumper::register();
         Debug::enable();
         Env::register();

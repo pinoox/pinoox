@@ -14,10 +14,12 @@
 namespace App\com_pinoox_manager\Controller;
 
 
+use Pinoox\Component\Date;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\User;
 use Pinoox\Model\FileModel;
 use Pinoox\Model\UserModel;
+use Pinoox\Portal\Config;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\FileUploader;
 use Pinoox\Portal\Hash;
@@ -25,6 +27,48 @@ use Pinoox\Portal\Url;
 
 class UserController extends Api
 {
+    public function get()
+    {
+        if (!User::isLoggedIn())
+            return $this->error(t('user.you_must_login'), 401);
+
+        return self::getDataUser();
+    }
+
+    public function getOptions()
+    {
+        $options = Config::name('options')->get() ?? [];
+        $options['lang'] = app('lang');
+        return $options;
+    }
+
+    public function getUsers($packageName)
+    {
+        UserModel::setPackage($packageName);
+        $users = UserModel::all();
+
+        return $users->map(function ($user) {
+            $avatar = Url::path('resources/avatar.png');
+            $avatarThumb = $avatar;
+            if ($user->file) {
+                $avatar = Url::check($user->file->file_link, $avatar);
+                $avatarThumb = Url::check($user->file->thumb_link, $avatarThumb);
+            }
+
+            return [
+                'email' => $user->email,
+                'app' => $user->app,
+                'register_date_fa' => Date::j('Y/m/d', $user->register_date),
+                'fname' => $user->fname,
+                'lname' => $user->lname,
+                'status_fa' => t('user.' . $user->status),
+                'full_name' => $user->full_name,
+                'avatar' => $avatar,
+                'avatar_thumb' => $avatarThumb,
+            ];
+        });
+    }
+
     public function deleteAvatar()
     {
         $user = User::get();

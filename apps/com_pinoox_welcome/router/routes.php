@@ -18,7 +18,7 @@ get(
 );
 
 get(
-    path: '/dist/pinoox.js',
+    path: '/file/loader',
     action: '@pinooxjs',
 );
 

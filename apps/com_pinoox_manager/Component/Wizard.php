@@ -244,8 +244,13 @@ class Wizard
 
     public static function installTemplate($file, $packageName, $meta)
     {
-        //Todo install template
-        return false;
+        try {
+            TemplateWizard::open($file)->install();
+            return true;
+        } catch (\Throwable $e) {
+            self::$message = $e->getMessage();
+            return false;
+        }
     }
 
     public static function deleteTemplate($packageName, $folderName)

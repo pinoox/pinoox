@@ -2,7 +2,6 @@ import {fileURLToPath, URL} from 'node:url'
 
 import {defineConfig, loadEnv} from 'vite'
 import vue from '@vitejs/plugin-vue'
-import sassGlobImports from 'vite-plugin-sass-glob-import';
 import Components from 'unplugin-vue-components/vite';
 import commonjs from 'vite-plugin-commonjs'
 import {babel} from "@rollup/plugin-babel";
@@ -16,17 +15,23 @@ export default defineConfig(({command, mode}) => {
         build: {
             manifest: true,
             rollupOptions: {
-                input: ['src/main.js'], // Entry point
-                manualChunks(id) {
-                    // Separate chunks for vendor and plugins
-                    if (id.includes('vendor')) return 'plugins';
-                    if (id.includes('node_modules')) return 'vendor';
-                }
+                input: ['src/main.js'],
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('vendor')) return 'plugins';
+                        if (id.includes('node_modules')) return 'vendor';
+                    },
+                },
             },
         },
         plugins: [
-            vue(),
-            sassGlobImports(),
+            vue({
+                template: {
+                    compilerOptions: {
+                        isCustomElement: (tag) => tag.startsWith('dock-'),
+                    },
+                },
+            }),
             commonjs(),
             babel({babelHelpers: 'bundled'}),
             tailwindcss(),
@@ -47,8 +52,8 @@ export default defineConfig(({command, mode}) => {
         },
         server: {
             proxy: {
-                '/api': env.VITE_SERVER_API,
-                '/dist/pinoox.js': env.VITE_SERVER_API,
+                '/api': env.VITE_SERVER_URL,
+                '/dist/pinoox.js': env.VITE_SERVER_URL,
             },
         },
     }

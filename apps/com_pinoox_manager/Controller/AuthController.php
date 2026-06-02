@@ -35,29 +35,24 @@ class AuthController extends Api
         $input = $validation->validate();
 
         $user = UserModel::where('username', $input['username'])->first();
-        $u = $user?->makeVisible('password');
-        if (!$u || !Hash::check($input['password'], $u->password)) {
-            return $this->error(t('user.username_or_password_is_wrong'));
-        }
+        $user?->makeVisible('password');
 
-        $userToken = UserModel::where('user_id', $user->user_id)->first();
-
-        if ($userToken) {
-            User::setUserSessionKey('pinoox_manager');
-            User::setToken($userToken);
-            return $this->message(t('user.logged_in_successfully'), User::$login_key);
-        } else {
+        if (!$user || !Hash::check($input['password'], $user->password))
             return $this->error(t('user.username_or_password_is_wrong'));
-        }
+
+        User::type(User::JWT);
+        User::setUserSessionKey('manager_pinoox');
+        User::setToken($user);
+
+        return $this->message(t('user.logged_in_successfully'), User::$login_key);
     }
 
     public function get()
     {
-        if (User::isLoggedIn()) {
+        if (User::isLoggedIn())
             return User::get();
-        } else {
-            return $this->error(t('user.you_must_login'), 401);
-        }
+
+        return $this->error(t('user.you_must_login'), 401);
     }
 
     public function logout()
@@ -65,5 +60,13 @@ class AuthController extends Api
         User::logout();
 
         return $this->message('logout');
+    }
+
+    public function lock()
+    {
+        if (User::isLoggedIn())
+            User::append('isLock', true);
+
+        return $this->message(UserController::getDataUser());
     }
 }

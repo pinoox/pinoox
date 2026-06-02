@@ -22,6 +22,7 @@ class ViteHelper
     protected string $mainDirectory;
     protected string $themePath;
     protected array $processedFiles = [];
+    protected array $outputBuffer = [];
 
     public function __construct(string $themePath, string $fileManifest = 'dist/.vite/manifest.json')
     {
@@ -69,7 +70,7 @@ class ViteHelper
 
     protected function processFile(array $fileData, array $manifest, string $dir, array $processed = []): void
     {
-        // Process imports first (dependencies)
+        // Process imports first (JS chunk dependencies, including Vite 8 rolldown-runtime)
         if (!empty($fileData['imports'])) {
             foreach ($fileData['imports'] as $importKey) {
                 if (empty($processed[$importKey]) && !empty($manifest[$importKey])) {
@@ -90,6 +91,9 @@ class ViteHelper
                 $this->addFile($css, $dir);
             }
         }
+
+        // Vite 8+ lists static assets (fonts, images) on the entry; they are loaded via CSS/JS URLs.
+        // No extra HTML tags are emitted here.
     }
 
     protected function addFile(string $fileName, string $dir): void

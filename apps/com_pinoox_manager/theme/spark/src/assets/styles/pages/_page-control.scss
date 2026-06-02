@@ -1,29 +1,34 @@
+@use '../base/variable' as *;
+
 .pageControl {
   background: rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(10px);
   width: 100%;
-  height: 100%;
+  height: 100vh;
   position: relative;
   padding-top: $toolbar-height;
   overflow: hidden;
 
   &__sidebar {
-    margin-top: $toolbar-height;
     position: fixed;
+    top: $toolbar-height;
+    bottom: 0;
+    right: 0;
+    z-index: 10;
     transition: width 0.3s ease-in-out;
   }
 
   &__page {
     position: relative;
-    height: 100%;
-    transition: width 0.3s ease-in-out;
+    height: calc(100vh - $toolbar-height);
+    transition: width 0.3s ease-in-out, right 0.3s ease-in-out;
     right: $sidebar-width;
-    width: calc(100% - $sidebar-width);
+    width: calc(100% - #{$sidebar-width});
+    overflow: hidden;
 
     &.collapsed {
       right: 66px;
       width: calc(100% - 70px);
-      margin: 0;
     }
   }
 }

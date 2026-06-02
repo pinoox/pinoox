@@ -45,6 +45,7 @@ class Event extends Portal
             ->addMethodCall('addSubscriber', [Listener::__ref('response')])
             ->addMethodCall('addSubscriber', [Listener::__ref('controller')])
             ->addMethodCall('addSubscriber', [Listener::__ref('transactional')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('sessionRelease')])
             ->addMethodCall('addSubscriber', [Listener::__ref('exception')])
             ->addMethodCall('addSubscriber', [Listener::__ref('view')]);
           //->addMethodCall('addSubscriber', [Listener::__ref('core_exception')]);

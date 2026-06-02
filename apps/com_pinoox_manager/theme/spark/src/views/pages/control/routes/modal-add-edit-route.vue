@@ -49,6 +49,8 @@
 </template>
 
 <script setup>
+defineOptions({modalGroup: 'default'});
+
 import {ref, computed, watch} from 'vue';
 import {closeModal} from '@kolirt/vue-modal';
 import {useAppStore} from "@/stores/modules/app.js";
