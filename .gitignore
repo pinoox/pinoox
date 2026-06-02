@@ -6,6 +6,9 @@ pinker
 .idea
 .vscode
 
+# Cursor editor (local rules; see global gitignore)
+.cursor/
+
 # Node Js
 node_modules
 package-lock.json

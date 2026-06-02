@@ -1,0 +1,27 @@
+.git
+.github
+.idea
+.vscode
+.DS_Store
+
+# Dependencies (installed at runtime via Composer / npm in mounted tree)
+vendor
+**/node_modules
+
+# Local env
+.env
+.env.local
+.env.*.local
+
+# PHPUnit
+.phpunit.result.cache
+tests
+
+# Runtime data (use Compose volumes)
+pinker
+uploads
+downloads
+
+# macOS / IDE
+*.swp
+*.swo

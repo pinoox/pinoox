@@ -15,6 +15,17 @@ To get started with Pinoox, follow these steps:
 
 2. Install the required PHP dependencies using Composer: `composer install`
 
+### Docker (optional)
+
+Docker packages **Pinoox core and framework infrastructure** (PHP, Apache, MySQL, Node, Composer) plus the three system apps (installer, manager, welcome). Third-party and market-installed apps are not part of the image. See [docker/README.md](docker/README.md).
+
+```bash
+cp .env.example .env
+docker compose build
+docker compose run --rm pinoox composer install
+docker compose up -d
+```
+
 
 ## Key Features
 
