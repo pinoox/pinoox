@@ -1,8 +1,6 @@
 <template>
   <Page title="ویجت‌ها" class="pageWidgets">
-    <div v-if="loading" class="widgetGrid__loading">در حال بارگذاری...</div>
-
-    <div v-else class="widgetGrid">
+    <div class="widgetGrid">
       <RouterLink
           v-for="widget in widgetList"
           :key="widget.id"
@@ -10,7 +8,7 @@
           class="widgetGrid__card"
       >
         <div class="widgetGrid__preview">
-          <component :is="getWidgetPreview(widget.id)"/>
+          <component :is="getWidgetPreview(widget.id)" v-if="getWidgetPreview(widget.id)"/>
         </div>
 
         <div class="widgetGrid__meta">
@@ -36,7 +34,9 @@ import Page from '@/views/components/layouts/Page.vue';
 import { getWidgetPreview } from './widgetPreviews.js';
 import { useWidgetSettings } from './useWidgetSettings.js';
 
-const { widgetList, loading, loadWidgets } = useWidgetSettings();
+const { widgetList, loadWidgets } = useWidgetSettings();
 
-onMounted(loadWidgets);
+onMounted(() => {
+  loadWidgets();
+});
 </script>

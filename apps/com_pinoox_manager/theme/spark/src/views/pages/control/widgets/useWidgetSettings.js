@@ -3,9 +3,35 @@ import { widgetAPI } from '@api/widget.js';
 import { unwrapResponse } from '@utils/helpers/apiHelper.js';
 import { useOptionsStore } from '@/stores/modules/options.js';
 
+const FALLBACK_WIDGETS = {
+  clock: {
+    id: 'clock',
+    title: 'ساعت',
+    description: 'نمایش تاریخ و ساعت روی دسکتاپ',
+    visible: true,
+    configurable: false,
+  },
+  storage: {
+    id: 'storage',
+    title: 'فضای ذخیره‌سازی',
+    description: 'نمایش فضای دیسک سرور یا پوشه پروژه',
+    visible: true,
+    configurable: true,
+  },
+};
+
+function initialWidgets(store) {
+  const fromStore = store.widgets;
+
+  if (fromStore && typeof fromStore === 'object' && Object.keys(fromStore).length)
+    return { ...fromStore };
+
+  return { ...FALLBACK_WIDGETS };
+}
+
 export function useWidgetSettings() {
   const optionsStore = useOptionsStore();
-  const widgets = ref({});
+  const widgets = ref(initialWidgets(optionsStore));
   const loading = ref(false);
 
   const widgetList = computed(() => Object.values(widgets.value));
@@ -15,7 +41,7 @@ export function useWidgetSettings() {
   }
 
   async function loadWidgets() {
-    loading.value = true;
+    loading.value = false;
 
     try {
       if (!optionsStore.isLoaded)

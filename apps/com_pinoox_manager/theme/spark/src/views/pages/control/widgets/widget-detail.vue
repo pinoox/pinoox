@@ -6,7 +6,7 @@
       </RouterLink>
     </template>
 
-    <div v-if="loading" class="widgetGrid__loading">در حال بارگذاری...</div>
+    <div v-if="loading && !widget" class="widgetGrid__loading">در حال بارگذاری...</div>
 
     <template v-else-if="widget">
       <PageSection title="پیش‌نمایش">
@@ -70,11 +70,11 @@ async function onToggleVisibility(visible) {
   await toggleVisibility(props.id, visible);
 }
 
-onMounted(async () => {
-  await loadWidgets();
-
-  if (!getWidget(props.id))
-    router.replace({ name: 'widgets' });
+onMounted(() => {
+  loadWidgets().then(() => {
+    if (!getWidget(props.id))
+      router.replace({ name: 'widgets' });
+  });
 });
 
 watch(
