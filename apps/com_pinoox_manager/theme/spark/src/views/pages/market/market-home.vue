@@ -1,56 +1,79 @@
-<template>
-  <Page title="مارکت پینوکس" class="pageMarket">
-    <template #toolbar>
-      <Menu :icon="saxIcon.back" label="بازگشت" @click="$router.push('/')"/>
-    </template>
-
-    <div class="mb-4 max-w-md flex gap-2">
-      <Input v-model="keyword" placeholder="جستجو..." @keyup.enter="search"/>
-      <Button label="جستجو" variant="primary" :is-loading="isLoading" @click="search"/>
-    </div>
-
-    <div v-if="apps.length" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-      <div
-          v-for="app in apps"
-          :key="app.package_name || app.package"
-          class="flex flex-col items-center gap-2 cursor-pointer hover:scale-105 transition-transform"
-          @click="openApp(app)"
-      >
-        <img :src="app.icon" :alt="app.name" class="w-16 h-16 rounded-xl object-cover"/>
-        <span class="text-sm text-center">{{ app.name }}</span>
-      </div>
-    </div>
-    <PageEmpty v-else-if="!isLoading" title="اپلیکیشنی یافت نشد"/>
-  </Page>
-</template>
-
-<script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import { marketAPI } from "@api/market.js";
-import { saxIcon } from "@/const/icons.js";
-import { unwrapList } from "@utils/helpers/apiHelper.js";
-
-const router = useRouter();
-const keyword = ref('');
-const apps = ref([]);
-const isLoading = ref(false);
-
-const search = async () => {
-  isLoading.value = true;
-  try {
-    const response = await marketAPI.getApps(keyword.value);
-    apps.value = unwrapList(response);
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const openApp = (app) => {
-  const packageName = app.package_name || app.package;
-  router.push(`/market/${packageName}`);
-};
-
-search();
-</script>
-
+<template>
+  <section class="marketPage">
+    <header class="marketPage__head">
+      <button type="button" class="marketPage__back" @click="$router.push('/')">
+        <Icon :is="saxIcon.back" class="marketPage__back-icon"/>
+        <span>بازگشت</span>
+      </button>
+
+      <div class="marketPage__head-center">
+        <Icon :is="saxIcon.market" class="marketPage__head-icon"/>
+        <h1 class="marketPage__head-title">مارکت پینوکس</h1>
+      </div>
+
+      <span class="marketPage__head-spacer" aria-hidden="true"></span>
+    </header>
+
+    <div class="marketPage__body">
+      <div class="marketSoon">
+        <div class="marketSoon__orb marketSoon__orb--one"></div>
+        <div class="marketSoon__orb marketSoon__orb--two"></div>
+        <div class="marketSoon__orb marketSoon__orb--three"></div>
+
+        <article class="marketSoon__card">
+          <div class="marketSoon__hero">
+            <div class="marketSoon__icon-ring">
+              <Icon :is="saxIcon.market" class="marketSoon__icon"/>
+            </div>
+
+            <h2 class="marketSoon__title">دسترسی ویژه به اپلیکیشن‌ها و قالب‌ها</h2>
+
+            <p class="marketSoon__lead">
+              مارکت پینوکس در حال آماده‌سازی است تا بتوانید
+              <strong>اپلیکیشن‌ها</strong> و <strong>قالب‌ها</strong> را مرور کنید
+              و با <strong>یک کلیک</strong> نصب کنید.
+            </p>
+          </div>
+
+          <div class="marketSoon__features">
+            <div v-for="item in features" :key="item.title" class="marketSoon__feature">
+              <span class="marketSoon__feature-icon">
+                <Icon :is="item.icon"/>
+              </span>
+              <strong>{{ item.title }}</strong>
+              <p>{{ item.text }}</p>
+            </div>
+          </div>
+
+          <div class="marketSoon__footer">
+            <p>در حال ساخت تجربه‌ای ساده، سریع و حرفه‌ای — منتظر ما باشید.</p>
+            <span class="marketSoon__chip">به‌زودی در دسترس</span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+</template>
+
+<script setup>
+import { saxIcon } from '@/const/icons.js';
+import Icon from '@/views/components/widgets/Icon.vue';
+
+const features = [
+  {
+    icon: saxIcon.apps,
+    title: 'اپلیکیشن‌ها',
+    text: 'افزونه‌ها و اپ‌های آماده پینوکس',
+  },
+  {
+    icon: saxIcon.appearance,
+    title: 'قالب‌ها',
+    text: 'انتخاب و اعمال قالب برای هر اپ',
+  },
+  {
+    icon: saxIcon.add,
+    title: 'نصب یک‌کلیکی',
+    text: 'دانلود و نصب خودکار، بدون دردسر',
+  },
+];
+</script>
