@@ -4,6 +4,7 @@
 @use 'base/general';
 @use 'base/initial';
 @use 'components/button';
+@use 'components/widget-loading';
 @use 'components/clock-widget';
 @use 'components/dockbar';
 @use 'components/file-uploader';
@@ -20,3 +21,5 @@
 @use 'pages/page-control';
 @use 'pages/page-login';
 @use 'pages/page-widgets';
+@use 'pages/page-app-view';
+@use 'pages/page-market';
