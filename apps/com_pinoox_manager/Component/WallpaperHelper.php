@@ -13,6 +13,7 @@
 namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Portal\Url;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WallpaperHelper
 {
@@ -24,27 +25,25 @@ class WallpaperHelper
 
     public static function folder(): string
     {
-        return path(self::FOLDER);
+        $dir = path(self::FOLDER);
+        if (!is_dir($dir))
+            mkdir($dir, 0755, true);
+
+        return $dir;
     }
 
     public static function all(): array
     {
         $dir = self::folder();
-        if (!is_dir($dir))
-            return [];
-
         $files = [];
+
         foreach (self::EXTENSIONS as $ext) {
             foreach (glob($dir . '/*.' . $ext) ?: [] as $file) {
                 if (!is_file($file))
                     continue;
 
-                $id = pathinfo($file, PATHINFO_FILENAME);
-                $files[$id] = [
-                    'id' => $id,
-                    'file' => basename($file),
-                    'url' => self::url(basename($file)),
-                ];
+                $item = self::itemFromFile($file);
+                $files[$item['id']] = $item;
             }
         }
 
@@ -57,7 +56,7 @@ class WallpaperHelper
     {
         $wallpapers = self::all();
         if ($wallpapers === [])
-            return '1';
+            return '';
 
         foreach ($wallpapers as $wallpaper) {
             if ($wallpaper['id'] === self::PREFERRED_DEFAULT)
@@ -69,10 +68,14 @@ class WallpaperHelper
 
     public static function resolve(?string $selected): string
     {
+        $wallpapers = self::all();
+        if ($wallpapers === [])
+            return '';
+
         $selected = trim(basename((string) $selected));
         $selected = pathinfo($selected, PATHINFO_FILENAME);
 
-        foreach (self::all() as $wallpaper) {
+        foreach ($wallpapers as $wallpaper) {
             if ($wallpaper['id'] === $selected)
                 return $selected;
         }
@@ -82,25 +85,37 @@ class WallpaperHelper
 
     public static function filePath(string $name): ?string
     {
-        $name = basename($name);
-        $id = pathinfo($name, PATHINFO_FILENAME);
-        $dir = self::folder();
-
-        if (!is_dir($dir))
-            return null;
-
-        foreach (self::EXTENSIONS as $ext) {
-            $file = $dir . '/' . $id . '.' . $ext;
-            if (is_file($file))
-                return $file;
-        }
-
-        return null;
+        return self::findInFolder(self::folder(), pathinfo(basename($name), PATHINFO_FILENAME));
     }
 
     public static function exists(string $name): bool
     {
         return self::filePath($name) !== null;
+    }
+
+    public static function upload(UploadedFile $file): ?array
+    {
+        $ext = strtolower($file->getClientOriginalExtension() ?: $file->guessExtension() ?: '');
+        if (!in_array($ext, self::EXTENSIONS, true))
+            return null;
+
+        $id = self::nextUploadId();
+        $dir = self::folder();
+        $target = $dir . '/' . $id . '.' . $ext;
+        $file->move($dir, $id . '.' . $ext);
+
+        return self::itemFromFile($target);
+    }
+
+    public static function delete(string $name): bool
+    {
+        $id = pathinfo(basename($name), PATHINFO_FILENAME);
+        $file = self::findInFolder(self::folder(), $id);
+
+        if (!$file)
+            return false;
+
+        return @unlink($file);
     }
 
     public static function url(string $fileName): string
@@ -118,5 +133,44 @@ class WallpaperHelper
             'webp' => 'image/webp',
             default => 'application/octet-stream',
         };
+    }
+
+    private static function itemFromFile(string $file): array
+    {
+        $id = pathinfo($file, PATHINFO_FILENAME);
+
+        return [
+            'id' => $id,
+            'file' => basename($file),
+            'url' => self::url(basename($file)),
+            'deletable' => true,
+        ];
+    }
+
+    private static function findInFolder(string $dir, string $id): ?string
+    {
+        if (!is_dir($dir))
+            return null;
+
+        foreach (self::EXTENSIONS as $ext) {
+            $file = $dir . '/' . $id . '.' . $ext;
+            if (is_file($file))
+                return $file;
+        }
+
+        return null;
+    }
+
+    private static function nextUploadId(): string
+    {
+        $existing = [];
+        foreach (self::all() as $wallpaper)
+            $existing[$wallpaper['id']] = true;
+
+        $index = 1;
+        while (isset($existing[(string) $index]))
+            $index++;
+
+        return (string) $index;
     }
 }

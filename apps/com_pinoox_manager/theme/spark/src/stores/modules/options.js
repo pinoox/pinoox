@@ -12,9 +12,9 @@ export const useOptionsStore = defineStore('options', {
 
     state: () => ({
 
-        background: '1',
+        background: '',
 
-        defaultBackground: '1',
+        defaultBackground: '',
 
         wallpapers: [],
 
@@ -54,7 +54,7 @@ export const useOptionsStore = defineStore('options', {
 
             this.wallpapers = Array.isArray(data.wallpapers) ? data.wallpapers : [];
 
-            this.defaultBackground = String(data.defaultBackground ?? this.wallpapers[0]?.id ?? '1');
+            this.defaultBackground = String(data.defaultBackground ?? this.wallpapers[0]?.id ?? '');
 
             this.background = resolveWallpaperId(this.wallpapers, data.background, this.defaultBackground);
 
@@ -75,6 +75,58 @@ export const useOptionsStore = defineStore('options', {
             await optionAPI.changeBackground(name);
 
             this.background = resolveWallpaperId(this.wallpapers, name, this.defaultBackground);
+
+        },
+
+        async uploadWallpaper(file) {
+
+            const formData = new FormData();
+
+            formData.append('wallpaper', file);
+
+            const response = await optionAPI.uploadWallpaper(formData);
+
+            const data = unwrapResponse(response) ?? {};
+
+
+
+            if (Array.isArray(data.wallpapers))
+
+                this.wallpapers = data.wallpapers;
+
+
+
+            return data.wallpaper ?? null;
+
+        },
+
+        async deleteWallpaper(id) {
+
+            const response = await optionAPI.deleteWallpaper(id);
+
+            const data = unwrapResponse(response) ?? {};
+
+
+
+            if (Array.isArray(data.wallpapers))
+
+                this.wallpapers = data.wallpapers;
+
+
+
+            if (data.defaultBackground != null)
+
+                this.defaultBackground = String(data.defaultBackground);
+
+
+
+            if (data.background != null)
+
+                this.background = resolveWallpaperId(this.wallpapers, data.background, this.defaultBackground);
+
+
+
+            return data;
 
         },
 
@@ -168,9 +220,9 @@ export const useOptionsStore = defineStore('options', {
 
         reset() {
 
-            this.background = this.defaultBackground || '1';
+            this.background = this.defaultBackground || '';
 
-            this.defaultBackground = '1';
+            this.defaultBackground = '';
 
             this.wallpapers = [];
 

@@ -34,6 +34,8 @@ use App\com_pinoox_manager\Component\WidgetHelper;
 
 use App\com_pinoox_manager\Component\WallpaperHelper;
 
+use Pinoox\Component\Http\Request;
+
 use Pinoox\Component\Http\Response;
 
 use Pinoox\Portal\App\App;
@@ -245,6 +247,92 @@ class OptionController extends Api
             ]
 
         );
+
+    }
+
+
+
+    public function uploadWallpaper(Request $request)
+
+    {
+
+        if (!$request->files->has('wallpaper'))
+
+            return self::error(t('manager.invalid_request'));
+
+
+
+        $validation = $request->validation([
+
+            'wallpaper' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
+
+        ]);
+
+
+
+        if ($validation->fails())
+
+            return self::error($validation->errors()->first());
+
+
+
+        $wallpaper = WallpaperHelper::upload($request->files->get('wallpaper'));
+
+        if (!$wallpaper)
+
+            return self::error(t('manager.error_happened'));
+
+
+
+        return [
+
+            'wallpaper' => $wallpaper,
+
+            'wallpapers' => WallpaperHelper::all(),
+
+        ];
+
+    }
+
+
+
+    public function deleteWallpaper(string $name)
+
+    {
+
+        $id = pathinfo(basename($name), PATHINFO_FILENAME);
+
+
+
+        if (!WallpaperHelper::delete($name))
+
+            return self::error(t('manager.error_happened'));
+
+
+
+        $options = Config::name('options')->get() ?? [];
+
+        if ((string) ($options['background'] ?? '') === $id) {
+
+            Config::name('options')
+
+                ->set('background', WallpaperHelper::defaultId())
+
+                ->save();
+
+        }
+
+
+
+        return [
+
+            'wallpapers' => WallpaperHelper::all(),
+
+            'defaultBackground' => WallpaperHelper::defaultId(),
+
+            'background' => $this->syncBackgroundOption(Config::name('options')->get() ?? []),
+
+        ];
 
     }
 

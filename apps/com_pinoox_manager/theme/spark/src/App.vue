@@ -43,6 +43,7 @@
 import {ModalOverlay, ModalTarget} from '@kolirt/vue-modal';
 
 import {useBackground} from "./views/composables/useBackground.js";
+import {DEFAULT_FALLBACK_BACKGROUND} from "@utils/helpers/backgroundHelper.js";
 
 import {useRouteMeta} from "@views/composables/useRouteMeta.js";
 
@@ -80,11 +81,17 @@ const isBooting = ref(false);
 
 
 
-const bgStyle = computed(() => ({
+const bgStyle = computed(() => {
 
-    backgroundImage: selectedBackground.value ? `url(${selectedBackground.value})` : undefined,
+    if (selectedBackground.value) {
 
-}));
+        return { backgroundImage: `url(${selectedBackground.value})` };
+
+    }
+
+    return { background: DEFAULT_FALLBACK_BACKGROUND };
+
+});
 
 
 

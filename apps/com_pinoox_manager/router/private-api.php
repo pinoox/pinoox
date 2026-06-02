@@ -38,6 +38,8 @@ get(path: 'user/getUsers/{packageName}', action: [UserController::class, 'getUse
 // options
 get(path: 'options/get', action: [OptionController::class, 'getOptions']);
 get(path: 'options/changeBackground/{name}', action: [OptionController::class, 'changeBackground']);
+post(path: 'options/uploadWallpaper', action: [OptionController::class, 'uploadWallpaper']);
+post(path: 'options/deleteWallpaper/{name}', action: [OptionController::class, 'deleteWallpaper']);
 get(path: 'options/changeLockTime/{minutes}', action: [OptionController::class, 'changeLockTime']);
 get(path: 'options/toggleDockPin/{packageName}', action: [OptionController::class, 'toggleDockPin']);
 get(path: 'changeLang/{lang}', action: [OptionController::class, 'changeLang']);
