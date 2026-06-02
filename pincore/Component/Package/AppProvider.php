@@ -21,6 +21,7 @@ use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
+use Pinoox\Component\Kernel\SessionStarter;
 use Pinoox\Component\Kernel\Terminal;
 use Pinoox\Portal\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -94,7 +95,7 @@ class AppProvider
         $this->getRequest()->setSession($session instanceof SessionInterface ? $session : $this->session);
 
         if ($startSession && $this->getRequest()->hasSession()) {
-            $this->getRequest()->getSession()->start();
+            SessionStarter::start($this->getRequest());
         }
     }
 

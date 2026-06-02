@@ -19,6 +19,7 @@ use Pinoox\Component\Kernel\Listener\ExceptionListener;
 use Pinoox\Component\Kernel\Listener\QueryRouteListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
 use Pinoox\Component\Kernel\Listener\RouteEmptyListener;
+use Pinoox\Component\Kernel\Listener\SessionReleaseListener;
 use Pinoox\Component\Kernel\Listener\RouterListener;
 use Pinoox\Component\Kernel\Listener\TransactionalListener;
 use Pinoox\Component\Kernel\Listener\ViewListener;
@@ -50,6 +51,8 @@ class Listener extends Portal
         self::__bind(RequestListener::class, 'request')->setArguments([
             Validation::__ref(),
         ]);
+
+        self::__bind(SessionReleaseListener::class, 'sessionRelease');
 
         self::__bind(ActionRoutesManageListener::class, 'controller');
 
