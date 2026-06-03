@@ -3,8 +3,11 @@
 namespace Pinoox\Terminal\Pincore;
 
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\FileSystem;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -17,7 +20,7 @@ class CacheClearCommand extends Terminal
     protected function configure(): void
     {
         // No arguments needed by default; you can optionally pass a package name
-        $this->addArgument('package', null, 'Optional package name to clear only one package');
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Optional package name to clear only one package');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -31,12 +34,14 @@ class CacheClearCommand extends Terminal
             $packages = [$package];
         } else {
             // Get all registered apps including core
-            $packages = \Pinoox\Portal\App\AppEngine::all();
+            $packages = ['pincore', ...array_keys(AppEngine::all())];
         }
 
         foreach ($packages as $pkg) {
-            $pinkerDir = path('pinker', $pkg);
-            \Pinoox\Portal\FileSystem::remove($pinkerDir);
+            $pinkerDir = $pkg === 'pincore'
+                ? path('~/pinker/pincore')
+                : path('~/pinker/apps/' . $pkg);
+            FileSystem::remove($pinkerDir);
             $output->writeln("<info>Pinker cache cleared for [{$pkg}]</info>");
         }
 

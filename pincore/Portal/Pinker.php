@@ -14,7 +14,7 @@
 
 namespace Pinoox\Portal;
 
-use Pinoox\Component\Package\Reference\NameReference;
+use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Baker\Pinker as ObjectPortal1;
@@ -38,10 +38,11 @@ class Pinker extends Portal
 
 	public static function folder(string $path, string $file): ObjectPortal1
 	{
-		$mainFile = $path . '/' . $file;
+		$mainFilePath = self::ds($path . '/' . $file);
+		$mainFile = $mainFilePath;
 		$mainFile = is_file($mainFile) ? $mainFile : '';
 
-		$bakedFile = $path . '/' . self::folder . '/' . $file;
+		$bakedFile = self::bakedFileFromSource($mainFilePath);
 
 		return self::create($mainFile, $bakedFile);
 	}
@@ -55,16 +56,9 @@ class Pinker extends Portal
 	 */
 	public static function file(string|ReferenceInterface $fileName): ObjectPortal1
 	{
-		$mainFile = Path::createPath($fileName, 'pincore');
-		$mainFile = is_file($mainFile) ? $mainFile : '';
-		$bakedFileName = !is_string($fileName) ? $fileName->getValue() : $fileName;
-		$bakedFileName = self::folder . '/' . $bakedFileName;
-
-		if (!is_string($fileName)) {
-		    $fileName = NameReference::create($fileName->getPackageName(), $bakedFileName);
-		}
-
-		$bakedFile = Path::createPath($fileName, 'pincore');
+		$mainFilePath = self::ds(Path::createPath($fileName, 'pincore'));
+		$mainFile = is_file($mainFilePath) ? $mainFilePath : '';
+		$bakedFile = self::bakedFileFromSource($mainFilePath);
 		return self::create($mainFile, $bakedFile);
 	}
 
@@ -79,10 +73,38 @@ class Pinker extends Portal
 	public static function path(string $file, ?string $basePath = null): ObjectPortal1
 	{
 		$basePath = !empty($basePath) ? $basePath . '/' : '';
+		$mainFile = self::ds($basePath . $file);
+		if (!self::isAbsolutePath($mainFile) && is_string(Loader::getBasePath())) {
+			$mainFile = self::ds(Loader::getBasePath() . '/' . $mainFile);
+		}
+
 		return self::create(
-		    self::ds($basePath . $file),
-		    self::ds($basePath . Pinker::folder . '/' . $file),
+		    $mainFile,
+		    self::bakedFileFromSource($mainFile),
 		);
+	}
+
+	public static function bakedFileFromSource(string $sourceFile): string
+	{
+		$sourceFile = self::ds($sourceFile);
+		$basePath = self::rootPath();
+		$relative = $sourceFile;
+
+		if (!empty($basePath) && str_starts_with($sourceFile, $basePath . '/')) {
+			$relative = substr($sourceFile, strlen($basePath) + 1);
+		}
+
+		return self::ds($basePath . '/' . self::folder . '/' . ltrim($relative, '/'));
+	}
+
+	public static function rootPath(): string
+	{
+		return rtrim(self::ds((string)Loader::getBasePath()), '/');
+	}
+
+	private static function isAbsolutePath(string $path): bool
+	{
+		return preg_match('/^[A-Za-z]:\//', $path) === 1 || str_starts_with($path, '/');
 	}
 
 

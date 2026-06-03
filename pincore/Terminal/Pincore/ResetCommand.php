@@ -49,7 +49,9 @@ class ResetCommand extends Terminal
         $package = $input->getArgument('package');
 
         $package = (!empty($package) && AppEngine::exists($package)) ? $package : 'pincore';
-        $pinkerDir = path('~:' . $package . '/pinker');
+        $pinkerDir = $package === 'pincore'
+            ? path('~/pinker/pincore')
+            : path('~/pinker/apps/' . $package);
         FileSystem::remove($pinkerDir);
 
         self::success('Pinker directory [' . $package . '] removed successfully.');

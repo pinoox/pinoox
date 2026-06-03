@@ -85,7 +85,7 @@ class DeleteAppCommand extends Terminal
      */
     private function handleRoutes(OutputInterface $output, string $packageName, ?string $specificRoute = null): void
     {
-        $bakedRouter = PINOOX_CORE_PATH . 'pinker/config/app/router.config.php';
+        $bakedRouter = path('~/pinker/pincore/config/app/router.config.php');
         if (!FileSystem::exists($bakedRouter)) {
             $output->writeln("<comment>Pinker router configuration file not found.</comment>");
             return;

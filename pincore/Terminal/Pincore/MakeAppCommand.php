@@ -67,7 +67,6 @@ class MakeAppCommand extends Terminal
             "{$appDir}/Controller",
             "{$appDir}/router",
             "{$appDir}/theme/default",
-            "{$appDir}/pinker",
         ]);
 
         // Generate app.php
@@ -184,7 +183,7 @@ PHP;
             }
 
             // Update Pinker-baked router config
-            $bakedRouter = PINOOX_CORE_PATH . 'pinker/config/app/router.config.php';
+            $bakedRouter = path('~/pinker/pincore/config/app/router.config.php');
             $routes = FileSystem::exists($bakedRouter) ? include $bakedRouter : [];
             $routes[$routePath] = $name;
             ksort($routes);

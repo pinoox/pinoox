@@ -21,6 +21,7 @@ use Pinoox\Component\Package\Loader\LoaderInterface;
 use Pinoox\Component\Package\Loader\PackageLoader;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Manager\PathManager;
+use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\Config;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
@@ -176,7 +177,8 @@ class AppEngine implements EngineInterface
 
         if (empty($this->appConfig[$packageName])) {
             $mainFile = $this->path($packageName, $this->appFile);
-            $bakedFile = $this->path($packageName, $this->folderPinker . '/' . $this->appFile);
+            $basePath = rtrim(str_replace('\\', '/', (string)Loader::getBasePath()), '/');
+            $bakedFile = $basePath . '/' . $this->folderPinker . '/apps/' . $packageName . '/' . $this->appFile;
             $pinker = new Pinker($mainFile, $bakedFile);
             $pinker
                 ->dumping(true);

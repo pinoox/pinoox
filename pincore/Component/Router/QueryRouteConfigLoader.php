@@ -130,7 +130,7 @@ class QueryRouteConfigLoader
 
         $basePath = rtrim(str_replace('\\', '/', $basePath), '/');
         $candidates = [
-            $basePath . '/pincore/pinker/config/app/router.config.php',
+            $basePath . '/pinker/pincore/config/app/router.config.php',
             $basePath . '/pincore/config/app/router.config.php',
         ];
 
