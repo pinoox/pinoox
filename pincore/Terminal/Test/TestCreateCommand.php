@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 
 #[AsCommand(
@@ -29,9 +30,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class TestCreateCommand extends Terminal
 {
+    use SelectsTestPackage;
+
     protected function configure(): void
     {
         $this->addArgument('TestName', InputArgument::REQUIRED, 'Name of the test class')
+            ->addArgument('package', InputArgument::OPTIONAL, 'Package to create the test for')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing test case file')
             ->addOption('unit', null, InputOption::VALUE_NONE, 'Create a unit test in the Unit path');
     }
@@ -39,15 +43,21 @@ class TestCreateCommand extends Terminal
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
+        $io = new SymfonyStyle($input, $output);
 
         $testName = $input->getArgument('TestName');
+        $package = $this->resolvePackage($input, $output, $io);
         $subFolder = $input->getOption('unit') ? 'Unit' : 'Feature';
 
-        $exportPath = 'tests/' . $subFolder . '/' . $testName . '.php';
+        $exportPath = $this->testPath($package, $subFolder) . '/' . $testName . '.php';
 
-        if (file_exists($exportPath)) {
+        if (file_exists($exportPath) && !$input->getOption('force')) {
             $this->error($testName . "Test file already exists");
             return Command::FAILURE;
+        }
+
+        if (!is_dir(dirname($exportPath))) {
+            mkdir(dirname($exportPath), 0777, true);
         }
 
         if (TestFile::create($exportPath, $testName, 'something')) {

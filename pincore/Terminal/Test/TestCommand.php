@@ -14,13 +14,14 @@
 namespace Pinoox\Terminal\Test;
 
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\Path;
 use Pinoox\Portal\Config;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'test',
@@ -28,11 +29,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class TestCommand extends Terminal
 {
+    use SelectsTestPackage;
 
     protected function configure(): void
     {
-        $this->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Filter tests by name or annotation')
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Package to run tests for')
+            ->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Filter tests by name or annotation')
             ->addOption('unit', 'u', InputOption::VALUE_NONE, 'Run only unit tests')
+            ->addOption('feature', null, InputOption::VALUE_NONE, 'Run only feature tests')
             ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Run tests belonging to specific groups')
             ->addOption('coverage', 'c', InputOption::VALUE_NONE, 'Generate code coverage report')
             ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'Run tests for specific app');
@@ -41,41 +45,68 @@ class TestCommand extends Terminal
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
+        $io = new SymfonyStyle($input, $output);
 
         // Set environment to test mode
         Config::name('~pinoox')->set('mode', 'test');
 
-        $this->info('Running tests...');
+        try {
+            $package = $this->resolvePackage($input, $output, $io);
+            $testPath = $this->resolveTestPath($package, $input);
 
-        $command = Path::get('~')  . '/vendor/bin/pest ';
- 
-        if ($input->getOption('filter'))
-            $command .= ' --filter=' . $input->getOption('filter');
-
-        if ($input->getOption('group'))
-            $command .= ' --group=' . $input->getOption('group');
-
-        if ($input->getOption('coverage'))
-            $command .= ' --coverage';
-
-        if ($input->getOption('unit'))
-            $command .= ' --group=unit';
-
-        if ($input->getOption('app')) {
-            $appName = $input->getOption('app');
-            $appPath = Path::get('~') . '/apps/' . $appName;
-            
-            if (!is_dir($appPath)) {
-                $this->error("App '{$appName}' not found!");
+            if (!is_dir($testPath)) {
+                $io->warning("No tests found for package '{$package}' at {$testPath}.");
+                return Command::SUCCESS;
             }
-            
-            $command .= ' ' . $appPath . '/tests';
+
+            $io->title('Pinoox Tests');
+            $io->definitionList(
+                ['Package' => $package],
+                ['Path' => $testPath]
+            );
+
+            $command = $this->buildPestCommand($testPath, $input);
+            passthru($command, $exitCode);
+
+            return $exitCode === 0 ? Command::SUCCESS : Command::FAILURE;
+        } catch (\Exception $e) {
+            $io->error($e->getMessage());
+            return Command::FAILURE;
+        }
+    }
+
+    private function resolveTestPath(string $package, InputInterface $input): string
+    {
+        if ($input->getOption('unit')) {
+            $unitPath = $this->testPath($package, 'Unit');
+            return is_dir($unitPath) ? $unitPath : $this->testPath($package);
         }
 
-        // Execute the Pest tests
-        passthru($command);
+        if ($input->getOption('feature')) {
+            $featurePath = $this->testPath($package, 'Feature');
+            return is_dir($featurePath) ? $featurePath : $this->testPath($package);
+        }
 
-        return Command::SUCCESS;
+        return $this->testPath($package);
+    }
+
+    private function buildPestCommand(string $testPath, InputInterface $input): string
+    {
+        $command = escapeshellarg(path('~/vendor/bin/pest')) . ' ' . escapeshellarg($testPath) . ' --colors=always';
+
+        if ($input->getOption('filter')) {
+            $command .= ' --filter=' . escapeshellarg((string)$input->getOption('filter'));
+        }
+
+        if ($input->getOption('group')) {
+            $command .= ' --group=' . escapeshellarg((string)$input->getOption('group'));
+        }
+
+        if ($input->getOption('coverage')) {
+            $command .= ' --coverage';
+        }
+
+        return $command;
     }
 
 }
