@@ -137,6 +137,21 @@ use Pinoox\Portal\Config;
  * @method static \Illuminate\Contracts\Database\Query\Expression|string orderColumn(array|string $field)
  * @method static string orderDirection(string $type)
  * @method static Connection connection($connection = NULL)
+ * @method static Connection core()
+ * @method static Connection app(?string $package = NULL, string $name = 'default')
+ * @method static Connection package(?string $package = NULL, string $name = 'default')
+ * @method static string currentConnectionName()
+ * @method static string connectionNameForModel(string $class)
+ * @method static string connectionNameForPackage(?string $package = NULL, string $name = 'default')
+ * @method static bool registerPackageConnections(string $package)
+ * @method static string tableName(string $table, ?string $package = NULL)
+ * @method static string tableNameForModel(string $table, string $class)
+ * @method static string physicalTableName(string $table, ?string $package = null)
+ * @method static string tablePrefixForPackage(?string $package = NULL)
+ * @method static string|null packageNameForModel(string $class)
+ * @method static Connection currentConnection($connection = NULL)
+ * @method static ObjectPortal1 currentSchema($connection = NULL)
+ * @method static ObjectPortal3 currentTable($table, $as = NULL, $connection = NULL)
  * @method static ObjectPortal1 schema($connection = NULL)
  * @method static Connection getConnection($name = NULL)
  * @method static addConnection(array $config, $name = 'default')
@@ -181,7 +196,7 @@ class DB extends Portal
     {
         $config = self::getConfig();
         // add default connection
-        self::addConnection($config);
+        self::registerCoreConnection($config);
 
         // Set the event dispatcher used by Eloquent models... (optional)
         self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
@@ -210,6 +225,15 @@ class DB extends Portal
     public static function mode()
     {
         return Config::name('~pinoox')->get('mode');
+    }
+
+    public static function __replace(): array
+    {
+        return [
+            'connection' => fn($connection = null) => self::__instance()->currentConnection($connection),
+            'schema' => fn($connection = null) => self::__instance()->currentSchema($connection),
+            'table' => fn($table, $as = null, $connection = null) => self::__instance()->currentTable($table, $as, $connection),
+        ];
     }
 
 

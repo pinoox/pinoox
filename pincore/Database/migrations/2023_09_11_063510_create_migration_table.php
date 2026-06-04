@@ -22,7 +22,7 @@ return new class extends MigrationBase
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create(Table::MIGRATION, function (Blueprint $table) {
+        $this->schema->create($this->table(Table::MIGRATION, 'pincore'), function (Blueprint $table) {
             $table->id();
             $table->string('migration');
             $table->integer('batch');
@@ -33,6 +33,6 @@ return new class extends MigrationBase
 
     public function down()
     {
-        $this->schema->dropIfExists(Table::MIGRATION);
+        $this->schema->dropIfExists($this->table(Table::MIGRATION, 'pincore'));
     }
 };

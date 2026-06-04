@@ -13,7 +13,6 @@
 
 namespace Pinoox\Terminal\Migrate;
 
-use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\Database\DB;
@@ -23,7 +22,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Pinoox\Component\Migration\MigrationQuery;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 
 // the "name" and "description" arguments of AsCommand replace the
@@ -34,12 +33,14 @@ use Pinoox\Component\Migration\MigrationQuery;
 )]
 class MigrateCommand extends Terminal
 {
+    use SelectsMigrationPackage;
+
     /**
      * Configure the command
      */
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to migrate schemas', $this->getDefaultPackage())
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to migrate schemas')
             ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints')
             ->addOption('dbconfig', null, InputOption::VALUE_NONE, 'Show current database configuration')
             ->addOption('status', 's', InputOption::VALUE_NONE, 'Show migration status')
@@ -53,6 +54,7 @@ class MigrateCommand extends Terminal
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
+        $io = new SymfonyStyle($input, $output);
         $ignoreFk = $input->getOption('ignore-fk');
         $showStatus = $input->getOption('status');
         $reset = $input->getOption('reset');
@@ -60,39 +62,35 @@ class MigrateCommand extends Terminal
 
         if ($input->getOption('dbconfig')) {
             $config = DB::connection()->getConfig();
-            $output->writeln(json_encode($config, JSON_PRETTY_PRINT));
-            return 0;
+            unset($config['password']);
+            $io->title('Pinoox Database Configuration');
+            $io->writeln(json_encode($config, JSON_PRETTY_PRINT));
+            return Command::SUCCESS;
         }
 
+        $package = $this->resolvePackage($input, $output, $io);
+        $this->printHeader($io, $package);
+
         if ($showStatus) {
-            return $this->showStatus($input->getArgument('package'), $output);
+            return $this->showStatus($package, $io);
         }
 
         try {
-            $package = $input->getArgument('package');
-
             if ($reset) {
                 $migrator = new Migrator($package);
                 $result = $migrator->reset();
-                foreach ($result as $message) {
-                    $output->writeln($message);
-                }
+                $this->printMessages($io, $result);
                 return Command::SUCCESS;
             }
 
             if ($ignoreFk) {
                 DB::statement('SET FOREIGN_KEY_CHECKS=0');
+                $io->note('Foreign key checks are disabled for this migration run.');
             }
 
-            $migrator = new Migrator($package);
-            if ($force) {
-                $result = $migrator->runWithForce();
-            } else {
-                $result = $migrator->run();
-            }
-            foreach ($result as $message) {
-                $output->writeln($message);
-            }
+            $migrator = new Migrator($package, 'run', ['force' => $force]);
+            $result = $migrator->run();
+            $this->printResult($io, $result);
 
             if ($ignoreFk) {
                 DB::statement('SET FOREIGN_KEY_CHECKS=1');
@@ -100,52 +98,113 @@ class MigrateCommand extends Terminal
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+            $io->error($e->getMessage());
             return Command::FAILURE;
         }
     }
 
-    /**
-     * @throws Exception
-     */
-    private function printMessages($messages): void
+    private function printHeader(SymfonyStyle $io, string $package): void
     {
-        if (!empty($messages)){
-            foreach ($messages as $message) {
-                $this->success($message);
+        $io->title('Pinoox Migration');
+
+        $connectionName = DB::connectionNameForPackage($package);
+        $connection = DB::getConnection($connectionName);
+        $config = $connection->getConfig();
+
+        $io->definitionList(
+            ['Package' => $package],
+            ['Connection' => $this->displayConnectionName($package, $connectionName)],
+            ['Database' => $config['database'] ?? '-'],
+            ['Table prefix' => $connection->getTablePrefix() ?: '(none)']
+        );
+    }
+
+    private function displayConnectionName(string $package, string $connectionName): string
+    {
+        if ($package === 'pincore') {
+            return 'default';
+        }
+
+        $prefix = 'app_' . preg_replace('/[^A-Za-z0-9_]+/', '_', $package) . '_';
+
+        if (str_starts_with($connectionName, $prefix)) {
+            return substr($connectionName, strlen($prefix)) ?: 'default';
+        }
+
+        return $connectionName === 'pincore' ? 'default' : $connectionName;
+    }
+
+    private function printResult(SymfonyStyle $io, array $result): void
+    {
+        if (isset($result['executed']) || isset($result['skipped'])) {
+            $executed = $result['executed'] ?? [];
+            $skipped = $result['skipped'] ?? [];
+
+            if (!empty($executed)) {
+                $io->section('Executed');
+                $io->listing($executed);
             }
+
+            if (!empty($skipped)) {
+                $io->section('Skipped');
+                $io->listing($skipped);
+            }
+
+            if (empty($executed) && empty($skipped)) {
+                $io->success('Nothing to migrate.');
+                return;
+            }
+
+            $io->success(sprintf(
+                'Migration completed. Executed: %d, skipped: %d, total: %d.',
+                count($executed),
+                count($skipped),
+                $result['total'] ?? count($executed) + count($skipped)
+            ));
+
+            return;
+        }
+
+        $this->printMessages($io, $result);
+    }
+
+    private function printMessages(SymfonyStyle $io, array $messages): void
+    {
+        foreach ($messages as $message) {
+            if ($message === 'Nothing to migrate.') {
+                $io->success($message);
+                continue;
+            }
+
+            $io->writeln((string)$message);
         }
     }
 
     /**
      * Show migration status
      */
-    private function showStatus(string $app, OutputInterface $output): int
+    private function showStatus(string $app, SymfonyStyle $io): int
     {
         try {
-            $records = MigrationQuery::fetchAllByBatch(null, $app);
-            
+            $records = (new Migrator($app))->status();
+
             if (empty($records)) {
-                $output->writeln("No migrations found for app: " . $app);
+                $io->success("There are no migrations for package: " . $app);
                 return Command::SUCCESS;
             }
 
-            $output->writeln("\nMigration Status for app: " . $app);
-            $output->writeln(str_repeat('-', 80));
-            $output->writeln(sprintf("%-50s %-10s %-20s", "Migration", "Batch", "Status"));
-            $output->writeln(str_repeat('-', 80));
+            $rows = array_map(static fn($record) => [
+                $record['migration'],
+                $record['batch'] ?? '-',
+                $record['status'] === 'migrated' ? 'Done' : 'Pending',
+                $record['created_at'] ?? '-',
+            ], $records);
 
-            foreach ($records as $record) {
-                $output->writeln(sprintf("%-50s %-10s %-20s",
-                    $record['migration'],
-                    $record['batch'],
-                    'Completed'
-                ));
-            }
+            $io->table(['Migration', 'Batch', 'Status', 'Created at'], $rows);
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $output->writeln("<error>" . $e->getMessage() . "</error>");
+            $io->error($e->getMessage());
             return Command::FAILURE;
         }
     }

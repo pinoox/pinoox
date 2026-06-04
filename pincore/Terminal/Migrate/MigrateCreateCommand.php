@@ -11,6 +11,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Finder\Finder;
 
 #[AsCommand(
@@ -19,6 +20,8 @@ use Symfony\Component\Finder\Finder;
 )]
 class MigrateCreateCommand extends Terminal
 {
+    use SelectsMigrationPackage;
+
     private string $package;
 
     private string $migration;
@@ -33,14 +36,14 @@ class MigrateCreateCommand extends Terminal
     {
         $this
             ->addArgument('migration', InputArgument::REQUIRED, 'Enter name of migration name')
-            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas',$this->getDefaultPackage());
+            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $this->package = $input->getArgument('package');
+        $this->package = $this->resolvePackage($input, $output, new SymfonyStyle($input, $output));
         $this->migration = $input->getArgument('migration');
 
         $this->init();
@@ -71,6 +74,7 @@ class MigrateCreateCommand extends Terminal
             $isCreated = StubGenerator::generate('migration.create.stub', $this->getExportPath(), [
                 'copyright' => StubGenerator::get('copyright.stub'),
                 'table' => $this->mig->getTableName(),
+                'package' => $this->package,
                 'namespace' => "App\\$this->package\migrations",
             ]);
 

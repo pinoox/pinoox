@@ -19,7 +19,7 @@ return [
             'password' => 'root',
             'charset' => 'utf8mb4',
             'collation' => 'utf8mb4_bin',
-            'prefix' => '',
+            'prefix' => 'pincore_',
             'strict' => true,
             'engine' => NULL,
             'timezone' => '+03:30',

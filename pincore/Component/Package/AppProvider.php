@@ -23,6 +23,7 @@ use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\SessionStarter;
 use Pinoox\Component\Kernel\Terminal;
+use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\ParameterBag;
@@ -99,6 +100,15 @@ class AppProvider
         }
     }
 
+    private function database(): void
+    {
+        $package = $this->app->package();
+
+        if (!empty($package)) {
+            DB::registerPackageConnections($package);
+        }
+    }
+
     private function getClassLoader(): ClassLoader
     {
         return $this->app->classLoader;
@@ -124,6 +134,7 @@ class AppProvider
             $this->loadComposer($this->app->path());
             $this->loader();
             $this->events();
+            $this->database();
             $this->resolveSession();
         }
     }

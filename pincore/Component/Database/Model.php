@@ -152,6 +152,11 @@ abstract class Model extends EloquentModel
 {
     use Searchable, Sortable,JoinWith;
 
+    public function getConnectionName()
+    {
+        return parent::getConnectionName() ?? DB::connectionNameForModel(static::class);
+    }
+
     /**
      * Get the table associated with the model.
      *
@@ -160,10 +165,10 @@ abstract class Model extends EloquentModel
     public function getTable(): string
     {
         if (isset($this->table)) {
-            return $this->table;
+            return DB::tableNameForModel($this->table, static::class);
         }
-        $package = app('package') . '_';
-        return $package . strtolower(str_replace('\\', '', class_basename($this)));
+
+        return DB::tableNameForModel(strtolower(str_replace('\\', '', class_basename($this))), static::class);
     }
 
     protected function hasRelation($relation): bool
@@ -209,7 +214,7 @@ abstract class Model extends EloquentModel
      */
     protected function beginTransaction(): void
     {
-        DB::beginTransaction();
+        $this->getConnection()->beginTransaction();
     }
 
     /**
@@ -217,7 +222,7 @@ abstract class Model extends EloquentModel
      */
     protected function commit(): void
     {
-        DB::commit();
+        $this->getConnection()->commit();
     }
 
     /**
@@ -225,7 +230,7 @@ abstract class Model extends EloquentModel
      */
     protected function rollBack($toLevel = null): void
     {
-        DB::rollBack($toLevel);
+        $this->getConnection()->rollBack($toLevel);
     }
 
     /**
@@ -233,6 +238,6 @@ abstract class Model extends EloquentModel
      */
     protected function transaction(Closure $callback, int $attempts = 1): mixed
     {
-        return DB::transaction($callback, $attempts);
+        return $this->getConnection()->transaction($callback, $attempts);
     }
 }

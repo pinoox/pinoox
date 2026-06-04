@@ -12,20 +12,20 @@
 
 namespace Pinoox\Model;
 
+use Pinoox\Portal\Database\DB;
+
 class Table
 {
-    private const PREFIX = 'pincore_';
-
-    const USER = self::PREFIX . 'user';
-    const FILE = self::PREFIX . 'file';
-    const TOKEN = self::PREFIX . 'token';
-    const MIGRATION = self::PREFIX . 'migration';
+    const USER = 'user';
+    const FILE = 'file';
+    const TOKEN = 'token';
+    const MIGRATION = 'migration';
 
     public static function __callStatic(string $name, array $arguments)
     {
         $alias = $arguments[0] ?? $name;
         $name = strtoupper($name);
-        $table = constant(static::class . '::' . $name);
+        $table = DB::tableName(constant(static::class . '::' . $name), 'pincore');
         if ($alias) {
             $table .= ' AS ' . $alias;
         }

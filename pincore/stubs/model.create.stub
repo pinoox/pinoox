@@ -12,6 +12,6 @@ class {{classname}} extends Model
      *
      * @var string
      */
-    protected $table = '{{package}}_{{table}}';
+    protected $table = '{{table}}';
 
 }

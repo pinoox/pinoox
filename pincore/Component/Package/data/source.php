@@ -39,6 +39,10 @@ return [
     'token' => null,
     'user-type' => null,
     'user' => null,
+    'database' => null,
+    'table' => [
+        'prefix' => null,
+    ],
     'lang' => 'en',
     'theme' => 'default',
     'path-theme' => 'theme',

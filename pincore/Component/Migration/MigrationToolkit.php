@@ -129,7 +129,7 @@ class MigrationToolkit
     public function isExistsMigrationTable(): bool
     {
         try {
-            return $this->schema->hasTable(Table::MIGRATION);
+            return DB::schema('pincore')->hasTable(DB::tableName(Table::MIGRATION, 'pincore'));
         } catch (\Exception $e) {
             $this->addError($e);
             return false;
@@ -415,8 +415,7 @@ class MigrationToolkit
      */
     private function makeTableName(string $modelName): string
     {
-        $packageName = AppEngine::config($this->package)->get('package');
-        return $packageName . '_' . $this->toSnakeCase($modelName);
+        return $this->toSnakeCase($modelName);
     }
 
     /**
@@ -457,7 +456,7 @@ class MigrationToolkit
             $fileName = $this->getFileName($migration);
             foreach ($dbMigrations as $dbMigration) {
                 if ($fileName === $dbMigration['migration']) {
-                    $migration['sync'] = true;
+                    $migration['sync'] = $dbMigration;
                     break;
                 }
             }

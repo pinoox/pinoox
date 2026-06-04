@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'migrate:rollback',
@@ -31,6 +32,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class MigrateRollbackCommand extends Terminal
 {
+    use SelectsMigrationPackage;
+
     private string $package;
 
 
@@ -38,7 +41,7 @@ class MigrateRollbackCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas', $this->getDefaultPackage());
+        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas');
         $this->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints');
 
     }
@@ -48,7 +51,7 @@ class MigrateRollbackCommand extends Terminal
         parent::execute($input, $output);
         $ignoreFk = $input->getOption('ignore-fk');
 
-        $this->package = $input->getArgument('package');
+        $this->package = $this->resolvePackage($input, $output, new SymfonyStyle($input, $output));
 
         $this->init();
 

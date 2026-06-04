@@ -20,7 +20,7 @@ class MigrationQuery
 {
     private static function tableExists(): bool
     {
-        return DB::getSchemaBuilder()->hasTable(Table::MIGRATION);
+        return DB::schema('pincore')->hasTable(DB::tableName(Table::MIGRATION, 'pincore'));
     }
 
     public static function fetchLatestBatch($app): int

@@ -38,7 +38,7 @@ class ApiController extends Controller
             'database' => $c['database'] ?? null,
             'username' => $c['username'] ?? null,
             'password' => $c['password'] ?? null,
-            'prefix' => $c['prefix'] ?? null,
+            'prefix' => $c['prefix'] ?? 'pincore_',
             'driver' => 'mysql',
             'port' => '3306',
             'charset' => 'utf8mb4',
