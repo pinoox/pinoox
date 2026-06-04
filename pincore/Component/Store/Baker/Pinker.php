@@ -23,6 +23,9 @@ use Pinoox\Component\Helpers\Str;
  */
 class Pinker
 {
+    private const CACHE_SCHEMA = 2;
+    private const OVERRIDE_SCHEMA = 1;
+
     private $data = null;
 
     private ?array $info = null;
@@ -71,6 +74,11 @@ class Pinker
     public function bake(): self
     {
         if (!empty($this->bakedFile)) {
+            if ($this->usesOverlayStorage()) {
+                $this->bakeOverride();
+                return $this;
+            }
+
             if (!$this->dumping) {
                 $config = $this->format($this->generateData());
             } else {
@@ -78,6 +86,20 @@ class Pinker
             }
             $this->fileHandler->store($this->bakedFile, $config);
         }
+
+        return $this;
+    }
+
+    public function rebuild(): self
+    {
+        if (!$this->usesOverlayStorage()) {
+            $this->restore();
+            return $this;
+        }
+
+        $this->removeCache();
+        $this->data = $this->sourceData();
+        $this->bakeCache($this->data);
 
         return $this;
     }
@@ -113,40 +135,47 @@ class Pinker
                 'time' => time(),
             ],
             $info,
+            $this->sourceInfo(),
             $mainInfo,
         );
     }
 
     private function transmutation(): array|string
     {
-        $data = $this->generateData();
-        $replaces = [];
-        $printData = [];
+        $tags = $this->generateInformation();
+        $docBlock = HelperAnnotations::generateDocBlock('Pinoox Baker', $tags);
 
-        if (is_array($data)) {
-            foreach ($data as $key => $value) {
-                $key = $this->isCamelToUnderscore ? Str::camelToUnderscore($key) : $key;
-                if (is_callable($value) && $value instanceof Closure) {
-                    $replaces['{_{' . $key . '}_}'] = HelperObject::closure_dump($value);
-                    $printData[$key] = '{_{' . $key . '}_}';
-                } else {
-                    $printData[$key] = $value;
-                }
-            }
-        } elseif (is_callable($data) && $data instanceof Closure) {
-            $replaces['{_}'] = HelperObject::closure_dump($data);
-            $printData = '{_}';
-        } else {
-            $printData = $data;
+        return '<?' . 'php' . "\n" .
+            $docBlock . "\n\n" .
+            'return ' . $this->exportPhp($this->generateData()) . ';';
+    }
+
+    private function exportPhp(mixed $data, int $level = 0): string
+    {
+        if ($data instanceof Closure) {
+            return HelperObject::closure_dump($data);
         }
 
-        $printData = $this->format($printData);
-
-        foreach ($replaces as $key => $value) {
-            $printData = str_replace("'$key'", $value, $printData);
+        if (!is_array($data)) {
+            return var_export($data, true);
         }
 
-        return $printData;
+        if ($data === []) {
+            return '[]';
+        }
+
+        $indent = str_repeat('    ', $level);
+        $childIndent = str_repeat('    ', $level + 1);
+        $items = [];
+
+        foreach ($data as $key => $value) {
+            $key = is_string($key) && $level === 0 && $this->isCamelToUnderscore
+                ? Str::camelToUnderscore($key)
+                : $key;
+            $items[] = $childIndent . var_export($key, true) . ' => ' . $this->exportPhp($value, $level + 1);
+        }
+
+        return "[\n" . implode(",\n", $items) . "\n" . $indent . "]";
     }
 
     public function pickup()
@@ -169,8 +198,23 @@ class Pinker
 
     public function remove(): void
     {
+        $this->removeCache();
+        $this->removeOverride();
+    }
+
+    public function removeCache(): void
+    {
         if(is_file($this->bakedFile))
             $this->fileHandler->remove($this->bakedFile);
+    }
+
+    public function removeOverride(): void
+    {
+        $overrideFile = $this->getOverrideFile();
+
+        if ($overrideFile !== null && is_file($overrideFile)) {
+            $this->fileHandler->remove($overrideFile);
+        }
     }
 
     public function getInfo(?string $key = null): array|string|null
@@ -182,12 +226,18 @@ class Pinker
     public function restore(): void
     {
         $this->fileHandler->remove($this->bakedFile);
+        $this->removeOverride();
         $this->data = is_file($this->mainFile) ? $this->fileHandler->retrieve($this->mainFile) : null;
-        $this->bake();
+        $this->usesOverlayStorage() ? $this->bakeCache($this->data) : $this->bake();
     }
 
     private function getData()
     {
+        if ($this->usesOverlayStorage()) {
+            $source = $this->sourceDataForRead();
+            return $this->applyOverride($source);
+        }
+
         if (!is_file($this->bakedFile) && is_file($this->mainFile)) {
             $this->data = is_file($this->mainFile) ? $this->fileHandler->retrieve($this->mainFile) : null;
             $this->bake();
@@ -233,5 +283,338 @@ class Pinker
     public function getMainFile(): string
     {
         return $this->mainFile;
+    }
+
+    public function getOverrideFile(): ?string
+    {
+        if (!$this->usesOverlayStorage()) {
+            return null;
+        }
+
+        $bakedFile = $this->normalizePath($this->bakedFile);
+        $root = $this->pinkerRoot();
+
+        if ($root === null || !str_starts_with($bakedFile, $root . '/')) {
+            return null;
+        }
+
+        return $root . '/state/' . substr($bakedFile, strlen($root) + 1);
+    }
+
+    public function status(): array
+    {
+        $info = $this->sourceInfo();
+        $override = $this->loadOverride();
+
+        return [
+            'source' => $this->mainFile,
+            'cache' => $this->bakedFile,
+            'override' => $this->getOverrideFile(),
+            'source_exists' => is_file($this->mainFile),
+            'cache_exists' => is_file($this->bakedFile),
+            'override_exists' => $override !== null,
+            'cache_valid' => $this->isCacheValid(),
+            'env_sensitive' => $this->isSourceEnvSensitive(),
+            'source_hash' => $info['source_hash'] ?? null,
+            'source_mtime' => $info['source_mtime'] ?? null,
+            'source_size' => $info['source_size'] ?? null,
+            'override_sets' => is_array($override['data'] ?? null) ? count($override['data']) : 0,
+            'override_removes' => is_array($override['remove'] ?? null) ? count($override['remove']) : 0,
+            'override_updated_at' => $override['info']['updated_at'] ?? null,
+        ];
+    }
+
+    private function usesOverlayStorage(): bool
+    {
+        if ($this->mainFile === '' || $this->bakedFile === '') {
+            return false;
+        }
+
+        if ($this->normalizePath($this->mainFile) === $this->normalizePath($this->bakedFile)) {
+            return false;
+        }
+
+        $root = $this->pinkerRoot();
+
+        return $root !== null && str_starts_with($this->normalizePath($this->bakedFile), $root . '/');
+    }
+
+    private function sourceDataForRead()
+    {
+        if ($this->isSourceEnvSensitive()) {
+            return $this->sourceData();
+        }
+
+        if (!$this->isCacheValid()) {
+            $this->removeCache();
+            $this->data = $this->sourceData();
+            $this->bakeCache($this->data);
+        }
+
+        if (!is_file($this->bakedFile)) {
+            return $this->sourceData();
+        }
+
+        $data = $this->fileHandler->retrieve($this->bakedFile);
+
+        if ($data === null && is_file($this->mainFile)) {
+            $this->removeCache();
+            $this->data = $this->sourceData();
+            $this->bakeCache($this->data);
+
+            return is_file($this->bakedFile) ? $this->fileHandler->retrieve($this->bakedFile) : $this->data;
+        }
+
+        return $data;
+    }
+
+    private function sourceData()
+    {
+        return is_file($this->mainFile) ? $this->fileHandler->retrieve($this->mainFile) : null;
+    }
+
+    private function bakeCache($data): void
+    {
+        if ($this->isSourceEnvSensitive()) {
+            return;
+        }
+
+        $this->data = $data;
+        $this->fileHandler->store($this->bakedFile, $this->dumping ? $this->transmutation() : $this->format($this->generateData()));
+    }
+
+    private function bakeOverride(): void
+    {
+        $overrideFile = $this->getOverrideFile();
+
+        if ($overrideFile === null) {
+            return;
+        }
+
+        $source = $this->sourceData();
+        $current = $this->generateData();
+        $override = $this->makeOverride($source, $current);
+
+        if (empty($override['data']) && empty($override['remove'])) {
+            $this->removeOverride();
+            return;
+        }
+
+        $this->fileHandler->store($overrideFile, $this->formatExported([
+            '__pinker_override__' => true,
+            'schema' => self::OVERRIDE_SCHEMA,
+            'data' => $override['data'],
+            'remove' => $override['remove'],
+            'info' => [
+                'source' => $this->mainFile,
+                'cache' => $this->bakedFile,
+                'updated_at' => time(),
+            ],
+        ]));
+    }
+
+    private function formatExported(mixed $data): string
+    {
+        $tags = $this->generateInformation();
+        $docBlock = HelperAnnotations::generateDocBlock('Pinoox Baker', $tags);
+
+        return '<?' . 'php' . "\n" .
+            $docBlock . "\n\n" .
+            'return ' . $this->exportPhp($data) . ';';
+    }
+
+    private function applyOverride($source)
+    {
+        $override = $this->loadOverride();
+
+        if ($override === null) {
+            return $source;
+        }
+
+        $data = is_array($source) ? $source : [];
+
+        foreach (($override['data'] ?? []) as $path => $value) {
+            $this->setPath($data, (string)$path, $value);
+        }
+
+        foreach (($override['remove'] ?? []) as $path) {
+            $this->removePath($data, (string)$path);
+        }
+
+        return $data;
+    }
+
+    private function loadOverride(): ?array
+    {
+        $overrideFile = $this->getOverrideFile();
+
+        if ($overrideFile === null || !is_file($overrideFile)) {
+            return null;
+        }
+
+        $data = $this->fileHandler->retrieve($overrideFile);
+
+        return is_array($data) && ($data['__pinker_override__'] ?? false) === true ? $data : null;
+    }
+
+    private function makeOverride($source, $current): array
+    {
+        $source = is_array($source) ? $source : [];
+        $current = is_array($current) ? $current : [];
+
+        return [
+            'data' => $this->diffData($source, $current),
+            'remove' => $this->removedPaths($source, $current),
+        ];
+    }
+
+    private function diffData(array $source, array $current, string $prefix = ''): array
+    {
+        $diff = [];
+
+        foreach ($current as $key => $value) {
+            $path = $prefix === '' ? (string)$key : $prefix . '.' . $key;
+
+            if (!array_key_exists($key, $source)) {
+                $diff[$path] = $value;
+                continue;
+            }
+
+            if (is_array($source[$key]) && is_array($value) && $this->isAssoc($source[$key]) && $this->isAssoc($value)) {
+                $diff += $this->diffData($source[$key], $value, $path);
+                continue;
+            }
+
+            if ($source[$key] !== $value) {
+                $diff[$path] = $value;
+            }
+        }
+
+        return $diff;
+    }
+
+    private function removedPaths(array $source, array $current, string $prefix = ''): array
+    {
+        $removed = [];
+
+        foreach ($source as $key => $value) {
+            $path = $prefix === '' ? (string)$key : $prefix . '.' . $key;
+
+            if (!array_key_exists($key, $current)) {
+                $removed[] = $path;
+                continue;
+            }
+
+            if (is_array($value) && is_array($current[$key]) && $this->isAssoc($value) && $this->isAssoc($current[$key])) {
+                $removed = array_merge($removed, $this->removedPaths($value, $current[$key], $path));
+            }
+        }
+
+        return $removed;
+    }
+
+    private function setPath(array &$data, string $path, mixed $value): void
+    {
+        $keys = explode('.', $path);
+        $target = &$data;
+
+        foreach ($keys as $key) {
+            if (!isset($target[$key]) || !is_array($target[$key])) {
+                $target[$key] = [];
+            }
+
+            $target = &$target[$key];
+        }
+
+        $target = $value;
+    }
+
+    private function removePath(array &$data, string $path): void
+    {
+        $keys = explode('.', $path);
+        $last = array_pop($keys);
+        $target = &$data;
+
+        foreach ($keys as $key) {
+            if (!isset($target[$key]) || !is_array($target[$key])) {
+                return;
+            }
+
+            $target = &$target[$key];
+        }
+
+        unset($target[$last]);
+    }
+
+    private function isAssoc(array $array): bool
+    {
+        return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    private function isCacheValid(): bool
+    {
+        if (!is_file($this->bakedFile)) {
+            return false;
+        }
+
+        $info = $this->getInfo();
+
+        if ((int)($info['schema'] ?? 0) !== self::CACHE_SCHEMA || !is_file($this->mainFile)) {
+            return false;
+        }
+
+        $mtime = filemtime($this->mainFile);
+        $size = filesize($this->mainFile);
+
+        if ((int)($info['source_mtime'] ?? 0) !== (int)$mtime) {
+            return false;
+        }
+
+        if (isset($info['source_size'])) {
+            return (int)$info['source_size'] === (int)$size;
+        }
+
+        return ($info['source_hash'] ?? null) === sha1_file($this->mainFile);
+    }
+
+    private function sourceInfo(): array
+    {
+        return [
+            'schema' => self::CACHE_SCHEMA,
+            'source' => $this->mainFile,
+            'source_hash' => is_file($this->mainFile) ? sha1_file($this->mainFile) : null,
+            'source_mtime' => is_file($this->mainFile) ? filemtime($this->mainFile) : null,
+            'source_size' => is_file($this->mainFile) ? filesize($this->mainFile) : null,
+            'env_sensitive' => $this->isSourceEnvSensitive() ? 'yes' : 'no',
+        ];
+    }
+
+    private function isSourceEnvSensitive(): bool
+    {
+        if (!is_file($this->mainFile)) {
+            return false;
+        }
+
+        $source = (string)file_get_contents($this->mainFile);
+
+        return preg_match('/\\b(?:env|_env|config_env|getenv)\\s*\\(/', $source) === 1;
+    }
+
+    private function pinkerRoot(): ?string
+    {
+        $bakedFile = $this->normalizePath($this->bakedFile);
+        $needle = '/pinker/';
+        $pos = strpos($bakedFile, $needle);
+
+        if ($pos === false) {
+            return null;
+        }
+
+        return substr($bakedFile, 0, $pos + strlen('/pinker'));
+    }
+
+    private function normalizePath(string $path): string
+    {
+        return rtrim(str_replace('\\', '/', $path), '/');
     }
 }

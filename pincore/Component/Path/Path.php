@@ -73,6 +73,16 @@ class Path implements PathInterface
 
         $pathManager = $this->getManager($package);
         $value = !empty($parser->getValue()) ? $parser->getValue() : '';
+
+        if ($package === '~' && ($value === 'pincore' || str_starts_with($value, 'pincore/'))) {
+            $path = defined('PINOOX_CORE_PATH')
+                ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
+                : rtrim($this->basePath, '/') . '/pincore';
+            $suffix = ltrim(substr($value, strlen('pincore')), '/');
+
+            return $this->paths[$key] = $suffix !== '' ? $path . '/' . $suffix : $path;
+        }
+
         $value = $pathManager->get($value);
         return $this->paths[$key] = $value;
     }

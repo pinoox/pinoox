@@ -46,7 +46,9 @@ class AppRouter extends Portal
 {
 	public static function __register(): void
 	{
-		$path = Loader::getBasePath().'/pincore';
+		$path = defined('PINOOX_CORE_PATH')
+		    ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
+		    : rtrim(str_replace('\\', '/', (string)Loader::getBasePath()), '/') . '/pincore';
 		$file = 'config/app/router.config.php';
 		$fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
 		$config = Config::create($fileStrategy);

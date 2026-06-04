@@ -17,6 +17,8 @@ use Pinoox\Component\Kernel\Loader;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Url;
 
+defined('PINOOX_PATH_THUMB') || define('PINOOX_PATH_THUMB', 'thumbs/{name}_{size}.{ext}');
+
 class Dir
 {
     /**

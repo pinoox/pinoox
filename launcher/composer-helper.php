@@ -15,6 +15,18 @@ function pinoox_project_path(): string
     return pinoox_base_path();
 }
 
+function pinoox_public_core_path(): string
+{
+    $corePath = pinoox_core_path();
+    $basePath = pinoox_base_path();
+
+    if (str_starts_with($corePath, $basePath . '/')) {
+        return ltrim(substr($corePath, strlen($basePath)), '/');
+    }
+
+    return 'pincore';
+}
+
 function pinoox_composer_terminal_command(): string
 {
     $path = pinoox_project_path();
@@ -31,7 +43,7 @@ function pinoox_composer_action_url(): string
     $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
     $base = rtrim($scriptDir, '/');
 
-    return $base . '/pincore/bootstrap/composer-action.php';
+    return $base . '/launcher/composer-action.php';
 }
 
 function pinoox_shell_functions_available(): bool

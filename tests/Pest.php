@@ -1,5 +1,8 @@
 <?php
 
+require_once dirname(__DIR__) . '/launcher/core-path.php';
+require_once PINOOX_CORE_PATH . 'functions/base.php';
+
 /*
 |--------------------------------------------------------------------------
 | Test Case

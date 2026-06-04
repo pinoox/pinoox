@@ -19,50 +19,76 @@ class HelperObject
 {
     public static function closure_dump(Closure $closure): string
     {
-        $str = 'function (';
         $reflection = new ReflectionFunction($closure);
-        $params = [];
-
-        foreach ($reflection->getParameters() as $param) {
-            $paramStr = '';
-
-            $paramType = $param->getType();
-            if ($paramType !== null && $paramType->getName() === 'array') {
-                $paramStr .= 'array ';
-            } elseif ($paramType !== null) {
-                $paramStr .= $paramType->getName() . ' ';
-            }
-
-            if ($param->isPassedByReference()) {
-                $paramStr .= '&';
-            }
-
-            $paramStr .= '$' . $param->name;
-
-            if ($param->isOptional()) {
-                $paramStr .= ' = ' . var_export($param->getDefaultValue(), true);
-            }
-
-            $params[] = $paramStr;
-        }
-
-        $str .= implode(', ', $params) . '){';
-
         $lines = file($reflection->getFileName());
         $start = $reflection->getStartLine() - 1;
         $end = $reflection->getEndLine();
 
-        $functionText = '';
+        $source = '';
 
         for ($line = $start; $line < $end; $line++) {
-            $functionText .= $lines[$line];
+            $source .= $lines[$line];
         }
 
-        $regex = '/function\s*?\(.*\)\s*?{(.*?)\}/ms';
-        preg_match_all($regex, $functionText, $matches, PREG_SET_ORDER, 0);
-        $functionText = $matches[0][1] ?? null;
+        $functionPos = strpos($source, 'function');
 
-        return $str . $functionText . '}';
+        if ($functionPos === false) {
+            return 'function () {}';
+        }
+
+        $source = substr($source, $functionPos);
+        $bracePos = strpos($source, '{');
+
+        if ($bracePos === false) {
+            return trim($source);
+        }
+
+        $length = strlen($source);
+        $depth = 0;
+        $quote = null;
+        $escape = false;
+
+        for ($i = $bracePos; $i < $length; $i++) {
+            $char = $source[$i];
+
+            if ($quote !== null) {
+                if ($escape) {
+                    $escape = false;
+                    continue;
+                }
+
+                if ($char === '\\') {
+                    $escape = true;
+                    continue;
+                }
+
+                if ($char === $quote) {
+                    $quote = null;
+                }
+
+                continue;
+            }
+
+            if ($char === '"' || $char === "'") {
+                $quote = $char;
+                continue;
+            }
+
+            if ($char === '{') {
+                $depth++;
+                continue;
+            }
+
+            if ($char === '}') {
+                $depth--;
+
+                if ($depth === 0) {
+                    return trim(substr($source, 0, $i + 1));
+                }
+            }
+        }
+
+        return trim($source);
     }
 
 

@@ -129,9 +129,13 @@ class QueryRouteConfigLoader
         }
 
         $basePath = rtrim(str_replace('\\', '/', $basePath), '/');
+        $corePath = defined('PINOOX_CORE_PATH')
+            ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
+            : $basePath . '/pincore';
+
         $candidates = [
             $basePath . '/pinker/pincore/config/app/router.config.php',
-            $basePath . '/pincore/config/app/router.config.php',
+            $corePath . '/config/app/router.config.php',
         ];
 
         foreach ($candidates as $file) {

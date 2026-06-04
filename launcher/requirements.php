@@ -15,14 +15,24 @@
  * Loaded before vendor/autoload.php so low PHP versions still get a readable error.
  */
 
+require_once __DIR__ . '/core-path.php';
+
 function pinoox_base_path(): string
 {
-    return dirname(__DIR__, 2);
+    if (defined('PINOOX_BASE_PATH')) {
+        return rtrim(str_replace('\\', '/', PINOOX_BASE_PATH), '/');
+    }
+
+    return dirname(__DIR__);
 }
 
 function pinoox_core_path(): string
 {
-    return dirname(__DIR__);
+    if (defined('PINOOX_CORE_PATH')) {
+        return rtrim(str_replace('\\', '/', PINOOX_CORE_PATH), '/');
+    }
+
+    return pinoox_base_path() . '/pincore';
 }
 
 /**

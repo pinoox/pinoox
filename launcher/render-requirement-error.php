@@ -86,7 +86,9 @@ function pinoox_requirement_logo_url(): string
     $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
     $base = rtrim($scriptDir, '/');
 
-    return $base . '/pincore/resource/images/logo.png';
+    $corePath = function_exists('pinoox_public_core_path') ? pinoox_public_core_path() : 'pincore';
+
+    return $base . '/' . $corePath . '/resource/images/logo.png';
 }
 
 function pinoox_render_requirement_page(array $copy, array $facts, array $hints, int $status = 503): void
