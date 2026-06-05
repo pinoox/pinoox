@@ -3,6 +3,7 @@
 namespace Pinoox\Terminal\Migrate;
 
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemApp;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -49,6 +50,10 @@ trait SelectsMigrationPackage
         ];
 
         foreach (AppEngine::all() as $package => $manager) {
+            if ($package === SystemApp::PACKAGE) {
+                continue;
+            }
+
             $name = $manager->config()->get('name') ?: $package;
             $packages[$package] = $name;
         }
@@ -85,7 +90,7 @@ trait SelectsMigrationPackage
 
     protected function packageExists(string $package): bool
     {
-        return $package === 'pincore' || AppEngine::exists($package);
+        return $package === 'pincore' || ($package !== SystemApp::PACKAGE && AppEngine::exists($package));
     }
 
     protected function normalizePackageInput(string $package): string

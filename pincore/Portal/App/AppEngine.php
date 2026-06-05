@@ -21,6 +21,9 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal3;
 use Pinoox\Component\Translator\Translator as ObjectPortal1;
 use Pinoox\Portal\Pinker;
+use Pinoox\Support\AppRegistry;
+use Pinoox\Support\SystemConfig;
+use Pinoox\Support\SystemApp;
 
 /**
  * @method static array getDefaultData()
@@ -42,17 +45,25 @@ use Pinoox\Portal\Pinker;
  */
 class AppEngine extends Portal
 {
-	const file = 'app.php';
-
 	public static function __register(): void
 	{
-		$pathApps = Loader::getBasePath() . '/apps';
+		$pathApps = SystemConfig::path('apps');
 		self::__bind(\Pinoox\Component\Package\Engine\AppEngine::class)
 		    ->setArguments([
 		        $pathApps,
-		        self::file,
-		        Pinker::folder,
+		        SystemConfig::rawPath('app_file', 'app.php'),
+		        SystemConfig::path('pinker'),
+		        null,
+		        self::registeredPackages(),
 		    ]);
+	}
+
+	private static function registeredPackages(): array
+	{
+		return AppRegistry::load(
+		    SystemConfig::path('system_registry'),
+		    (string)Loader::getBasePath(),
+		);
 	}
 
 

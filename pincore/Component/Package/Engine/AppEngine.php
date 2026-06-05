@@ -72,9 +72,15 @@ class AppEngine implements EngineInterface
      * @param string $appFile
      * @param string $folderPinker
      */
-    public function __construct(private string $pathApp, private string $appFile, private string $folderPinker, ?array $defaultData = null)
+    public function __construct(
+        private string $pathApp,
+        private string $appFile,
+        private string $folderPinker,
+        ?array $defaultData = null,
+        array $packages = [],
+    )
     {
-        $this->arrayLoader = new ArrayLoader($appFile);
+        $this->arrayLoader = new ArrayLoader($appFile, $packages);
         $this->packageLoader = new PackageLoader($appFile, $pathApp);
         $this->initDefaultData($defaultData);
 
@@ -178,7 +184,12 @@ class AppEngine implements EngineInterface
         if (empty($this->appConfig[$packageName])) {
             $mainFile = $this->path($packageName, $this->appFile);
             $basePath = rtrim(str_replace('\\', '/', (string)Loader::getBasePath()), '/');
-            $bakedFile = $basePath . '/' . $this->folderPinker . '/apps/' . $packageName . '/' . $this->appFile;
+            $pinkerPath = rtrim(str_replace('\\', '/', $this->folderPinker), '/');
+            if (!preg_match('/^[A-Za-z]:\//', $pinkerPath) && !str_starts_with($pinkerPath, '/')) {
+                $pinkerPath = $basePath . '/' . $pinkerPath;
+            }
+
+            $bakedFile = $pinkerPath . '/apps/' . $packageName . '/' . $this->appFile;
             $pinker = new Pinker($mainFile, $bakedFile);
             $pinker
                 ->dumping(true);
