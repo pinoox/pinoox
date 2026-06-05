@@ -32,6 +32,8 @@ abstract class Portal
     protected static array $__args = [];
     protected static array $__watcher = [];
     protected static array $__subNameClasses = [];
+    protected static array $__registered = [];
+    protected static array $__booted = [];
     protected static ClassLoader $__classLoader;
     protected static string $__vendorDir;
     protected static string $__baseDir;
@@ -58,7 +60,8 @@ abstract class Portal
             static::__container()->removeDefinition($id);
         }
 
-        static::__register();
+        unset(static::$__registered[static::class], static::$__booted[static::class]);
+        static::__registerLifecycle();
     }
 
     final protected function __args($index = null): array
@@ -81,6 +84,43 @@ abstract class Portal
      */
     public static function __register(): void
     {
+    }
+
+    /**
+     * Boot the portal after its services are registered.
+     */
+    public static function __boot(): void
+    {
+    }
+
+    final public static function __registerLifecycle(): void
+    {
+        static::__ensureRegistered();
+        static::__ensureBooted();
+    }
+
+    final protected static function __ensureRegistered(): void
+    {
+        $class = static::class;
+
+        if (!empty(static::$__registered[$class])) {
+            return;
+        }
+
+        static::$__registered[$class] = true;
+        static::__register();
+    }
+
+    final protected static function __ensureBooted(): void
+    {
+        $class = static::class;
+
+        if (!empty(static::$__booted[$class])) {
+            return;
+        }
+
+        static::$__booted[$class] = true;
+        static::__boot();
     }
 
     /**
@@ -315,7 +355,9 @@ abstract class Portal
         static::__before($name);
 
         if (!$container->has($name))
-            static::__register();
+            static::__registerLifecycle();
+        else
+            static::__ensureBooted();
 
         if (!empty($name) && $container->has($name)) {
             try {

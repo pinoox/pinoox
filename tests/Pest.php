@@ -1,6 +1,6 @@
 <?php
 
-require_once dirname(__DIR__) . '/launcher/core-path.php';
+require_once dirname(__DIR__) . '/system/launcher/core-path.php';
 require_once PINOOX_CORE_PATH . 'functions/base.php';
 
 /*
@@ -45,4 +45,15 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+function expectPortalContract(string $class): void
+{
+    $basePath = str_replace('\\', '/', dirname(__DIR__) . '/pincore/');
+    $file = $basePath . str_replace('\\', '/', substr($class, strlen('Pinoox\\'))) . '.php';
+    $source = file_get_contents($file);
+
+    expect(is_file($file))->toBeTrue()
+        ->and($source)->toContain('extends Portal')
+        ->and($source)->toContain('function __name');
 }

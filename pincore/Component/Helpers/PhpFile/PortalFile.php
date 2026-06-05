@@ -217,6 +217,8 @@ class PortalFile extends PhpFile
 
         $class = $namespace->addClass($this->getClassname());
         $class->setExtends(Portal::class);
+        $this->addMethodRegisterInPortal($class, '');
+        $this->addMethodBootInPortal($class, '');
         $this->addMethodName($class, $this->getClassname());
         $this->addMethodCallBack($class);
         $this->addMethodExclude($class);
@@ -294,9 +296,18 @@ class PortalFile extends PhpFile
 
     private function addMethodRegisterInPortal(ClassType $class, string $body): void
     {
-        // add method in class
         $method = $class->addMethod('__register');
-        $method->addComment('register component.');
+        $method->addComment('Register services in the container.');
+        $method->setPublic()
+            ->setStatic()
+            ->setReturnType('void')
+            ->addBody($body);
+    }
+
+    private function addMethodBootInPortal(ClassType $class, string $body): void
+    {
+        $method = $class->addMethod('__boot');
+        $method->addComment('Boot the portal after services are registered.');
         $method->setPublic()
             ->setStatic()
             ->setReturnType('void')

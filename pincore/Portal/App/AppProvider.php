@@ -55,7 +55,10 @@ class AppProvider extends Portal
             Session::__ref(),
             Event::__ref(),
         ]);
+    }
 
+    public static function __boot(): void
+    {
         self::require();
     }
 

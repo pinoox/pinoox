@@ -17,4 +17,6 @@ namespace Pinoox\Component\Kernel;
 interface BootInterface
 {
     public static function __register();
+
+    public static function __boot();
 }
