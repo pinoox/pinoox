@@ -5,5 +5,5 @@
  *
  */
 
-include_once __DIR__ . '/launcher/bootstrap.php';
+include_once __DIR__ . '/system/launcher/bootstrap.php';
 

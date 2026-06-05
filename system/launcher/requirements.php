@@ -23,7 +23,7 @@ function pinoox_base_path(): string
         return rtrim(str_replace('\\', '/', PINOOX_BASE_PATH), '/');
     }
 
-    return dirname(__DIR__);
+    return dirname(__DIR__, 2);
 }
 
 function pinoox_core_path(): string
@@ -33,6 +33,16 @@ function pinoox_core_path(): string
     }
 
     return pinoox_base_path() . '/pincore';
+}
+
+function pinoox_system_path(): string
+{
+    return pinoox_base_path() . '/system';
+}
+
+function pinoox_system_app_path(): string
+{
+    return pinoox_system_path();
 }
 
 /**
@@ -153,18 +163,23 @@ function pinoox_requirement_locales(): array
     }
 
     $locales = [];
-    $pattern = pinoox_core_path() . '/lang/*/requirements.lang.php';
+    $patterns = [
+        pinoox_system_path() . '/lang/*/requirements.lang.php',
+        pinoox_core_path() . '/lang/*/requirements.lang.php',
+    ];
 
-    foreach (glob($pattern) ?: [] as $file) {
-        $code = basename(dirname($file));
+    foreach ($patterns as $pattern) {
+        foreach (glob($pattern) ?: [] as $file) {
+            $code = basename(dirname($file));
 
-        if (!preg_match('/^[a-z]{2}$/', $code)) {
-            continue;
+            if (!preg_match('/^[a-z]{2}$/', $code) || isset($locales[$code])) {
+                continue;
+            }
+
+            $data = require $file;
+            $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
+            $locales[$code] = (string) ($meta['name'] ?? strtoupper($code));
         }
-
-        $data = require $file;
-        $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
-        $locales[$code] = (string) ($meta['name'] ?? strtoupper($code));
     }
 
     if ($locales === []) {
@@ -238,7 +253,11 @@ function pinoox_requirement_lang_path(string $locale): string
 {
     $locale = pinoox_requirement_normalize_locale($locale);
 
-    return pinoox_core_path() . '/lang/' . $locale . '/requirements.lang.php';
+    $systemFile = pinoox_system_path() . '/lang/' . $locale . '/requirements.lang.php';
+
+    return is_file($systemFile)
+        ? $systemFile
+        : pinoox_core_path() . '/lang/' . $locale . '/requirements.lang.php';
 }
 
 function pinoox_load_requirement_lang(string $locale): array

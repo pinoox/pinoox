@@ -21,7 +21,7 @@ use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Package\AppManager;
-use Pinoox\Model\UserModel;
+use Pinoox\System\Model\UserModel;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;

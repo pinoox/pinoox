@@ -50,7 +50,7 @@ class PrerequisitesChecker
 
 
 
-        require_once dirname(__DIR__, 3) . '/launcher/requirements.php';
+        require_once dirname(__DIR__, 3) . '/system/launcher/requirements.php';
 
     }
 
