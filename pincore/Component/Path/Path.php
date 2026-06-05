@@ -19,6 +19,8 @@ use Pinoox\Component\Package\Parser\ParserInterface;
 use Pinoox\Component\Package\Reference\NameReference;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Manager\PathManager;
+use Pinoox\Support\SystemApp;
+use Pinoox\Support\SystemConfig;
 
 class Path implements PathInterface
 {
@@ -83,8 +85,38 @@ class Path implements PathInterface
             return $this->paths[$key] = $suffix !== '' ? $path . '/' . $suffix : $path;
         }
 
+        if ($package === '~' && ($systemPath = SystemApp::stripPathAlias($value)) !== null) {
+            return $this->paths[$key] = SystemApp::path($systemPath);
+        }
+
+        if ($package === SystemApp::PACKAGE) {
+            return $this->paths[$key] = $this->systemPath($value);
+        }
+
         $value = $pathManager->get($value);
         return $this->paths[$key] = $value;
+    }
+
+    private function systemPath(string $value): string
+    {
+        foreach ([
+            SystemConfig::rawPath('app_config', 'config') => 'system_config',
+            SystemConfig::rawPath('app_lang', 'lang') => 'system_lang',
+            SystemConfig::rawPath('app_migrations', 'migrations') => 'system_migrations',
+            'Model' => 'system_models',
+        ] as $folder => $pathKey) {
+            $folder = trim($folder, '/');
+
+            if ($value === $folder) {
+                return SystemConfig::path($pathKey);
+            }
+
+            if (str_starts_with($value, $folder . '/')) {
+                return SystemConfig::path($pathKey) . '/' . substr($value, strlen($folder) + 1);
+            }
+        }
+
+        return SystemApp::path($value);
     }
 
     public function params(string|ReferenceInterface $path = '', ?string $package = ''): string

@@ -13,6 +13,9 @@
 namespace Pinoox\Component\Router;
 
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemConfig;
+use Pinoox\Support\SystemApp;
 
 class QueryRouteConfigLoader
 {
@@ -48,8 +51,10 @@ class QueryRouteConfigLoader
             return [];
         }
 
-        $file = rtrim(str_replace('\\', '/', $basePath), '/')
-            . '/apps/' . $package . '/config/query_route.config.php';
+        $appPath = AppEngine::exists($package)
+            ? AppEngine::path($package)
+            : SystemConfig::path('apps') . '/' . $package;
+        $file = rtrim(str_replace('\\', '/', $appPath), '/') . '/config/query_route.config.php';
 
         if (!is_file($file)) {
             return [];
@@ -129,13 +134,14 @@ class QueryRouteConfigLoader
         }
 
         $basePath = rtrim(str_replace('\\', '/', $basePath), '/');
-        $corePath = defined('PINOOX_CORE_PATH')
-            ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
-            : $basePath . '/pincore';
+        $systemRouter = SystemConfig::path('system_router');
+        $legacyCoreRouter = SystemApp::legacyCorePath('config/app/router.config.php');
 
         $candidates = [
+            $basePath . '/pinker/system/config/app/router.config.php',
+            $systemRouter,
             $basePath . '/pinker/pincore/config/app/router.config.php',
-            $corePath . '/config/app/router.config.php',
+            $legacyCoreRouter,
         ];
 
         foreach ($candidates as $file) {

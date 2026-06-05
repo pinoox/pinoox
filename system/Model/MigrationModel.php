@@ -4,7 +4,7 @@
  *
  */
 
-namespace Pinoox\Model;
+namespace Pinoox\System\Model;
 
 use Pinoox\Component\Database\Model;
 

@@ -15,8 +15,8 @@ namespace Pinoox\Component\Migration;
 use Exception;
 use Illuminate\Database\QueryException;
 use Pinoox\Portal\Database\DB;
-use Pinoox\Model\MigrationModel;
-use Pinoox\Model\Table;
+use Pinoox\System\Model\MigrationModel;
+use Pinoox\System\Model\Table;
 
 /**
  * Enhanced Migrator class with comprehensive migration management

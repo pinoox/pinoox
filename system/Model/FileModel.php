@@ -12,12 +12,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Model;
+namespace Pinoox\System\Model;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Pinoox\Component\Database\Model;
 use Pinoox\Component\User;
-use Pinoox\Model\Scope\AppScope;
+use Pinoox\System\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Url;
 

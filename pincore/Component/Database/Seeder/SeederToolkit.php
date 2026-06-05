@@ -13,6 +13,8 @@
 namespace Pinoox\Component\Database\Seeder;
 
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemApp;
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\Finder\Finder;
 
 class SeederToolkit
@@ -62,7 +64,7 @@ class SeederToolkit
     private function initializeSeederPath(): void
     {
         if ($this->package === 'pincore') {
-            $this->seederPath = path('~pincore') . '/' . $this->seederFolder;
+            $this->seederPath = SystemConfig::resolvePath('~system/' . $this->seederFolder);
         } else {
             $this->seederPath = AppEngine::path($this->package) . '/' . $this->seederFolder;
         }

@@ -15,6 +15,7 @@
 namespace Pinoox\Portal;
 
 use Pinoox\Component\Source\Portal;
+use Pinoox\Support\SystemConfig;
 
 /**
  * @method static StubGenerator generate(string $stubFileName, string $outputPath, array $data = [])
@@ -33,7 +34,7 @@ class StubGenerator extends Portal
 
 	private static function getStubsPath(): string
 	{
-		return PINOOX_CORE_PATH . 'stubs/';
+		return rtrim(SystemConfig::path('stubs'), '/') . '/';
 	}
 
 

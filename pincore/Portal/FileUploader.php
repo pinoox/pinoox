@@ -20,7 +20,7 @@ use Pinoox\Component\Upload;
 use Pinoox\Component\Upload\FileUploader as ObjectPortal2;
 use Pinoox\Component\Upload\FileUploaderFactory as ObjectPortal1;
 use Pinoox\Component\User;
-use Pinoox\Model\FileModel;
+use Pinoox\System\Model\FileModel;
 use Pinoox\Portal\App\App;
 
 /**

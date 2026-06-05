@@ -21,6 +21,8 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Translator\Loader\FileLoader;
 use Pinoox\Component\Translator\Translator;
 use Pinoox\Portal\App\App;
+use Pinoox\Support\SystemConfig;
+use Pinoox\Support\SystemApp;
 
 /**
  * @method static Lang addPath(string $path)
@@ -60,16 +62,16 @@ use Pinoox\Portal\App\App;
  */
 class Lang extends Portal
 {
-    private const localeFallback = 'en';
-    private const folder = 'lang';
     private const ext = '.lang';
 
     public static function __register(): void
     {
-        $localeFallback = App::get('lang_fallback') ?? self::localeFallback;
+        $localeFallback = App::get('lang_fallback') ?? config('~pinoox.lang_fallback', 'en');
+        $folder = SystemConfig::rawPath('app_lang', 'lang');
         $paths = [
-            Path::get(self::folder),
-            View::asstes('lang'),
+            SystemConfig::path('system_lang'),
+            Path::get($folder),
+            View::asstes($folder),
         ];
 
         self::__bind(FileLoader::class, 'loader')

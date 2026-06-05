@@ -18,6 +18,7 @@ use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Baker\Pinker as ObjectPortal1;
+use Pinoox\Support\SystemConfig;
 
 /**
  * @method static \Pinoox\Component\Store\Baker\Pinker create(string $mainFile = '', string $bakedFile = '', ?Pinoox\Component\Store\Baker\FileHandlerInterface $fileHandler = NULL)
@@ -97,7 +98,7 @@ class Pinker extends Portal
 			$relative = substr($sourceFile, strlen($basePath) + 1);
 		}
 
-		return self::ds($basePath . '/' . self::folder . '/' . ltrim($relative, '/'));
+		return self::ds(SystemConfig::path('pinker') . '/' . ltrim($relative, '/'));
 	}
 
 	public static function rootPath(): string

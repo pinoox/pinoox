@@ -10,7 +10,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Model;
+namespace Pinoox\System\Model;
 
 use Pinoox\Portal\Database\DB;
 

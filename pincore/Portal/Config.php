@@ -14,10 +14,13 @@
 
 namespace Pinoox\Portal;
 
+use Pinoox\Component\Package\Reference\NameReference;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\Config as ObjectPortal1;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
+use Pinoox\Support\SystemConfig;
+use Pinoox\Support\SystemApp;
 
 /**
  * @method static \Pinoox\Component\Store\Config\Config create(\Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface $strategy)
@@ -28,7 +31,6 @@ use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
  */
 class Config extends Portal
 {
-    const folder = 'config';
     const ext = 'config.php';
 
 
@@ -60,10 +62,26 @@ class Config extends Portal
         return self::create(new FileConfigStrategy($pinker));
     }
 
-    private static function initFileConfig(string $fileName): ObjectPortal1
+    private static function initFileConfig(string|ReferenceInterface $fileName): ObjectPortal1
     {
+        if (is_string($fileName)) {
         $fileName = $fileName . '.' . self::ext;
-        $ref = Path::prefixReference($fileName, self::folder);
+        }
+
+        $folder = SystemConfig::rawPath('app_config', 'config');
+        $ref = Path::prefixReference($fileName, $folder);
+
+        if ($ref->getPackageName() === '~') {
+            $value = $ref->getValue();
+            $systemPrefix = $folder . '/' . SystemApp::PATH_ALIAS . '/';
+
+            if (is_string($value) && str_starts_with($value, $systemPrefix)) {
+                $value = $folder . '/' . substr($value, strlen($systemPrefix));
+            }
+
+            $ref = NameReference::create(SystemApp::PACKAGE, $value);
+        }
+
         $pinker = Pinker::file($ref);
         return self::create(new FileConfigStrategy($pinker));
     }

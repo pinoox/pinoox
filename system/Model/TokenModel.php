@@ -12,13 +12,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Model;
+namespace Pinoox\System\Model;
 
 use Pinoox\Component\Database\Model;
-use Pinoox\Component\Date;
-use Pinoox\Component\Token;
 use Pinoox\Component\User;
-use Pinoox\Model\Scope\AppScope;
+use Pinoox\System\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Url;
 

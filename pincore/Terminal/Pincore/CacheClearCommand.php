@@ -5,6 +5,7 @@ namespace Pinoox\Terminal\Pincore;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\FileSystem;
+use Pinoox\Support\SystemApp;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -38,13 +39,25 @@ class CacheClearCommand extends Terminal
         }
 
         foreach ($packages as $pkg) {
-            $pinkerDir = $pkg === 'pincore'
-                ? path('~/pinker/pincore')
-                : path('~/pinker/apps/' . $pkg);
-            FileSystem::remove($pinkerDir);
+            foreach ($this->pinkerDirs($pkg) as $pinkerDir) {
+                FileSystem::remove($pinkerDir);
+            }
+
             $output->writeln("<info>Pinker cache cleared for [{$pkg}]</info>");
         }
 
         return Command::SUCCESS;
+    }
+
+    private function pinkerDirs(string $package): array
+    {
+        if ($package === 'pincore') {
+            return [
+                path('~/pinker/pincore'),
+                path('~/pinker/system'),
+            ];
+        }
+
+        return [path('~/pinker/apps/' . $package)];
     }
 } 

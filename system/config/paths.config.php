@@ -1,0 +1,43 @@
+<?php
+
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | Core Project Paths
+    |--------------------------------------------------------------------------
+    |
+    | Every value may be absolute or relative to the project root. Aliases are
+    | supported by the core path resolver:
+    | ~, ~system, ~pincore, ~pinker, ~storage.
+    |
+    */
+    'system' => env('PINOOX_SYSTEM_PATH', 'system'),
+    'apps' => env('PINOOX_APPS_PATH', 'apps'),
+    'pinker' => env('PINOOX_PINKER_PATH', 'pinker'),
+    'storage' => env('PINOOX_STORAGE_PATH', 'storage'),
+    'resources' => env('PINOOX_RESOURCES_PATH', 'resources'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | System Resource Paths
+    |--------------------------------------------------------------------------
+    */
+    'system_config' => env('PINOOX_SYSTEM_CONFIG_PATH', '~system/config'),
+    'system_lang' => env('PINOOX_SYSTEM_LANG_PATH', '~system/lang'),
+    'system_migrations' => env('PINOOX_SYSTEM_MIGRATIONS_PATH', '~system/migrations'),
+    'system_models' => env('PINOOX_SYSTEM_MODELS_PATH', '~system/Model'),
+    'system_registry' => env('PINOOX_SYSTEM_REGISTRY_PATH', '~system/config/apps.config.php'),
+    'system_router' => env('PINOOX_SYSTEM_ROUTER_PATH', '~system/config/app/router.config.php'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Framework Resource Paths
+    |--------------------------------------------------------------------------
+    */
+    'stubs' => env('PINOOX_STUBS_PATH', '~pincore/stubs'),
+    'app_file' => env('PINOOX_APP_FILE', 'app.php'),
+    'app_migrations' => env('PINOOX_APP_MIGRATIONS_PATH', 'migrations'),
+    'app_lang' => env('PINOOX_APP_LANG_PATH', 'lang'),
+    'app_config' => env('PINOOX_APP_CONFIG_PATH', 'config'),
+    'wizard_tmp' => env('PINOOX_WIZARD_TMP_PATH', '~pinker/wizard_tmp'),
+];

@@ -14,8 +14,8 @@ namespace Pinoox\Component;
 
 use Firebase\JWT\Key;
 use Illuminate\Database\Eloquent\Builder;
-use Pinoox\Model\TokenModel;
-use Pinoox\Model\UserModel;
+use Pinoox\System\Model\TokenModel;
+use Pinoox\System\Model\UserModel;
 use Firebase\JWT\JWT;
 use Pinoox\Portal\Hash;
 use Pinoox\Portal\Lang;

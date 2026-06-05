@@ -14,7 +14,7 @@ namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Kernel\BootInterface;
-use Pinoox\Model\TokenModel;
+use Pinoox\System\Model\TokenModel;
 
 class Token implements BootInterface
 {
@@ -23,6 +23,10 @@ class Token implements BootInterface
     private static $token_key = null;
 
     public static function __register()
+    {
+    }
+
+    public static function __boot()
     {
         self::deleteAllExpired();
     }

@@ -17,6 +17,7 @@ namespace Pinoox\Portal\Wizard;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Wizard\Wizard as ObjectPortal1;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemConfig;
 
 /**
  * @method static \Pinoox\Component\Wizard\TemplateWizard open(string $path)
@@ -34,11 +35,9 @@ use Pinoox\Portal\App\AppEngine;
  */
 class TemplateWizard extends Portal
 {
-	private const tmpPathRoot = 'wizard_tmp';
-
 	public static function __register(): void
 	{
-		$tmpPath = path('pinker/' . self::tmpPathRoot);
+		$tmpPath = SystemConfig::path('wizard_tmp');
 		self::__bind(\Pinoox\Component\Wizard\TemplateWizard::class)->setArguments([
 		    $tmpPath,
 		    AppEngine::__ref()

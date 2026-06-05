@@ -18,6 +18,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Connection;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemApp;
 
 /**
  * @mixin Connection
@@ -76,7 +77,7 @@ class DatabaseManager extends Capsule
 
     public function connectionNameForModel(string $class): string
     {
-        if (str_starts_with($class, 'Pinoox\\Model\\')) {
+        if ($this->isSystemModel($class)) {
             return self::CORE_CONNECTION;
         }
 
@@ -158,7 +159,7 @@ class DatabaseManager extends Capsule
 
     public function packageNameForModel(string $class): ?string
     {
-        if (str_starts_with($class, 'Pinoox\\Model\\')) {
+        if ($this->isSystemModel($class)) {
             return self::CORE_CONNECTION;
         }
 
@@ -321,6 +322,12 @@ class DatabaseManager extends Capsule
         $name = preg_replace('/[^A-Za-z0-9_]+/', '_', strtolower($name));
 
         return trim($name, '_') . '_';
+    }
+
+    private function isSystemModel(string $class): bool
+    {
+        return str_starts_with($class, 'Pinoox\\Model\\')
+            || str_starts_with($class, 'Pinoox\\System\\Model\\');
     }
 
     private function isQualifiedTable(string $table): bool

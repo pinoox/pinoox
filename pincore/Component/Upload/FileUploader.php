@@ -13,7 +13,7 @@
 namespace Pinoox\Component\Upload;
 
 use Pinoox\Component\Helpers\Str;
-use Pinoox\Model\FileModel;
+use Pinoox\System\Model\FileModel;
 use Pinoox\Portal\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;

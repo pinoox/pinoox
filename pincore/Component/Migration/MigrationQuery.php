@@ -12,8 +12,8 @@
 
 namespace Pinoox\Component\Migration;
 
-use Pinoox\Model\MigrationModel;
-use Pinoox\Model\Table;
+use Pinoox\System\Model\MigrationModel;
+use Pinoox\System\Model\Table;
 use Pinoox\Portal\Database\DB;
 
 class MigrationQuery

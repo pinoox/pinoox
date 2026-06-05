@@ -11,7 +11,7 @@
  */
 
 
-namespace Pinoox\Model\Scope;
+namespace Pinoox\System\Model\Scope;
 
 
 use Illuminate\Database\Eloquent\Builder;

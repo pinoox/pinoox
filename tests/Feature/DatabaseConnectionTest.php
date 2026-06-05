@@ -2,7 +2,7 @@
 
 use Pinoox\Component\Database\DatabaseManager;
 use Pinoox\Component\Kernel\Loader;
-use Pinoox\Model\Table;
+use Pinoox\System\Model\Table;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppProvider;
 use Pinoox\Portal\Database\DB;

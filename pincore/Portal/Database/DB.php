@@ -172,7 +172,10 @@ class DB extends Portal
         self::__bind(\Pinoox\Component\Database\DatabaseManager::class)->setArguments([
             Container::Illuminate()
         ]);
+    }
 
+    public static function __boot(): void
+    {
         self::resolvePagination();
     }
 

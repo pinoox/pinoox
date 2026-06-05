@@ -5,6 +5,9 @@ namespace Pinoox\Terminal\Pincore;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Component\File;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\Pinker;
+use Pinoox\Support\SystemApp;
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -53,7 +56,9 @@ class MakeAppCommand extends Terminal
         );
         $description = $helper->ask($input, $output, $questionDesc);
         
-        $appDir = 'apps/' . $name;
+        $appDir = SystemConfig::path('apps') . '/' . $name;
+        $appFile = SystemConfig::rawPath('app_file', 'app.php');
+        $configFolder = trim(SystemConfig::rawPath('app_config', 'config'), '/\\');
 
         if (FileSystem::exists($appDir)) {
             $output->writeln("<error>App '{$name}' already exists!</error>");
@@ -63,7 +68,7 @@ class MakeAppCommand extends Terminal
         // Create directories
         FileSystem::mkdir([
             "{$appDir}",
-            "{$appDir}/config",
+            "{$appDir}/{$configFolder}",
             "{$appDir}/Controller",
             "{$appDir}/router",
             "{$appDir}/theme/default",
@@ -86,10 +91,11 @@ return [
     'theme'         => 'default',
 ];
 PHP;
-        FileSystem::dumpFile("{$appDir}/app.php", $appConfig);
+        FileSystem::dumpFile("{$appDir}/{$appFile}", $appConfig);
 
         // Get copyright stub content
-        $copyrightStub = file_get_contents(PINOOX_CORE_PATH . 'stubs/copyright.stub');
+        $stubsPath = rtrim(SystemConfig::path('stubs'), '/') . '/';
+        $copyrightStub = file_get_contents($stubsPath . 'copyright.stub');
 
         // Generate router/actions.php
         $actionsFile = <<<PHP
@@ -150,16 +156,16 @@ PHP;
         FileSystem::dumpFile("{$appDir}/Controller/MainController.php", $controllerFile);
 
         // Generate hello.twig from stub
-        $indexStub = file_get_contents(PINOOX_CORE_PATH . 'stubs/index.twig.stub');
+        $indexStub = file_get_contents($stubsPath . 'index.twig.stub');
         $indexContent = str_replace('{{appName}}', $displayName, $indexStub);
         FileSystem::dumpFile("{$appDir}/theme/default/hello.twig", $indexContent);
 
         // Generate pinoox.twig from stub
-        $pinooxStub = file_get_contents(PINOOX_CORE_PATH . 'stubs/pinoox.twig.stub');
+        $pinooxStub = file_get_contents($stubsPath . 'pinoox.twig.stub');
         FileSystem::dumpFile("{$appDir}/theme/default/pinoox.twig", $pinooxStub);
 
         // Generate functions.php from stub
-        $functionsStub = file_get_contents(PINOOX_CORE_PATH . 'stubs/functions.php.stub');
+        $functionsStub = file_get_contents($stubsPath . 'functions.php.stub');
         FileSystem::dumpFile("{$appDir}/theme/default/functions.php", $functionsStub);
 
         // Ask user to update only the Pinker baked router config
@@ -183,8 +189,11 @@ PHP;
             }
 
             // Update Pinker-baked router config
-            $bakedRouter = path('~/pinker/pincore/config/app/router.config.php');
-            $routes = FileSystem::exists($bakedRouter) ? include $bakedRouter : [];
+            $sourceRouter = SystemApp::path('config/app/router.config.php');
+            $bakedRouter = Pinker::bakedFileFromSource($sourceRouter);
+            $routes = FileSystem::exists($bakedRouter)
+                ? include $bakedRouter
+                : (FileSystem::exists($sourceRouter) ? include $sourceRouter : []);
             $routes[$routePath] = $name;
             ksort($routes);
             $export = "<?php\n\nreturn [\n";

@@ -11,6 +11,7 @@
  */
 
 return [
+    'default' => env('PINOOX_DOMAIN', null),
 
     // "*.domain.com" => "{sub}"
 

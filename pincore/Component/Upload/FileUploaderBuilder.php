@@ -14,7 +14,7 @@ namespace Pinoox\Component\Upload;
 
 use InvalidArgumentException;
 use Pinoox\Component\Database\Model;
-use Pinoox\Model\FileModel;
+use Pinoox\System\Model\FileModel;
 use Pinoox\Portal\FileUploader;
 
 class FileUploaderBuilder

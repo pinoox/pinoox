@@ -15,7 +15,7 @@ namespace Pinoox\Database\migrations;
 
 use Illuminate\Database\Schema\Blueprint;
 use Pinoox\Component\Migration\MigrationBase;
-use Pinoox\Model\Table;
+use Pinoox\System\Model\Table;
 
 return new class extends MigrationBase {
     /**

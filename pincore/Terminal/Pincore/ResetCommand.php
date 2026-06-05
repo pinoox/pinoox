@@ -21,6 +21,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Portal\Pinker;
+use Pinoox\Support\SystemApp;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -49,14 +50,25 @@ class ResetCommand extends Terminal
         $package = $input->getArgument('package');
 
         $package = (!empty($package) && AppEngine::exists($package)) ? $package : 'pincore';
-        $pinkerDir = $package === 'pincore'
-            ? path('~/pinker/pincore')
-            : path('~/pinker/apps/' . $package);
-        FileSystem::remove($pinkerDir);
+        foreach ($this->pinkerDirs($package) as $pinkerDir) {
+            FileSystem::remove($pinkerDir);
+        }
 
         self::success('Pinker directory [' . $package . '] removed successfully.');
 
         return Command::SUCCESS;
+    }
+
+    private function pinkerDirs(string $package): array
+    {
+        if ($package === 'pincore') {
+            return [
+                path('~/pinker/pincore'),
+                path('~/pinker/system'),
+            ];
+        }
+
+        return [path('~/pinker/apps/' . $package)];
     }
 
     /**

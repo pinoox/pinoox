@@ -13,7 +13,7 @@
 namespace Pinoox\Component\Upload;
 
 
-use Pinoox\Model\FileModel;
+use Pinoox\System\Model\FileModel;
 use Pinoox\Portal\App\App;
 
 class FileUploaderFactory

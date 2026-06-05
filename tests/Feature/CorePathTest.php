@@ -4,6 +4,7 @@ use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Package\Parser\NameParser;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Path;
+use Pinoox\Support\SystemApp;
 
 it('resolves the pincore path through the central core path constant', function () {
     $path = new Path(corePathTestNormalize(dirname(__DIR__, 2)), new NameParser(), new CorePathTestEngine(), null);
@@ -14,6 +15,15 @@ it('resolves the pincore path through the central core path constant', function 
     expect($path->get('~pincore'))->toBe($corePath)
         ->and($path->get('~pincore/config/app/source.config.php'))
         ->toBe($corePath . '/config/app/source.config.php');
+});
+
+it('resolves the system app path through the system alias', function () {
+    $basePath = corePathTestNormalize(dirname(__DIR__, 2));
+    $path = new Path($basePath, new NameParser(), new CorePathTestEngine(), null);
+
+    expect($path->get('~system'))->toBe($basePath . '/system')
+        ->and($path->get('~system/lang/en/file.lang.php'))
+        ->toBe($basePath . '/system/lang/en/file.lang.php');
 });
 
 function corePathTestNormalize(string $path): string

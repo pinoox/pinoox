@@ -15,13 +15,13 @@
 namespace Pinoox\Portal\App;
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Package\AppLayer as ObjectPortal1;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Store\Config\ConfigInterface as ObjectPortal2;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Pinker;
+use Pinoox\Support\SystemApp;
 
 /**
  * @method static setDefault($packageName)
@@ -46,11 +46,8 @@ class AppRouter extends Portal
 {
 	public static function __register(): void
 	{
-		$path = defined('PINOOX_CORE_PATH')
-		    ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
-		    : rtrim(str_replace('\\', '/', (string)Loader::getBasePath()), '/') . '/pincore';
 		$file = 'config/app/router.config.php';
-		$fileStrategy = new FileConfigStrategy(Pinker::folder($path,$file));
+		$fileStrategy = new FileConfigStrategy(Pinker::folder(SystemApp::basePath(), $file));
 		$config = Config::create($fileStrategy);
 		self::__bind(\Pinoox\Component\Package\AppRouter::class)->setArguments([
 		    $config,

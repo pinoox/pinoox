@@ -12,16 +12,15 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-namespace Pinoox\Model;
+namespace Pinoox\System\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Validation\Rule;
 use Pinoox\Component\Database\Model;
-use Pinoox\Model\Scope\AppScope;
+use Pinoox\System\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Hash;
-use Pinoox\Portal\Url;
 
 
 /**

@@ -4,6 +4,9 @@ namespace Pinoox\Terminal\Pincore;
 
 use Pinoox\Portal\FileSystem;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\Pinker;
+use Pinoox\Support\SystemApp;
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -32,7 +35,7 @@ class DeleteAppCommand extends Terminal
         parent::execute($input, $output);
 
         $packageName = $input->getArgument('package');
-        $appDir = 'apps/' . $packageName;
+        $appDir = SystemConfig::path('apps') . '/' . $packageName;
         $routeOnly = $input->getOption('route-only');
         $specificRoute = $input->getOption('specific-route');
 
@@ -85,13 +88,14 @@ class DeleteAppCommand extends Terminal
      */
     private function handleRoutes(OutputInterface $output, string $packageName, ?string $specificRoute = null): void
     {
-        $bakedRouter = path('~/pinker/pincore/config/app/router.config.php');
-        if (!FileSystem::exists($bakedRouter)) {
+        $sourceRouter = SystemApp::path('config/app/router.config.php');
+        $bakedRouter = Pinker::bakedFileFromSource($sourceRouter);
+        if (!FileSystem::exists($bakedRouter) && !FileSystem::exists($sourceRouter)) {
             $output->writeln("<comment>Pinker router configuration file not found.</comment>");
             return;
         }
         
-        $routes = include $bakedRouter;
+        $routes = FileSystem::exists($bakedRouter) ? include $bakedRouter : include $sourceRouter;
         $routesUpdated = false;
 
         // Find and remove routes

@@ -13,10 +13,12 @@
 namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Schema\Builder;
-use Pinoox\Model\Table;
-use Pinoox\Model\MigrationModel;
+use Pinoox\System\Model\Table;
+use Pinoox\System\Model\MigrationModel;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
+use Pinoox\Support\SystemConfig;
+use Pinoox\Support\SystemApp;
 use Symfony\Component\Finder\Finder;
 
 class MigrationToolkit
@@ -190,8 +192,9 @@ class MigrationToolkit
     private function initializeMigrationPath(): void
     {
         if ($this->package === 'pincore') {
-            $this->migrationPath = path('~pincore') . '/Database/' . $this->migrationFolder;
+            $this->migrationPath = SystemConfig::path('system_migrations');
         } else {
+            $this->migrationFolder = trim(SystemConfig::rawPath('app_migrations', 'migrations'), '/\\');
             $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
         }
     }
