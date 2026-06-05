@@ -62,10 +62,7 @@
       "Pinoox\\": "pincore/",
       "Pinoox\\System\\": "system/",
       "App\\": "apps/"
-    },
-    "files": [
-      "pincore/Support/system_model_aliases.php"
-    ]
+    }
   },
   "autoload-dev": {
     "psr-4": {

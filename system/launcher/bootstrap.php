@@ -40,4 +40,6 @@ if ($loader instanceof Composer\Autoload\ClassLoader) {
     $loader->addPsr4('Pinoox\\', PINOOX_CORE_PATH, true);
 }
 
+require_once PINOOX_BASE_PATH . '/system/support/system_model_aliases.php';
+
 AppProvider::boot();

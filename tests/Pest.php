@@ -2,6 +2,7 @@
 
 require_once dirname(__DIR__) . '/system/launcher/core-path.php';
 require_once PINOOX_CORE_PATH . 'functions/base.php';
+require_once dirname(__DIR__) . '/system/support/system_model_aliases.php';
 
 /*
 |--------------------------------------------------------------------------
