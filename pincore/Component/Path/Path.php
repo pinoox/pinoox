@@ -102,7 +102,9 @@ class Path implements PathInterface
         foreach ([
             SystemConfig::rawPath('app_config', 'config') => 'system_config',
             SystemConfig::rawPath('app_lang', 'lang') => 'system_lang',
-            SystemConfig::rawPath('app_migrations', 'migrations') => 'system_migrations',
+            SystemConfig::rawPath('app_migrations', 'database/migrations') => 'system_migrations',
+            SystemConfig::rawPath('app_seed', 'database/seed') => 'system_seed',
+            SystemConfig::rawPath('app_patches', 'database/patches') => 'system_patches',
             'Model' => 'system_models',
         ] as $folder => $pathKey) {
             $folder = trim($folder, '/');

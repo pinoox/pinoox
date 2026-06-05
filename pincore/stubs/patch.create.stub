@@ -1,0 +1,14 @@
+<?php
+{{ copyright }}
+
+namespace {{namespace}};
+
+use Pinoox\Component\Database\Patch\PatchBase;
+
+return new class extends PatchBase
+{
+    public function run(): void
+    {
+        // Your patch logic here
+    }
+};

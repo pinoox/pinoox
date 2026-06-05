@@ -52,7 +52,7 @@ class MigrationToolkit
     private string $migrationPath = '';
     private string $migrationName = '';
     private string $tableName = '';
-    private string $migrationFolder = 'migrations';
+    private string $migrationFolder = 'database/migrations';
     private string $action = self::ACTION_RUN;
     private array $errors = [];
     private array $migrations = [];
@@ -194,7 +194,7 @@ class MigrationToolkit
         if ($this->package === 'pincore') {
             $this->migrationPath = SystemConfig::path('system_migrations');
         } else {
-            $this->migrationFolder = trim(SystemConfig::rawPath('app_migrations', 'migrations'), '/\\');
+            $this->migrationFolder = trim(SystemConfig::rawPath('app_migrations', 'database/migrations'), '/\\');
             $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
         }
     }
@@ -209,11 +209,13 @@ class MigrationToolkit
         $files = [];
         $finder = new Finder();
 
-        if (!is_dir($this->migrationPath)) {
+        $paths = $this->migrationSearchPaths();
+
+        if (empty($paths)) {
             return $files;
         }
 
-        $finder->in($this->migrationPath)->files()->name('*.php');
+        $finder->in($paths)->files()->name('*.php');
 
         foreach ($finder as $file) {
             $filename = $file->getBasename('.php');
@@ -402,6 +404,31 @@ class MigrationToolkit
         if (!file_exists($this->migrationPath)) {
             mkdir($this->migrationPath, 0755, true);
         }
+    }
+
+    private function migrationSearchPaths(): array
+    {
+        $paths = [];
+
+        if (is_dir($this->migrationPath)) {
+            $paths[] = $this->migrationPath;
+        }
+
+        $legacyPath = $this->legacyMigrationPath();
+        if ($legacyPath !== null && is_dir($legacyPath) && $legacyPath !== $this->migrationPath) {
+            $paths[] = $legacyPath;
+        }
+
+        return $paths;
+    }
+
+    private function legacyMigrationPath(): ?string
+    {
+        if ($this->package === 'pincore') {
+            return SystemConfig::resolvePath('~system/migrations');
+        }
+
+        return AppEngine::path($this->package) . '/migrations';
     }
 
     /**

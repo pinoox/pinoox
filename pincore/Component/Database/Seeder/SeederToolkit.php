@@ -13,7 +13,6 @@
 namespace Pinoox\Component\Database\Seeder;
 
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Support\SystemApp;
 use Pinoox\Support\SystemConfig;
 use Symfony\Component\Finder\Finder;
 
@@ -21,7 +20,7 @@ class SeederToolkit
 {
     private string $package = '';
     private string $seederPath = '';
-    private string $seederFolder = 'Database/Seeders';
+    private string $seederFolder = 'database/seed';
     private array $errors = [];
     private array $seeders = [];
 
@@ -64,8 +63,9 @@ class SeederToolkit
     private function initializeSeederPath(): void
     {
         if ($this->package === 'pincore') {
-            $this->seederPath = SystemConfig::resolvePath('~system/' . $this->seederFolder);
+            $this->seederPath = SystemConfig::path('system_seed');
         } else {
+            $this->seederFolder = trim(SystemConfig::rawPath('app_seed', 'database/seed'), '/\\');
             $this->seederPath = AppEngine::path($this->package) . '/' . $this->seederFolder;
         }
     }
@@ -80,7 +80,7 @@ class SeederToolkit
             return;
         }
 
-        $finder->in($this->seederPath)->files()->name('*.php');
+        $finder->in($this->seederSearchPaths())->files()->name('*.php');
 
         foreach ($finder as $file) {
             $seederClass = require $file->getRealPath();
@@ -99,6 +99,31 @@ class SeederToolkit
         if (!is_dir($this->seederPath)) {
             mkdir($this->seederPath, 0755, true);
         }
+    }
+
+    private function seederSearchPaths(): array
+    {
+        $paths = [];
+
+        if (is_dir($this->seederPath)) {
+            $paths[] = $this->seederPath;
+        }
+
+        $legacyPath = $this->legacySeederPath();
+        if (is_dir($legacyPath) && $legacyPath !== $this->seederPath) {
+            $paths[] = $legacyPath;
+        }
+
+        return $paths;
+    }
+
+    private function legacySeederPath(): string
+    {
+        if ($this->package === 'pincore') {
+            return SystemConfig::resolvePath('~system/Database/seeders');
+        }
+
+        return AppEngine::path($this->package) . '/Database/Seeders';
     }
 
     private function addError(\Exception|\Throwable|string $error): void

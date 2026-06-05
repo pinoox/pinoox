@@ -33,7 +33,7 @@ class MigrationConfig
     {
         $this->appPath = $package === 'pincore' ? SystemApp::basePath() : $path;
         $this->package = $package;
-        $this->folders = '\\' . trim(SystemConfig::rawPath('app_migrations', 'migrations'), '\\/') . '\\';
+        $this->folders = '\\' . trim(SystemConfig::rawPath('app_migrations', 'database/migrations'), '\\/') . '\\';
         $this->migrationPath = $package === 'pincore'
             ? SystemConfig::path('system_migrations')
             : $this->appPath . $this->folders;

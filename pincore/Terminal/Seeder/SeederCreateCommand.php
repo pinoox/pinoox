@@ -14,7 +14,9 @@ namespace Pinoox\Terminal\Seeder;
 
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\StubGenerator;
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -52,7 +54,7 @@ class SeederCreateCommand extends Terminal
                 $this->success('🌱 SEEDER CREATED SUCCESSFULLY');
                 $this->newLine();
                 $this->info('  Name:      ' . $this->getSeederClassName());
-                $this->info('  Location:  ' . path('~apps') . '/' . $this->package . '/Database/Seeders');
+                $this->info('  Location:  ' . $this->getSeederPath());
                 $this->info('  Package:   ' . $this->package);
                 $this->newLine();
                 $this->warning('  Run the seeder using: php pinoox seeder:run ' . $this->package . ' -c ' . $this->getSeederClassName());
@@ -90,9 +92,10 @@ class SeederCreateCommand extends Terminal
     private function getSeederPath(): string
     {
         if ($this->package === 'pincore') {
-            return path('~pincore') . '/Database/seeders';
+            return SystemConfig::path('system_seed');
         }
-        return path('~apps') . '/' . $this->package . '/Database/Seeders';
+
+        return AppEngine::path($this->package) . '/' . trim(SystemConfig::rawPath('app_seed', 'database/seed'), '/\\');
     }
 
     private function ensureSeederDirectoryExists(string $path): void
@@ -111,7 +114,7 @@ class SeederCreateCommand extends Terminal
     private function getNamespace(): string
     {
         return $this->package === 'pincore' 
-            ? 'Pinoox\\Database\\seeders' 
-            : 'App\\' . $this->package . '\\Database\\Seeders';
+            ? 'Pinoox\\Database\\seed'
+            : 'App\\' . $this->package . '\\database\\seed';
     }
 } 

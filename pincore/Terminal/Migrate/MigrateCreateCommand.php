@@ -75,7 +75,7 @@ class MigrateCreateCommand extends Terminal
                 'copyright' => StubGenerator::get('copyright.stub'),
                 'table' => $this->mig->getTableName(),
                 'package' => $this->package,
-                'namespace' => "App\\$this->package\migrations",
+                'namespace' => $this->getNamespace(),
             ]);
 
             if ($isCreated) {
@@ -106,6 +106,13 @@ class MigrateCreateCommand extends Terminal
         //create filename
         $this->mig->generateMigrationFileName($fileName);
         return $this->mig->filePath() . '.php';
+    }
+
+    private function getNamespace(): string
+    {
+        return $this->package === 'pincore'
+            ? 'Pinoox\\Database\\migrations'
+            : 'App\\' . $this->package . '\\database\\migrations';
     }
 
 }
