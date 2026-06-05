@@ -23,6 +23,8 @@ use Pinoox\Component\Http\Response;
 use Pinoox\Component\Kernel\Kernel;
 use Pinoox\Component\Kernel\SessionStarter;
 use Pinoox\Component\Kernel\Terminal;
+use Pinoox\Api\AppApiServiceProvider;
+use Pinoox\GraphQL\GraphQLServiceProvider;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Event;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -135,8 +137,15 @@ class AppProvider
             $this->loader();
             $this->events();
             $this->database();
+            $this->api();
             $this->resolveSession();
         }
+    }
+
+    private function api(): void
+    {
+        AppApiServiceProvider::register();
+        GraphQLServiceProvider::register();
     }
 
     private function loadComposer($dir): ?ClassLoader

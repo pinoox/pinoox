@@ -31,6 +31,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface as ObjectPortal1;
  * @method static array matchRequest(\Pinoox\Component\Http\Request $request)
  * @method static array getAllPath()
  * @method static Router add(array|string $path, \Closure|array|string $action = '', string $name = '', array|string $methods = [], array $defaults = [], array $filters = [], ?int $property = NULL, array $data = [], array $flows = [], array $tags = [])
+ * @method static \Pinoox\Component\Router\RouteBuilder builder()
+ * @method static \Pinoox\Component\Router\RouteBuilder route(string $path, \Closure|array|string $action = '', array|string $methods = [], string $name = '')
  * @method static mixed buildAction(mixed $action, ?int $indexCollection = NULL)
  * @method static mixed getAction(string $name)
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [], array $flows = [], array $tags = [])

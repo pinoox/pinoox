@@ -172,6 +172,20 @@ class Router
         }
     }
 
+    public function builder(): RouteBuilder
+    {
+        return new RouteBuilder($this);
+    }
+
+    public function route(string $path, array|string|Closure $action = '', string|array $methods = [], string $name = ''): RouteBuilder
+    {
+        return $this->builder()
+            ->path($path)
+            ->action($action)
+            ->methods($methods)
+            ->name($name);
+    }
+
     /**
      * build action
      *
