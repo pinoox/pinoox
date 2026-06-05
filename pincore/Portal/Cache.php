@@ -3,6 +3,7 @@
 namespace Pinoox\Portal;
 
 use Pinoox\Component\Source\Portal;
+use Pinoox\Support\SystemConfig;
 use Psr\Cache\CacheItemPoolInterface;
 use Psr\SimpleCache\CacheInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
@@ -28,13 +29,14 @@ class Cache extends Portal
 {
 	public static function __register(): void
 	{
-		// Load core configuration
-		$config = Config::file('pinoox')->get('cache');
+		$config = Config::name('~cache')->get();
+        $store = $config['default'] ?? 'file';
+        $stores = $config['stores'] ?? [];
+        $storeConfig = $stores[$store] ?? $stores['file'] ?? [];
 
-		// Set cache configuration values
-		$directory = $config['directory'] ?? sys_get_temp_dir();
-		$namespace = $config['default_namespace'] ?? '';
-		$lifetime = $config['default_lifetime'] ?? 0;
+		$directory = SystemConfig::resolvePath($storeConfig['path'] ?? '~storage/cache');
+		$namespace = $storeConfig['namespace'] ?? $config['prefix'] ?? 'pinoox';
+		$lifetime = (int) ($storeConfig['ttl'] ?? 0);
 		
 		// Set container parameters
 		self::__param('cache_directory', $directory);

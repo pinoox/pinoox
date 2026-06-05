@@ -12,6 +12,7 @@
 
 namespace Pinoox\Component\Kernel;
 
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\HttpFoundation\Request;
 
 final class SessionStarter
@@ -101,6 +102,11 @@ final class SessionStarter
     private static function candidateSavePaths(): array
     {
         $paths = [];
+        $configured = SystemConfig::get('session', 'files', '~storage/sessions');
+
+        if (is_string($configured) && trim($configured) !== '') {
+            $paths[] = SystemConfig::resolvePath($configured);
+        }
 
         $mampTmp = getenv('TEMP') ?: getenv('TMP') ?: '';
 

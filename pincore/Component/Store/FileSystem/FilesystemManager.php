@@ -34,6 +34,8 @@ use League\Flysystem\ReadOnly\ReadOnlyFilesystemAdapter;
 use League\Flysystem\UnixVisibility\PortableVisibilityConverter;
 use League\Flysystem\Visibility;
 use Pinoox\Component\Store\Config\ConfigInterface;
+use Pinoox\Portal\App\App;
+use Pinoox\Support\SystemConfig;
 
 /**
  * @mixin \Illuminate\Contracts\Filesystem\Filesystem
@@ -112,6 +114,51 @@ class FilesystemManager implements FactoryContract
         ]);
     }
 
+    public function app(?string $package = null, ?string $disk = null)
+    {
+        return $this->package($package, $disk);
+    }
+
+    public function package(?string $package = null, ?string $disk = null)
+    {
+        $package = $this->normalizePackageName($package ?: $this->currentPackageName());
+        $disk = $disk ?: $this->config->get('app_disk', $this->getDefaultDriver());
+        $cacheKey = "package:{$disk}:{$package}";
+
+        if (isset($this->disks[$cacheKey])) {
+            return $this->disks[$cacheKey];
+        }
+
+        $baseConfig = $this->getConfig($disk);
+
+        if (($baseConfig['driver'] ?? null) === 'local') {
+            return $this->disks[$cacheKey] = $this->build([
+                'driver' => 'local',
+                'root' => $this->appPath($package),
+                'visibility' => $baseConfig['visibility'] ?? 'private',
+                'throw' => $baseConfig['throw'] ?? $this->config->get('throw', false),
+            ]);
+        }
+
+        $prefix = trim((string) $this->config->get('app_prefix', 'apps'), '/');
+        $prefix = trim($prefix . '/' . $package, '/');
+
+        return $this->disks[$cacheKey] = $this->build([
+            'driver' => 'scoped',
+            'disk' => $disk,
+            'prefix' => $prefix,
+            'visibility' => $baseConfig['visibility'] ?? 'private',
+        ]);
+    }
+
+    public function appPath(?string $package = null, string $path = ''): string
+    {
+        $package = $this->normalizePackageName($package ?: $this->currentPackageName());
+        $root = SystemConfig::resolvePath((string) $this->config->get('app_root', '~storage/apps'));
+
+        return $this->joinPath($root, $package, $path);
+    }
+
     /**
      * Attempt to get the disk from the local cache.
      *
@@ -135,6 +182,7 @@ class FilesystemManager implements FactoryContract
     protected function resolve($name, $config = null)
     {
         $config ??= $this->getConfig($name);
+        $config = $this->normalizeConfig($config);
 
         if (empty($config['driver'])) {
             throw new InvalidArgumentException("Disk [{$name}] does not have a configured driver.");
@@ -153,6 +201,15 @@ class FilesystemManager implements FactoryContract
         }
 
         return $this->{$driverMethod}($config);
+    }
+
+    protected function normalizeConfig(array $config): array
+    {
+        if (isset($config['root']) && is_string($config['root'])) {
+            $config['root'] = SystemConfig::resolvePath($config['root']);
+        }
+
+        return $config;
     }
 
     /**
@@ -421,6 +478,41 @@ class FilesystemManager implements FactoryContract
         $this->config = $config;
 
         return $this;
+    }
+
+    protected function currentPackageName(): string
+    {
+        try {
+            return App::package() ?: 'pincore';
+        } catch (\Throwable) {
+            return 'pincore';
+        }
+    }
+
+    protected function normalizePackageName(string $package): string
+    {
+        $package = trim(str_replace(['\\', '/'], '_', $package));
+        $package = preg_replace('/[^A-Za-z0-9_.-]+/', '_', $package) ?: 'pincore';
+
+        return trim($package, '._-') ?: 'pincore';
+    }
+
+    protected function joinPath(string ...$segments): string
+    {
+        $path = '';
+
+        foreach ($segments as $index => $segment) {
+            $segment = str_replace('\\', '/', $segment);
+            $segment = $index === 0 ? rtrim($segment, '/') : trim($segment, '/');
+
+            if ($segment === '') {
+                continue;
+            }
+
+            $path = $path === '' ? $segment : $path . '/' . $segment;
+        }
+
+        return $path;
     }
 
     /**
