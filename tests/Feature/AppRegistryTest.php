@@ -1,8 +1,13 @@
 <?php
 
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Package\App;
+use Pinoox\Component\Package\AppRouter;
 use Pinoox\Component\Package\Engine\AppEngine as PackageAppEngine;
+use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Support\AppRegistry;
+use Symfony\Component\Routing\RequestContext;
 
 beforeEach(function () {
     Loader::setBasePath(dirname(__DIR__, 2));
@@ -39,6 +44,74 @@ it('registers external apps from the system app registry config', function () {
         @unlink($registryFile);
     }
 });
+
+it('autoloads external app namespaces registered by the system registry', function () {
+    $basePath = str_replace('\\', '/', dirname(__DIR__, 2));
+    $package = 'com_test_registry_autoload';
+    $externalApp = str_replace('\\', '/', dirname(__DIR__) . '/Fixtures/external_apps/' . $package);
+    $controllerDir = $externalApp . '/Controller';
+    $controllerClass = 'App\\' . $package . '\\Controller\\RegistryController';
+
+    if (!is_dir($controllerDir)) {
+        mkdir($controllerDir, 0777, true);
+    }
+
+    file_put_contents($externalApp . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'name' => 'Registry Autoload', 'enable' => true];\n");
+    file_put_contents($controllerDir . '/RegistryController.php', "<?php\n\nnamespace App\\{$package}\\Controller;\n\nclass RegistryController {}\n");
+
+    $packages = [$package => $externalApp];
+    $engine = new PackageAppEngine($basePath . '/missing_apps_dir', 'app.php', 'pinker', null, $packages);
+    $loader = new Composer\Autoload\ClassLoader();
+    $loader->register();
+
+    try {
+        new App(
+            new AppRouter(new AppRegistryTestConfig([]), $engine, new Request()),
+            $engine,
+            new RequestContext(),
+            $loader,
+        );
+
+        expect(class_exists($controllerClass))->toBeTrue();
+    } finally {
+        $loader->unregister();
+    }
+});
+
+class AppRegistryTestConfig implements ConfigInterface
+{
+    public function __construct(private array $data = [])
+    {
+    }
+
+    public function get(?string $key = null, $default = null): mixed
+    {
+        if ($key === null) {
+            return $this->data;
+        }
+
+        return $this->data[$key] ?? $default;
+    }
+
+    public function set(string $key, mixed $value): static
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    public function remove(string $key): static
+    {
+        unset($this->data[$key]);
+
+        return $this;
+    }
+
+    public function save(): static
+    {
+        return $this;
+    }
+}
 
 function deleteAppRegistryTestDirectory(string $dir): void
 {

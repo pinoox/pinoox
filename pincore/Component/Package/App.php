@@ -33,6 +33,7 @@ use Symfony\Component\HttpFoundation\Request as RequestSymfony;
 class App implements UrlMatcherInterface, RequestMatcherInterface
 {
     private AppLayer $appLayer;
+    private array $autoloadedPackages = [];
 
     public function __construct(
         private readonly AppRouter  $appRouter,
@@ -43,6 +44,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
     )
     {
         $this->appLayer = $this->appRouter->find();
+        $this->registerConfiguredPackageAutoloaders();
     }
 
     /**
@@ -319,10 +321,25 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         $this->appEngine->add($packageName, $dir);
     }
 
+    private function registerConfiguredPackageAutoloaders(): void
+    {
+        foreach ($this->appEngine->registeredPackages() as $packageName => $dir) {
+            $this->autoloader($packageName, $dir);
+        }
+    }
+
     private function autoloader($packageName, $dir): void
     {
+        $dir = rtrim(str_replace('\\', '/', $dir), '/');
+
+        if (isset($this->autoloadedPackages[$packageName])) {
+            return;
+        }
+
         $namespace = 'App\\' . $packageName . '\\';
         $this->classLoader->addPsr4($namespace, $dir);
+        $this->autoloadedPackages[$packageName] = $dir;
+
         spl_autoload_register(function ($class) use ($namespace, $dir) {
             if (str_starts_with($class, $namespace)) {
                 $class = str_replace($namespace, '', $class);

@@ -225,6 +225,11 @@ class AppEngine implements EngineInterface
         $this->arrayLoader->add($packageName, $path);
     }
 
+    public function registeredPackages(): array
+    {
+        return $this->arrayLoader->getPackages();
+    }
+
     /**
      * Get path app.
      *
