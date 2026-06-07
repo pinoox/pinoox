@@ -12,8 +12,14 @@
 
 namespace Pinoox\Component\Router;
 
+use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Loader;
+
 class QueryRouteResolver
 {
+    /** Internal query key for Pinoox path routing when URL rewrite is unavailable (?_pnx=/path). */
+    public const PARAMETER = '_pnx';
+
     private const SERVER_FLAG = 'PINOOX_QUERY_ROUTE_APPLIED';
 
     private static ?array $config = null;
@@ -25,16 +31,133 @@ class QueryRouteResolver
     public static function defaultConfig(): array
     {
         return [
-            'parameter' => 'route',
+            'parameter' => self::PARAMETER,
             'prefer_path_info' => true,
+            'canonicalize' => true,
             'path_aliases' => [],
             'prefix_rules' => [],
         ];
     }
 
+    public static function shouldCanonicalize(?string $package = null): bool
+    {
+        $config = self::config($package);
+
+        if (!($config['canonicalize'] ?? true)) {
+            return false;
+        }
+
+        return self::rewriteAppearsActive();
+    }
+
+    public static function rewriteAppearsActive(): bool
+    {
+        if (self::projectRewriteConfigured()) {
+            return true;
+        }
+
+        if (PHP_SAPI === 'cli') {
+            return false;
+        }
+
+        // PATH_INFO set by ?_pnx= is not Apache rewrite — only real front-controller routing counts.
+        if (self::wasApplied()) {
+            return false;
+        }
+
+        if (self::hasResolvedPathInfo()) {
+            return true;
+        }
+
+        if (!empty($_SERVER['REDIRECT_URL'])) {
+            return true;
+        }
+
+        if (isset($_SERVER['REDIRECT_STATUS']) && (int) $_SERVER['REDIRECT_STATUS'] === 200) {
+            return true;
+        }
+
+        $uri = (string) ($_SERVER['REQUEST_URI'] ?? '');
+        $script = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+
+        if (str_contains($uri, '/api/') && $script === 'index.php') {
+            return true;
+        }
+
+        return false;
+    }
+
+    public static function canonicalPathForRequest(Request $request, ?string $package = null): ?string
+    {
+        if (!self::shouldCanonicalize($package)) {
+            return null;
+        }
+
+        $parameter = self::parameter();
+        $rawRoute = $request->query->get($parameter);
+
+        if (!is_string($rawRoute) || trim($rawRoute) === '') {
+            return null;
+        }
+
+        $path = self::resolvePath($rawRoute, $package);
+        $target = $path === '/' ? '/' : $path;
+
+        $query = $request->query->all();
+        unset($query[$parameter]);
+
+        if ($query !== []) {
+            $target .= '?' . http_build_query($query);
+        }
+
+        return $target;
+    }
+
+    public static function canonicalUrlForRequest(Request $request, ?string $package = null): ?string
+    {
+        $target = self::canonicalPathForRequest($request, $package);
+
+        if ($target === null) {
+            return null;
+        }
+
+        $origin = rtrim($request->getSchemeAndHttpHost() . $request->getBasePath(), '/');
+        $path = parse_url($target, PHP_URL_PATH) ?: '/';
+        $query = parse_url($target, PHP_URL_QUERY);
+
+        $url = $origin . ($path === '/' ? '/' : $path);
+
+        if (is_string($query) && $query !== '') {
+            $url .= '?' . $query;
+        }
+
+        return $url;
+    }
+
+    public static function urlsEquivalent(string $current, string $canonical): bool
+    {
+        $currentParts = parse_url($current) ?: [];
+        $canonicalParts = parse_url($canonical) ?: [];
+
+        $currentPath = self::normalizeUrlPath((string) ($currentParts['path'] ?? '/'));
+        $canonicalPath = self::normalizeUrlPath((string) ($canonicalParts['path'] ?? '/'));
+
+        if ($currentPath !== $canonicalPath) {
+            return false;
+        }
+
+        parse_str((string) ($currentParts['query'] ?? ''), $currentQuery);
+        parse_str((string) ($canonicalParts['query'] ?? ''), $canonicalQuery);
+        unset($currentQuery[self::parameter()]);
+
+        return $currentQuery === $canonicalQuery
+            && ($currentParts['host'] ?? '') === ($canonicalParts['host'] ?? '')
+            && ($currentParts['scheme'] ?? '') === ($canonicalParts['scheme'] ?? '');
+    }
+
     public static function parameter(): string
     {
-        return self::config()['parameter'] ?? 'route';
+        return self::config()['parameter'] ?? self::PARAMETER;
     }
 
     public static function package(): ?string
@@ -118,10 +241,55 @@ class QueryRouteResolver
     public static function buildUrl(string $siteUrl, string $routePath, ?string $package = null): string
     {
         $siteUrl = rtrim($siteUrl, '/');
-        $path = self::normalize($routePath);
+        $path = self::resolvePath($routePath, $package);
+
+        if (self::rewriteAppearsActive()) {
+            return $siteUrl . ($path === '/' ? '' : $path);
+        }
+
         $parameter = self::parameter();
 
         return $siteUrl . '/?' . $parameter . '=' . rawurlencode($path);
+    }
+
+    private static function normalizeUrlPath(string $path): string
+    {
+        $path = str_replace('\\', '/', $path);
+
+        if ($path === '' || $path === '/') {
+            return '/';
+        }
+
+        return rtrim($path, '/');
+    }
+
+    private static function projectRewriteConfigured(): bool
+    {
+        $basePath = Loader::getBasePath();
+
+        if (!is_string($basePath) || $basePath === '') {
+            return false;
+        }
+
+        $file = rtrim(str_replace('\\', '/', $basePath), '/') . '/.htaccess';
+
+        if (!is_file($file)) {
+            return false;
+        }
+
+        $content = @file_get_contents($file);
+
+        if (!is_string($content) || trim($content) === '') {
+            return false;
+        }
+
+        return str_contains($content, 'RewriteEngine On')
+            && (str_contains($content, 'index.php') || str_contains($content, 'BEGIN pinoox'));
+    }
+
+    public static function usesQueryRouting(): bool
+    {
+        return !self::rewriteAppearsActive();
     }
 
     private static function applyPrefixRules(string $path, ?string $package = null): string

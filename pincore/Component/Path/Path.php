@@ -10,7 +10,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Path;
 
 use Pinoox\Component\Helpers\Str;
@@ -25,7 +24,7 @@ use Pinoox\Support\SystemConfig;
 class Path implements PathInterface
 {
     /**
-     * @var string[]
+     * @var array<string, string>
      */
     private array $paths = [];
 
@@ -33,68 +32,174 @@ class Path implements PathInterface
         private readonly string          $basePath,
         private readonly ParserInterface $parser,
         private readonly EngineInterface $appEngine,
-        private ?string                   $package
+        private ?string                   $package,
     )
     {
     }
 
+    /**
+     * Project root directory.
+     */
+    public function root(): string
+    {
+        return $this->get('~');
+    }
+
+    /**
+     * Apps directory or a specific app folder.
+     */
+    public function apps(?string $package = null): string
+    {
+        if ($package === null || $package === '') {
+            return $this->get('~apps');
+        }
+
+        return $this->app($package) ?? $this->get('~apps/' . $package);
+    }
+
+    /**
+     * System app directory (~system).
+     */
+    public function system(string $path = ''): string
+    {
+        return $this->get($path === '' ? '~system' : '~system/' . ltrim($path, '/'));
+    }
+
+    /**
+     * Framework core directory (~pincore).
+     */
+    public function pincore(string $path = ''): string
+    {
+        return $this->get($path === '' ? '~pincore' : '~pincore/' . ltrim($path, '/'));
+    }
 
     /**
      * Get path app
-     *
-     * @param string|null $packageName
-     * @return string|null
      */
     public function app(?string $packageName = null): ?string
     {
-        $packageName = !is_null($packageName) ? $packageName : $this->package;
+        $packageName = $packageName ?? $this->package;
+
         try {
             return $this->appEngine->path($packageName);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
         }
 
         return null;
     }
 
     /**
-     * Get path
+     * Resolve a reference to an absolute filesystem path.
      *
-     * @param string|ReferenceInterface $path
-     * @param string $package
-     * @return string
-     * @throws \Exception
+     * Supported forms:
+     * - ~, ~system, ~pincore, ~apps/{package}
+     * - {package}:relative/path
+     * - relative/path (active app)
      */
     public function get(string|ReferenceInterface $path = '', ?string $package = ''): string
     {
         $parser = $this->reference($path);
-        $package = empty($package) ? $parser->getPackageName() : $package;
-        $key = $package . ':' . $parser->getValue();
+        $package = $package !== '' && $package !== null ? $package : $parser->getPackageName();
+        $value = $parser->getValue() ?? '';
+        $key = ($package ?? '') . ':' . $value;
 
-        if (isset($this->paths[$key]))
+        if (isset($this->paths[$key])) {
             return $this->paths[$key];
-
-        $pathManager = $this->getManager($package);
-        $value = !empty($parser->getValue()) ? $parser->getValue() : '';
+        }
 
         if ($package === '~' && ($value === 'pincore' || str_starts_with($value, 'pincore/'))) {
-            $path = defined('PINOOX_CORE_PATH')
+            $corePath = defined('PINOOX_CORE_PATH')
                 ? rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/')
                 : rtrim($this->basePath, '/') . '/pincore';
             $suffix = ltrim(substr($value, strlen('pincore')), '/');
 
-            return $this->paths[$key] = $suffix !== '' ? $path . '/' . $suffix : $path;
+            return $this->paths[$key] = $suffix !== '' ? $corePath . '/' . $suffix : $corePath;
         }
 
         if ($package === '~' && ($systemPath = SystemApp::stripPathAlias($value)) !== null) {
             return $this->paths[$key] = SystemApp::path($systemPath);
         }
 
+        if ($package === '~' && ($value === 'apps' || str_starts_with($value, 'apps/'))) {
+            $appsRoot = SystemConfig::path('apps');
+            $suffix = $value === 'apps' ? '' : substr($value, strlen('apps/'));
+
+            return $this->paths[$key] = $suffix === '' ? $appsRoot : $appsRoot . '/' . $suffix;
+        }
+
+        if ($package === '~' && $value !== '') {
+            return $this->paths[$key] = SystemConfig::resolvePath('~/' . ltrim($value, '/'));
+        }
+
         if ($package === SystemApp::PACKAGE) {
             return $this->paths[$key] = $this->systemPath($value);
         }
 
-        $value = $pathManager->get($value);
-        return $this->paths[$key] = $value;
+        $pathManager = $this->getManager($package);
+        $relative = $value !== '' ? $value : '';
+
+        return $this->paths[$key] = $pathManager->get($relative);
+    }
+
+    /**
+     * Resolve a named reference, optionally remapping root (~) refs into a default package folder.
+     */
+    public function resolve(string|ReferenceInterface $fileName, string $defaultPackage = 'pincore'): string
+    {
+        $reference = $this->reference($fileName);
+        $pathMain = $reference->getPackageName() === '~'
+            ? $defaultPackage . '/' . $reference->getValue()
+            : $reference->getValue();
+
+        return $this->get(NameReference::create($reference->getPackageName(), $pathMain));
+    }
+
+    public function params(string|ReferenceInterface $path = '', ?string $package = ''): string
+    {
+        $basePath = $this->root();
+        $resolved = $this->get($path, $package);
+        $resolved = Str::firstDelete($resolved, $basePath);
+
+        return Str::firstDelete($resolved, '/');
+    }
+
+    public function set(string $key, string $value): static
+    {
+        $this->paths[$key] = $value;
+
+        return $this;
+    }
+
+    public function parse(string $name): ReferenceInterface
+    {
+        return $this->parser->parse($name);
+    }
+
+    public function prefixName(string|ReferenceInterface $path, string $prefix): string
+    {
+        return $this->prefixReference($path, $prefix)->get();
+    }
+
+    public function prefix(string|ReferenceInterface $path, string $prefix): string
+    {
+        return $this->get($this->prefixReference($path, $prefix));
+    }
+
+    public function prefixReference(string|ReferenceInterface $path, string $prefix): ReferenceInterface
+    {
+        $ref = $this->reference($path);
+        $prefixed = $prefix . '/' . $ref->getValue();
+
+        return NameReference::create($ref->getPackageName(), $prefixed);
+    }
+
+    public function reference(string|ReferenceInterface $path): ReferenceInterface
+    {
+        if (!$path instanceof ReferenceInterface) {
+            $path = $this->parser->parse($path);
+        }
+
+        return $path;
     }
 
     private function systemPath(string $value): string
@@ -104,7 +209,7 @@ class Path implements PathInterface
             SystemConfig::rawPath('app_lang', 'lang') => 'system_lang',
             SystemConfig::rawPath('app_migrations', 'database/migrations') => 'system_migrations',
             SystemConfig::rawPath('app_seed', 'database/seed') => 'system_seed',
-            SystemConfig::rawPath('app_patches', 'database/patches') => 'system_patches',
+            SystemConfig::rawPath('app_patches', 'patches') => 'system_patches',
             'Model' => 'system_models',
         ] as $folder => $pathKey) {
             $folder = trim($folder, '/');
@@ -121,27 +226,13 @@ class Path implements PathInterface
         return SystemApp::path($value);
     }
 
-    public function params(string|ReferenceInterface $path = '', ?string $package = ''): string
-    {
-        $basePath = $this->get('~');
-        $path = $this->get($path, $package);
-        $path = Str::firstDelete($path, $basePath);
-        return Str::firstDelete($path, '/');
-    }
-
-    public function set($key, $value): static
-    {
-        $this->paths[$key] = $value;
-        return $this;
-    }
-
     private function getManager(?string $packageName = null): PathManager
     {
-
         $pathManager = new PathManager();
-        if (empty($this->package )|| $packageName === '~') {
+
+        if (empty($this->package) || $packageName === '~') {
             $pathManager->setBasePath($this->basePath);
-        } else if ($packageName && $this->appEngine->exists($packageName)) {
+        } elseif ($packageName && $this->appEngine->exists($packageName)) {
             $pathManager->setBasePath($this->appEngine->path($packageName));
         } else {
             $pathManager->setBasePath($this->appEngine->path($this->package));
@@ -149,45 +240,4 @@ class Path implements PathInterface
 
         return $pathManager;
     }
-
-    public function parse(string $name): ReferenceInterface
-    {
-        return $this->parser->parse($name);
-    }
-
-    public function prefixName(string|ReferenceInterface $path, string $prefix): string
-    {
-        $reference = $this->prefixReference($path, $prefix);
-        return $reference->get();
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function prefix(string|ReferenceInterface $path, string $prefix): string
-    {
-        $reference = $this->prefixReference($path, $prefix);
-        return $this->get($reference);
-    }
-
-    public function prefixReference(string|ReferenceInterface $path, string $prefix): ReferenceInterface
-    {
-        $ref = $this->reference($path);
-
-        $path = $prefix . '/' . $ref->getValue();
-
-        return NameReference::create(
-            $ref->getPackageName(),
-            $path);
-    }
-
-    public function reference(string|ReferenceInterface $path): ReferenceInterface
-    {
-        if (!($path instanceof ReferenceInterface))
-            $path = $this->parser->parse($path);
-
-        return $path;
-    }
-
-
 }
