@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -129,6 +130,10 @@ class Session
      */
     public static function has()
     {
+        if (PHP_SESSION_ACTIVE !== session_status()) {
+            return false;
+        }
+
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
         return HelperArray::existsNestedKey($_SESSION, $parts);
     }
@@ -142,6 +147,7 @@ class Session
      */
     public static function set($key, $value = null)
     {
+        self::ensureStarted();
         $_SESSION[$key] = $value;
         if (self::$non_blocking)
             session_write_close();
@@ -154,6 +160,10 @@ class Session
      */
     public static function get()
     {
+        if (PHP_SESSION_ACTIVE !== session_status()) {
+            return func_num_args() === 0 ? [] : null;
+        }
+
         if (func_num_args() == 0)
             return self::getAll();
 
@@ -188,7 +198,6 @@ class Session
         $parts = explode('.', $keys);
         return $parts;
     }
-
 
     /**
      * Get Session of specific app
@@ -230,7 +239,6 @@ class Session
         if ($unitTime == 'day') $lifeTime = $lifeTime * 60 * 60 * 24;
         self::$lifeTime = $lifeTime;
     }
-
 
     public static function gcProbability($gc_probability)
     {
@@ -287,6 +295,10 @@ class Session
      */
     public static function remove()
     {
+        if (PHP_SESSION_ACTIVE !== session_status()) {
+            return;
+        }
+
         $parts = self::getKeyFromArgs(func_num_args(), func_get_args());
         HelperArray::removeNestedKey($_SESSION, $parts);
     }
@@ -294,8 +306,26 @@ class Session
     /**
      * Start Session
      */
+    public static function ensureStarted(): void
+    {
+        if (PHP_SESSION_ACTIVE === session_status()) {
+            return;
+        }
+
+        (new self())->start();
+    }
+
+    /**
+     * Start Session
+     */
     public function start()
     {
+        if (PHP_SESSION_ACTIVE === session_status()) {
+            self::$is_start = true;
+
+            return;
+        }
+
         // this makes it harder for an attacker to hijack the session ID
         ini_set('session.cookie_httponly', 1);
         // make sure that PHP only uses cookies for sessions and disallow session ID passing as a GET parameter

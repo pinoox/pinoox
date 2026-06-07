@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\File;
 
+use Pinoox\Component\Transport\TransportConfig;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Storage;
 
@@ -17,7 +18,7 @@ class FileConfig
             ?? Storage::getDefaultDriver();
 
         return [
-            'package' => (string) (App::get('transport.file') ?? App::package()),
+            'package' => TransportConfig::package('file'),
             'disk' => (string) $disk,
             'default_access' => (string) (App::get('filesystem.access') ?? App::get('filesystem.default_access') ?? 'public'),
             'thumb_width' => (int) (App::get('filesystem.thumb_width') ?? 512),
@@ -25,3 +26,4 @@ class FileConfig
         ];
     }
 }
+

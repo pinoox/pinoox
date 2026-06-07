@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\Access;
 
+use Pinoox\Component\Transport\TransportConfig;
 use Pinoox\Portal\App\App;
 
 class AccessConfig
@@ -24,9 +25,10 @@ class AccessConfig
 
         return [
             'enabled' => (bool) ($config['enabled'] ?? true),
-            'package' => (string) (App::get('transport.access') ?? App::get('transport.user') ?? App::package()),
+            'package' => TransportConfig::package('access'),
             'super_roles' => array_values($config['super_roles'] ?? ['admin', 'superadmin']),
             'groups' => is_array($config['groups'] ?? null) ? $config['groups'] : [],
         ];
     }
 }
+

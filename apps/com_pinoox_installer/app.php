@@ -16,7 +16,7 @@ return [
     'lang' => 'en',
     'minpin' => 2,
     'transport' => [
-        'user' => 'pincore',
+        'user' => 'platform',
     ],
     'flow' => [
         BootFlow::class,
@@ -36,3 +36,4 @@ return [
         'exclude' => ['node_modules'],
     ],
 ];
+

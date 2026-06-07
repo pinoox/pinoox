@@ -5,6 +5,7 @@ namespace Pinoox\Component\User;
 use Pinoox\Component\User\Event\UserAuthenticated;
 use Pinoox\Component\User\Event\UserLoggedOut;
 use Pinoox\Component\User\Event\UserLoginFailed;
+use Pinoox\Portal\App\App;
 use Pinoox\Portal\Lang;
 use Pinoox\System\Model\UserModel;
 
@@ -12,18 +13,31 @@ class Guard
 {
     private bool $booted = false;
 
+    private ?string $bootedPackage = null;
+
+    private ?string $bootedFingerprint = null;
+
     public function __construct(private readonly UserProvider $provider = new UserProvider())
     {
     }
 
     public function boot(): void
     {
-        if ($this->booted) {
+        $package = App::package();
+        AuthConfig::reset();
+        $config = AuthConfig::resolve(refresh: true);
+        $fingerprint = AuthConfig::fingerprint($config);
+
+        if ($this->booted
+            && $this->bootedPackage === $package
+            && $this->bootedFingerprint === $fingerprint) {
             return;
         }
 
-        AuthSession::applyConfig(AuthConfig::resolve());
+        AuthSession::applyConfig($config);
         $this->booted = true;
+        $this->bootedPackage = $package;
+        $this->bootedFingerprint = $fingerprint;
     }
 
     public function check(): bool
@@ -134,6 +148,16 @@ class Guard
     public function reset(): void
     {
         AuthSession::reset();
+        AuthConfig::reset();
+        $this->booted = false;
+        $this->bootedPackage = null;
+        $this->bootedFingerprint = null;
+    }
+
+    public function setRequestToken(?string $token): void
+    {
+        $this->boot();
+        AuthSession::setRequestToken($token);
     }
 
     public function get(?string $field = null): mixed
@@ -177,3 +201,4 @@ class Guard
         }
     }
 }
+

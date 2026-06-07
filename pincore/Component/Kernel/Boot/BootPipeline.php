@@ -7,6 +7,7 @@ use Pinoox\Component\AppEvent\AppBootstrap;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Container\ServiceContainerBootstrap;
 use Pinoox\Component\Kernel\SessionStarter;
+use Pinoox\Component\User\AuthConfig;
 use Pinoox\PinDoc\Api\AppApiServiceProvider;
 use Pinoox\PinDoc\GraphQL\GraphQLServiceProvider;
 use Pinoox\Portal\App\AppEngine;
@@ -171,6 +172,11 @@ class BootPipeline
 
     private function resolveSession(): void
     {
+        $authMode = strtolower((string) ($this->context->app->get('auth.mode') ?? ''));
+        if ($authMode === AuthConfig::MODE_SESSION) {
+            return;
+        }
+
         $sessionConf = $this->context->app->get('session');
         $startSession = $sessionConf === true || $sessionConf === 'start';
 
@@ -202,3 +208,4 @@ class BootPipeline
         return null;
     }
 }
+

@@ -20,3 +20,4 @@ class UserLoginFailed extends Event
     ) {
     }
 }
+

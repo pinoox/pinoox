@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -22,6 +23,7 @@ use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Engine\AppEngine;
 use Pinoox\Component\Store\Config\Data\DataManager;
+use Pinoox\Component\Transport\TransportContext;
 use Pinoox\Component\Translator\Translator;
 use Symfony\Component\HttpFoundation\InputBag;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
@@ -102,13 +104,20 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
 
         $mainLayer = new AppLayer($this->appLayer->getPath(), $this->appLayer->getPackageName());
 
+        $hostPackage = $this->appLayer->getPackageName();
+
         $this->setLayer(new AppLayer($path, $packageName));
         if (!is_callable($closure))
             throw new Exception('the value must be of function type');
 
-        $result = $closure();
+        TransportContext::enter($hostPackage);
 
-        $this->setLayer($mainLayer);
+        try {
+            $result = $closure();
+        } finally {
+            $this->setLayer($mainLayer);
+            TransportContext::leave();
+        }
 
         return $result;
     }

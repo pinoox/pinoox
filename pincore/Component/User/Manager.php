@@ -96,6 +96,11 @@ class Manager
         $this->guard->reset();
     }
 
+    public function setRequestToken(?string $token): void
+    {
+        $this->guard->setRequestToken($token);
+    }
+
     // ── Session helpers ─────────────────────────────────────────────────
 
     public function get(?string $field = null): mixed
@@ -424,3 +429,4 @@ class Manager
         ];
     }
 }
+

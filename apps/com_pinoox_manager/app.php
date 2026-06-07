@@ -17,9 +17,10 @@ return [
     'minpin' => 2,
     'lang' => 'fa',
     'transport' => [
-        'user' => 'pincore',
-        'file' => 'pincore',
-        'access' => 'pincore',
+        'user' => 'platform',
+        'token' => 'platform',
+        'file' => 'platform',
+        'access' => 'platform',
     ],
     'filesystem' => [
         'disk' => 'local',
@@ -60,3 +61,4 @@ return [
         'exclude' => ['node_modules', 'tests'],
     ],
 ];
+

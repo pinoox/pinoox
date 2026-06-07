@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
  * @method static int|null id()
  * @method static string|null token()
  * @method static void reset()
+ * @method static void setRequestToken(?string $token)
  * @method static mixed get(?string $field = null)
  * @method static UserModel|null record(?int $userId = null)
  * @method static mixed session(?string $field = null)
@@ -76,3 +77,4 @@ class Auth extends Portal
         return [];
     }
 }
+

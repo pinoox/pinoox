@@ -16,3 +16,4 @@ class UserLoggedOut extends Event
     {
     }
 }
+

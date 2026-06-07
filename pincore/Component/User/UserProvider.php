@@ -52,3 +52,4 @@ class UserProvider
         return $query->first();
     }
 }
+

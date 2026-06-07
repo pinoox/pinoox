@@ -16,22 +16,37 @@ use Pinoox\System\Model\UserModel;
  */
 class AuthSession
 {
+
     public const COOKIE = 'cookie';
+
     public const SESSION = 'session';
+
     public const JWT = 'jwt';
 
     public static ?string $login_key = null;
 
     private static ?string $msg = null;
+
     private static string $type = self::COOKIE;
+
     private static int $lifetime = 86400;
+
     private static int $rememberLifetime = 86400 * 365;
+
     private static ?array $token = null;
+
     private static string|false|null $token_key = false;
+
     private static ?array $user = null;
+
+    private static ?string $requestToken = null;
+
     private static bool $updateLifetime = true;
+
     private static bool $updateTokenKey = false;
+
     private static string $user_session_key = 'pinoox_user';
+
     private static string $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
     /**
@@ -47,13 +62,17 @@ class AuthSession
      */
     public static function applyConfig(array $config): void
     {
-        self::type(match ($config['mode']) {
+        $nextType = match ($config['mode']) {
             AuthConfig::MODE_JWT => self::JWT,
             AuthConfig::MODE_SESSION => self::SESSION,
             default => self::COOKIE,
-        });
+        };
 
-        self::setUserSessionKey($config['key']);
+        if ($nextType !== self::$type) {
+            self::type($nextType);
+        }
+
+        self::setUserSessionKey((string) $config['key']);
         self::lifeTime($config['lifetime'], $config['lifetime_unit']);
 
         if (!empty($config['remember_lifetime'])) {
@@ -94,6 +113,15 @@ class AuthSession
         self::$token = null;
         self::$user = null;
         self::$token_key = false;
+        self::$requestToken = null;
+    }
+
+    public static function setRequestToken(?string $token): void
+    {
+        self::$requestToken = ($token !== null && $token !== '') ? $token : null;
+        self::$token_key = false;
+        self::$token = null;
+        self::$user = null;
     }
 
     public static function isLoggedIn(): bool
@@ -126,7 +154,15 @@ class AuthSession
         self::$token_key = match (self::$type) {
             self::COOKIE => Cookie::get(self::$user_session_key),
             self::JWT => self::authToken(),
-            self::SESSION => Session::get(self::$user_session_key),
+            self::SESSION => (function () {
+                if (PHP_SESSION_ACTIVE !== session_status()) {
+                    return false;
+                }
+
+                $token = Session::get(self::$user_session_key);
+
+                return !empty($token) ? $token : false;
+            })(),
             default => false,
         };
 
@@ -136,7 +172,7 @@ class AuthSession
     public static function authToken(?string $token = null): string|false
     {
         if ($token === null) {
-            $token = self::authorizationHeader();
+            $token = self::resolveBearerToken();
             if (empty($token)) {
                 return false;
             }
@@ -158,7 +194,14 @@ class AuthSession
 
     public static function setUserSessionKey(string $key): void
     {
+        if (self::$user_session_key === $key) {
+            return;
+        }
+
         self::$user_session_key = $key;
+        self::$token_key = false;
+        self::$token = null;
+        self::$user = null;
     }
 
     public static function setToken(UserModel $user, bool $newKey = false, bool $remember = false): void
@@ -187,10 +230,15 @@ class AuthSession
                 $token_key,
                 $remember ? self::$rememberLifetime : 999999999,
             ),
-            self::JWT => (function () use ($token_key) {
+            self::JWT => (function () use ($token_key, $remember) {
                 self::$login_key = JWT::encode([
                     self::$user_session_key => $token_key,
                 ], self::$secret_key, 'HS256');
+                Cookie::set(
+                    self::$user_session_key,
+                    self::$login_key,
+                    $remember ? self::$rememberLifetime : self::$lifetime,
+                );
             })(),
             self::SESSION => (function () use ($token_key) {
                 Session::lifeTime($remember ? self::$rememberLifetime : 999999999);
@@ -271,7 +319,7 @@ class AuthSession
         Token::delete($token_key);
         if (!TokenModel::where('token_key', $token_key)->first()) {
             match (self::$type) {
-                self::COOKIE => Cookie::destroy(self::$user_session_key),
+                self::COOKIE, self::JWT => Cookie::destroy(self::$user_session_key),
                 self::SESSION => (function () {
                     Session::remove(self::$user_session_key);
                     if (Session::has()) {
@@ -316,6 +364,27 @@ class AuthSession
         self::$token = null;
     }
 
+    private static function resolveBearerToken(): ?string
+    {
+        $header = self::authorizationHeader();
+        if (!empty($header)) {
+            return $header;
+        }
+
+        if (!empty(self::$requestToken)) {
+            return self::$requestToken;
+        }
+
+        if (self::$type === self::JWT) {
+            $cookie = Cookie::get(self::$user_session_key);
+            if (!empty($cookie)) {
+                return $cookie;
+            }
+        }
+
+        return null;
+    }
+
     private static function authorizationHeader(): ?string
     {
         if (function_exists('apache_request_headers')) {
@@ -348,3 +417,4 @@ class AuthSession
         };
     }
 }
+

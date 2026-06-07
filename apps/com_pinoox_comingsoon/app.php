@@ -15,14 +15,11 @@ return [
     'lang' => 'fa',
     'minpin' => 2,
     'transport' => [
-        'user' => 'pincore',
-        'token' => 'pincore',
-    ],
-    'auth' => [
-        'mode' => 'session',
-        'key' => 'comingsoon_pinoox',
-        'lifetime' => 30,
-        'lifetime_unit' => 'day',
+        'user' => 'platform',
+        'auth' => 'platform',
+        'token' => 'platform',
+        'file' => 'platform',
+        'access' => 'platform',
     ],
     'router' => [
         'routes' => [

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -15,6 +16,7 @@ namespace App\com_pinoox_manager\Controller;
 use App\com_pinoox_manager\Component\AppHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
+use Pinoox\Component\Transport\TransportConfig;
 use Pinoox\Portal\Auth;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
@@ -25,13 +27,26 @@ class AppViewController
 {
     public function run(Request $request, string $packageName, string $subPath = '')
     {
-        if (!Auth::check())
-            return redirect(url('login'));
+        Auth::boot();
 
-        if (!$this->canPreview($packageName))
-            return redirect(url('login'));
+        $managerToken = $request->queryOne('__manager_token');
+        if (is_string($managerToken) && $managerToken !== '') {
+            Auth::setRequestToken($managerToken);
+        }
 
-        Auth::reset();
+        if (!Auth::check()) {
+            return redirect(url('login'));
+        }
+
+        if (!$this->canPreview($packageName)) {
+            return redirect(url('/'));
+        }
+
+        $hostPackage = App::package();
+
+        if (!TransportConfig::sharesAuthWith($packageName, $hostPackage)) {
+            Auth::reset();
+        }
 
         $layerPath = App::pathRoute() .'/app/' . $packageName;
 
@@ -59,9 +74,13 @@ class AppViewController
         if (!$app || empty($app['enable']))
             return false;
 
+        if (($app['open'] ?? '') === 'app-view')
+            return true;
+
         if (!empty($app['sys-app']) || !empty($app['sys_app']))
             return false;
 
         return true;
     }
 }
+

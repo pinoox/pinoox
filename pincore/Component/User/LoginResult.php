@@ -25,3 +25,4 @@ readonly class LoginResult
         return new self(false, $reason, $message);
     }
 }
+

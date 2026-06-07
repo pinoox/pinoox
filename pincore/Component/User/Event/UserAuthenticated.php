@@ -16,3 +16,4 @@ class UserAuthenticated extends Event
     {
     }
 }
+
