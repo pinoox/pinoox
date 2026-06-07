@@ -221,3 +221,4 @@ it('builds full operation url for examples', function () {
 
     expect($url)->toBe('https://example.com/pinoox/api/v1/ping');
 });
+

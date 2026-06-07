@@ -78,3 +78,4 @@ function expectPortalContract(string $class): void
         ->and($source)->toContain('extends Portal')
         ->and($source)->toContain('function __name');
 }
+

@@ -52,3 +52,4 @@ function deletePortalFileSystemTestDirectory(string $dir): void
 
     rmdir($dir);
 }
+

@@ -1,6 +1,8 @@
 <?php
 
+use Pinoox\Component\Package\AppComposerVendor;
 use Pinoox\Component\Package\Pinx\PinxBuilder;
+use Pinoox\Component\Package\Pinx\PinxFileSelector;
 use Pinoox\Component\Package\Pinx\PinxIdentity;
 use Pinoox\Component\Package\Pinx\PinxInstaller;
 use Pinoox\Component\Package\Pinx\PinxManifest;
@@ -154,6 +156,34 @@ it('evaluates minpin against pinoox version config', function () {
         ->and(PinxVersion::satisfiesMinpin(0))->toBeTrue()
         ->and(PinxVersion::satisfiesMinpin((int) $version['code']))->toBeTrue()
         ->and(PinxVersion::satisfiesMinpin(((int) $version['code']) + 1000))->toBeFalse();
+});
+
+it('builds composer install command without dev dependencies', function () {
+    $command = AppComposerVendor::buildInstallCommand(pinxSystemAppDir('com_test_pinx'), dirname(__DIR__, 2));
+
+    expect($command)->toContain('install')
+        ->and($command)->toContain('--no-dev')
+        ->and($command)->toContain('--optimize-autoloader');
+});
+
+it('includes gitignored vendor directory in pinx payload when always included', function () {
+    pinxSystemWriteTestApp('com_test_pinx', [
+        'build' => ['gitignore' => true, 'composer' => false, 'exclude' => ['export']],
+    ]);
+
+    $dir = pinxSystemAppDir('com_test_pinx');
+    file_put_contents($dir . '/.gitignore', "/vendor\n");
+    mkdir($dir . '/vendor/nested', 0777, true);
+    file_put_contents($dir . '/vendor/nested/lib.txt', 'vendor-lib');
+
+    $files = (new PinxFileSelector())->payloadFiles($dir, [
+        'gitignore' => true,
+        'exclude' => ['export'],
+        'always_include' => ['vendor'],
+    ]);
+
+    expect($files)->toHaveKey('marker.txt')
+        ->and($files)->toHaveKey('vendor/nested/lib.txt');
 });
 
 it('builds a signed pinx package when a signing key exists', function () {
@@ -378,3 +408,4 @@ function pinxSystemTempFile(string $name): string
 
     return $dir . '/' . $name;
 }
+

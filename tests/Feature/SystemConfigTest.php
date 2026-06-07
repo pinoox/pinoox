@@ -145,3 +145,4 @@ it('loads cache session and security config from env aliases', function () {
         ->and(SystemConfig::get('session', 'files'))->toBe('~storage/custom-sessions')
         ->and(SystemConfig::get('security', 'hashing.bcrypt.rounds'))->toBe(10);
 });
+

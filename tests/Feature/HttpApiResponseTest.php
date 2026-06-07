@@ -75,3 +75,4 @@ it('stores validation details on error payloads', function () {
 
     expect($payload['error']['details'])->toBe(['email' => ['required']]);
 });
+

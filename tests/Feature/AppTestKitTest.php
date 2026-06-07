@@ -48,3 +48,4 @@ it('exposes global app test helpers', function () {
         ->and(function_exists('inApp'))->toBeTrue()
         ->and(function_exists('fakeApp'))->toBeTrue();
 });
+

@@ -88,3 +88,4 @@ it('returns auth flow errors in the standard envelope', function () {
         ],
     ]);
 });
+

@@ -87,7 +87,7 @@ it('detects absolute theme asset paths for public url conversion', function () {
 
     $stack = ThemeStack::resolve('com_test_theme_child');
     $view = new \Pinoox\Component\Template\View($stack['paths'], '', []);
-    $filesystemPath = str_replace('\\', '/', $view->path()->assets('logo.png'));
+    $filesystemPath = str_replace('\\', '/', $view->assets('logo.png', true));
     $basePath = rtrim(str_replace('\\', '/', dirname(__DIR__, 2)), '/');
 
     expect($view->isFilesystemPath($filesystemPath))->toBeTrue()
@@ -96,6 +96,51 @@ it('detects absolute theme asset paths for public url conversion', function () {
         ->toBe('apps/com_test_theme_child/theme/brand/logo.png');
 
     @unlink($logoPath);
+});
+
+it('builds public theme asset urls without leaking filesystem paths', function () {
+    scaffoldThemeInheritanceApps();
+
+    $logoPath = dirname(__DIR__, 2) . '/apps/com_test_theme_child/theme/brand/logo.png';
+    file_put_contents($logoPath, 'png');
+
+    $stack = ThemeStack::resolve('com_test_theme_child');
+    $view = new \Pinoox\Component\Template\View($stack['paths'], '', []);
+
+    expect(\Pinoox\Component\Template\Theme\ThemeAssets::publicSegment(
+        new \Pinoox\Component\Template\Theme\ThemeReference('com_test_theme_child', 'brand'),
+        'logo.png',
+        'theme',
+    ))->toBe('theme/brand/logo.png');
+
+    @unlink($logoPath);
+});
+
+it('resolves assets from another theme folder in the same app', function () {
+    scaffoldThemeInheritanceApps();
+
+    $parentLogo = dirname(__DIR__, 2) . '/apps/com_test_theme_child/theme/default/parent-logo.png';
+    file_put_contents($parentLogo, 'png');
+
+    ['file' => $file, 'theme' => $theme] = \Pinoox\Component\Template\Theme\ThemeAssets::parseThemedLink('@default/parent-logo.png');
+
+    expect($theme)->toBe('default')
+        ->and($file)->toBe('parent-logo.png')
+        ->and(\Pinoox\Component\Template\Theme\ThemeAssets::publicSegment(
+            new ThemeReference('com_test_theme_child', 'default'),
+            'parent-logo.png',
+            'theme',
+        ))->toBe('theme/default/parent-logo.png');
+
+    $filesystem = \Pinoox\Component\Template\Theme\ThemeAssets::filesystem(
+        'parent-logo.png',
+        'default',
+        'com_test_theme_child',
+    );
+
+    expect(str_replace('\\', '/', $filesystem))->toContain('theme/default/parent-logo.png');
+
+    @unlink($parentLogo);
 });
 
 it('detects circular theme inheritance', function () {
@@ -175,3 +220,4 @@ function deleteThemeInheritanceDirectory(string $dir): void
 
     rmdir($dir);
 }
+

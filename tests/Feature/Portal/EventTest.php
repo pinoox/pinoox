@@ -27,3 +27,4 @@ it('keeps callback portal methods chainable and dispatches events', function () 
     expect($result)->toBeInstanceOf(Event::class)
         ->and($handled)->toBeTrue();
 });
+

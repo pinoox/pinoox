@@ -30,3 +30,4 @@ it('rejects database test without database name', function () {
         'password' => 'root',
     ]))->toBeFalse();
 });
+

@@ -41,3 +41,4 @@ it('reports boot state via portal', function () {
 it('exposes api manifest collector storage', function () {
     expect(method_exists(AppBootstrap::class, 'apiManifests'))->toBeTrue();
 });
+

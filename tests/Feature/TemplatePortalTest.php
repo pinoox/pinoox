@@ -53,3 +53,4 @@ it('renders vite_tags helper without throwing', function () {
     @rmdir($themePath . '/dist');
     @rmdir($themePath);
 });
+

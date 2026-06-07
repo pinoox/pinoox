@@ -30,6 +30,7 @@ it('delegates engine methods through DelegatingEngine', function () {
 class AppHmvcTestEngine implements EngineInterface
 {
     /** @param array<string, bool> $enabled */
+
     public function __construct(
         private array $enabled = [],
         private string $basePath = '/apps',
@@ -86,3 +87,4 @@ class AppHmvcTestEngine implements EngineInterface
         return $path === '' ? $base : $base . '/' . trim($path, '/');
     }
 }
+

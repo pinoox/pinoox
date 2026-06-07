@@ -174,3 +174,4 @@ function scheduleSystemMarkerFile(): string
 {
     return dirname(__DIR__) . '/Fixtures/schedule-marker.txt';
 }
+

@@ -38,8 +38,70 @@ it('builds scoped urls from an auto-detected request context', function () {
         ->and($url->to('profile'))->toBe('http://localhost/manager/profile')
         ->and($url->to('api/v1/users', Url::SCOPE_RELATIVE))->toBe('/api/v1/users')
         ->and($url->to('uploads/file.txt', Url::SCOPE_SITE))->toBe('http://localhost/uploads/file.txt')
-        ->and($url->asset('resources/avatar.png'))->toBe('http://localhost/manager/resources/avatar.png')
+        ->and($url->asset('resources/avatar.png'))->toBe('http://localhost/apps/com_pinoox_manager/resources/avatar.png')
         ->and($url->isSecure())->toBeFalse();
+});
+
+it('resolves structured url context parts for root and subfolder installs', function () {
+    $rootRequest = pathUrlTestRequest('http://domain.com/manager/user/');
+    $rootUrl = pathUrlTestMakeUrl($rootRequest, [
+        '/manager' => 'com_pinoox_manager',
+    ], 'com_pinoox_manager', '/manager');
+
+    expect($rootUrl->accessor()->toArray())->toBe([
+        'domain' => 'domain.com',
+        'site' => 'http://domain.com',
+        'app' => 'http://domain.com/manager',
+        'path' => '/',
+        'appPath' => '/manager',
+        'routeSegment' => 'manager',
+        'api' => 'http://domain.com/manager/api/v1/',
+        'apiPath' => '/manager/api/v1/',
+        'resource' => 'http://domain.com/apps/com_pinoox_manager',
+        'resourcePath' => '/apps/com_pinoox_manager',
+        'theme' => 'http://domain.com/apps/com_pinoox_manager/theme/spark',
+        'themePath' => '/apps/com_pinoox_manager/theme/spark',
+        'resources' => 'http://domain.com/apps/com_pinoox_manager/resources/',
+        'avatar' => 'http://domain.com/apps/com_pinoox_manager/resources/avatar.png',
+        'appIcon' => 'http://domain.com/apps/com_pinoox_manager/resources/default.png',
+    ])
+        ->and($rootUrl->sitePath())->toBe('/')
+        ->and($rootUrl->appPath())->toBe('/manager')
+        ->and($rootUrl->asset('resources/avatar.png'))->toBe('http://domain.com/apps/com_pinoox_manager/resources/avatar.png')
+        ->and($rootUrl->asset('apps/com_pinoox_manager/resources/avatar.png'))->toBe('http://domain.com/apps/com_pinoox_manager/resources/avatar.png')
+        ->and($rootUrl->accessor()->resource('resources/'))->toBe('http://domain.com/apps/com_pinoox_manager/resources/')
+        ->and($rootUrl->accessor()->resourcePath('resources/'))->toBe('/apps/com_pinoox_manager/resources/')
+        ->and($rootUrl->accessor()->api('auth/login'))->toBe('http://domain.com/manager/api/v1/auth/login')
+        ->and($rootUrl->to('', Url::SCOPE_APP_PATH))->toBe('/manager');
+
+    $subRequest = pathUrlTestRequest('http://domain.com/pinoox/manager/user/');
+    $subRequest->server->set('SCRIPT_NAME', '/pinoox/index.php');
+    $subRequest->server->set('SCRIPT_FILENAME', '/var/www/pinoox/index.php');
+
+    $subUrl = pathUrlTestMakeUrl($subRequest, [
+        '/manager' => 'com_pinoox_manager',
+    ], 'com_pinoox_manager', '/manager');
+
+    expect($subUrl->accessor()->toArray())->toBe([
+        'domain' => 'domain.com',
+        'site' => 'http://domain.com/pinoox',
+        'app' => 'http://domain.com/pinoox/manager',
+        'path' => '/pinoox',
+        'appPath' => '/pinoox/manager',
+        'routeSegment' => 'manager',
+        'api' => 'http://domain.com/pinoox/manager/api/v1/',
+        'apiPath' => '/pinoox/manager/api/v1/',
+        'resource' => 'http://domain.com/pinoox/apps/com_pinoox_manager',
+        'resourcePath' => '/pinoox/apps/com_pinoox_manager',
+        'theme' => 'http://domain.com/pinoox/apps/com_pinoox_manager/theme/spark',
+        'themePath' => '/pinoox/apps/com_pinoox_manager/theme/spark',
+        'resources' => 'http://domain.com/pinoox/apps/com_pinoox_manager/resources/',
+        'avatar' => 'http://domain.com/pinoox/apps/com_pinoox_manager/resources/avatar.png',
+        'appIcon' => 'http://domain.com/pinoox/apps/com_pinoox_manager/resources/default.png',
+    ])
+        ->and($subUrl->to('', Url::SCOPE_APP_PATH))->toBe('/pinoox/manager')
+        ->and($subUrl->accessor()->resource('resources/avatar.png'))
+        ->toBe('http://domain.com/pinoox/apps/com_pinoox_manager/resources/avatar.png');
 });
 
 it('resolves app urls from the router map', function () {
@@ -85,9 +147,62 @@ it('maps filesystem references under apps to public app urls', function () {
     $reference = '~apps/com_pinoox_manager/resources/avatar.png';
 
     expect($url->reference($reference))
-        ->toBe('http://localhost/manager/resources/avatar.png')
+        ->toBe('http://localhost/apps/com_pinoox_manager/resources/avatar.png')
         ->and($url->fromPath($basePath . '/apps/com_pinoox_manager/icon.png'))
         ->toBe('http://localhost/apps/com_pinoox_manager/icon.png');
+});
+
+it('builds theme asset urls through theme accessor', function () {
+    $request = pathUrlTestRequest('http://localhost/pinoox/manager/dashboard');
+    $request->server->set('SCRIPT_NAME', '/pinoox/index.php');
+
+    $url = pathUrlTestMakeUrl($request, [
+        '/manager' => 'com_pinoox_manager',
+    ], 'com_pinoox_manager', '/manager');
+
+    $expected = 'http://localhost/pinoox/apps/com_pinoox_manager/theme/spark/index.html';
+    $base = 'http://localhost/pinoox/apps/com_pinoox_manager/theme/spark';
+    $theme = $url->themeAccessor('spark');
+
+    expect($theme->assets('index.html'))->toBe($expected)
+        ->and($url->themeAccessor()->assets('index.html'))->toBe($expected)
+        ->and($theme->name())->toBe('spark')
+        ->and($theme->getName())->toBe('spark')
+        ->and($theme->url())->toBe($base)
+        ->and($theme->path())->toBe('/pinoox/apps/com_pinoox_manager/theme/spark')
+        ->and($theme->config('api'))->toBeTrue()
+        ->and($theme->title('en'))->toBe('Spark')
+        ->and($theme->lang('description', 'en'))->not->toBe('')
+        ->and($theme->root())->toContain('theme/spark')
+        ->and(theme('spark', 'com_pinoox_manager'))->toBeInstanceOf(\Pinoox\Component\Path\ThemeAccessor::class);
+});
+
+it('reads app manifest through app accessor', function () {
+    $request = pathUrlTestRequest('http://localhost/pinoox/manager/dashboard');
+    $request->server->set('SCRIPT_NAME', '/pinoox/index.php');
+
+    $url = pathUrlTestMakeUrl($request, [
+        '/manager' => 'com_pinoox_manager',
+    ], 'com_pinoox_manager', '/manager');
+
+    $manifest = $url->appAccessor('com_pinoox_manager');
+
+    expect($manifest->package())->toBe('com_pinoox_manager')
+        ->and($manifest->name())->toBe('manager')
+        ->and($manifest->config('lang'))->toBe('fa')
+        ->and($manifest->themeName())->toBe('spark')
+        ->and($manifest->url())->toBe('http://localhost/pinoox/manager')
+        ->and($manifest->path())->toBe('/pinoox/manager')
+        ->and($url->accessor()->app())->toBe($manifest->url())
+        ->and($url->accessor()->appPath())->toBe($manifest->path())
+        ->and($manifest->root())->toContain('apps/com_pinoox_manager')
+        ->and($manifest->resource('resources/avatar.png'))
+        ->toBe('http://localhost/pinoox/apps/com_pinoox_manager/resources/avatar.png')
+        ->and($manifest->theme()->name())->toBe('spark')
+        ->and($manifest->versionName())->toBe('2.2.0')
+        ->and(app('com_pinoox_manager')->name())->toBe('manager')
+        ->and(app('com_pinoox_manager')->config('lang'))->toBe('fa')
+        ->and(app('com_pinoox_manager'))->toBeInstanceOf(\Pinoox\Component\Path\AppAccessor::class);
 });
 
 function pathUrlTestRequest(string $uri): Request
@@ -218,3 +333,4 @@ class PathUrlTestEngine implements EngineInterface
         return $path === '' ? $base : $base . '/' . ltrim($path, '/');
     }
 }
+

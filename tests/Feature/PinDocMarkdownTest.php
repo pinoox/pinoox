@@ -72,3 +72,4 @@ PHP,
         ->toContain('<h2>Custom docs</h2>')
         ->toContain('<strong>content</strong>');
 });
+

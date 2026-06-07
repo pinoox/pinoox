@@ -114,3 +114,4 @@ it('documents redis cache store in cache config', function () {
     expect($config['stores'])->toHaveKey('redis')
         ->and($config['stores']['redis']['driver'])->toBe('redis');
 });
+

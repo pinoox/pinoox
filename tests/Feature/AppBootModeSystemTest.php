@@ -289,3 +289,4 @@ class AppBootModeRouterConfig implements \Pinoox\Component\Store\Config\ConfigIn
         return $this;
     }
 }
+

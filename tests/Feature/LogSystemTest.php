@@ -35,3 +35,4 @@ it('creates scoped channel loggers', function () {
 
     expect($name)->toContain('migration');
 });
+

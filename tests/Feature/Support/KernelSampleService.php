@@ -14,3 +14,4 @@ class KernelSampleService implements KernelSampleContract
         return 'kernel-sample';
     }
 }
+

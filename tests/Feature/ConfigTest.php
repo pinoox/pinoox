@@ -42,3 +42,4 @@ it('keeps legacy Pinoox model aliases for system models', function () {
         ->and(is_a(\Pinoox\Model\UserModel::class, \Pinoox\System\Model\UserModel::class, true))
         ->toBeTrue();
 });
+

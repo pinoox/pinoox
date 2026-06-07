@@ -198,3 +198,4 @@ function actionSystemRouter(string $package = 'com_test_actions'): RouterCompone
 
     return new RouterComponent(new RouteName(), $app);
 }
+

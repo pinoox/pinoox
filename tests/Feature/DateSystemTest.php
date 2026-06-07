@@ -44,3 +44,4 @@ it('exposes jformat helper', function () {
     expect(jformat('2024-01-02', 'Y/m/d'))->toBe('1402/10/12')
         ->and(format_jalali('2024-01-02', 'Y/m/d'))->toBe('1402/10/12');
 });
+

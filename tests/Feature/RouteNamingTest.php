@@ -15,3 +15,4 @@ it('resolves full route names for cross-app references', function () {
 it('exposes route_name helper', function () {
     expect(\Pinoox\Router\route_name('home', 'com_pinoox_manager'))->toBe('manager.home');
 });
+

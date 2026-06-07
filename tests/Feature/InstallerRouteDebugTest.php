@@ -54,3 +54,4 @@ it('matches installer api ping under subdirectory', function () {
         expect($match['_route'])->toEndWith('.ping');
     });
 });
+

@@ -64,3 +64,4 @@ class PortalContextResolverTest extends TestCase
         @unlink($userFile);
     }
 }
+

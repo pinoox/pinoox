@@ -267,3 +267,19 @@ it('provisions enabled apps in dependency order during project setup', function 
         ->and(array_search('com_test_dep_host', $provisioned, true))
         ->toBeLessThan(array_search('com_test_dep_client', $provisioned, true));
 });
+
+it('rejects bulk provision when a required dependency app is missing', function () {
+    appDepWriteTestApp('com_test_dep_client', [
+        'enable' => true,
+        'depends' => ['com_test_dep_missing'],
+    ]);
+    AppEngine::__rebuild();
+
+    expect(fn () => (new AppProvisioner(AppEngine::___()))->provisionInstalledApps([
+        'only_enabled' => true,
+        'skip_migrate' => true,
+        'skip_patch' => true,
+        'skip_cache' => true,
+    ]))->toThrow(\Pinoox\Component\Kernel\Exception::class, 'com_test_dep_missing');
+});
+

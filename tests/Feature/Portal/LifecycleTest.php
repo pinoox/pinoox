@@ -20,6 +20,7 @@ it('registers and boots a portal once through the lifecycle', function () {
 class TestLifecyclePortal extends Portal
 {
     public static int $registered = 0;
+
     public static int $booted = 0;
 
     public static function resetLifecycle(): void
@@ -44,3 +45,4 @@ class TestLifecyclePortal extends Portal
         return 'test.lifecycle.portal';
     }
 }
+

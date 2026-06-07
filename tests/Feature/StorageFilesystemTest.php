@@ -99,3 +99,4 @@ function deleteStorageFilesystemTestDirectory(string $dir): void
 
     rmdir($dir);
 }
+

@@ -130,3 +130,4 @@ function deleteAppRegistryTestDirectory(string $dir): void
 
     rmdir($dir);
 }
+

@@ -197,3 +197,4 @@ function deletePinkerTestDirectory(string $dir): void
 
     rmdir($dir);
 }
+

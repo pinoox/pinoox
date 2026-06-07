@@ -29,3 +29,4 @@ function apiSystemDeleteDirectory(string $dir): void
 
     rmdir($dir);
 }
+

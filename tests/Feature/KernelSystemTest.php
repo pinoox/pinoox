@@ -77,3 +77,4 @@ it('hydrates container bindings from boot cache payload shape', function () {
 
     expect(AppServiceContainer::export('com_test_cache'))->toBe($payload);
 });
+

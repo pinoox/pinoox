@@ -18,3 +18,4 @@ it('resolves the date manager from the portal', function () {
     expect(Date::___())->toBeInstanceOf(DateManager::class)
         ->and(Date::parse('2024-01-02')->format('Y-m-d'))->toBe('2024-01-02');
 });
+

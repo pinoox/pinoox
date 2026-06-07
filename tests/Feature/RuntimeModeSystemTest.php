@@ -158,3 +158,4 @@ function deleteRuntimeModeDirectory(string $dir): void
 
     rmdir($dir);
 }
+

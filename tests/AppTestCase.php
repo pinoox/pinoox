@@ -22,3 +22,4 @@ abstract class AppTestCase extends TestCase
         }
     }
 }
+

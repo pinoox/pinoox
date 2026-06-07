@@ -157,3 +157,4 @@ function componentCatalogNormalizePath(string|false $path): string
 
     return str_replace('\\', '/', $realPath !== false ? $realPath : $path);
 }
+

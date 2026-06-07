@@ -56,3 +56,4 @@ class ExceptionHintResolverTest extends TestCase
         $this->assertStringContainsString('/api/setup', $hints[0]['summary']);
     }
 }
+

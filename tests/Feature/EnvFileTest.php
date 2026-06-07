@@ -75,3 +75,4 @@ function envFileTestPath(): string
 {
     return str_replace('\\', '/', dirname(__DIR__, 2) . '/tests/Fixtures/env_file/.env');
 }
+

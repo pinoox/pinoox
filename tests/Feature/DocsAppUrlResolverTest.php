@@ -35,3 +35,4 @@ it('builds operation url from document api base', function () {
 
     expect($url)->toBe('https://example.com/api/v1/ping');
 });
+

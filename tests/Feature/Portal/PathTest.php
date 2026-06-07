@@ -31,3 +31,4 @@ it('resolves named references through resolve()', function () {
     expect(Path::resolve('~config/app/source.config.php'))
         ->toBe($basePath . '/pincore/config/app/source.config.php');
 });
+

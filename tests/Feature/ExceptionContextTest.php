@@ -26,3 +26,4 @@ class ExceptionContextTest extends TestCase
         $this->assertSame('2.0 #7', $version['label']);
     }
 }
+

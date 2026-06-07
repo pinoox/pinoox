@@ -57,3 +57,4 @@ it('uses guard guest and check helpers', function () {
     expect($guard->guest())->toBeTrue()
         ->and($guard->check())->toBeFalse();
 });
+

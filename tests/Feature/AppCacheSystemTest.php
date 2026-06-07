@@ -101,3 +101,4 @@ function writeAppCacheTestApp(string $package, array $config): void
         ...$config,
     ], true) . ";\n");
 }
+

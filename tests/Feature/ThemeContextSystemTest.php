@@ -164,3 +164,4 @@ function themeContextDeleteDirectory(string $dir): void
 
     rmdir($dir);
 }
+

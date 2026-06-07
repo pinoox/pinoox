@@ -52,3 +52,4 @@ it('is listed in pinoox command registry', function () {
 
     expect($application->has('serve'))->toBeTrue();
 });
+

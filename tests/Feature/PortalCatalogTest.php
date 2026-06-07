@@ -131,3 +131,4 @@ function portalCatalogExpectedClassFromFile(string $file): string
 
     return 'Pinoox\\' . str_replace('/', '\\', $relativePath);
 }
+

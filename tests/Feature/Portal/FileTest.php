@@ -43,3 +43,4 @@ it('parses max size units on upload builder', function () {
 
     expect($builder)->toBeInstanceOf(UploadBuilder::class);
 });
+

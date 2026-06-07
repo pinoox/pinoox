@@ -55,3 +55,4 @@ class TraceFrameClassifierTest extends TestCase
         $this->assertStringContainsString('trace-from-pincore', TraceFrameClassifier::lineClasses($traces[0], $origin, 0, 'C:/pinoox'));
     }
 }
+

@@ -98,3 +98,4 @@ test('ViteHelper reads production manifest chunks', function () {
     @rmdir($themePath . '/dist');
     @rmdir($themePath);
 });
+

@@ -1,7 +1,6 @@
 <?php
 
 use App\com_pinoox_installer\Component\DatabaseCredentialsSync;
-use Pinoox\Component\Helpers\EnvFile;
 use Pinoox\Component\Runtime\RuntimeMode;
 
 afterEach(function () {
@@ -51,26 +50,6 @@ it('maps installer database config to production connection profile', function (
         ->and($env['DB_HOST'])->toBe('db.hosting.local');
 });
 
-it('writes env file only for development or when env already exists', function () {
-    $dir = str_replace('\\', '/', dirname(__DIR__, 2) . '/tests/Fixtures/env_file');
-    $path = $dir . '/.env';
-
-    if (!is_dir($dir)) {
-        mkdir($dir, 0777, true);
-    }
-
-    $file = new EnvFile($path);
-
-    if (is_file($path)) {
-        unlink($path);
-    }
-
-    expect(DatabaseCredentialsSync::shouldWriteEnvFile($file, RuntimeMode::PRODUCTION))->toBeFalse()
-        ->and(DatabaseCredentialsSync::shouldWriteEnvFile($file, RuntimeMode::DEVELOPMENT))->toBeTrue();
-
-    file_put_contents($path, "APP_NAME=Pinoox\n");
-
-    expect(DatabaseCredentialsSync::shouldWriteEnvFile($file, RuntimeMode::PRODUCTION))->toBeTrue();
-
-    unlink($path);
+it('does not expose env file writing from the installer', function () {
+    expect(method_exists(DatabaseCredentialsSync::class, 'shouldWriteEnvFile'))->toBeFalse();
 });
