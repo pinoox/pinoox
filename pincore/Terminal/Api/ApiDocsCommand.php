@@ -6,8 +6,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 
 #[AsCommand(
     name: 'api:docs',
-    description: 'Generate REST API documentation.',
+    description: 'Generate REST API docs (Markdown or HTML) for an app',
 )]
-class ApiDocsCommand extends \Pinoox\Api\Console\ApiDocsCommand
+class ApiDocsCommand extends \Pinoox\PinDoc\Api\Console\ApiDocsCommand
 {
 }
