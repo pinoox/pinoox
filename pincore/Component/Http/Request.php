@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -59,7 +60,6 @@ class Request extends RequestSymfony
             $default,
         );
     }
-
 
     private function initJsonData(): void
     {
@@ -190,7 +190,7 @@ class Request extends RequestSymfony
     public function requestOne($key, $default = null): mixed
     {
         return HelperArray::parseParam(
-            $this->json->all(),
+            $this->request->all(),
             $key,
             $default,
         );
@@ -214,7 +214,6 @@ class Request extends RequestSymfony
             $default,
         );
     }
-
 
     public function json($keys, $default = null, $removeNull = false): array
     {
@@ -442,6 +441,59 @@ class Request extends RequestSymfony
         }
 
         return in_array($this->getRealMethod(), ['GET', 'HEAD']) ? $this->query : $this->request;
+    }
+
+    /**
+     * Primary request payload (JSON body, POST fields, or query on GET).
+     */
+    public function getPayload(): InputBag
+    {
+        return $this->input();
+    }
+
+    /**
+     * Read one value from the active payload source.
+     */
+    public function payload(string $key, mixed $default = null): mixed
+    {
+        return $this->fetchDataByKey($this->input()->all(), $key, $default);
+    }
+
+    /**
+     * Read multiple values from the active payload source.
+     *
+     * @param string|array $keys Comma-separated keys or key => default map
+     */
+    public function payloadMany(string|array $keys, mixed $default = null, mixed $removeNull = false): array
+    {
+        return HelperArray::parseParams(
+            $this->input()->all(),
+            $keys,
+            $default,
+            $removeNull,
+        );
+    }
+
+    /**
+     * Keep only the given keys from the active payload.
+     */
+    public function only(array $keys): array
+    {
+        return array_intersect_key(
+            $this->input()->all(),
+            array_flip($keys),
+        );
+    }
+
+    /**
+     * Remove the given keys from the active payload.
+     */
+    public function except(array $keys): array
+    {
+        return array_diff_key(
+            $this->input()->all(),
+            array_flip($keys),
+        );
     }
 
     public function merge(array $input): static

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Http;
 
@@ -59,6 +59,7 @@ abstract class FormRequest
         $this->files = $request->files;
         $this->cookies = $request->cookies;
         $this->request = $request->request;
+        $this->query = $request->query;
         $this->server = $request->server;
         $this->headers = $request->headers;
         $this->parameters = $request->parameters;
@@ -67,6 +68,31 @@ abstract class FormRequest
     public function getPayload(): InputBag
     {
         return $this->global->getPayload();
+    }
+
+    public function payload(string $key, mixed $default = null): mixed
+    {
+        return $this->global->payload($key, $default);
+    }
+
+    public function payloadMany(string|array $keys, mixed $default = null, mixed $removeNull = false): array
+    {
+        return $this->global->payloadMany($keys, $default, $removeNull);
+    }
+
+    public function queryOne($key, mixed $default = null): mixed
+    {
+        return $this->global->queryOne($key, $default);
+    }
+
+    public function only(array $keys): array
+    {
+        return $this->global->only($keys);
+    }
+
+    public function except(array $keys): array
+    {
+        return $this->global->except($keys);
     }
 
     public function validate($key = null, $default = null)
@@ -125,7 +151,6 @@ abstract class FormRequest
 
         return $this->with($validator);
     }
-
 
     protected function addAfterArrayToValidator(Validator $validator): void
     {
@@ -301,7 +326,6 @@ abstract class FormRequest
         return $validator;
     }
 
-
     protected function getValidatorInstance(): Validator
     {
         return $this->validation();
@@ -357,3 +381,4 @@ abstract class FormRequest
         return [];
     }
 }
+
