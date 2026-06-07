@@ -38,6 +38,10 @@ class Kernel extends HttpKernel
         try {
             $event = new RequestEvent($this, $request, $type);
             $this->dispatcher->dispatch($event, self::HANDLE_BEFORE);
+
+            if ($event->hasResponse()) {
+                return $event->getResponse();
+            }
         } catch (Throwable $e) {
             if (false === $catch) {
                 throw $e;
