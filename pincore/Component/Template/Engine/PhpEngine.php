@@ -1,15 +1,4 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
-
 
 namespace Pinoox\Component\Template\Engine;
 
@@ -26,63 +15,50 @@ class PhpEngine implements EngineInterface
     private PhpEngineSymfony $template;
 
     /**
-     * PhpEngine constructor.
-     *
-     * @param TemplateNameParserInterface $parser
-     * @param string|array $folder
-     * @param string|null $rootPath
+     * @param string|list<string> $paths Absolute theme directories (child first)
      */
-    public function __construct(TemplateNameParserInterface $parser, string|array $folder, ?string $rootPath = null)
+    public function __construct(TemplateNameParserInterface $parser, string|array $paths)
     {
-        $paths = $this->buildPaths($rootPath, $folder);
-        $this->loader = new FilesystemLoader($paths);
+        $this->loader = new FilesystemLoader($this->buildLoaderPaths($paths));
         $this->parser = $parser;
         $this->template = new PhpEngineSymfony($this->parser, $this->loader, [new SlotsHelper()]);
     }
 
     /**
-     * build paths template
-     *
-     * @param string|null $rootPath
-     * @param string|array $folders
-     * @return array|string
+     * @param string|list<string> $paths
+     * @return list<string>
      */
-    private function buildPaths(?string $rootPath, string|array $folders): array|string
+    private function buildLoaderPaths(string|array $paths): array
     {
-        $paths = [];
-        if (is_array($folders)) {
-            foreach ($folders as $folder) {
-                $paths[] = $this->buildPaths($rootPath, $folder);
+        $paths = is_array($paths) ? $paths : [$paths];
+        $loaderPaths = [];
+
+        foreach ($paths as $path) {
+            $path = rtrim(str_replace('\\', '/', (string) $path), '/');
+            if ($path === '') {
+                continue;
             }
-        } else {
-            $paths = $rootPath . '/' . $folders . '/' . '%name%';
+
+            $loaderPaths[] = $path . '/%name%';
         }
 
-        return $paths;
+        return $loaderPaths;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function render(TemplateReferenceInterface|string $name, array $parameters = []): string
     {
         return $this->template->render($name, $parameters);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function exists(TemplateReferenceInterface|string $name): bool
     {
         return $this->template->exists($name);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function supports(TemplateReferenceInterface|string $name): bool
     {
         $reference = $this->parser->parse($name);
+
         return 'php' === $reference->get('engine');
     }
 }

@@ -1,19 +1,8 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
-
 
 namespace Pinoox\Component\Helpers;
 
-
+use Pinoox\Component\Template\Frontend\FrontendConfig;
 use Pinoox\Portal\View;
 
 class ViteHelper
@@ -21,30 +10,35 @@ class ViteHelper
     protected string $fileManifest;
     protected string $mainDirectory;
     protected string $themePath;
-    protected array $processedFiles = [];
     protected array $outputBuffer = [];
 
-    public function __construct(string $themePath, string $fileManifest = 'dist/.vite/manifest.json')
+    public function __construct(string $themePath, ?string $fileManifest = null)
     {
-        $this->fileManifest = $fileManifest;
-        $this->themePath = $themePath;
-        $this->mainDirectory = $this->findMainDirectory($fileManifest);
+        $this->themePath = rtrim(str_replace('\\', '/', $themePath), '/');
+        $config = FrontendConfig::forThemePath($this->themePath);
+        $this->fileManifest = $fileManifest ?? (string) ($config['manifest'] ?? 'dist/.vite/manifest.json');
+        $this->mainDirectory = $this->findMainDirectory($this->fileManifest);
     }
 
     protected function findMainDirectory(string $fileManifest): string
     {
         $mainDirectory = explode('/', dirname($fileManifest));
-        return !empty($mainDirectory) ? $mainDirectory[0] : '/';
+
+        return !empty($mainDirectory[0]) ? $mainDirectory[0] : 'dist';
     }
 
     public function vite(string $name, ?string $fileManifest = null): array
     {
         $this->outputBuffer = [];
         $fileManifest = $fileManifest ?? $this->fileManifest;
-        $manifest = $this->loadManifest($fileManifest);
 
+        if ($devUrl = $this->resolveDevServerUrl()) {
+            return $this->devTags($devUrl, $name);
+        }
+
+        $manifest = $this->loadManifest($fileManifest);
         $mainDirectory = !empty($fileManifest) ? $this->findMainDirectory($fileManifest) : $this->mainDirectory;
-        
+
         if (!empty($manifest[$name])) {
             $this->processFile($manifest[$name], $manifest, $mainDirectory);
         }
@@ -54,23 +48,65 @@ class ViteHelper
 
     public function printVite(string $name, ?string $fileManifest = null): void
     {
-        $output = $this->vite($name, $fileManifest);
-        $this->printOutputBuffer($output);
+        $this->printOutputBuffer($this->vite($name, $fileManifest));
+    }
+
+    public function tags(string $name, ?string $fileManifest = null): string
+    {
+        return implode("\n\t", $this->vite($name, $fileManifest));
+    }
+
+    protected function resolveDevServerUrl(): ?string
+    {
+        $hotFile = $this->themePath . '/dist/hot';
+        if (is_file($hotFile)) {
+            $url = trim((string) file_get_contents($hotFile));
+
+            return $url !== '' ? rtrim($url, '/') : null;
+        }
+
+        $config = FrontendConfig::forThemePath($this->themePath);
+        if (!FrontendConfig::isDevEnabled($config)) {
+            return null;
+        }
+
+        $manifestPath = $this->themePath . '/' . ltrim($this->fileManifest, '/');
+        if (is_file($manifestPath) && !(bool) _env('VITE_DEV_FORCE', false)) {
+            return null;
+        }
+
+        $url = trim((string) ($config['dev']['url'] ?? ''));
+
+        return $url !== '' ? rtrim($url, '/') : null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    protected function devTags(string $devUrl, string $entry): array
+    {
+        $entry = ltrim($entry, '/');
+
+        return [
+            '<script type="module" src="' . $devUrl . '/@vite/client"></script>',
+            '<script type="module" src="' . $devUrl . '/' . $entry . '"></script>',
+        ];
     }
 
     protected function loadManifest(string $fileManifest): array
     {
-        $pathManifest = $this->themePath . '/' . $fileManifest;
+        $pathManifest = $this->themePath . '/' . ltrim($fileManifest, '/');
         if (is_file($pathManifest)) {
             $manifest = file_get_contents($pathManifest);
+
             return json_decode($manifest, true) ?: [];
         }
+
         return [];
     }
 
     protected function processFile(array $fileData, array $manifest, string $dir, array $processed = []): void
     {
-        // Process imports first (JS chunk dependencies, including Vite 8 rolldown-runtime)
         if (!empty($fileData['imports'])) {
             foreach ($fileData['imports'] as $importKey) {
                 if (empty($processed[$importKey]) && !empty($manifest[$importKey])) {
@@ -80,28 +116,22 @@ class ViteHelper
             }
         }
 
-        // Add main file
         if (!empty($fileData['file'])) {
             $this->addFile($fileData['file'], $dir);
         }
 
-        // Add CSS files (after main file to ensure proper order)
         if (!empty($fileData['css'])) {
             foreach ($fileData['css'] as $css) {
                 $this->addFile($css, $dir);
             }
         }
-
-        // Vite 8+ lists static assets (fonts, images) on the entry; they are loaded via CSS/JS URLs.
-        // No extra HTML tags are emitted here.
     }
 
     protected function addFile(string $fileName, string $dir): void
     {
         $extension = pathinfo($fileName, PATHINFO_EXTENSION);
-        
-        // Only process JS and CSS files
-        if (!in_array($extension, ['js', 'css'])) {
+
+        if (!in_array($extension, ['js', 'css'], true)) {
             return;
         }
 
@@ -115,25 +145,33 @@ class ViteHelper
 
     protected function printOutputBuffer(array $output): void
     {
-        if (empty($output)) {
+        if ($output === []) {
             return;
         }
 
         echo $output[0];
-        for ($i = 1; $i < count($output); $i++) {
+        for ($i = 1, $count = count($output); $i < $count; $i++) {
             echo "\n\t" . $output[$i];
         }
     }
 
-    public static function useVite(string $name, ?string $fileManifest = 'dist/.vite/manifest.json'): array
+    public static function forActiveTheme(): self
     {
-        $viteHelper = new self(View::path()->assets());
-        return $viteHelper->vite($name, $fileManifest);
+        return new self(View::path()->current());
     }
 
-    public static function usePrintVite(string $name, ?string $fileManifest = 'dist/.vite/manifest.json'): void
+    public static function useVite(string $name, ?string $fileManifest = null): array
     {
-        $viteHelper = new self(View::path()->assets());
-        $viteHelper->printVite($name, $fileManifest);
+        return self::forActiveTheme()->vite($name, $fileManifest);
+    }
+
+    public static function usePrintVite(string $name, ?string $fileManifest = null): void
+    {
+        self::forActiveTheme()->printVite($name, $fileManifest);
+    }
+
+    public static function useViteTags(string $name, ?string $fileManifest = null): string
+    {
+        return self::forActiveTheme()->tags($name, $fileManifest);
     }
 }

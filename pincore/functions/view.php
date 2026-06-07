@@ -11,6 +11,8 @@
  */
 
 use Pinoox\Component\Helpers\ViteHelper;
+use Pinoox\Component\Template\Theme\ThemeContext as ThemeContextManager;
+use Pinoox\Flow\ThemeContextFlow;
 use Pinoox\Portal\View;
 
 if (!function_exists('view')) {
@@ -44,8 +46,59 @@ if (!function_exists('render')) {
 }
 
 if (!function_exists('vite')) {
-    function vite(string $name, string $fileManifest = 'dist/.vite/manifest.json')
+    function vite(string $name, ?string $fileManifest = null): void
     {
         ViteHelper::usePrintVite($name, $fileManifest);
+    }
+}
+
+if (!function_exists('vite_tags')) {
+    function vite_tags(string $name, ?string $fileManifest = null): string
+    {
+        return ViteHelper::useViteTags($name, $fileManifest);
+    }
+}
+
+if (!function_exists('theme_flow_aliases')) {
+    /**
+     * Build flow aliases for theme contexts (site, panel, kids, ...).
+     *
+     * @param list<string> $contexts
+     * @return array<string, array<string, ThemeContextFlow>>
+     */
+    function theme_flow_aliases(array $contexts): array
+    {
+        $aliases = [];
+
+        foreach ($contexts as $context) {
+            if (!is_string($context) || trim($context) === '') {
+                continue;
+            }
+
+            $context = trim($context);
+            $aliases['theme'][$context] = ThemeContextFlow::for($context);
+        }
+
+        return $aliases;
+    }
+}
+
+if (!function_exists('theme_context')) {
+    function theme_context(?string $context = null): string|null
+    {
+        if ($context === null) {
+            return ThemeContextManager::active();
+        }
+
+        ThemeContextManager::activate($context);
+
+        return $context;
+    }
+}
+
+if (!function_exists('within_theme')) {
+    function within_theme(string $context, callable $callback, ?string $package = null): mixed
+    {
+        return ThemeContextManager::using($context, $callback, $package);
     }
 }

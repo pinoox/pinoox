@@ -39,18 +39,18 @@ class TwigEngine implements EngineInterface
     public Environment $template;
 
     /**
-     * TwigEngine constructor.
      * @param TemplateNameParserInterface $parser
-     * @param LoaderInterface|string|array $folder
-     * @param string|null $rootPath
+     * @param LoaderInterface|string|list<string> $paths Absolute theme paths or custom loader
      */
-    public function __construct(TemplateNameParserInterface $parser, LoaderInterface|string|array $folder, ?string $rootPath = null)
+    public function __construct(TemplateNameParserInterface $parser, LoaderInterface|string|array $paths)
     {
-
-        if ($folder instanceof LoaderInterface) {
-            $this->fileLoader = $folder;
+        if ($paths instanceof LoaderInterface) {
+            $this->fileLoader = $paths;
         } else {
-            $this->fileLoader = new FilesystemLoader($folder, $rootPath);
+            $this->fileLoader = new FilesystemLoader();
+            foreach ($this->normalizePaths($paths) as $path) {
+                $this->fileLoader->addPath($path);
+            }
         }
 
 
@@ -61,6 +61,25 @@ class TwigEngine implements EngineInterface
         ]);
         $this->parser = $parser;
         $this->template = new Environment($this->loader);
+    }
+
+    /**
+     * @param string|list<string> $paths
+     * @return list<string>
+     */
+    private function normalizePaths(string|array $paths): array
+    {
+        $paths = is_array($paths) ? $paths : [$paths];
+        $normalized = [];
+
+        foreach ($paths as $path) {
+            $path = rtrim(str_replace('\\', '/', (string) $path), '/');
+            if ($path !== '' && is_dir($path)) {
+                $normalized[] = $path;
+            }
+        }
+
+        return $normalized;
     }
 
     /**
@@ -183,7 +202,7 @@ class TwigEngine implements EngineInterface
                 if (count($functions) > 1) {
                     $functions = $functions[1];
                 }
-                $namespace = $isNamespace ? File::extract_namespace(Dir::path('~pincore/boot/routes.php')) : null;
+                $namespace = $isNamespace ? File::extract_namespace(Path::get('~pincore/boot/routes.php')) : null;
                 $this->addInternalFunction($functions, $namespace);
             }
         }

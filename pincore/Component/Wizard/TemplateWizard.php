@@ -23,7 +23,7 @@ class TemplateWizard extends Wizard implements WizardInterface
     {
         parent::open($path);
 
-        //extract target file (meta.json)
+        //extract target file (theme.php)
         $this->extractTemp($this->targetFile());
         $this->loadTargetFileFromPin();
 

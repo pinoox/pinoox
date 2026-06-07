@@ -17,8 +17,11 @@ namespace Pinoox\Portal;
 use Pinoox\Component\Http\JsonResponse;
 use Pinoox\Component\Http\Response;
 use Pinoox\Component\Source\Portal;
+use Pinoox\Component\Template\Seo\SeoMeta;
 use Pinoox\Component\Template\Reference\TemplatePathReference as ObjectPortal2;
 use Pinoox\Component\Template\View as ObjectPortal1;
+use Pinoox\Component\Cache\AppCacheConfig;
+use Pinoox\Component\Template\Theme\ThemeStack;
 use Pinoox\Portal\App\App;
 
 /**
@@ -33,29 +36,34 @@ use Pinoox\Portal\App\App;
  * @method static \Pinoox\Component\Template\View add(array $data)
  * @method static \Pinoox\Component\Template\View setData(array $data)
  * @method static array engines()
+ * @method static bool isFilesystemPath(string $path)
+ * @method static string assets(string $link = '', bool $asPath = false)
  * @method static string asstes(string $file = '')
  * @method static string render(array|null|string $name = NULL, array $parameters = [], bool $exist = true)
  * @method static string renderByEngine(array|null|string $name, array $parameters, bool $exist = true)
  * @method static \Pinoox\Component\Template\View ready(array|string $name = '', array $parameters = [], bool $exist = true)
  * @method static string getContentReady()
+ * @method static array themePaths()
+ * @method static array themeStack()
  * @method static ObjectPortal2 path()
- * @method static \Pinoox\Component\Template\View ___()
+ * @method static ObjectPortal1 ___()
  *
  * @see \Pinoox\Component\Template\View
  */
 class View extends Portal
 {
+    public static function isFilesystemPath(string $path): bool
+    {
+        return ObjectPortal1::isFilesystemPath($path);
+    }
+
     public static function __register(): void
     {
-        // theme names
-        $folders = App::get('theme');
-
-        // base path
-        $pathTheme = Path::get(App::get('path-theme'));
+        $stack = ThemeStack::resolve(App::package());
 
         self::__bind(ObjectPortal1::class)->setArguments([
-            $folders,
-            $pathTheme,
+            $stack['paths'],
+            '',
             self::getTwigOptions(),
         ]);
     }
@@ -90,7 +98,9 @@ class View extends Portal
     public static function getTwigOptions(): array
     {
         $twig = App::get('twig');
-        return !empty($twig) && is_array($twig) ? $twig : [];
+        $options = !empty($twig) && is_array($twig) ? $twig : [];
+
+        return array_merge($options, AppCacheConfig::twigOptions(App::package()));
     }
 
     public static function jsonResponse(string $name, array $parameters = [], ?string $charset = null): JsonResponse
@@ -107,6 +117,15 @@ class View extends Portal
     public static function jsResponse(string $name, array $parameters = [], ?string $charset = 'UTF-8'): Response
     {
         return self::response($name, $parameters, 'application/javascript', $charset);
+    }
+
+    /**
+     * @param array<string, mixed>|SeoMeta $seo
+     */
+    public static function shareSeo(array|SeoMeta $seo): void
+    {
+        $meta = $seo instanceof SeoMeta ? $seo : SeoMeta::fromArray($seo);
+        self::set('_seo', $meta);
     }
 
 
