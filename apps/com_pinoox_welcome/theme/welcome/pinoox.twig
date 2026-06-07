@@ -1,13 +1,12 @@
 const PINOOX = {
-    // urls
     URL: {
         CURRENT: window.location.href,
-        BASE: '{{ url("", "relative") }}',
-        API: '{{ url("api/v1/", "relative") }}',
-        SITE: '{{ url("", "site") }}',
+        BASE: '{{ url().appPath }}',
+        API: '{{ url().api }}',
+        SITE: '{{ url().site }}',
         THEME: '{{ assets() }}',
-        MANAGER: '{{ app_url("com_pinoox_manager") }}',
-        AVATAR: '{{ asset("resources/avatar.png") }}',
-        APP_ICON: '{{ asset("resources/default.png") }}',
+        MANAGER: '{{ url().package("com_pinoox_manager").app }}',
+        AVATAR: '{{ url().resource("resources/avatar.png") }}',
+        APP_ICON: '{{ url().resource("resources/default.png") }}',
     },
 };

@@ -26,9 +26,10 @@ class MainController extends Controller
 
     public function save(Request $request)
     {
-        $form = $request->request('title,description,twitter,instagram,linkedin,telegram', null);
+        $form = $request->payloadMany('title,description,twitter,instagram,linkedin,telegram');
         config('app')->setData($form)->save();
 
         return url();
     }
 }
+

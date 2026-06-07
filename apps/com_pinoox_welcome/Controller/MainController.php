@@ -20,7 +20,7 @@ class MainController extends Controller
 
     public function home()
     {
-        dd(UserModel::all()->toArray());
         return View::render('hello');
     }
 }
+
