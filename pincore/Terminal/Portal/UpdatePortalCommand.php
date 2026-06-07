@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'portal:update',
     description: 'Update an existing Portal class from its service',
 )]
+
 class UpdatePortalCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class UpdatePortalCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Regenerates Portal method stubs from the linked service class.
-
-
 
 Example:
 
@@ -67,3 +66,4 @@ HELP
         return Command::INVALID;
     }
 }
+

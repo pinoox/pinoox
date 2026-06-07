@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -18,12 +19,14 @@ use Pinoox\Portal\Database\DB;
 
 class MigrationQuery
 {
+
     public const TYPE_MIGRATION = 'migration';
+
     public const TYPE_PATCH = 'patch';
 
     private static function tableExists(): bool
     {
-        return DB::schema('pincore')->hasTable(DB::tableName(Table::HISTORY, 'pincore'));
+        return DB::schema('platform')->hasTable(DB::tableName(Table::HISTORY, 'platform'));
     }
 
     public static function fetchLatestBatch($app): int
@@ -102,7 +105,7 @@ class MigrationQuery
             return 0;
         }
 
-        $records = DB::table(DB::tableName('migration', 'pincore'), null, 'pincore')->get();
+        $records = DB::table(DB::tableName('migration', 'platform'), null, 'platform')->get();
         $imported = 0;
 
         foreach ($records as $record) {
@@ -110,6 +113,10 @@ class MigrationQuery
             $app = $record->app ?? null;
 
             if (empty($migration) || empty($app) || self::is_exists($migration, $app)) {
+                continue;
+            }
+
+            if (!self::legacyMigrationHasAppliedTables($migration)) {
                 continue;
             }
 
@@ -128,6 +135,48 @@ class MigrationQuery
 
     private static function legacyTableExists(): bool
     {
-        return DB::schema('pincore')->hasTable(DB::tableName('migration', 'pincore'));
+        return DB::schema('platform')->hasTable(DB::tableName('migration', 'platform'));
+    }
+
+    private static function legacyMigrationHasAppliedTables(string $migration): bool
+    {
+        if (str_contains($migration, 'create_history_table') || str_contains($migration, 'create_migration_table')) {
+            return self::tableExists();
+        }
+
+        if (str_contains($migration, 'create_access_tables')) {
+            return self::physicalTableExists(Table::ROLE);
+        }
+
+        $name = preg_replace('/^\d{4}_\d{2}_\d{2}_\d{6}_/', '', $migration) ?? $migration;
+
+        if (preg_match('/^create_(.+)_table$/', $name, $matches)) {
+            return self::physicalTableExists($matches[1]);
+        }
+
+        return false;
+    }
+
+    private static function physicalTableExists(string $table): bool
+    {
+        try {
+            $connection = DB::connection('platform');
+            $physical = DB::physicalTableName($table, 'platform');
+            $database = (string) $connection->getDatabaseName();
+
+            if ($database === '' || $physical === '') {
+                return false;
+            }
+
+            $row = $connection->selectOne(
+                'SELECT 1 AS found FROM information_schema.tables WHERE table_schema = ? AND table_name = ? LIMIT 1',
+                [$database, $physical],
+            );
+
+            return $row !== null;
+        } catch (\Throwable) {
+            return false;
+        }
     }
 }
+

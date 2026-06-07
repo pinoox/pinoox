@@ -21,6 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:delete',
     description: 'Delete an app folder and remove its URL routes',
 )]
+
 class DeleteAppCommand extends Terminal
 {
     use SelectsPackage;
@@ -151,3 +152,4 @@ HELP
         }
     }
 } 
+

@@ -18,6 +18,7 @@ use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Connection;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\Platform;
 use Pinoox\Support\SystemApp;
 
 /**
@@ -25,8 +26,11 @@ use Pinoox\Support\SystemApp;
  */
 class DatabaseManager extends Capsule
 {
+
     public const DEFAULT_CONNECTION = 'default';
-    public const CORE_CONNECTION = 'pincore';
+
+    public const CORE_CONNECTION = Platform::PACKAGE;
+
     public const DEFAULT_CORE_TABLE_PREFIX = 'pinx_';
 
     private array $packageConnections = [];
@@ -137,7 +141,7 @@ class DatabaseManager extends Capsule
             return '';
         }
 
-        if ($package === self::CORE_CONNECTION || $package === 'pincore') {
+        if ($package === self::CORE_CONNECTION) {
             return $this->connectionPrefix(self::CORE_CONNECTION) !== '' ? '' : self::DEFAULT_CORE_TABLE_PREFIX;
         }
 
@@ -177,7 +181,7 @@ class DatabaseManager extends Capsule
             return self::DEFAULT_CONNECTION;
         }
 
-        if ($package === self::CORE_CONNECTION || $package === 'pincore') {
+        if ($package === self::CORE_CONNECTION) {
             return self::CORE_CONNECTION;
         }
 
@@ -378,3 +382,4 @@ class DatabaseManager extends Capsule
         return $this->currentConnection()->$method(...$parameters);
     }
 }
+

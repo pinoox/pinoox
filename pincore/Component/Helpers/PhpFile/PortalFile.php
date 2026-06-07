@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Helpers\PhpFile;
 
@@ -57,7 +57,6 @@ class PortalFile extends PhpFile
         $this->portalPath = $this->replaceDirectorySepartor($path, '/');
     }
 
-
     private function buildClassname($input): void
     {
         $className = $input->getArgument('portalName');
@@ -92,12 +91,12 @@ class PortalFile extends PhpFile
     private function buildPackage($input): void
     {
         $package = $input->getOption('package');
-        $this->package = !empty($package) ? $package : 'pincore';
+        $this->package = !empty($package) ? $package : 'platform';
     }
 
     private function buildNameSpace(): void
     {
-        if ($this->package == 'pincore')
+        if ($this->package == 'platform')
             $namespace = 'Pinoox\\Portal';
         else
             $namespace = 'App\\' . $this->package . '\\Portal';
@@ -125,7 +124,7 @@ class PortalFile extends PhpFile
     private function buildPortalFolder(): void
     {
 
-        if ($this->package === 'pincore')
+        if ($this->package === 'platform')
             $portalFolder = path('~pincore/Portal');
         else
             $portalFolder = path('Portal', $this->package);
@@ -268,7 +267,6 @@ class PortalFile extends PhpFile
             $body = "return [];";
         }
 
-
         if ($class->hasMethod('__callback')) {
             $class->removeMethod('__callback');
         }
@@ -378,7 +376,6 @@ class PortalFile extends PhpFile
             $returnType = implode('|', $returnTypeParts);
         }
 
-
         $returnType = !empty($returnType) ? $returnType . ' ' : '';
         return "@method static {$returnType}{$methodName}({$args})";
     }
@@ -399,8 +396,8 @@ class PortalFile extends PhpFile
             $include = call_user_func([$this->getPortalName(), '__include']);
             $replace = call_user_func([$this->getPortalName(), '__compileReplaces']);
         }
-        if ($this->package == 'pincore') {
-            $container = Container::pincore();
+        if ($this->package == 'platform') {
+            $container = Container::platform();
         } else {
             $container = Container::app($this->package);
         }
@@ -457,6 +454,7 @@ class PortalFile extends PhpFile
                 /**
                  * @var ReflectionMethod $method
                  */
+
                 $method = $v['method'];
                 $_className = $v['class'];
                 if (isset($replace[$method->getName()]) || Str::firstHas($method->getName(), '__') || in_array($method->getName(), $exclude) || (!empty($include) && !in_array($method->getName(), $include)) || method_exists($this->getPortalName(), $method->getName()))
@@ -477,7 +475,6 @@ class PortalFile extends PhpFile
                 } catch (\ReflectionException $e) {
                     continue;
                 }
-
 
                 if (in_array($methodName, $exclude))
                     continue;
@@ -520,3 +517,4 @@ class PortalFile extends PhpFile
         }
     }
 }
+

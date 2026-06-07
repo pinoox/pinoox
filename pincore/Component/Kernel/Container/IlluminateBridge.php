@@ -16,7 +16,7 @@ class IlluminateBridge
     {
         if (self::$illuminate === null) {
             self::$illuminate = Container::Illuminate();
-            self::$illuminate->instance(ContainerInterface::class, Container::pincore());
+            self::$illuminate->instance(ContainerInterface::class, Container::platform());
             self::$illuminate->instance(IlluminateContainer::class, self::$illuminate);
         }
 
@@ -97,3 +97,4 @@ class IlluminateBridge
         return class_exists($type->getName()) || interface_exists($type->getName());
     }
 }
+

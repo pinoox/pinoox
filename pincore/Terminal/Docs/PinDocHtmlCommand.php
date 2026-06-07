@@ -8,6 +8,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
     name: 'pindoc:html',
     description: 'Build PinDoc HTML from API docs and/or custom Markdown.',
 )]
+
 class PinDocHtmlCommand extends \Pinoox\PinDoc\Console\PinDocHtmlCommand
 {
 }
+

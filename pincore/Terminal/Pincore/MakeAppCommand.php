@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:create',
     description: 'Scaffold a new app under apps/ with routes, theme, and boot files',
 )]
+
 class MakeAppCommand extends Terminal
 {
     protected function configure(): void
@@ -144,7 +145,9 @@ namespace App\\{$name}\\Router;
 
 final class Actions
 {
+
     public const HOME = 'home';
+
     public const PINOOXJS = 'pinooxjs';
 }
 PHP;
@@ -295,8 +298,9 @@ PHP;
 
         $output->writeln("<info>App '{$name}' created successfully in {$appDir}</info>");
         $output->writeln("<info>HMVC folders: Controller, Model, Flow, routes, lang, database, patches, theme</info>");
-        $output->writeln("<info>Optional: run composer install inside the app for extra dependencies</info>");
+        $output->writeln("<info>Optional: add dependencies in composer.json; pinx:build runs composer install --no-dev and ships vendor/</info>");
         $output->writeln("<info>Tests scaffolded in {$appDir}/tests — run: php pinoox test {$name}</info>");
         return Command::SUCCESS;
     }
 } 
+

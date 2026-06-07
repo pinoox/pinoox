@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'seeder:create',
     description: 'Create a new database seeder class in an app',
 )]
+
 class SeederCreateCommand extends Terminal
 {
     use SelectsPackage;
@@ -32,8 +33,6 @@ class SeederCreateCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Creates a seeder stub inside database/seed/ for the selected app.
-
-
 
 Example:
 
@@ -103,7 +102,7 @@ HELP
 
     private function getSeederPath(): string
     {
-        if ($this->package === 'pincore') {
+        if ($this->package === 'platform') {
             return SystemConfig::path('system_seed');
         }
 
@@ -126,8 +125,9 @@ HELP
 
     private function getNamespace(): string
     {
-        return $this->package === 'pincore'
+        return $this->package === 'platform'
             ? 'Pinoox\\Database\\seed'
             : 'App\\' . $this->package . '\\database\\seed';
     }
 }
+

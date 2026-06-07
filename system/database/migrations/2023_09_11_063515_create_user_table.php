@@ -24,7 +24,7 @@ return new class extends MigrationBase {
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create($this->table(Table::USER, 'pincore'), function (Blueprint $table) {
+        $this->schema->create($this->table(Table::USER, 'platform'), function (Blueprint $table) {
             $table->increments('user_id');
             $table->unsignedInteger('session_id')->nullable();
             $table->unsignedInteger('avatar_id')->nullable();
@@ -44,7 +44,7 @@ return new class extends MigrationBase {
             $table->index('user_id');
             $table->index('avatar_id');
             $table->index('personal_id');
-            $table->foreign('avatar_id')->references('file_id')->on($this->table(Table::FILE, 'pincore'))->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('avatar_id')->references('file_id')->on($this->table(Table::FILE, 'platform'))->onDelete('set null')->onUpdate('cascade');
         });
     }
 
@@ -54,7 +54,7 @@ return new class extends MigrationBase {
     public function down()
     {
         $this->schema->getConnection()->statement('SET FOREIGN_KEY_CHECKS = 0');
-        $this->schema->dropIfExists($this->table(Table::USER, 'pincore'));
+        $this->schema->dropIfExists($this->table(Table::USER, 'platform'));
         $this->schema->getConnection()->statement('SET FOREIGN_KEY_CHECKS = 1');
     }
 };

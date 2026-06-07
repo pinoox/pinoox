@@ -6,6 +6,7 @@ use Pinoox\Component\Cache\AppCacheManager;
 use Pinoox\Component\Database\Patch\PatchToolkit;
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Migration\Migrator;
+use Pinoox\Component\Package\AppDependency;
 use Pinoox\Component\Package\Engine\AppEngine;
 
 /**
@@ -33,6 +34,28 @@ final class AppProvisioner
      */
     public function provisionInstalledApps(array $options = []): array
     {
+        $packages = $this->packagesForSetup($options);
+        $provisioned = [];
+
+        foreach ($packages as $package) {
+            $this->provision($package, $options);
+            $provisioned[] = $package;
+        }
+
+        return $provisioned;
+    }
+
+    /**
+     * Enabled on-disk apps for project setup (dependency order, no installer).
+     *
+     * @param array{
+     *     exclude?: list<string>,
+     *     only_enabled?: bool
+     * } $options
+     * @return list<string>
+     */
+    public function packagesForSetup(array $options = []): array
+    {
         $exclude = array_values(array_filter(
             $options['exclude'] ?? [],
             static fn (mixed $package): bool => is_string($package) && $package !== '',
@@ -53,14 +76,87 @@ final class AppProvisioner
         }
 
         $ordered = AppDependency::sortForInstall($packages, $this->engine);
-        $provisioned = [];
+        $this->assertDependencies($ordered);
 
-        foreach ($ordered as $package) {
-            $this->provision($package, $options);
-            $provisioned[] = $package;
+        return $ordered;
+    }
+
+    /**
+     * @param list<string> $packages
+     */
+    public function migratePackages(array $packages): void
+    {
+        foreach ($packages as $package) {
+            if (!$this->hasMigrationFiles($package)) {
+                continue;
+            }
+
+            (new Migrator($package))->run();
+        }
+    }
+
+    /**
+     * @param list<string> $packages
+     */
+    public function patchPackages(array $packages, bool $force = false): void
+    {
+        foreach ($packages as $package) {
+            $this->runPatches($package, $force);
+        }
+    }
+
+    /**
+     * @param list<string> $packages
+     */
+    public function applyLangToPackages(array $packages, ?string $lang): void
+    {
+        foreach ($packages as $package) {
+            $this->applyDefaultLang($package, $lang);
+        }
+    }
+
+    /**
+     * Bootstrap pincore after database credentials are available.
+     *
+     * Runs core migrations and system patches (system/patches).
+     * Mirrors the pincore half of pinx:install and web installer installCore.
+     *
+     * @param array{
+     *     skip_migrate?: bool,
+     *     skip_patch?: bool,
+     *     force?: bool
+     * } $options
+     */
+    public function provisionCore(array $options = []): void
+    {
+        if (!($options['skip_migrate'] ?? false)) {
+            (new Migrator('platform', 'run'))->run();
         }
 
-        return $provisioned;
+        if (!($options['skip_patch'] ?? false)) {
+            $this->runPatches('platform', (bool) ($options['force'] ?? false));
+        }
+    }
+
+    /**
+     * @param list<string> $packages
+     */
+    private function assertDependencies(array $packages): void
+    {
+        foreach ($packages as $package) {
+            if (!$this->engine->exists($package)) {
+                continue;
+            }
+
+            $appFile = $this->engine->path($package, 'app.php');
+            $config = is_file($appFile) ? include $appFile : [];
+
+            if (!is_array($config)) {
+                continue;
+            }
+
+            AppDependency::assertSatisfied(AppDependency::fromAppConfig($config), $this->engine);
+        }
     }
 
     /**
@@ -106,6 +202,28 @@ final class AppProvisioner
         }
     }
 
+    private function hasMigrationFiles(string $package): bool
+    {
+        if (!$this->engine->exists($package)) {
+            return false;
+        }
+
+        $folder = trim((string) \Pinoox\Support\SystemConfig::rawPath('app_migrations', 'database/migrations'), '/\\');
+        $path = $this->engine->path($package) . '/' . $folder;
+
+        if (!is_dir($path)) {
+            return false;
+        }
+
+        foreach (glob($path . '/*.php') ?: [] as $file) {
+            if (is_file($file)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     private function runPatches(string $package, bool $force): void
     {
         $toolkit = new PatchToolkit();
@@ -139,3 +257,4 @@ final class AppProvisioner
         }
     }
 }
+

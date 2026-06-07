@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'pinx:info',
     description: 'Show metadata of a .pinx/.pin package',
 )]
+
 class PinxInfoCommand extends Terminal
 {
     protected function configure(): void
@@ -101,3 +102,4 @@ class PinxInfoCommand extends Terminal
         }
     }
 }
+

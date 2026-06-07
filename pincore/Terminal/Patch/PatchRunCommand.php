@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Patch;
 
@@ -18,6 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'patch:run',
     description: 'Run pending data patches for an app',
 )]
+
 class PatchRunCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -26,7 +27,7 @@ class PatchRunCommand extends Terminal
     {
         $this
             ->setHelp('Example: php pinoox patch:run com_my_shop')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.')
             ->addOption('class', 'c', InputOption::VALUE_OPTIONAL, 'Run a specific patch class')
             ->addOption('force', null, InputOption::VALUE_NONE, 'Continue when a patch fails');
     }
@@ -39,7 +40,7 @@ class PatchRunCommand extends Terminal
         $class = $input->getOption('class');
 
         try {
-            (new Migrator('pincore'))->run();
+            (new Migrator('platform'))->run();
 
             $toolkit = new PatchToolkit();
             $toolkit->package($package)->load();
@@ -130,3 +131,4 @@ class PatchRunCommand extends Terminal
         ]);
     }
 }
+

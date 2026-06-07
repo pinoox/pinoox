@@ -82,7 +82,7 @@ class LogConfig
 
         $app = [];
 
-        if ($package !== 'pincore' && \Pinoox\Portal\App\AppEngine::exists($package)) {
+        if ($package !== 'platform' && \Pinoox\Portal\App\AppEngine::exists($package)) {
             $appConfig = \Pinoox\Portal\App\AppEngine::config($package)->get('log') ?? [];
             $app = is_array($appConfig) ? $appConfig : [];
         }
@@ -145,3 +145,4 @@ class LogConfig
         }
     }
 }
+

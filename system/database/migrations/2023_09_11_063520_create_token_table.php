@@ -25,7 +25,7 @@ return new class extends MigrationBase
     public function up()
     {
         $this->schema->disableForeignKeyConstraints();
-        $this->schema->create($this->table(Table::TOKEN, 'pincore'), function (Blueprint $table) {
+        $this->schema->create($this->table(Table::TOKEN, 'platform'), function (Blueprint $table) {
             $table->increments('token_id');
             $table->string('token_key', 100);
             $table->string('token_name', 255)->nullable();
@@ -39,7 +39,7 @@ return new class extends MigrationBase
             $table->timestamps();
 
             $table->index('user_id');
-            $table->foreign('user_id')->references('user_id')->on($this->table(Table::USER, 'pincore'))->onDelete('set null')->onUpdate('cascade');
+            $table->foreign('user_id')->references('user_id')->on($this->table(Table::USER, 'platform'))->onDelete('set null')->onUpdate('cascade');
         });
     }
 
@@ -48,6 +48,6 @@ return new class extends MigrationBase
      */
     public function down()
     {
-        $this->schema->dropIfExists($this->table(Table::TOKEN, 'pincore'));
+        $this->schema->dropIfExists($this->table(Table::TOKEN, 'platform'));
     }
 };

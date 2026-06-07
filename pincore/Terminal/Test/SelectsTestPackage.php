@@ -22,10 +22,11 @@ trait SelectsTestPackage
 
     protected function testPath(string $package, ?string $suite = null): string
     {
-        $path = $package === 'pincore'
+        $path = $package === 'platform'
             ? path('~/tests')
             : AppEngine::path($package) . '/tests';
 
         return $suite ? $path . '/' . $suite : $path;
     }
 }
+

@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'controller:create',
     description: 'Create a new controller class in an app',
 )]
+
 class ControllerCreateCommand extends Terminal
 {
     use SelectsPackage;
@@ -26,8 +27,6 @@ class ControllerCreateCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Creates a controller stub inside apps/{package}/Controller/.
-
-
 
 Example:
 
@@ -62,3 +61,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

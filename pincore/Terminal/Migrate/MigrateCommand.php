@@ -1,4 +1,5 @@
-<?php
+﻿<?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -24,13 +25,13 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-
 // the "name" and "description" arguments of AsCommand replace the
 // static $defaultName and $defaultDescription properties
 #[AsCommand(
     name: 'migrate',
-    description: 'Run pending database migrations for an app or pincore',
+    description: 'Run pending database migrations for an app or platform',
 )]
+
 class MigrateCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -52,7 +53,7 @@ Examples:
   php pinoox migrate --reset
 HELP
             )
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.')
             ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key checks during migration')
             ->addOption('dbconfig', null, InputOption::VALUE_NONE, 'Print the active database connection settings')
             ->addOption('status', 's', InputOption::VALUE_NONE, 'Show which migrations ran and which are pending')
@@ -133,7 +134,7 @@ HELP
 
     private function displayConnectionName(string $package, string $connectionName): string
     {
-        if ($package === 'pincore') {
+        if ($package === 'platform') {
             return 'default';
         }
 
@@ -143,7 +144,7 @@ HELP
             return substr($connectionName, strlen($prefix)) ?: 'default';
         }
 
-        return $connectionName === 'pincore' ? 'default' : $connectionName;
+        return $connectionName === 'platform' ? 'default' : $connectionName;
     }
 
     private function printResult(SymfonyStyle $io, array $result): void
@@ -221,3 +222,4 @@ HELP
         }
     }
 }
+

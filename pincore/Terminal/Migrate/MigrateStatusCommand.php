@@ -1,4 +1,5 @@
-<?php
+﻿<?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -24,8 +25,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'migrate:status',
-    description: 'Show migration status for an app or pincore',
+    description: 'Show migration status for an app or platform',
 )]
+
 class MigrateStatusCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -38,7 +40,7 @@ class MigrateStatusCommand extends Terminal
     {
         $this
             ->setHelp('Example: php pinoox migrate:status com_my_shop')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -115,3 +117,4 @@ class MigrateStatusCommand extends Terminal
     }
 
 }
+

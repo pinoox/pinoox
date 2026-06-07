@@ -19,3 +19,4 @@ trait SelectsMigrationPackage
         ]);
     }
 }
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Portal;
 
@@ -15,8 +15,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'portal:create',
-    description: 'Create a Portal facade class for an app or pincore',
+    description: 'Create a Portal facade class for an app or platform',
 )]
+
 class CreatePortalCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class CreatePortalCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Creates a Portal stub that wraps a service class for static access.
-
-
 
 Examples:
 
@@ -70,3 +69,4 @@ HELP
         return Command::INVALID;
     }
 }
+

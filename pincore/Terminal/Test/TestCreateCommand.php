@@ -1,4 +1,5 @@
-<?php
+﻿<?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -23,11 +24,11 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-
 #[AsCommand(
     name: 'test:create',
-    description: 'Create a Pest test file in an app or pincore',
+    description: 'Create a Pest test file in an app or platform',
 )]
+
 class TestCreateCommand extends Terminal
 {
     use SelectsTestPackage;
@@ -37,7 +38,7 @@ class TestCreateCommand extends Terminal
         $this
             ->setHelp('Example: php pinoox test:create ProductTest com_my_shop --feature')
             ->addArgument('TestName', InputArgument::REQUIRED, 'Test class name (e.g. ProductTest)')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.')
             ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite an existing test file')
             ->addOption('unit', null, InputOption::VALUE_NONE, 'Create under tests/Unit instead of tests/Feature');
     }
@@ -72,3 +73,4 @@ class TestCreateCommand extends Terminal
 
     }
 }
+

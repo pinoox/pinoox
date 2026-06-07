@@ -19,14 +19,14 @@ trait SelectsPackage
     protected function packageArgumentHelp(bool $allowAll = false, bool $optional = false): string
     {
         if ($allowAll) {
-            return 'App package, pincore, or all. Leave empty to pick from the list.';
+            return 'App package, platform, or all. Leave empty to pick from the list.';
         }
 
         if ($optional) {
             return 'Filter by app package. Leave empty to show all apps or pick from the list.';
         }
 
-        return 'App package name (e.g. com_my_shop) or pincore. Leave empty to pick from the list.';
+        return 'App package name (e.g. com_my_shop) or platform. Leave empty to pick from the list.';
     }
 
     protected function resolvePackageRequired(
@@ -37,7 +37,7 @@ trait SelectsPackage
     ): string {
         $package = $this->resolvePackageChoice($input, $output, $io, $config);
 
-        return $package ?? ($config['default'] ?? 'pincore');
+        return $package ?? ($config['default'] ?? 'platform');
     }
 
     /**
@@ -67,7 +67,7 @@ trait SelectsPackage
         $allowAll = (bool) ($config['allowAll'] ?? false);
         $optional = (bool) ($config['optional'] ?? false);
         $excludeSystem = (bool) ($config['excludeSystem'] ?? false);
-        $default = (string) ($config['default'] ?? ($allowAll ? 'all' : 'pincore'));
+        $default = (string) ($config['default'] ?? ($allowAll ? 'all' : 'platform'));
         $argument = (string) ($config['argument'] ?? 'package');
         $optionNames = $config['options'] ?? ['package', 'app'];
         $sectionTitle = (string) ($config['sectionTitle'] ?? 'Available packages');
@@ -165,7 +165,7 @@ trait SelectsPackage
      */
     protected function packageChoices(bool $excludeSystem = false, bool $appsOnly = false): array
     {
-        $packages = $appsOnly ? [] : ['pincore' => 'Core platform'];
+        $packages = $appsOnly ? [] : ['platform' => 'Core platform'];
 
         foreach (AppEngine::all() as $package => $manager) {
             if ($excludeSystem && $package === SystemApp::PACKAGE) {
@@ -237,11 +237,11 @@ trait SelectsPackage
             return true;
         }
 
-        if ($appsOnly && $package === 'pincore') {
+        if ($appsOnly && $package === 'platform') {
             return false;
         }
 
-        if ($package === 'pincore') {
+        if ($package === 'platform') {
             return true;
         }
 
@@ -329,3 +329,4 @@ trait SelectsPackage
         return $this->getHelper('question')->ask($input, $output, $question);
     }
 }
+

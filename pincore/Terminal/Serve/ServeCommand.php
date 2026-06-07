@@ -15,6 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'serve',
     description: 'Start the Pinoox development web server (PHP built-in)',
 )]
+
 class ServeCommand extends Terminal
 {
     protected function configure(): void
@@ -137,3 +138,4 @@ HELP
         @exec($command);
     }
 }
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Log;
 
@@ -16,13 +16,14 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'log:clear',
     description: 'Clear the Pinoox log file'
 )]
+
 class LogClearCommand extends Terminal
 {
     use SelectsPackage;
 
     protected function configure(): void
     {
-        $this->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'App package or pincore. Leave empty for active/default log.');
+        $this->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'App package or platform. Leave empty for active/default log.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -63,3 +64,4 @@ class LogClearCommand extends Terminal
         return LogConfig::resolveForPackage($package)['path'];
     }
 }
+

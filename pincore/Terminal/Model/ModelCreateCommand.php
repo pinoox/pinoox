@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'model:create',
     description: 'Create a new Eloquent model class in an app',
 )]
+
 class ModelCreateCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class ModelCreateCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Creates a model stub inside apps/{package}/Model/.
-
-
 
 Example:
 
@@ -67,3 +66,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

@@ -2,17 +2,23 @@
 
 namespace Pinoox\Component\Database\Patch;
 
-use Pinoox\Portal\App\AppEngine;
-use Pinoox\Support\SystemConfig;
 use Pinoox\Component\Migration\MigrationQuery;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\Database\DB;
+use Pinoox\Support\SystemConfig;
 use Pinoox\System\Model\HistoryModel;
+use Pinoox\System\Model\Table;
 use Symfony\Component\Finder\Finder;
 
 class PatchToolkit
 {
+
     public const STATUS_SUCCESS = 'success';
+
     public const STATUS_FAILED = 'failed';
+
     public const STATUS_SKIPPED = 'skipped';
+
     public const STATUS_ROLLED_BACK = 'rolled_back';
 
     private string $package = '';
@@ -65,6 +71,10 @@ class PatchToolkit
 
     public function hasRun(string $patch): bool
     {
+        if (!$this->historyTableExists()) {
+            return false;
+        }
+
         return HistoryModel::where('type', MigrationQuery::TYPE_PATCH)
             ->where('app', $this->package)
             ->whereIn('migration', [$this->recordName($patch), 'patch:' . $patch])
@@ -108,6 +118,10 @@ class PatchToolkit
 
     public function latestRecord(string $patch): ?array
     {
+        if (!$this->historyTableExists()) {
+            return null;
+        }
+
         $record = HistoryModel::where('type', MigrationQuery::TYPE_PATCH)
             ->where('app', $this->package)
             ->whereIn('migration', [$this->recordName($patch), 'patch:' . $patch])
@@ -142,7 +156,7 @@ class PatchToolkit
 
     private function initializePatchPath(): void
     {
-        if ($this->package === 'pincore') {
+        if ($this->package === 'platform') {
             $this->patchPath = SystemConfig::path('system_patches');
             return;
         }
@@ -198,6 +212,10 @@ class PatchToolkit
 
     private function nextBatch(): int
     {
+        if (!$this->historyTableExists()) {
+            return 1;
+        }
+
         $lastBatch = HistoryModel::where('type', MigrationQuery::TYPE_PATCH)
             ->where('app', $this->package)
             ->max('batch');
@@ -231,4 +249,14 @@ class PatchToolkit
     {
         return is_file($file) ? hash_file('sha256', $file) : null;
     }
+
+    private function historyTableExists(): bool
+    {
+        try {
+            return DB::schema('platform')->hasTable(DB::tableName(Table::HISTORY, 'platform'));
+        } catch (\Throwable) {
+            return false;
+        }
+    }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -29,6 +30,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'wizard:install',
     description: 'Install apps or themes (delegates to pinx:install)',
 )]
+
 class WizardInstallCommand extends Terminal
 {
     protected function configure(): void
@@ -97,3 +99,4 @@ class WizardInstallCommand extends Terminal
         return $base . '.pinx';
     }
 }
+

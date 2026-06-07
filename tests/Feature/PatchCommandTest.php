@@ -62,7 +62,8 @@ it('lets patch status select a package interactively by number', function () {
 
     expect($status)->toBe(0)
         ->and($tester->getDisplay())->toContain('Available packages')
-        ->and($tester->getDisplay())->toContain('pincore')
+        ->and($tester->getDisplay())->toContain('platform')
         ->and($tester->getDisplay())->toContain('App')
         ->and($tester->getDisplay())->toContain('Patch');
 });
+

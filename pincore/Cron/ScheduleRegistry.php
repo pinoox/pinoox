@@ -5,6 +5,7 @@ namespace Pinoox\Cron;
 use Pinoox\Component\AppEvent\AppBootstrap;
 use Pinoox\Component\AppEvent\AppScheduleRegistryStore;
 use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\Platform;
 use Pinoox\Support\SystemConfig;
 
 class ScheduleRegistry
@@ -16,7 +17,7 @@ class ScheduleRegistry
     {
         $tasks = [];
 
-        if ($package === null || $package === 'system' || $package === 'pincore') {
+        if ($package === null || $package === 'system' || Platform::isPackage($package)) {
             $tasks = array_merge($tasks, $this->load('system', SystemConfig::path('system') . '/schedule.php'));
         }
 
@@ -82,3 +83,4 @@ class ScheduleRegistry
         return $schedule->tasks();
     }
 }
+

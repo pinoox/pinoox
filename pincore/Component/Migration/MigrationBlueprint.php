@@ -11,9 +11,8 @@ class MigrationBlueprint extends Blueprint
         $command = new MigrationForeignKeyDefinition(
             $this->indexCommand('foreign', $columns, $name)->getAttributes()
         );
-
         $this->commands[count($this->commands) - 1] = $command;
-
         return $command;
     }
 }
+

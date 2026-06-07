@@ -19,7 +19,7 @@ class PinkerCacheStore implements CacheStoreInterface
 
     public function path(string $package): string
     {
-        if ($package === 'pincore') {
+        if ($package === 'platform') {
             return rtrim(str_replace('\\', '/', SystemConfig::path('pinker')), '/') . '/pincore';
         }
 
@@ -59,7 +59,7 @@ class PinkerCacheStore implements CacheStoreInterface
     {
         $entries = [];
 
-        if ($package === 'pincore') {
+        if ($package === 'platform') {
             $base = rtrim(str_replace('\\', '/', \PINOOX_CORE_PATH), '/');
         } elseif (!AppEngine::exists($package)) {
             return $entries;
@@ -70,7 +70,7 @@ class PinkerCacheStore implements CacheStoreInterface
         $appFile = SystemConfig::rawPath('app_file', 'app.php');
         $source = $base . '/' . $appFile;
 
-        if ($package !== 'pincore' && is_file($source)) {
+        if ($package !== 'platform' && is_file($source)) {
             $entries[] = [
                 'pinker' => (new Pinker($source, PinkerPortal::bakedFileFromSource($source)))->dumping(true),
             ];
@@ -79,3 +79,4 @@ class PinkerCacheStore implements CacheStoreInterface
         return $entries;
     }
 }
+

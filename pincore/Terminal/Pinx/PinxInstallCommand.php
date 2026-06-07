@@ -21,6 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'pinx:install',
     description: 'Install or update a .pinx/.pin package',
 )]
+
 class PinxInstallCommand extends Terminal
 {
     protected function configure(): void
@@ -169,3 +170,4 @@ HELP
         return $packageArg . '.pinx';
     }
 }
+

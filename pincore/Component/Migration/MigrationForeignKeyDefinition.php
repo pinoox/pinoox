@@ -17,3 +17,4 @@ class MigrationForeignKeyDefinition extends ForeignKeyDefinition
         return $this->__call('on', [$table]);
     }
 }
+

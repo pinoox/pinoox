@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Database\Relation;
-
 
 use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Portal\App\App;
@@ -23,7 +22,7 @@ trait JoinWith
     Builder
     {
         $relationJoiner = new RelationJoiner($query, [
-            'pincore', App::package()
+            'platform', App::package()
         ]);
 
         return $relationJoiner->joinWith($relations, $type, $where);

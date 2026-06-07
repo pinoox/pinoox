@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'seeder:run',
     description: 'Run database seeders for an app',
 )]
+
 class SeederCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class SeederCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Runs all seeders in database/seed/ for the selected app.
-
-
 
 Examples:
 
@@ -121,3 +120,4 @@ HELP
         }
     }
 }
+

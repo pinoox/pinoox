@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Log;
 
@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'log:view',
     description: 'View or open the Pinoox log file'
 )]
+
 class LogViewCommand extends Terminal
 {
     use SelectsPackage;
@@ -23,7 +24,7 @@ class LogViewCommand extends Terminal
     protected function configure(): void
     {
         $this
-            ->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'App package or pincore. Leave empty for active/default log.')
+            ->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'App package or platform. Leave empty for active/default log.')
             ->addOption('tail', 't', InputOption::VALUE_OPTIONAL, 'Show the last N lines of the log', 10)
             ->addOption('open', 'o', InputOption::VALUE_NONE, 'Open the log file with the default text editor')
             ->addOption('follow', 'f', InputOption::VALUE_NONE, 'Follow the log file (tail -f)')
@@ -258,3 +259,4 @@ class LogViewCommand extends Terminal
         return LogConfig::resolveForPackage($package)['path'];
     }
 }
+

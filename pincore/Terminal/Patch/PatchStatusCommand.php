@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Patch;
 
@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'patch:status',
     description: 'Show which patches ran and which are pending',
 )]
+
 class PatchStatusCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -25,7 +26,7 @@ class PatchStatusCommand extends Terminal
     {
         $this
             ->setHelp('Example: php pinoox patch:status com_my_shop')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -35,7 +36,7 @@ class PatchStatusCommand extends Terminal
         $package = $this->resolvePackage($input, $output, new SymfonyStyle($input, $output));
 
         try {
-            (new Migrator('pincore'))->run();
+            (new Migrator('platform'))->run();
 
             $toolkit = new PatchToolkit();
             $toolkit->package($package)->load();
@@ -82,3 +83,4 @@ class PatchStatusCommand extends Terminal
         }
     }
 }
+

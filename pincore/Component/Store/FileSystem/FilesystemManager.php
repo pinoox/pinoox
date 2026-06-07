@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Store\FileSystem;
 
@@ -483,18 +483,18 @@ class FilesystemManager implements FactoryContract
     protected function currentPackageName(): string
     {
         try {
-            return App::package() ?: 'pincore';
+            return App::package() ?: 'platform';
         } catch (\Throwable) {
-            return 'pincore';
+            return 'platform';
         }
     }
 
     protected function normalizePackageName(string $package): string
     {
         $package = trim(str_replace(['\\', '/'], '_', $package));
-        $package = preg_replace('/[^A-Za-z0-9_.-]+/', '_', $package) ?: 'pincore';
+        $package = preg_replace('/[^A-Za-z0-9_.-]+/', '_', $package) ?: 'platform';
 
-        return trim($package, '._-') ?: 'pincore';
+        return trim($package, '._-') ?: 'platform';
     }
 
     protected function joinPath(string ...$segments): string
@@ -527,3 +527,4 @@ class FilesystemManager implements FactoryContract
         return $this->disk()->$method(...$parameters);
     }
 }
+

@@ -114,8 +114,8 @@ it('uses the core connection prefix without duplicating it in resolved table nam
     ]);
 
     expect($manager->core()->getTablePrefix())->toBe('pinx_')
-        ->and($manager->tableName('user', 'pincore'))->toBe('user')
-        ->and($manager->tableName('user as u', 'pincore'))->toBe('user AS u');
+        ->and($manager->tableName('user', 'platform'))->toBe('user')
+        ->and($manager->tableName('user as u', 'platform'))->toBe('user AS u');
 });
 
 it('derives an app connection from core when only the table prefix is customized', function () {
@@ -140,8 +140,8 @@ it('derives an app connection from core when only the table prefix is customized
         ->and($manager->app('com_test_derived_prefix')->getTablePrefix())->toBe('welcome_')
         ->and($manager->tableName('category', 'com_test_derived_prefix'))->toBe('category')
         ->and($manager->physicalTableName('category', 'com_test_derived_prefix'))->toBe('welcome_category')
-        ->and($manager->tableName('user', 'pincore'))->toBe('user')
-        ->and($manager->physicalTableName(Table::FILE, 'pincore'))->toBe('pinx_file');
+        ->and($manager->tableName('user', 'platform'))->toBe('user')
+        ->and($manager->physicalTableName(Table::FILE, 'platform'))->toBe('pinx_file');
 });
 
 it('loads relations between models that belong to different app databases', function () {
@@ -230,10 +230,10 @@ it('resolves table names using core, shared app, dedicated app, and explicit pre
     ]);
     AppEngine::__rebuild();
 
-    expect($manager->tableName('user', 'pincore'))->toBe('pinx_user')
+    expect($manager->tableName('user', 'platform'))->toBe('pinx_user')
         ->and(Table::USER)->toBe('user')
         ->and(Table::user('u'))->toBe('pinx_user AS u')
-        ->and($manager->tableName(Table::USER, 'pincore'))->toBe('pinx_user')
+        ->and($manager->tableName(Table::USER, 'platform'))->toBe('pinx_user')
         ->and($manager->tableName('pinx_user', 'com_test_shared_tables'))->toBe('pinx_user')
         ->and($manager->tableName('notifications', 'com_test_shared_tables'))->toBe('tables_notifications')
         ->and($manager->tableName('notifications', 'com_test_dedicated_tables'))->toBe('notifications')
@@ -252,7 +252,7 @@ it('keeps migration table access pointed to the central history table', function
 
     expect(Table::HISTORY)->toBe('history')
         ->and(Table::MIGRATION)->toBe('history')
-        ->and($manager->physicalTableName(Table::MIGRATION, 'pincore'))->toBe('pinx_history')
+        ->and($manager->physicalTableName(Table::MIGRATION, 'platform'))->toBe('pinx_history')
         ->and(class_exists(Pinoox\Model\HistoryModel::class))->toBeTrue();
 });
 
@@ -297,3 +297,4 @@ function deleteDirectory(string $dir): void
 
     rmdir($dir);
 }
+

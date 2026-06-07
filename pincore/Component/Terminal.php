@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -91,9 +92,8 @@ class Terminal extends Command
         return $io->askQuestion($question);
     }
 
-
     protected function getDefaultPackage(): string
     {
-        return _env('PINOOX_CLI_PACKAGE', 'pincore');
+        return _env('PINOOX_CLI_PACKAGE', \Pinoox\Support\Platform::PACKAGE);
     }
 }

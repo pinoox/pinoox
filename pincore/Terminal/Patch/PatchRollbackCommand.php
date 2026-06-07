@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Patch;
 
@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'patch:rollback',
     description: 'Rollback the last executed patch',
 )]
+
 class PatchRollbackCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -26,7 +27,7 @@ class PatchRollbackCommand extends Terminal
         $this
             ->setHelp('Example: php pinoox patch:rollback com_my_shop')
             ->addArgument('patch', InputArgument::REQUIRED, 'Patch name or class to rollback')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -37,7 +38,7 @@ class PatchRollbackCommand extends Terminal
         $target = (string)$input->getArgument('patch');
 
         try {
-            (new Migrator('pincore'))->run();
+            (new Migrator('platform'))->run();
 
             $toolkit = new PatchToolkit();
             $toolkit->package($package)->load();
@@ -115,3 +116,4 @@ class PatchRollbackCommand extends Terminal
         return (int)round((microtime(true) - $startedAt) * 1000);
     }
 }
+

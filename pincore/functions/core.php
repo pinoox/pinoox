@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -106,15 +107,15 @@ if (!function_exists('container')) {
     }
 }
 
-if (!function_exists('pincore')) {
+if (!function_exists('platform')) {
     /**
-     * Open pincore container
+     * Open platform container
      *
      * @return ContainerBuilder
      */
-    function pincore(): ContainerBuilder
+    function platform(): ContainerBuilder
     {
-        return Container::pincore();
+        return Container::platform();
     }
 }
 
@@ -161,7 +162,7 @@ if (!function_exists('session')) {
      */
     function session($key = null, $default = null)
     {
-        $session = app()->session();
+        $session = App::___()->session();
         if (is_null($key)) {
             return $session;
         }
@@ -178,29 +179,14 @@ if (!function_exists('session')) {
     }
 }
 
-if (!function_exists('app')) {
+if (!function_exists('runtime')) {
     /**
-     * @param null $key
-     * @param null $default
-     * @return \Pinoox\Component\Package\App|mixed
-     * @throws Exception
+     * Active HTTP App kernel (request, session, router, …).
+     * For app.php manifest use app() instead.
      */
-    function app($key = null, $default = null)
+    function runtime(): \Pinoox\Component\Package\App
     {
-        $app = App::___();
-        if (is_null($key)) {
-            return $app;
-        }
-
-        if (is_array($key)) {
-            foreach ($key as $name => $value) {
-                $app->set($name, $value);
-            }
-
-            return $app;
-        }
-
-        return $app->get($key, $default);
+        return App::___();
     }
 }
 
@@ -233,7 +219,7 @@ if (!function_exists('cookie')) {
     ): CookieSymfony|InputBag
     {
         return $name === null
-            ? app()->cookie()
+            ? App::___()->cookie()
             : Cookie::create(
                 name: $name,
                 value: $value,

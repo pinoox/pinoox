@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Patch;
 
@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'patch:create',
     description: 'Create a data patch file for one-time DB or config updates',
 )]
+
 class PatchCreateCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -31,7 +32,7 @@ class PatchCreateCommand extends Terminal
         $this
             ->setHelp('Example: php pinoox patch:create fix_user_roles com_my_shop')
             ->addArgument('patch', InputArgument::REQUIRED, 'Patch name (e.g. fix_user_roles)')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -72,7 +73,7 @@ class PatchCreateCommand extends Terminal
 
     private function getPatchPath(): string
     {
-        if ($this->package === 'pincore') {
+        if ($this->package === 'platform') {
             return SystemConfig::path('system_patches');
         }
 
@@ -88,8 +89,9 @@ class PatchCreateCommand extends Terminal
 
     private function getNamespace(): string
     {
-        return $this->package === 'pincore'
+        return $this->package === 'platform'
             ? 'Pinoox\\Patches'
             : 'App\\' . $this->package . '\\patches';
     }
 }
+

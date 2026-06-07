@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'cache:clear',
     description: 'Clear app runtime cache (routes, API, Twig, GraphQL, Pinker)',
 )]
+
 class CacheClearCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class CacheClearCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Removes cached files from pinker/apps/{package}/cache/.
-
-
 
 Examples:
 
@@ -66,3 +65,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

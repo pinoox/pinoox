@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -26,6 +27,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'query',
     description: 'Execute SQL queries directly from command line'
 )]
+
 class QueryCommand extends Terminal
 {
     protected function configure(): void

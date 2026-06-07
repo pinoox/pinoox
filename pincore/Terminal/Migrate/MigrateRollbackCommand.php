@@ -1,4 +1,5 @@
-<?php
+﻿<?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -30,12 +31,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'migrate:rollback',
     description: 'Rollback the last batch of migrations',
 )]
+
 class MigrateRollbackCommand extends Terminal
 {
     use SelectsMigrationPackage;
 
     private string $package;
-
 
     private $mig = null;
 
@@ -43,7 +44,7 @@ class MigrateRollbackCommand extends Terminal
     {
         $this
             ->setHelp('Example: php pinoox migrate:rollback com_my_shop')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.')
             ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key checks during rollback');
 
     }
@@ -74,7 +75,6 @@ class MigrateRollbackCommand extends Terminal
         $this->mig->package($this->package)
             ->action('rollback')
             ->load();
-
 
         if (!$this->mig->isSuccess()) {
             $this->error($this->mig->getErrors());
@@ -115,3 +115,4 @@ class MigrateRollbackCommand extends Terminal
     }
 
 }
+

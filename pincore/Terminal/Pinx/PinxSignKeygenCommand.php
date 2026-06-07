@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'pinx:sign-keygen',
     description: 'Generate an Ed25519 signing key pair for pinx package builds',
 )]
+
 class PinxSignKeygenCommand extends Terminal
 {
     use SelectsPackage;
@@ -87,3 +88,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

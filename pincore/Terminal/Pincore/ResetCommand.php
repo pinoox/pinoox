@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'reset',
     description: 'Remove Pinker baked files and restore app config from source',
 )]
+
 class ResetCommand extends Terminal
 {
     use SelectsPackage;
@@ -27,8 +28,6 @@ class ResetCommand extends Terminal
             ->setHelp(
                 <<<'HELP'
 Deletes Pinker cache folders so config is rebuilt from source on next request.
-
-
 
 Examples:
 
@@ -61,7 +60,7 @@ HELP
 
     private function pinkerDirs(string $package): array
     {
-        if ($package === 'pincore') {
+        if ($package === 'platform') {
             return [
                 path('~/pinker/pincore'),
                 path('~/pinker/system'),
@@ -71,3 +70,4 @@ HELP
         return [path('~/pinker/apps/' . $package)];
     }
 }
+

@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:resolve',
     description: 'Show which app handles a URL path and/or host',
 )]
+
 class AppResolveCommand extends Terminal
 {
     protected function configure(): void
@@ -84,3 +85,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

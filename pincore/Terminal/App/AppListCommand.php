@@ -17,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'app:list',
     description: 'List installed apps with routes, domain hosts, and status',
 )]
+
 class AppListCommand extends Terminal
 {
     protected function configure(): void
@@ -101,3 +102,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

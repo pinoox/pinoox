@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -25,18 +26,29 @@ use Pinoox\System\Model\Table;
 class Migrator
 {
     // Migration actions
+
     private const ACTION_RUN = 'run';
+
     private const ACTION_ROLLBACK = 'rollback';
+
     private const ACTION_INIT = 'init';
+
     private const ACTION_STATUS = 'status';
+
     private const ACTION_RESET = 'reset';
+
     private const ACTION_REFRESH = 'refresh';
 
     // Migration statuses
+
     private const STATUS_PENDING = 'pending';
+
     private const STATUS_RUNNING = 'running';
+
     private const STATUS_COMPLETED = 'completed';
+
     private const STATUS_FAILED = 'failed';
+
     private const STATUS_ROLLED_BACK = 'rolled_back';
 
     private string $package;
@@ -115,8 +127,8 @@ class Migrator
     public function init(): array
     {
         try {
-            if ($this->package !== 'pincore') {
-                return (new self('pincore', self::ACTION_INIT, $this->options))->init();
+            if ($this->package !== 'platform') {
+                return (new self('platform', self::ACTION_INIT, $this->options))->init();
             }
 
             $this->log('Initializing migration system...');
@@ -125,7 +137,7 @@ class Migrator
                 return ['Migration system already initialized.'];
             }
 
-            $this->toolkit->package('pincore')->action('init')->load();
+            $this->toolkit->package('platform')->action('init')->load();
 
             if (!$this->toolkit->isSuccess()) {
                 throw new Exception($this->toolkit->getErrors());
@@ -133,6 +145,11 @@ class Migrator
 
             $result = $this->executeMigrations();
             MigrationQuery::importLegacyMigrationRecords();
+
+            if (!$this->toolkit->isExistsMigrationTable()) {
+                throw new Exception('Migration history table was not created during initialization.');
+            }
+
             $this->log('Migration system initialized successfully.');
 
             return $result;
@@ -148,10 +165,16 @@ class Migrator
     public function run(): array
     {
         try {
-            if ($this->package === 'pincore') {
+            if ($this->package === 'platform') {
                 if (!$this->toolkit->isExistsMigrationTable()) {
                     $this->log("Migration table doesn't exist, initializing...");
                     $this->init();
+
+                    if (!$this->toolkit->isExistsMigrationTable()) {
+                        throw new Exception('Migration history table is missing after initialization.');
+                    }
+
+                    $this->toolkit = new MigrationToolkit();
                 }
 
                 $this->toolkit->package($this->package)->action($this->action)->load();
@@ -187,7 +210,7 @@ class Migrator
             }
             throw $e;
         } finally {
-            if ($this->package !== 'pincore') {
+            if ($this->package !== 'platform') {
                 $this->releaseLock();
             }
             $this->finalizeStatistics();
@@ -196,7 +219,7 @@ class Migrator
 
     private function ensureCoreMigrations(): void
     {
-        (new self('pincore', self::ACTION_RUN, $this->options))->run();
+        (new self('platform', self::ACTION_RUN, $this->options))->run();
     }
 
     /**
@@ -390,21 +413,13 @@ class Migrator
             
             foreach ($migrations as $migration) {
                 $migrationName = $migration['fileName'];
-                
-                // Check if this migration has already been run
-                if ($this->hasBeenRun($migrationName)) {
+
+                if ($this->shouldSkipMigrationExecution($migration)) {
                     $skipped[] = $migrationName;
                     $this->log("Skipping already executed migration: {$migrationName}");
                     continue;
                 }
-                
-                // Skip if migration is marked as sync (already run)
-                if (!empty($migration['sync'])) {
-                    $skipped[] = $migrationName;
-                    $this->log("Skipping synchronized migration: {$migrationName}");
-                    continue;
-                }
-                
+
                 try {
                     $this->log("Executing migration: {$migrationName}");
                     
@@ -439,10 +454,30 @@ class Migrator
         ];
     }
     
+    /**
+     * @param array<string, mixed> $migration
+     */
+    private function shouldSkipMigrationExecution(array $migration): bool
+    {
+        $migrationName = (string) ($migration['fileName'] ?? '');
+
+        if ($migrationName === '') {
+            return false;
+        }
+
+        $recorded = $this->hasBeenRun($migrationName) || !empty($migration['sync']);
+
+        if (!$recorded) {
+            return false;
+        }
+
+        return $this->targetTableExists($migration);
+    }
+
     private function hasBeenRun(string $migrationName): bool
     {
         try {
-            return DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')
+            return DB::table(DB::tableName(Table::HISTORY, 'platform'), null, 'platform')
                 ->where('type', MigrationQuery::TYPE_MIGRATION)
                 ->where('migration', $migrationName)
                 ->where('app', $this->package)
@@ -453,11 +488,70 @@ class Migrator
             return false;
         }
     }
+
+    /**
+     * @param array<string, mixed> $migration
+     */
+    private function targetTableExists(array $migration): bool
+    {
+        $fileName = (string) ($migration['fileName'] ?? '');
+
+        if (str_contains($fileName, 'create_access_tables')) {
+            return $this->schemaHasTable(Table::ROLE, $this->package);
+        }
+
+        $table = $migration['tableName'] ?? null;
+
+        if (!is_string($table) || $table === '') {
+            return true;
+        }
+
+        return $this->schemaHasTable($table, $this->package);
+    }
+
+    private function schemaHasTable(string $table, ?string $package = null): bool
+    {
+        try {
+            $package ??= $this->package;
+            $connection = $package === 'platform'
+                ? 'platform'
+                : DB::connectionNameForPackage($package);
+            $conn = DB::connection($connection);
+            $physical = DB::physicalTableName($table, $package);
+            $prefix = (string) $conn->getTablePrefix();
+            $logical = $physical;
+
+            if ($prefix !== '' && str_starts_with($physical, $prefix)) {
+                $logical = substr($physical, strlen($prefix));
+            }
+
+            if (DB::schema($connection)->hasTable($logical)) {
+                return true;
+            }
+
+            $database = (string) $conn->getDatabaseName();
+
+            if ($database === '' || $physical === '') {
+                return false;
+            }
+
+            $row = $conn->selectOne(
+                'SELECT 1 AS found FROM information_schema.tables WHERE table_schema = ? AND table_name = ? LIMIT 1',
+                [$database, $physical],
+            );
+
+            return $row !== null;
+        } catch (Exception $e) {
+            $this->log('Error checking table ' . $table . ': ' . $e->getMessage(), 'warning');
+
+            return false;
+        }
+    }
     
     private function recordMigration(string $migrationName): void
     {
         try {
-            DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')->insert([
+            DB::table(DB::tableName(Table::HISTORY, 'platform'), null, 'platform')->insert([
                 'type' => MigrationQuery::TYPE_MIGRATION,
                 'migration' => $migrationName,
                 'app' => $this->package,
@@ -474,7 +568,7 @@ class Migrator
     private function getBatchNumber(): int
     {
         try {
-            $lastBatch = DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')
+            $lastBatch = DB::table(DB::tableName(Table::HISTORY, 'platform'), null, 'platform')
                 ->where('type', MigrationQuery::TYPE_MIGRATION)
                 ->where('app', $this->package)
                 ->max('batch');
@@ -776,3 +870,4 @@ class Migrator
             || strpos($migration['fileName'], 'create_migration_table') !== false;
     }
 }
+

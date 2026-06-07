@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'schedule:run',
     description: 'Run due cron tasks (for system crontab)',
 )]
+
 class ScheduleRunCommand extends Terminal
 {
     use SelectsPackage;
@@ -84,3 +85,4 @@ HELP
         return $failed ? Command::FAILURE : Command::SUCCESS;
     }
 }
+

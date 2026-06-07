@@ -30,7 +30,7 @@ class Table
     {
         $alias = $arguments[0] ?? $name;
         $name = strtoupper($name);
-        $table = DB::tableName(constant(static::class . '::' . $name), 'pincore');
+        $table = DB::tableName(constant(static::class . '::' . $name), 'platform');
         if ($alias) {
             $table .= ' AS ' . $alias;
         }

@@ -15,6 +15,7 @@
 namespace Pinoox\System\Model;
 
 use Pinoox\Component\Database\Model;
+use Pinoox\Component\Transport\TransportConfig;
 use Pinoox\Portal\User;
 use Pinoox\System\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
@@ -67,8 +68,7 @@ class TokenModel extends Model
 
     public static function getPackage(): string
     {
-        $package = App::get('transport.token');
-        return $package ?? App::package();
+        return TransportConfig::package('token');
     }
 
     protected static function booted(): void

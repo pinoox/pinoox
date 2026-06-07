@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -43,9 +44,13 @@ return [
         'lifetime' => 30,
         'lifetime_unit' => 'day',
     ],
+    // Shared resources between apps. Values: local | platform | host | {package}
     'transport' => [
         'user' => null,
+        'auth' => null,
+        'token' => null,
         'file' => null,
+        'access' => null,
     ],
     'filesystem' => [
         'disk' => null,
@@ -140,3 +145,4 @@ return [
         'include_themes' => [],
     ],
 ];
+

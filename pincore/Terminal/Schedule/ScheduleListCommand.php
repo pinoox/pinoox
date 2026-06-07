@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'schedule:list',
     description: 'List cron tasks registered by apps',
 )]
+
 class ScheduleListCommand extends Terminal
 {
     use SelectsPackage;
@@ -71,3 +72,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

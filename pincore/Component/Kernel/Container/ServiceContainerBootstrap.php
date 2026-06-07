@@ -9,13 +9,14 @@ use Pinoox\Portal\App\AppEngine;
 class ServiceContainerBootstrap
 {
     /** @var array<string, true> */
+
     private static array $booted = [];
 
     public static function boot(?string $package = null): ContainerBuilder
     {
         $package = $package ?? (string) (\Pinoox\Portal\App\App::package() ?? '');
         $builder = $package === '' || $package === '~'
-            ? KernelContainer::pincore()
+            ? KernelContainer::platform()
             : KernelContainer::app($package);
 
         $key = self::key($package);
@@ -97,3 +98,4 @@ class ServiceContainerBootstrap
         return $package === '' ? '~' : $package;
     }
 }
+

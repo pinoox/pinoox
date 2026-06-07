@@ -66,3 +66,4 @@ abstract class PatchBase
         return $this->schema;
     }
 }
+

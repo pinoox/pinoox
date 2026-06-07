@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:domain',
     description: 'View host-to-app mappings from domain.config.php',
 )]
+
 class AppDomainCommand extends Terminal
 {
     use SelectsPackage;
@@ -167,3 +168,4 @@ HELP
         $output->writeln('');
     }
 }
+

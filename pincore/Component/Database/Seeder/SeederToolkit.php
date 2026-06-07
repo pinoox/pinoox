@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -62,7 +63,7 @@ class SeederToolkit
 
     private function initializeSeederPath(): void
     {
-        if ($this->package === 'pincore') {
+        if ($this->package === 'platform') {
             $this->seederPath = SystemConfig::path('system_seed');
         } else {
             $this->seederFolder = trim(SystemConfig::rawPath('app_seed', 'database/seed'), '/\\');
@@ -115,3 +116,4 @@ class SeederToolkit
         }
     }
 } 
+

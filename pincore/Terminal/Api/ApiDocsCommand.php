@@ -8,6 +8,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
     name: 'api:docs',
     description: 'Generate REST API docs (Markdown or HTML) for an app',
 )]
+
 class ApiDocsCommand extends \Pinoox\PinDoc\Api\Console\ApiDocsCommand
 {
 }
+

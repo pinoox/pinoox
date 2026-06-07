@@ -17,6 +17,7 @@ use Symfony\Component\Console\Output\OutputInterface;
     name: 'mode:show',
     description: 'Show runtime mode profile for the project and installed apps',
 )]
+
 class ModeShowCommand extends Terminal
 {
     protected function configure(): void
@@ -120,3 +121,4 @@ HELP
         $table->render();
     }
 }
+

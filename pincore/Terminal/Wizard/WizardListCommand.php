@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -29,6 +30,7 @@ use Symfony\Component\Process\Process;
     name: 'wizard:list',
     description: 'Show list of pin packages',
 )]
+
 class WizardListCommand extends Terminal
 {
 
@@ -66,7 +68,6 @@ class WizardListCommand extends Terminal
         return Command::SUCCESS;
     }
 
-
     private function fetchPinFiles(): array
     {
         $finder = new Finder();
@@ -80,7 +81,6 @@ class WizardListCommand extends Terminal
 
         return $files;
     }
-
 
     private function selectFiles(array $files, InputInterface $input, OutputInterface $output): array
     {

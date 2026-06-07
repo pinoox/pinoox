@@ -18,6 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:router',
     description: 'View or edit URL-to-app mappings in router.config.php',
 )]
+
 class AppRouterCommand extends Terminal
 {
     use SelectsPackage;
@@ -153,3 +154,4 @@ HELP
         $output->writeln('');
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Source;
-
 
 use Composer\Autoload\ClassLoader;
 use Pinoox\Component\Helpers\Str;
@@ -27,15 +26,25 @@ use Symfony\Component\DependencyInjection\Reference;
 abstract class Portal
 {
     protected static mixed $__lastHistory = null;
+
     protected static array $__history = [];
+
     protected static string $__method = '';
+
     protected static array $__args = [];
+
     protected static array $__watcher = [];
+
     protected static array $__subNameClasses = [];
+
     protected static array $__registered = [];
+
     protected static array $__booted = [];
+
     protected static ClassLoader $__classLoader;
+
     protected static string $__vendorDir;
+
     protected static string $__baseDir;
 
     /**
@@ -165,7 +174,6 @@ abstract class Portal
         return [];
     }
 
-
     /**
      * Get compiled replace methods.
      * @return array
@@ -291,7 +299,6 @@ abstract class Portal
         }
     }
 
-
     /**
      * Handle dynamic, static calls to the object.
      *
@@ -319,7 +326,6 @@ abstract class Portal
     {
         return static::callMethod($method, $args);
     }
-
 
     /**
      * Get the last result of calls to the object.
@@ -491,7 +497,7 @@ abstract class Portal
      */
     final public static function __container(): ContainerBuilder
     {
-        return Str::firstHas(static::class, 'App') ? Container::app() : Container::pincore();
+        return Str::firstHas(static::class, 'App') ? Container::app() : Container::platform();
     }
 
     /**
@@ -579,3 +585,4 @@ abstract class Portal
         return $names;
     }
 }
+

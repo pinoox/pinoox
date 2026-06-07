@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -27,6 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'wizard:export',
     description: 'Export production package (delegates to pinx:build)',
 )]
+
 class WizardExportCommand extends Terminal
 {
     protected function configure(): void
@@ -64,3 +66,4 @@ class WizardExportCommand extends Terminal
         }
     }
 }
+

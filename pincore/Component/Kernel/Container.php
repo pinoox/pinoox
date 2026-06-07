@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,7 +11,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Kernel;
 
 use Pinoox\Portal\App\App;
@@ -19,9 +19,10 @@ use Illuminate\Container\Container as ContainerIlluminate;
 
 class Container
 {
-    const pincore = 'pincore';
+    const platform = 'platform';
 
     /** @var ContainerBuilder[] */
+
     private static array $containers;
 
     private static ContainerIlluminate $containerIlluminate;
@@ -47,7 +48,7 @@ class Container
      */
     public static function destroy(string $name): void
     {
-        if (isset(self::$containers[$name]) && $name !== self::pincore)
+        if (isset(self::$containers[$name]) && $name !== self::platform)
             unset(self::$containers[$name]);
     }
 
@@ -67,16 +68,16 @@ class Container
      *
      * @return ContainerBuilder
      */
-    public static function pincore(): ContainerBuilder
+    public static function platform(): ContainerBuilder
     {
-        return self::open(self::pincore);
+        return self::open(self::platform);
     }
 
     public static function app(?string $packageName = null): ContainerBuilder
     {
         $packageName = empty($packageName) ? App::package() : $packageName;
         if ($packageName === '~')
-            return self::pincore();
+            return self::platform();
         else
             return self::open($packageName);
     }

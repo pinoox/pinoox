@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -21,6 +22,7 @@ use Pinoox\Portal\Database\DB;
 class MigrationBase extends Migration
 {
     public Builder $schema;
+
     private static ?string $package = null;
 
     public static function usePackage(?string $package): void
@@ -46,3 +48,4 @@ class MigrationBase extends Migration
     }
 
 }
+

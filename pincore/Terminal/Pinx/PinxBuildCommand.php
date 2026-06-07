@@ -20,6 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'pinx:build',
     description: 'Build a .pinx install package from an app or theme',
 )]
+
 class PinxBuildCommand extends Terminal
 {
     use SelectsPackage;
@@ -124,6 +125,10 @@ HELP
                 $rows[] = ['Depends', $dependsSummary];
             }
 
+            if (!empty($result['composer'])) {
+                $rows[] = ['Composer', 'vendor/ prepared with --no-dev'];
+            }
+
             $io->definitionList(...array_map(static fn (array $row) => [$row[0] => $row[1]], $rows));
 
             if ($manifest->isTheme()) {
@@ -138,3 +143,4 @@ HELP
         }
     }
 }
+

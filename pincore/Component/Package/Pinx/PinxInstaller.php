@@ -141,7 +141,7 @@ class PinxInstaller
                 $this->runRegistry($manifest, $steps);
 
                 if (!($options['skip_migrate'] ?? false)) {
-                    $this->runMigrate($manifest->package(), $steps);
+                    $this->runMigrate($manifest->package(), $steps, (bool) ($options['force'] ?? false));
                 } else {
                     $this->recordStep($steps, 'migrate', 'skipped', 'Migration skipped by option.');
                 }
@@ -358,10 +358,11 @@ class PinxInstaller
     /**
      * @param list<array{step: string, status: string, message: string}> $steps
      */
-    private function runMigrate(string $package, array &$steps): void
+    private function runMigrate(string $package, array &$steps, bool $force = false): void
     {
         try {
-            (new Migrator('pincore'))->run();
+            (new Migrator('platform'))->run();
+            $this->runPatches('platform', $steps, $force);
             (new Migrator($package))->run();
             $this->recordStep($steps, 'migrate', 'ok', 'Migrations completed for ' . $package . '.');
         } catch (\Throwable $e) {
@@ -449,3 +450,4 @@ class PinxInstaller
         }
     }
 }
+

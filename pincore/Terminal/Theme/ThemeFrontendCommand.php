@@ -18,6 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'theme:frontend',
     description: 'Build, run, inspect, or scaffold frontend assets for an app theme',
 )]
+
 class ThemeFrontendCommand extends Terminal
 {
     use SelectsPackage;
@@ -163,3 +164,4 @@ HELP
         return Command::SUCCESS;
     }
 }
+

@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace Pinoox\Terminal\Migrate;
 
@@ -18,6 +18,7 @@ use Symfony\Component\Finder\Finder;
     name: 'migrate:create',
     description: 'Create a new database migration file',
 )]
+
 class MigrateCreateCommand extends Terminal
 {
     use SelectsMigrationPackage;
@@ -25,7 +26,6 @@ class MigrateCreateCommand extends Terminal
     private string $package;
 
     private string $migration;
-
 
     /**
      * @var MigrationToolkit
@@ -37,7 +37,7 @@ class MigrateCreateCommand extends Terminal
         $this
             ->setHelp('Example: php pinoox migrate:create create_products_table com_my_shop')
             ->addArgument('migration', InputArgument::REQUIRED, 'Migration name (e.g. create_products_table)')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -52,7 +52,6 @@ class MigrateCreateCommand extends Terminal
 
         return Command::SUCCESS;
     }
-
 
     private function init(): void
     {
@@ -111,9 +110,10 @@ class MigrateCreateCommand extends Terminal
 
     private function getNamespace(): string
     {
-        return $this->package === 'pincore'
+        return $this->package === 'platform'
             ? 'Pinoox\\Database\\migrations'
             : 'App\\' . $this->package . '\\database\\migrations';
     }
 
 }
+

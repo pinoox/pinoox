@@ -1,4 +1,5 @@
-<?php
+﻿<?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -25,8 +26,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'test',
-    description: 'Run Pest/PHPUnit tests for an app or pincore',
+    description: 'Run Pest/PHPUnit tests for an app or platform',
 )]
+
 class TestCommand extends Terminal
 {
     use SelectsTestPackage;
@@ -35,7 +37,7 @@ class TestCommand extends Terminal
     {
         $this
             ->setHelp('Examples: php pinoox test | php pinoox test com_my_shop --feature')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or platform. Leave empty to pick from the list.')
             ->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Run tests matching a name pattern')
             ->addOption('unit', 'u', InputOption::VALUE_NONE, 'Run only Unit tests')
             ->addOption('feature', null, InputOption::VALUE_NONE, 'Run only Feature tests')
@@ -112,3 +114,4 @@ class TestCommand extends Terminal
     }
 
 }
+
