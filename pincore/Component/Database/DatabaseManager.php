@@ -27,6 +27,7 @@ class DatabaseManager extends Capsule
 {
     public const DEFAULT_CONNECTION = 'default';
     public const CORE_CONNECTION = 'pincore';
+    public const DEFAULT_CORE_TABLE_PREFIX = 'pinx_';
 
     private array $packageConnections = [];
 
@@ -137,7 +138,7 @@ class DatabaseManager extends Capsule
         }
 
         if ($package === self::CORE_CONNECTION || $package === 'pincore') {
-            return $this->connectionPrefix(self::CORE_CONNECTION) !== '' ? '' : 'pincore_';
+            return $this->connectionPrefix(self::CORE_CONNECTION) !== '' ? '' : self::DEFAULT_CORE_TABLE_PREFIX;
         }
 
         if (!AppEngine::exists($package)) {
@@ -349,7 +350,7 @@ class DatabaseManager extends Capsule
     private function hasTablePrefix(string $table, string $prefix, ?string $package): bool
     {
         return str_starts_with($table, $prefix)
-            || str_starts_with($table, 'pincore_')
+            || str_starts_with($table, self::DEFAULT_CORE_TABLE_PREFIX)
             || (!empty($package) && str_starts_with($table, $package . '_'));
     }
 
