@@ -3,28 +3,17 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | System App Registry
+    | External app registry
     |--------------------------------------------------------------------------
     |
-    | Apps inside the project-level apps/ directory are discovered automatically.
-    | Use this registry only for apps that live outside apps/ or need an
-    | explicit project-level registration.
-    |
-    | Supported formats:
+    | Apps under paths.apps are discovered automatically from apps/{package}/app.php.
+    | Register here only apps that live outside the apps/ folder.
     |
     | 'packages' => [
-    |     'com_vendor_app' => 'vendor/vendor-name/com_vendor_app',
-    |     'com_external_app' => [
-    |         'path' => '~/external/com_external_app',
-    |         'enabled' => true,
-    |     ],
+    |     'com_external_app' => '~/vendor/com_external_app',
+    |     'com_disabled_app' => ['path' => '~/external/app', 'enabled' => false],
     | ],
-    |
     */
-    'auto_discover' => env('PINOOX_APPS_AUTO_DISCOVER', true),
-    'path' => env('PINOOX_APPS_PATH', 'apps'),
-    'package_file' => env('PINOOX_APP_FILE', 'app.php'),
-
     'packages' => [
     ],
 ];

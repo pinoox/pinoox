@@ -2,7 +2,6 @@
 
 return [
     'key' => env('APP_KEY', env('PINOOX_APP_KEY', '')),
-    'debug' => env('APP_DEBUG', env('PINOOX_DEBUG', false)),
 
     'hashing' => [
         'driver' => env('HASH_DRIVER', env('PINOOX_HASH_DRIVER', 'bcrypt')),

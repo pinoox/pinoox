@@ -1,18 +1,31 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
 
 return [
+    /*
+    |--------------------------------------------------------------------------
+    | Canonical default domain (optional)
+    |--------------------------------------------------------------------------
+    |
+    | Used by docs, emails, and CLI when no HTTP request exists.
+    | Does NOT restrict which hosts may access the site.
+    |
+    */
     'default' => env('PINOOX_DOMAIN', null),
 
-    // "*.domain.com" => "{sub}"
-
+    /*
+    |--------------------------------------------------------------------------
+    | Dedicated host → app mappings
+    |--------------------------------------------------------------------------
+    |
+    | Any host NOT listed here uses default domain routing (router.config.php).
+    |
+    | 'shop.example.com' => 'com_my_shop',
+    |
+    | '*.example.com' => [
+    |     'package' => 'com_tenant',
+    |     'subdomain' => '{sub}',
+    | ],
+    */
+    'hosts' => [
+    ],
 ];

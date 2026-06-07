@@ -5,7 +5,9 @@ $aliases = [
     'Pinoox\\Model\\UserModel' => 'Pinoox\\System\\Model\\UserModel',
     'Pinoox\\Model\\FileModel' => 'Pinoox\\System\\Model\\FileModel',
     'Pinoox\\Model\\TokenModel' => 'Pinoox\\System\\Model\\TokenModel',
-    'Pinoox\\Model\\MigrationModel' => 'Pinoox\\System\\Model\\MigrationModel',
+    'Pinoox\\Model\\HistoryModel' => 'Pinoox\\System\\Model\\HistoryModel',
+    'Pinoox\\Model\\RoleModel' => 'Pinoox\\System\\Model\\RoleModel',
+    'Pinoox\\Model\\PermissionModel' => 'Pinoox\\System\\Model\\PermissionModel',
     'Pinoox\\Model\\Scope\\AppScope' => 'Pinoox\\System\\Model\\Scope\\AppScope',
 ];
 

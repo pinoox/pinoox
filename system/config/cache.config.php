@@ -8,8 +8,12 @@ return [
         'file' => [
             'driver' => 'file',
             'path' => env('CACHE_PATH', env('PINOOX_CACHE_PATH', '~storage/cache')),
-            'namespace' => env('CACHE_PREFIX', env('PINOOX_CACHE_PREFIX', 'pinoox')),
             'ttl' => (int) env('CACHE_TTL', env('PINOOX_CACHE_TTL', 0)),
+        ],
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => env('CACHE_REDIS_CONNECTION', env('REDIS_CACHE_CONNECTION', 'cache')),
         ],
     ],
 ];
