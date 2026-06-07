@@ -1,22 +1,36 @@
 <?php
-//pinoox app file, generated at "2019-08-28 14:21"
 
-return array(
+return [
     'package' => 'com_pinoox_comingsoon',
     'name' => 'coming',
     'developer' => 'armin dev',
-    'description' => 'برای بستن وب سایت جهت بروزرسانی، تعمیرات یا نمایش یک پیغام به کاربران',
-    'version-name' => '1.0',
-    'version-code' => 1,
+    'description' => 'Maintenance and coming-soon page for your site',
+    'version-name' => '1.1.0',
+    'version-code' => 2,
     'icon' => 'icon.png',
     'enable' => true,
+    'sys-app' => true,
     'theme' => 'default',
     'open' => 'app-view',
     'lang' => 'fa',
+    'minpin' => 2,
     'transport' => [
         'user' => 'pincore',
         'token' => 'pincore',
-    ]
-);
-
-//end of app
+    ],
+    'auth' => [
+        'mode' => 'session',
+        'key' => 'comingsoon_pinoox',
+        'lifetime' => 30,
+        'lifetime_unit' => 'day',
+    ],
+    'router' => [
+        'routes' => [
+            'routes/web.php',
+        ],
+    ],
+    'pinx' => [
+        'type' => 'app',
+        'minpin' => 2,
+    ],
+];
