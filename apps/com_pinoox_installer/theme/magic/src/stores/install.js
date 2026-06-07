@@ -19,7 +19,7 @@ export const useInstallStore = defineStore('install', {
             database: 'pinoox',
             username: 'root',
             password: '',
-            prefix: '',
+            prefix: 'pinx_',
         },
         user: {
             fname: '',

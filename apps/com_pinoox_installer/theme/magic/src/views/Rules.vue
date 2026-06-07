@@ -70,7 +70,7 @@ let rulesSimpleBar = null
 onMounted(() => {
     emit('update:steps', [])
     installAPI.agreement().then(async (data) => {
-        agreementHtml.value = typeof data === 'string' ? data : ''
+        agreementHtml.value = data?.text ?? ''
         await nextTick()
         initRulesScroll()
     })

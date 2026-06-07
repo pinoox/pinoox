@@ -3,12 +3,12 @@ const PINOOX = {
 // urls
 URL: {
 CURRENT: window.location.href,
-BASE: '{{ url("^") }}',
-API: '{{ url("^api/v1/") }}',
-SITE: '{{ url("~") }}',
+BASE: '{{ url("",'relative') }}',
+API: '{{ url("api/v1/") }}',
+SITE: '{{ url("", "site") }}',
 THEME: '{{ assets('/') }}',
-AVATAR: '{{ furl("resources/avatar.png") }}',
-APP_ICON: '{{ furl("resources/default.png") }}',
+AVATAR: '{{ asset("resources/avatar.png") }}',
+APP_ICON: '{{ asset("resources/default.png") }}',
 },
 
 OPTIONS:{

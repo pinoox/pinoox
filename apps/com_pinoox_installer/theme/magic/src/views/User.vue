@@ -138,19 +138,14 @@ function next() {
     installAPI.setup({
         db: db.value,
         user: user.value,
-    }).then((data) => {
-        const isInstall = !data || typeof data !== 'object' || data.status
-        if (isInstall) {
-            setTimeout(() => {
-                isLoading.value = false
-                redirect(PINOOX.URL.SITE, 0)
-            }, 3000)
-        } else {
+    }).then(() => {
+        setTimeout(() => {
             isLoading.value = false
-            err.value = data.result
-        }
-    }).catch(() => {
+            redirect(PINOOX.URL.SITE, 0)
+        }, 3000)
+    }).catch((error) => {
         isLoading.value = false
+        err.value = error?.message || LANG.value?.install?.err_insert_tables
     })
 }
 

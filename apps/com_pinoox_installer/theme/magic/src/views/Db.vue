@@ -125,13 +125,9 @@ onMounted(() => {
 function next() {
     isLoading.value = true
     isErr.value = false
-    installAPI.checkDB(params.value).then((data) => {
+    installAPI.checkDB(params.value).then(() => {
         isLoading.value = false
-        if (data.status) {
-            router.replace({name: 'user'})
-        } else {
-            isErr.value = true
-        }
+        router.replace({name: 'user'})
     }).catch(() => {
         isLoading.value = false
         isErr.value = true

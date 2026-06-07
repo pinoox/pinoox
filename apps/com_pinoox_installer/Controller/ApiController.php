@@ -7,7 +7,6 @@
  *      *     *  *    **  ****  ****  *    *
  * @author   Pinoox
  * @link https://www.pinoox.com/
- * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
@@ -15,48 +14,167 @@ namespace App\com_pinoox_installer\Controller;
 
 use App\com_pinoox_installer\Component\BootstrapDiagnostics;
 use App\com_pinoox_installer\Component\HtaccessManager;
+use App\com_pinoox_installer\Component\InstallerDatabase;
 use App\com_pinoox_installer\Component\LangHelper;
 use App\com_pinoox_installer\Component\PrerequisitesChecker;
+use App\com_pinoox_installer\Component\SetupException;
+use App\com_pinoox_installer\Component\SetupService;
+use App\com_pinoox_installer\Resource\AgreementResource;
+use App\com_pinoox_installer\Resource\LangResource;
+use App\com_pinoox_installer\Resource\PingResource;
+use Pinoox\Component\Database\DatabaseManager;
+use Pinoox\Component\Http\Api\PayloadResource;
+use Pinoox\Component\Http\JsonResponse;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Kernel\Controller\Controller;
-use Pinoox\Component\Migration\Migrator;
-use Pinoox\Component\Package\AppManager;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Component\Kernel\Controller\ApiController as BaseApiController;
+use Pinoox\PinDoc\Api\Attribute\ApiBody;
+use Pinoox\PinDoc\Api\Attribute\ApiEndpoint;
+use Pinoox\PinDoc\Api\Attribute\ApiParam;
+use Pinoox\PinDoc\Api\Attribute\ApiResponse;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\App\AppRouter;
-use Pinoox\Portal\Config;
-use Pinoox\Portal\Database\DB;
 
-class ApiController extends Controller
+class ApiController extends BaseApiController
 {
-
-    public function generateConfig($c): array
-    {
-        return [
-            'host' => $c['host'] ?? null,
-            'database' => $c['database'] ?? null,
-            'username' => $c['username'] ?? null,
-            'password' => $c['password'] ?? null,
-            'prefix' => $c['prefix'] ?? 'pincore_',
-            'driver' => 'mysql',
-            'port' => '3306',
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_bin',
-            'strict' => true,
-            'engine' => 'InnoDB',
-        ];
-    }
-
-    public function changeLang($lang): array
+    #[ApiParam(name: 'lang', in: 'path', type: 'string', required: true, description: 'Language code', example: 'en')]
+    #[ApiEndpoint(summary: 'Change installer language', description: 'Updates active installer locale.', tag: 'Localization')]
+    #[ApiResponse(status: 200, description: 'Updated language payload')]
+    public function changeLang(string $lang): JsonResponse
     {
         $lang = strtolower($lang);
-        App::set('lang', $lang)
-            ->save();
-        return $this->getLang();
+        App::set('lang', $lang)->save();
+
+        return $this->resource(new LangResource($this->langPayload($lang)));
     }
 
-    protected function getLang($lang = null): array
+    #[ApiEndpoint(summary: 'Validate database connection', description: 'Tests database credentials before installation.', tag: 'Database')]
+    #[ApiBody(
+        description: 'Database connection settings',
+        properties: [
+            'host' => 'string',
+            'database' => 'string',
+            'username' => 'string',
+            'password' => 'string',
+            'prefix' => 'string',
+        ],
+        example: [
+            'host' => '127.0.0.1',
+            'database' => 'pinoox',
+            'username' => 'root',
+            'password' => 'secret',
+            'prefix' => DatabaseManager::DEFAULT_CORE_TABLE_PREFIX,
+        ],
+    )]
+    #[ApiResponse(status: 200, description: 'Connection result')]
+    public function checkDB(Request $request): JsonResponse
+    {
+        $input = InstallerDatabase::readFromRequest($request);
+
+        if (InstallerDatabase::testConnection($input)) {
+            return $this->ok(['connected' => true], 'connect', translate: true);
+        }
+
+        return $this->fail('DB_CONNECTION_FAILED', 'disconnect', status: 422);
+    }
+
+    #[ApiEndpoint(summary: 'Installer health check', description: 'Returns API reachability and server timestamp.', tag: 'System')]
+    #[ApiResponse(status: 200, description: 'Service is healthy')]
+    public function ping(): JsonResponse
+    {
+        return $this->resource(new PingResource(['timestamp' => time()]));
+    }
+
+    #[ApiEndpoint(summary: 'Bootstrap diagnostics', description: 'Returns installer bootstrap checks for rewrite, htaccess, and assets.', tag: 'System')]
+    #[ApiResponse(status: 200, description: 'Bootstrap diagnostics payload')]
+    public function bootstrapDiagnostics(): JsonResponse
+    {
+        return $this->resource(new PayloadResource((new BootstrapDiagnostics())->run()));
+    }
+
+    #[ApiEndpoint(summary: 'Check all prerequisites', description: 'Runs disk, PHP, rewrite, and database extension checks.', tag: 'System')]
+    #[ApiResponse(status: 200, description: 'Prerequisites overview')]
+    public function checkAllPrerequisites(): JsonResponse
+    {
+        return $this->resource(new PayloadResource((new PrerequisitesChecker())->checkAll()));
+    }
+
+    #[ApiEndpoint(summary: 'Check one prerequisite', description: 'Runs a single prerequisite check by type.', tag: 'System')]
+    #[ApiParam(name: 'type', in: 'path', type: 'string', required: true, example: 'rewrite')]
+    #[ApiResponse(status: 200, description: 'Single prerequisite result')]
+    public function checkPrerequisites(string $type): JsonResponse
+    {
+        $result = (new PrerequisitesChecker())->check($type);
+
+        return $this->resource(new PayloadResource(array_merge(['type' => $type], $result)));
+    }
+
+    #[ApiEndpoint(summary: 'Htaccess status', description: 'Reports whether project .htaccess is present and valid.', tag: 'System')]
+    #[ApiResponse(status: 200, description: 'Htaccess status payload')]
+    public function htaccessStatus(): JsonResponse
+    {
+        return $this->resource(new PayloadResource((new HtaccessManager())->status()));
+    }
+
+    #[ApiEndpoint(summary: 'Create htaccess', description: 'Writes the default Pinoox .htaccess file when missing.', tag: 'System')]
+    #[ApiResponse(status: 200, description: 'Htaccess creation result')]
+    public function htaccessCreate(): JsonResponse
+    {
+        return $this->resource(new PayloadResource((new HtaccessManager())->create()));
+    }
+
+    #[ApiEndpoint(summary: 'Installer agreement', description: 'Returns translated agreement text.', tag: 'Localization')]
+    #[ApiResponse(status: 200, description: 'Agreement text')]
+    public function agreement(): JsonResponse
+    {
+        return $this->resource(new AgreementResource(t('agreement')));
+    }
+
+    #[ApiEndpoint(summary: 'Complete installation', description: 'Persists database config, migrates core/apps, creates admin user, and disables installer.', tag: 'Setup')]
+    #[ApiBody(
+        description: 'Database and admin user payload',
+        properties: [
+            'db' => 'object',
+            'user' => 'object',
+        ],
+    )]
+    #[ApiResponse(status: 200, description: 'Installation result')]
+    public function setup(Request $request): JsonResponse
+    {
+        $validation = $request->validation([
+            'user.fname' => 'required|min:3',
+            'user.lname' => 'required|min:3',
+            'user.email' => 'required|email',
+            'user.username' => 'required|alpha_dash:ascii|min:3',
+            'user.password' => 'required|min:6',
+            'db.host' => 'required',
+            'db.database' => 'required',
+            'db.username' => 'required',
+        ]);
+
+        if ($validation->fails()) {
+            return $this->fail('VALIDATION_FAILED', $validation->errors()->first(), status: 422, translate: false);
+        }
+
+        $data = $validation->validate();
+
+        try {
+            SetupService::make()->run(
+                $data['db'],
+                $data['user'],
+                App::get('lang'),
+            );
+        } catch (SetupException $e) {
+            return $this->fail('SETUP_FAILED', $e->messageKey());
+        } catch (\Throwable) {
+            return $this->fail('SETUP_FAILED', 'install.err_insert_tables');
+        }
+
+        return $this->ok(['installed' => true], 'success', translate: true);
+    }
+
+    /**
+     * @return array{direction: string, lang: array<string, mixed>}
+     */
+    private function langPayload(?string $lang = null): array
     {
         $lang = empty($lang) ? App::get('lang') : $lang;
 
@@ -65,183 +183,4 @@ class ApiController extends Controller
             'lang' => LangHelper::forFrontend($lang),
         ];
     }
-
-    private function checkConnection($data): bool
-    {
-        DB::addConnection($this->generateConfig($data));
-        DB::bootEloquent();
-
-        try {
-            DB::connection()->getPdo();
-            return true;
-        } catch (\Exception $e) {
-            return false;
-        }
-    }
-
-    public function checkDB(Request $request)
-    {
-        $data = $this->readDbInput($request);
-
-        if ($this->checkConnection($data)) {
-            return $this->message('connect', true);
-        }
-
-        return $this->message('disconnect', false);
-    }
-
-    private function readDbInput(Request $request): array
-    {
-        $keys = 'host,database,username,password,prefix';
-        $data = $request->request($keys, '', '!empty');
-
-        if (empty($data['host']) && empty($data['database'])) {
-            $data = $request->json($keys, '', '!empty');
-        }
-
-        return is_array($data) ? $data : [];
-    }
-
-    public function ping(): array
-    {
-        return [
-            'ok' => true,
-            'routing' => true,
-            'timestamp' => time(),
-        ];
-    }
-
-    public function bootstrapDiagnostics(): array
-    {
-        return (new BootstrapDiagnostics())->run();
-    }
-
-    public function checkAllPrerequisites(): array
-    {
-        return (new PrerequisitesChecker())->checkAll();
-    }
-
-    public function checkPrerequisites($type): array
-    {
-        $checker = new PrerequisitesChecker();
-        $result = $checker->check($type);
-
-        return array_merge(['type' => $type], $result);
-    }
-
-    public function htaccessStatus(): array
-    {
-        return (new HtaccessManager())->status();
-    }
-
-    public function htaccessCreate(): array
-    {
-        return (new HtaccessManager())->create();
-    }
-
-    public function agreement()
-    {
-        return t('agreement');
-    }
-
-    public function setup(Request $request)
-    {
-        $validation = $request->validation([
-            'user.fname' => 'required|min:3',
-            'user.lname' => 'required|min:3',
-            'user.email' => 'required|email',
-            'user.username' => 'required|alpha_dash:ascii|min:3',
-            'user.password' => 'required|min:6',
-        ]);
-
-        if ($validation->fails())
-            return $this->message($validation->errors()->first(), false);
-
-        $data = $validation->validate();
-        $user = $data['user'];
-        $db = $request->request->all('db') ?: $request->json->all('db');
-
-        // Add database core
-        if (!$this->insertTables($db, $user)) {
-            return $this->message(t('install.err_insert_tables'), false);
-        }
-
-        // Set primary apps route
-        $appRoutes = Config::name('app')->get();
-        AppRouter::setData($appRoutes);
-
-        // Install exists apps
-        $this->installExistsApps();
-
-        // Disable installer app
-        App::set('enable', false)
-            ->save();
-
-        return $this->message('success', true);
-    }
-
-    private function insertTables($c, $u)
-    {
-        if (empty($c) || empty($u))
-            return false;
-
-        $data = $this->generateConfig($c);
-
-        if (!$this->checkConnection($data)) return false;
-
-        Config::name('~database')
-            ->set('production', $data)
-            ->set('development', $data)
-            ->save();
-
-        try {
-
-            $initializer = new Migrator('pincore', 'init');
-            $initializer->init();
-
-            $migrator = new Migrator('pincore', 'run');
-            $migrator->run();
-
-        } catch (\Exception $e) {
-            return false;
-        }
-
-        return UserModel::create([
-            'app' => 'pincore',
-            'fname' => $u['fname'],
-            'lname' => $u['lname'],
-            'username' => $u['username'],
-            'password' => $u['password'],
-            'email' => $u['email'],
-        ]);
-    }
-
-    private function installExistsApps()
-    {
-        $packageInstaller = App::package();
-        $langInstaller = App::get('lang');
-        $apps = AppEngine::all();
-        foreach ($apps as $appManager) {
-            /**
-             * @var AppManager $appManager
-             */
-            if ($appManager->package() === $packageInstaller)
-                continue;
-
-            // migrate
-            $migrator = new Migrator($appManager->package(), 'run');
-            $migrator->run();
-
-            // default lang
-            if ($appManager->lang()->existsLocale($langInstaller)) {
-                $appManager->config()->set('lang', $langInstaller)->save();
-            }
-        }
-    }
-
-    private function message($result, $status)
-    {
-        return ["status" => $status, "result" => $result];
-    }
 }
-

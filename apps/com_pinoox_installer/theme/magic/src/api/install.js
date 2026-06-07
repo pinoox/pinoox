@@ -1,6 +1,7 @@
 import {http} from '@global'
+import {unwrapApiResponse} from '@/utils/apiEnvelope.js'
 
-const unwrap = (response) => response.data
+const unwrap = (response) => unwrapApiResponse(response)
 
 export const installAPI = {
     changeLang: (lang) => http.get(`/changeLang/${lang}`).then(unwrap),

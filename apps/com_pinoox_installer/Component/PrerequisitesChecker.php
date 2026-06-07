@@ -134,8 +134,6 @@ class PrerequisitesChecker
 
     }
 
-
-
     public function canContinue(array $items): bool
 
     {
@@ -227,85 +225,254 @@ class PrerequisitesChecker
 
 
     private function checkUrlRewrite(): array
-
     {
-
-        $routingActive = $this->isRoutingActive();
-
         $server = $this->detectWebServer();
+        $routingActive = $this->isRoutingActive();
+        $rewriteConfigured = QueryRouteResolver::rewriteAppearsActive();
+        $usesQueryRoute = QueryRouteResolver::usesQueryRouting();
+        $htaccessRequired = $this->serverUsesHtaccess($server['type']);
+        $htaccessStatus = $htaccessRequired ? (new HtaccessManager())->status() : null;
+        $htaccessOk = $htaccessStatus !== null && $this->htaccessIsOk($htaccessStatus);
+        $htaccessMeta = $this->htaccessMeta($htaccessStatus, $htaccessRequired);
 
+        $apacheRewrite = $server['type'] === 'apache' ? $this->apacheRewriteStatus() : null;
+        $modRewritePass = $apacheRewrite === true;
+        $routingWorks = $rewriteConfigured || $routingActive;
 
-
-        if ($server['type'] === 'apache') {
-
-            $apacheRewrite = $this->apacheRewriteStatus();
-
-
-
-            if ($apacheRewrite === true) {
-
-                return $this->rewriteResult(
-
-                    'pass',
-
-                    'Apache mod_rewrite',
-
-                    'Apache mod_rewrite',
-
-                    $server,
-
-                    $routingActive
-
+        if ($htaccessRequired) {
+            if ($htaccessOk && ($routingWorks || $modRewritePass)) {
+                return $this->withHtaccess(
+                    $this->rewriteResult(
+                        'pass',
+                        $this->rewriteDetailLabel($server, $htaccessMeta, true, $rewriteConfigured),
+                        $this->rewriteCurrentLabel($server, $htaccessMeta, true, $rewriteConfigured, $modRewritePass),
+                        $server,
+                        $routingWorks || $rewriteConfigured,
+                    ),
+                    $htaccessMeta,
                 );
-
             }
 
+            if (!$htaccessOk) {
+                if ($modRewritePass || $rewriteConfigured) {
+                    return $this->withHtaccess(
+                        $this->rewriteResult(
+                            'pass',
+                            $modRewritePass ? 'Apache mod_rewrite' : 'rewrite_htaccess_active',
+                            $modRewritePass
+                                ? 'Apache mod_rewrite'
+                                : $this->rewriteCurrentLabel($server, $htaccessMeta, false, $rewriteConfigured, $modRewritePass),
+                            $server,
+                            $routingWorks || $rewriteConfigured || $modRewritePass,
+                        ),
+                        $htaccessMeta,
+                    );
+                }
 
+                $detail = $htaccessMeta['detail'] ?? 'htaccess_missing';
+
+                if ($usesQueryRoute && $routingWorks) {
+                    return $this->withHtaccess(
+                        $this->rewriteResult(
+                            'unknown',
+                            $detail,
+                            $this->rewriteCurrentLabel($server, $htaccessMeta, false, false, $modRewritePass),
+                            $server,
+                            $routingWorks,
+                        ),
+                        $htaccessMeta,
+                    );
+                }
+
+                return $this->withHtaccess(
+                    $this->rewriteResult(
+                        'fail',
+                        $detail,
+                        $this->rewriteCurrentLabel($server, $htaccessMeta, false, $rewriteConfigured, $modRewritePass),
+                        $server,
+                        $routingWorks,
+                    ),
+                    $htaccessMeta,
+                );
+            }
+
+            if ($modRewritePass) {
+                return $this->withHtaccess(
+                    $this->rewriteResult(
+                        'pass',
+                        'Apache mod_rewrite',
+                        $this->rewriteCurrentLabel($server, $htaccessMeta, true, false, true),
+                        $server,
+                        $routingWorks,
+                    ),
+                    $htaccessMeta,
+                );
+            }
 
             if ($apacheRewrite === false) {
-
-                return $this->rewriteUnknown(
-
-                    $server,
-
-                    $routingActive,
-
-                    $routingActive ? 'Apache' : 'manual_verify'
-
+                return $this->withHtaccess(
+                    $this->rewriteUnknown(
+                        $server,
+                        $routingWorks,
+                        $routingWorks ? ($server['label'] ?? 'Apache') : 'manual_verify',
+                    ),
+                    $htaccessMeta,
                 );
-
             }
 
+            return $this->withHtaccess(
+                $this->rewriteUnknown(
+                    $server,
+                    $routingWorks,
+                    $routingWorks ? ($server['label'] ?? null) : ($server['label'] ?? 'manual_verify'),
+                ),
+                $htaccessMeta,
+            );
         }
 
+        if ($rewriteConfigured || $routingActive) {
+            return $this->withHtaccess(
+                $this->rewriteResult(
+                    'pass',
+                    $server['label'] ?? 'routing active',
+                    $server['label'] ?? 'routing active',
+                    $server,
+                    true,
+                ),
+                $htaccessMeta,
+            );
+        }
 
+        if ($server['type'] === 'apache' && $apacheRewrite === false) {
+            return $this->withHtaccess(
+                $this->rewriteUnknown($server, false, 'manual_verify'),
+                $htaccessMeta,
+            );
+        }
 
         if ($routingActive) {
-
-            return $this->rewriteUnknown(
-
-                $server,
-
-                true,
-
-                $server['label'] ?? null
-
+            return $this->withHtaccess(
+                $this->rewriteUnknown($server, true, $server['label'] ?? null),
+                $htaccessMeta,
             );
-
         }
-
-
 
         if ($server['detected']) {
-
-            return $this->rewriteUnknown($server, false, $server['label']);
-
+            return $this->withHtaccess(
+                $this->rewriteUnknown($server, false, $server['label']),
+                $htaccessMeta,
+            );
         }
 
+        return $this->withHtaccess(
+            $this->rewriteUnknown($server, false, null),
+            $htaccessMeta,
+        );
+    }
 
+    private function serverUsesHtaccess(string $type): bool
+    {
+        return in_array($type, ['apache', 'litespeed'], true);
+    }
 
-        return $this->rewriteUnknown($server, false, null);
+    private function htaccessIsOk(?array $status): bool
+    {
+        if ($status === null) {
+            return false;
+        }
 
+        return ($status['exists'] ?? false)
+            && !($status['empty'] ?? true)
+            && ($status['has_pinoox'] ?? false);
+    }
+
+    private function htaccessMeta(?array $status, bool $required): array
+    {
+        if (!$required || $status === null) {
+            return [
+                'required' => false,
+                'ok' => null,
+                'exists' => null,
+                'empty' => null,
+                'has_pinoox' => null,
+                'writable' => null,
+                'can_create' => null,
+                'detail' => null,
+            ];
+        }
+
+        $ok = $this->htaccessIsOk($status);
+
+        return [
+            'required' => true,
+            'ok' => $ok,
+            'exists' => (bool) ($status['exists'] ?? false),
+            'empty' => (bool) ($status['empty'] ?? true),
+            'has_pinoox' => (bool) ($status['has_pinoox'] ?? false),
+            'writable' => (bool) ($status['writable'] ?? false),
+            'can_create' => (bool) ($status['can_create'] ?? false),
+            'detail' => $ok ? 'htaccess_ok' : $this->htaccessDetailKey($status),
+        ];
+    }
+
+    private function htaccessDetailKey(array $status): string
+    {
+        if (!($status['exists'] ?? false) || ($status['empty'] ?? true)) {
+            return !($status['exists'] ?? false) ? 'htaccess_missing' : 'htaccess_empty';
+        }
+
+        if (!($status['has_pinoox'] ?? false)) {
+            return 'htaccess_no_pinoox';
+        }
+
+        return 'htaccess_ok';
+    }
+
+    private function withHtaccess(array $result, array $htaccessMeta): array
+    {
+        return array_merge($result, [
+            'htaccess_required' => $htaccessMeta['required'],
+            'htaccess' => $htaccessMeta,
+        ]);
+    }
+
+    private function rewriteDetailLabel(
+        array $server,
+        array $htaccessMeta,
+        bool $htaccessOk,
+        bool $rewriteConfigured,
+    ): string {
+        if ($rewriteConfigured && $htaccessOk) {
+            return 'rewrite_htaccess_ok';
+        }
+
+        if ($htaccessOk) {
+            return $server['label'] ?? 'htaccess_ok';
+        }
+
+        return $htaccessMeta['detail'] ?? 'htaccess_missing';
+    }
+
+    private function rewriteCurrentLabel(
+        array $server,
+        array $htaccessMeta,
+        bool $htaccessOk,
+        bool $rewriteConfigured,
+        bool $modRewritePass,
+    ): string {
+        if ($rewriteConfigured && $htaccessOk) {
+            return 'rewrite_htaccess_active';
+        }
+
+        if ($htaccessOk && $modRewritePass) {
+            return 'Apache mod_rewrite';
+        }
+
+        if ($htaccessOk) {
+            return ($server['label'] ?? 'Apache') . ' + .htaccess';
+        }
+
+        return $htaccessMeta['detail'] ?? 'manual_verify';
     }
 
 

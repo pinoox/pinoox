@@ -4,6 +4,8 @@ import {defineConfig, loadEnv} from 'vite'
 import vue from '@vitejs/plugin-vue'
 import commonjs from 'vite-plugin-commonjs'
 
+const QUERY_ROUTE_PARAM = '_pnx'
+
 export default defineConfig(({mode}) => {
     const env = loadEnv(mode, process.cwd(), '')
 
@@ -34,9 +36,9 @@ export default defineConfig(({mode}) => {
         },
         server: {
             proxy: {
-                '/?route=': env.VITE_SERVER_URL || 'http://localhost',
+                [`/?${QUERY_ROUTE_PARAM}=`]: env.VITE_SERVER_URL || 'http://localhost',
                 '/api/v1': env.VITE_SERVER_URL || 'http://localhost',
-                '/dist/pinoox.js': (env.VITE_SERVER_URL || 'http://localhost') + '/?route=',
+                '/dist/pinoox.js': `${env.VITE_SERVER_URL || 'http://localhost'}/?${QUERY_ROUTE_PARAM}=dist/pinoox.js`,
             },
         },
     }

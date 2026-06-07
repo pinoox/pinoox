@@ -86,6 +86,7 @@
                                                 </strong>
                                             </p>
                                             <button
+                                                v-if="item.key !== 'mod_rewrite'"
                                                 type="button"
                                                 class="prerequisite-card__tip-btn"
                                                 :class="{ 'is-open': openTips[item.key] }"
@@ -117,42 +118,6 @@
                             </article>
                         </div>
 
-                        <div
-                            v-if="rewriteNotice"
-                            class="prerequisites-notice"
-                            role="note"
-                        >
-                            <Icon name="warning"/>
-                            <div>
-                                <strong>{{ LANG.install.prerequisites_rewrite_notice_title }}</strong>
-                                <p>{{ rewriteNotice }}</p>
-                            </div>
-                        </div>
-
-                        <details
-                            v-if="showRewriteGuide"
-                            class="prerequisites-guide"
-                            :open="rewriteGuideOpen"
-                        >
-                            <summary>
-                                <Icon name="warning"/>
-                                <span>{{ LANG.install.prerequisites_guide_title }}</span>
-                            </summary>
-                            <p v-if="detectedServerLabel" class="prerequisites-guide__detected">
-                                {{ detectedServerHint }}
-                            </p>
-                            <div class="prerequisites-guide__grid">
-                                <div
-                                    v-for="guide in rewriteGuides"
-                                    :key="guide.tag"
-                                    class="prerequisites-guide__item"
-                                    :class="{ 'is-detected': guide.detected }"
-                                >
-                                    <span class="prerequisites-guide__tag">{{ guide.tag }}</span>
-                                    <p>{{ guide.text }}</p>
-                                </div>
-                            </div>
-                        </details>
                     </div>
 
                     <div class="page-actions">
@@ -218,6 +183,8 @@ const defaultItem = () => ({
     server: null,
     serverType: null,
     serverDetected: null,
+    htaccessRequired: false,
+    htaccess: null,
 })
 
 const prerequisites = reactive({
@@ -329,86 +296,6 @@ const isError = computed(() =>
     Object.values(prerequisites).some((item) => item.state === 'fail')
 )
 
-const showRewriteGuide = computed(() => {
-    if (connectionError.value) {
-        return true
-    }
-
-    const rewrite = prerequisites.mod_rewrite
-
-    return rewrite.state === 'fail' || rewrite.state === 'unknown'
-})
-
-const rewriteGuideOpen = computed(() => prerequisites.mod_rewrite.state === 'unknown')
-
-const detectedServerLabel = computed(() => {
-    const rewrite = prerequisites.mod_rewrite
-
-    return rewrite.server || rewrite.serverType || null
-})
-
-const detectedServerHint = computed(() => {
-    const install = LANG.value.install
-    const label = detectedServerLabel.value
-
-    if (!label) {
-        return install.prerequisites_help_rewrite_unknown
-    }
-
-    return (install.prerequisites_help_rewrite_unknown_server ?? install.prerequisites_help_rewrite_unknown)
-        .replaceAll(':server', label)
-})
-
-const rewriteNotice = computed(() => {
-    const rewrite = prerequisites.mod_rewrite
-
-    if (rewrite.state !== 'unknown') {
-        return ''
-    }
-
-    return LANG.value.install.prerequisites_rewrite_notice_body
-})
-
-const rewriteGuideDefinitions = [
-    {type: 'apache', tagKey: null, fallbackTag: 'Apache', key: 'prerequisites_guide_apache'},
-    {type: 'nginx', tagKey: null, fallbackTag: 'nginx', key: 'prerequisites_guide_nginx'},
-    {type: 'iis', tagKey: null, fallbackTag: 'IIS', key: 'prerequisites_guide_iis'},
-    {type: 'litespeed', tagKey: null, fallbackTag: 'LiteSpeed', key: 'prerequisites_guide_litespeed'},
-    {type: 'caddy', tagKey: null, fallbackTag: 'Caddy', key: 'prerequisites_guide_caddy'},
-    {type: 'lighttpd', tagKey: null, fallbackTag: 'lighttpd', key: 'prerequisites_guide_lighttpd'},
-    {type: 'shared', tagKey: 'prerequisites_guide_tag_shared', fallbackTag: 'Shared hosting', key: 'prerequisites_guide_shared_hosting'},
-    {type: 'other', tagKey: null, fallbackTag: null, key: 'prerequisites_guide_other'},
-]
-
-const rewriteGuides = computed(() => {
-    const install = LANG.value.install
-    const detectedType = prerequisites.mod_rewrite.serverType
-    const detectedLabel = prerequisites.mod_rewrite.server
-
-    const guides = rewriteGuideDefinitions.map((entry) => {
-        const tag = entry.tagKey
-            ? install[entry.tagKey]
-            : (entry.fallbackTag ?? install.prerequisites_status_unknown)
-
-        return {
-            type: entry.type,
-            tag,
-            text: install[entry.key] ?? '',
-            detected: entry.type === detectedType
-                || (entry.type === 'shared' && detectedType === 'apache' && prerequisites.mod_rewrite.state === 'unknown')
-                || (entry.fallbackTag && detectedLabel && entry.fallbackTag.toLowerCase() === detectedLabel.toLowerCase()),
-        }
-    })
-
-    return guides.sort((left, right) => {
-        if (left.detected === right.detected) {
-            return 0
-        }
-
-        return left.detected ? -1 : 1
-    })
-})
-
 onMounted(() => {
     emit('update:steps', [true])
     loadPrerequisites()
@@ -436,6 +323,8 @@ function markUnreachableChecks() {
                 server: null,
                 serverType: null,
                 serverDetected: null,
+                htaccessRequired: false,
+                htaccess: null,
             }
             continue
         }
@@ -449,6 +338,8 @@ function markUnreachableChecks() {
                 server: null,
                 serverType: null,
                 serverDetected: null,
+                htaccessRequired: false,
+                htaccess: null,
             }
         }
     }
@@ -466,6 +357,10 @@ async function verifyApiRouting() {
         const install = LANG.value.install
 
         if (rewrite.state === 'pass') {
+            return
+        }
+
+        if (rewrite.htaccessRequired && rewrite.htaccess?.ok === false && rewrite.state === 'fail') {
             return
         }
 
@@ -524,6 +419,8 @@ async function loadPrerequisites() {
                     server: result.server ?? null,
                     serverType: result.server_type ?? null,
                     serverDetected: result.server_detected ?? null,
+                    htaccessRequired: Boolean(result.htaccess_required),
+                    htaccess: result.htaccess ?? null,
                 }
             }
         }
@@ -595,6 +492,16 @@ function currentValue(type) {
     }
 
     if (type === 'mod_rewrite') {
+        const htaccessLabel = rewriteHtaccessValue(item, install)
+
+        if (htaccessLabel) {
+            if (item.server && item.state !== 'pass') {
+                return `${item.server} — ${htaccessLabel}`
+            }
+
+            return htaccessLabel
+        }
+
         if (item.routingActive && item.state === 'unknown') {
             if (item.server) {
                 return `${item.server} — ${install.prerequisites_current_api_ok}`
@@ -636,11 +543,44 @@ function currentValue(type) {
         return install.prerequisites_current_routing_active
     }
 
+    if (type === 'mod_rewrite') {
+        const mapped = rewriteDetailLabel(raw, install)
+
+        if (mapped) {
+            return mapped
+        }
+    }
+
     if (item.state === 'unknown' && type === 'mod_rewrite' && item.detail) {
-        return item.detail
+        return rewriteDetailLabel(item.detail, install) ?? item.detail
     }
 
     return raw
+}
+
+function rewriteDetailLabel(key, install) {
+    const map = {
+        htaccess_missing: install.prerequisites_current_htaccess_missing,
+        htaccess_empty: install.prerequisites_current_htaccess_empty,
+        htaccess_no_pinoox: install.prerequisites_current_htaccess_no_pinoox,
+        htaccess_ok: install.prerequisites_current_htaccess_ok,
+        rewrite_htaccess_ok: install.prerequisites_current_rewrite_htaccess_ok,
+        rewrite_htaccess_active: install.prerequisites_current_rewrite_htaccess_active,
+    }
+
+    return map[key] ?? null
+}
+
+function rewriteHtaccessValue(item, install) {
+    if (!item.htaccessRequired || !item.htaccess) {
+        return null
+    }
+
+    if (item.htaccess.ok) {
+        return install.prerequisites_current_htaccess_ok
+    }
+
+    return rewriteDetailLabel(item.htaccess.detail, install)
 }
 
 function guideText(type) {
@@ -666,19 +606,8 @@ function helpText(type) {
         return install.prerequisites_help_space_unknown
     }
 
-    if (type === 'mod_rewrite' && item.state === 'unknown') {
-        if (item.routingActive) {
-            return install.prerequisites_help_rewrite_unknown_api_ok
-        }
-
-        const server = item.server || item.serverType
-
-        if (server) {
-            return (install.prerequisites_help_rewrite_unknown_server ?? install.prerequisites_help_rewrite_unknown)
-                .replaceAll(':server', server)
-        }
-
-        return install.prerequisites_help_rewrite_unknown
+    if (type === 'mod_rewrite' && (item.state === 'unknown' || item.state === 'fail')) {
+        return install.prerequisites_status_unknown
     }
 
     if (item.state === 'pass') {
@@ -688,7 +617,6 @@ function helpText(type) {
     const map = {
         free_space: 'prerequisites_help_space_fail',
         php: 'prerequisites_help_php_fail',
-        mod_rewrite: 'prerequisites_help_rewrite_fail',
         mysql: 'prerequisites_help_mysql_fail',
     }
 

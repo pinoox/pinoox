@@ -3,8 +3,8 @@
 /**
  * Query-route rules for com_pinoox_installer.
  *
- * Short paths like /htaccess/status are mapped to router/api.php endpoints
- * under the /api/v1 collection (see router/routes.php).
+ * Short paths like /htaccess/status are mapped to routes/api.php endpoints
+ * under routes/api.php.
  */
 
 return [

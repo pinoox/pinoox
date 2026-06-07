@@ -1,3 +1,8 @@
+import {unwrapApiBody} from '@/utils/apiEnvelope.js'
+
+/** Pinoox query-route key (?_pnx=/path) — keep in sync with QueryRouteResolver::PARAMETER */
+export const QUERY_ROUTE_PARAM = '_pnx'
+
 let forceQueryRoute = false
 
 export function setForceQueryRoute(value) {
@@ -12,7 +17,45 @@ export function syncBootstrapQueryRoute(bootstrapError) {
     setForceQueryRoute(Boolean(bootstrapError))
 }
 
+function normalizeInstallerBasePath(base) {
+    if (!base || typeof base !== 'string') {
+        return null
+    }
+
+    let pathname = base
+
+    if (/^https?:\/\//i.test(pathname)) {
+        try {
+            pathname = new URL(pathname).pathname
+        } catch {
+            return null
+        }
+    }
+
+    if (/index\.php$/i.test(pathname)) {
+        pathname = pathname.replace(/index\.php$/i, '')
+    }
+
+    if (!pathname.startsWith('/')) {
+        pathname = `/${pathname}`
+    }
+
+    if (!pathname.endsWith('/')) {
+        pathname += '/'
+    }
+
+    return pathname
+}
+
 export function resolveInstallerRoot() {
+    if (typeof PINOOX !== 'undefined' && PINOOX.URL?.BASE) {
+        const fromConfig = normalizeInstallerBasePath(PINOOX.URL.BASE)
+
+        if (fromConfig) {
+            return fromConfig
+        }
+    }
+
     let pathname = window.location.pathname
 
     if (/index\.php$/i.test(pathname)) {
@@ -28,6 +71,28 @@ export function resolveInstallerRoot() {
     return pathname
 }
 
+function withInstallerBase(path) {
+    if (!path || typeof path !== 'string') {
+        return path
+    }
+
+    if (/^https?:\/\//i.test(path)) {
+        return path
+    }
+
+    let normalized = path.startsWith('/') ? path : `/${path}`
+
+    if (normalized.includes(`?${QUERY_ROUTE_PARAM}=`)) {
+        const base = resolveInstallerRoot().replace(/\/$/, '')
+
+        if (base && base !== '/' && !normalized.startsWith(`${base}/?`) && !normalized.startsWith(`${base}?`)) {
+            normalized = `${base}${normalized}`
+        }
+    }
+
+    return normalized
+}
+
 export function resolveSiteEntryUrl() {
     return `${window.location.origin}${resolveInstallerRoot()}`
 }
@@ -35,7 +100,7 @@ export function resolveSiteEntryUrl() {
 export function resolveQueryRouteUrl(routePath) {
     const path = routePath.startsWith('/') ? routePath : `/${routePath}`
 
-    return `${resolveSiteEntryUrl()}?route=${encodeURIComponent(path)}`
+    return `${resolveSiteEntryUrl()}?${QUERY_ROUTE_PARAM}=${encodeURIComponent(path)}`
 }
 
 export function shouldUseQueryRoute() {
@@ -76,15 +141,15 @@ export function resolveDirectApiBase() {
     }
 
     if (typeof PINOOX !== 'undefined' && PINOOX.URL?.API) {
-        const base = PINOOX.URL.API.replace(/\/?$/, '/')
+        let api = PINOOX.URL.API.replace(/\/?$/, '/')
 
-        if (/^https?:\/\//i.test(base)) {
-            return base
+        if (/^https?:\/\//i.test(api)) {
+            return api
         }
 
-        const normalized = base.startsWith('/') ? base : `/${base}`
+        api = withInstallerBase(api.startsWith('/') ? api : `/${api}`)
 
-        return `${window.location.origin}${normalized}`
+        return `${window.location.origin}${api.replace(/\/?$/, '/')}`
     }
 
     const root = resolveInstallerRoot()
@@ -108,10 +173,11 @@ export function resolveInstallerApiUrl(endpoint, options = {}) {
     return resolveQueryRouteUrl(`/${clean}`)
 }
 
+/** Always uses the clean URL — rewrite/htaccess must route /api/v1/ping directly. */
 export function resolvePingApiUrl() {
-    const base = resolveDirectApiBase().replace(/\/?$/, '/')
+    const root = resolveInstallerRoot().replace(/\/?$/, '')
 
-    return `${base}ping`
+    return `${window.location.origin}${root}/api/v1/ping`
 }
 
 export function resolvePinooxJsUrl(useQueryRoute = false) {
@@ -131,13 +197,13 @@ export function resolvePinooxJsUrl(useQueryRoute = false) {
 }
 
 async function parseJson(response) {
-    const data = await response.json().catch(() => ({}))
+    const body = await response.json().catch(() => ({}))
 
     if (!response.ok) {
-        throw Object.assign(new Error('Request failed'), {response: {data, status: response.status}})
+        throw Object.assign(new Error('Request failed'), {response: {data: body, status: response.status}})
     }
 
-    return data
+    return unwrapApiBody(body, {status: response.status})
 }
 
 export async function pingInstallerApi() {
@@ -151,7 +217,8 @@ export async function pingInstallerApi() {
             return {ok: false, routing: false, status: response.status}
         }
 
-        const data = await response.json().catch(() => ({}))
+        const body = await response.json().catch(() => ({}))
+        const data = unwrapApiBody(body, {status: response.status})
 
         return {
             ok: Boolean(data?.ok),
@@ -165,9 +232,7 @@ export async function pingInstallerApi() {
 }
 
 export function shouldShowBootstrapError(ping = null) {
-    const resolvedPing = ping ?? null
-
-    if (resolvedPing && !resolvedPing.ok) {
+    if (ping && !ping.ok) {
         return true
     }
 
@@ -286,6 +351,22 @@ export function shouldCheckStep3(steps12, ping) {
     }
 
     return !ping?.ok || typeof PINOOX === 'undefined'
+}
+
+export function isBootstrapReady(ping, results) {
+    if (!ping?.ok) {
+        return false
+    }
+
+    if (!isStepPassed(results?.rewrite) || !isStepPassed(results?.htaccess)) {
+        return false
+    }
+
+    if (typeof PINOOX === 'undefined' || shouldCheckStep3({rewrite: results.rewrite, htaccess: results.htaccess}, ping)) {
+        return isStepPassed(results.pinoox_js)
+    }
+
+    return true
 }
 
 export async function createHtaccessFile() {

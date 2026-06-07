@@ -1,6 +1,11 @@
 import axios from 'axios'
 import axiosMethodOverride from 'axios-method-override'
-import {resolveInstallerApiUrl, resolvePingApiUrl, shouldUseQueryRoute} from '../resolveInstallerApi.js'
+import {
+    QUERY_ROUTE_PARAM,
+    resolveInstallerApiUrl,
+    resolvePingApiUrl,
+    shouldUseQueryRoute,
+} from '../resolveInstallerApi.js'
 
 const baseUrl = import.meta.env.MODE === 'production'
     ? (typeof PINOOX !== 'undefined' ? PINOOX.URL.API : '')
@@ -41,7 +46,7 @@ const trackLoading = (config, delta) => {
 }
 
 function applyQueryRoute(config) {
-    if (!config.url || String(config.url).includes('?route=')) {
+    if (!config.url || String(config.url).includes(`?${QUERY_ROUTE_PARAM}=`)) {
         return
     }
 
