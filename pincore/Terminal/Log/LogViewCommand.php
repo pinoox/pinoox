@@ -2,12 +2,15 @@
 
 namespace Pinoox\Terminal\Log;
 
+use Pinoox\Component\Log\LogConfig;
 use Pinoox\Component\Terminal;
+use Pinoox\Terminal\Concerns\SelectsPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'log:view',
@@ -15,9 +18,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 )]
 class LogViewCommand extends Terminal
 {
+    use SelectsPackage;
+
     protected function configure(): void
     {
         $this
+            ->addOption('package', 'p', InputOption::VALUE_OPTIONAL, 'App package or pincore. Leave empty for active/default log.')
             ->addOption('tail', 't', InputOption::VALUE_OPTIONAL, 'Show the last N lines of the log', 10)
             ->addOption('open', 'o', InputOption::VALUE_NONE, 'Open the log file with the default text editor')
             ->addOption('follow', 'f', InputOption::VALUE_NONE, 'Follow the log file (tail -f)')
@@ -28,11 +34,8 @@ class LogViewCommand extends Terminal
     {
         parent::execute($input, $output);
 
-        // Get log file path from config
-        $config = \Pinoox\Portal\Config::file('pinoox')->get('log');
-        $logPath = $config['path'] ?? (sys_get_temp_dir() . '/pinoox.log');
-        
-        // Check if the log file exists
+        $logPath = $this->resolveLogPath($input, $output);
+
         if (!file_exists($logPath)) {
             $output->writeln("<comment>Log file not found at: {$logPath}</comment>");
             
@@ -232,4 +235,26 @@ class LogViewCommand extends Terminal
         
         return null;
     }
-} 
+
+    private function resolveLogPath(InputInterface $input, OutputInterface $output): string
+    {
+        $package = $this->readPackageInput($input, 'package', ['package']);
+
+        if ($package === '' && $input->isInteractive() && $input->getOption('package') === null) {
+            $io = new SymfonyStyle($input, $output);
+            $answer = $io->confirm('Select a specific app log file?', false);
+
+            if ($answer) {
+                $package = $this->resolvePackageRequired($input, $output, $io, [
+                    'sectionTitle' => 'Select log package',
+                ]);
+            }
+        }
+
+        if ($package === '') {
+            return LogConfig::path();
+        }
+
+        return LogConfig::resolveForPackage($package)['path'];
+    }
+}

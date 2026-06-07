@@ -2,97 +2,62 @@
 
 namespace Pinoox\Portal;
 
-use DateTimeZone as ObjectPortal3;
-use Monolog\Handler\HandlerInterface as ObjectPortal1;
-use Monolog\Handler\StreamHandler;
-use Monolog\Level;
 use Monolog\Logger as MonologLogger;
+use Pinoox\Component\Log\Manager;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\App\App;
-use Pinoox\Support\SystemConfig;
 use Psr\Log\LoggerInterface;
+use Stringable;
 
 /**
- * @method static string getName()
- * @method static MonologLogger withName(string $name)
- * @method static MonologLogger pushHandler(\Monolog\Handler\HandlerInterface $handler)
- * @method static ObjectPortal1 popHandler()
- * @method static MonologLogger setHandlers(array $handlers)
- * @method static array getHandlers()
- * @method static MonologLogger pushProcessor(\Monolog\Processor\ProcessorInterface|callable $callback)
- * @method static callable popProcessor()
- * @method static array getProcessors()
- * @method static MonologLogger useMicrosecondTimestamps(bool $micro)
- * @method static MonologLogger useLoggingLoopDetection(bool $detectCycles)
- * @method static bool addRecord(\Monolog\Level|int $level, string $message, array $context = [], ?Monolog\JsonSerializableDateTimeImmutable $datetime = NULL)
- * @method static Logger close()
- * @method static Logger reset()
- * @method static string getLevelName(\Monolog\Level|int $level)
- * @method static ObjectPortal2 toMonologLevel(\Monolog\Level|int|string $level)
- * @method static bool isHandling(\Monolog\Level|int|string $level)
- * @method static MonologLogger setExceptionHandler(?Closure $callback)
- * @method static \Closure|null getExceptionHandler()
- * @method static Logger log($level, \Stringable|string $message, array $context = [])
- * @method static Logger debug(\Stringable|string $message, array $context = [])
- * @method static Logger info(\Stringable|string $message, array $context = [])
- * @method static Logger notice(\Stringable|string $message, array $context = [])
- * @method static Logger warning(\Stringable|string $message, array $context = [])
- * @method static Logger error(\Stringable|string $message, array $context = [])
- * @method static Logger critical(\Stringable|string $message, array $context = [])
- * @method static Logger alert(\Stringable|string $message, array $context = [])
- * @method static Logger emergency(\Stringable|string $message, array $context = [])
- * @method static MonologLogger setTimezone(\DateTimeZone $tz)
- * @method static ObjectPortal3 getTimezone()
- * @method static \Monolog\Logger ___()
+ * Unified logging for Pinoox core and apps (Monolog + PSR-3).
  *
- * @see \Monolog\Logger
+ * @method static Manager channel(string $name)
+ * @method static Manager withContext(array $context)
+ * @method static string path()
+ * @method static MonologLogger getMonolog()
+ * @method static void emergency(string|Stringable $message, array $context = [])
+ * @method static void alert(string|Stringable $message, array $context = [])
+ * @method static void critical(string|Stringable $message, array $context = [])
+ * @method static void error(string|Stringable $message, array $context = [])
+ * @method static void warning(string|Stringable $message, array $context = [])
+ * @method static void notice(string|Stringable $message, array $context = [])
+ * @method static void info(string|Stringable $message, array $context = [])
+ * @method static void debug(string|Stringable $message, array $context = [])
+ * @method static void log($level, string|Stringable $message, array $context = [])
+ * @method static Manager ___()
+ *
+ * @see Manager
  */
 class Logger extends Portal
 {
-	public static function __register(): void
-	{
-		// Load logger configuration
-		$config = config('~pinoox')->get('log');
+    public static function __register(): void
+    {
+        self::__bind(Manager::class);
+        static::__container()->setAlias(LoggerInterface::class, self::__id());
+    }
 
-		$path = $config['path'] ?? sys_get_temp_dir() . '/pinoox.log';
-		$path = is_string($path) && str_starts_with($path, '~') ? SystemConfig::resolvePath($path) : $path;
-		$channel = ($config['channel'] ?? 'app') .'.'. App::package();;
-		$level = $config['level'] ?? Level::Debug;
+    public static function __name(): string
+    {
+        return 'logger';
+    }
 
-		// Register Monolog as the logger service
-		self::__bind(MonologLogger::class)
-		    ->setArguments([$channel])
-		    ->addMethodCall('pushHandler', [new StreamHandler($path, $level)]);
+    public static function __exclude(): array
+    {
+        return [];
+    }
 
-		// Alias the PSR-3 LoggerInterface to our logger service
-		static::__container()->setAlias(LoggerInterface::class, self::__id());
-	}
-
-
-	public static function __name(): string
-	{
-		return 'logger';
-	}
-
-
-	/**
-	 * Get method names for callback object.
-	 * @return string[]
-	 */
-	public static function __callback(): array
-	{
-		return [
-			'close',
-			'reset',
-			'log',
-			'debug',
-			'info',
-			'notice',
-			'warning',
-			'error',
-			'critical',
-			'alert',
-			'emergency'
-		];
-	}
+    public static function __callback(): array
+    {
+        return [
+            'log',
+            'debug',
+            'info',
+            'notice',
+            'warning',
+            'error',
+            'critical',
+            'alert',
+            'emergency',
+        ];
+    }
 }

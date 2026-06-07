@@ -2,37 +2,36 @@
 
 namespace Pinoox\Portal;
 
+use Pinoox\Component\Runtime\RuntimeMode;
 use Pinoox\Component\Source\Portal;
-use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 
 /**
- * @method static string|null get(?string $package = NULL)
+ * @method static string name(?string $package = NULL)
+ * @method static bool debug(?string $package = NULL)
  * @method static bool is(string $mode, ?string $package = NULL)
- * @method static \Pinoox\Component\Mode ___()
+ * @method static bool isProduction(?string $package = NULL)
+ * @method static bool isDevelopment(?string $package = NULL)
+ * @method static bool isTest(?string $package = NULL)
+ * @method static bool isStaging(?string $package = NULL)
+ * @method static string databaseConnection(?string $package = NULL)
+ * @method static bool cacheEnabledByDefault(?string $package = NULL)
+ * @method static string cacheMode(?string $package = NULL)
+ * @method static string defaultLogLevel(?string $package = NULL)
+ * @method static bool shouldValidateActions(?string $package = NULL)
+ * @method static array profile(?string $package = NULL)
+ * @method static RuntimeMode ___()
  *
- * @see \Pinoox\Component\Mode
+ * @see RuntimeMode
  */
 class Mode extends Portal
 {
     public static function __register(): void
     {
-        $appMode = App::config()->get('mode');
-        $coreMode = Config::name('~pinoox')->get('mode');
-
-        self::__bind(\Pinoox\Component\Mode::class)->setArguments([
+        self::__bind(RuntimeMode::class)->setArguments([
             AppEngine::__ref(),
-            $coreMode,
-            $appMode,
         ]);
     }
-
-
-    public static function __app(): ?string
-    {
-        return App::package();
-    }
-
 
     public static function __name(): string
     {
@@ -40,7 +39,6 @@ class Mode extends Portal
     }
 
     /**
-     * Get method names for callback object.
      * @return string[]
      */
     public static function __callback(): array
