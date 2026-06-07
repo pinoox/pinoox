@@ -1,28 +1,16 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
-
 
 namespace Pinoox\Component\Http\File;
 
-use Pinoox\Component\Upload\FileUploader;
-use Pinoox\Component\Upload\FileUploaderFactory;
+use Pinoox\Component\File\UploadBuilder;
+use Pinoox\Portal\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile as UploadedFileSymfony;
 
 class UploadedFile extends UploadedFileSymfony
 {
-
-    public function store($destination, $access = 'public'): FileUploader
+    public function store(string $destination, string $access = 'public'): UploadBuilder
     {
-        return (new FileUploaderFactory())->store($destination, $this, $access);
+        return File::upload($this)->to($destination)->access($access);
     }
 
     public static function createFromBase($file, $test = false)

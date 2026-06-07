@@ -12,12 +12,14 @@
 
 namespace Pinoox\Component\Upload;
 
+use Illuminate\Filesystem\FilesystemAdapter;
+use Pinoox\Component\File\FileConfig;
+use Pinoox\Component\File\FileStorage;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\System\Model\FileModel;
 use Pinoox\Portal\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
-
 
 class FileUploader
 {
@@ -26,8 +28,6 @@ class FileUploader
     private string $extension;
     private string $destination;
     private int $size;
-    private string $path;
-    private string $uploadPath;
     private UploadedFile|null $file;
     private string|null $fileKey;
     private string $access;
@@ -43,37 +43,47 @@ class FileUploader
     public $error;
 
     private array $allowedExtensions = [];
-    private int $maxFileSize = 0;// Maximum file size in bytes
+    private int $maxFileSize = 0;
+    private string $package;
+    private string $diskName;
+    private FilesystemAdapter $disk;
 
-
-    public function __construct(string $path = '', string $destination = '', UploadedFile|string $fileKey = null, string $access = 'public')
-    {
-        $this->path = $path;
-        $this->destination = $destination;
+    public function __construct(
+        string $destination = '',
+        UploadedFile|string $fileKey = null,
+        string $access = 'public',
+        ?string $package = null,
+        ?string $disk = null,
+    ) {
+        $config = FileConfig::resolve();
+        $this->destination = trim($destination, '/');
         $this->access = $access;
+        $this->package = $package ?? $config['package'];
+        $this->diskName = $disk ?? $config['disk'];
+        $this->disk = FileStorage::disk($this->package, $this->diskName);
 
         if ($fileKey instanceof UploadedFile) {
             $this->fileKey = $fileKey;
             $this->file = $fileKey;
         } else {
             $this->fileKey = $fileKey;
-            if (!empty($_FILES) && !empty($fileKey))
+            if (!empty($_FILES) && !empty($fileKey)) {
                 $this->file = (new FileBag($_FILES))->get($fileKey);
+            }
         }
-
-
-        $this->setUploadPath();
     }
 
     public function insert(): static
     {
         $this->isInsert = true;
+
         return $this;
     }
 
     public function group($group): static
     {
         $this->group = $group;
+
         return $this;
     }
 
@@ -82,6 +92,7 @@ class FileUploader
         $this->isThumb = true;
         $this->thumbInfo['width'] = $width;
         $this->thumbInfo['height'] = $height;
+
         return $this;
     }
 
@@ -89,30 +100,43 @@ class FileUploader
     {
         if (empty($this->file)) {
             $this->error = -1;
+
             return $this;
         }
- 
-        $this->extension = $this->file->getClientOriginalExtension();
-        $this->size = $this->file->getSize();
+
+        $this->extension = strtolower($this->file->getClientOriginalExtension());
+        $this->size = (int) $this->file->getSize();
         $this->fileRealname = $this->file->getClientOriginalName();
         $this->filename = Str::generateLowRandom(16) . '.' . $this->extension;
 
-        // Check if the file extension is allowed
-        if (!empty($this->allowedExtensions) && !in_array($this->extension, $this->allowedExtensions)) {
-            $this->error = 'invalid_extension'; // Set custom error for invalid extension
+        if (!empty($this->allowedExtensions) && !in_array($this->extension, $this->allowedExtensions, true)) {
+            $this->error = 'invalid_extension';
+
             return $this;
         }
 
-        // Check if the file size exceeds the maximum allowed size
         if ($this->maxFileSize > 0 && $this->size > $this->maxFileSize) {
-            $this->error = 'file_too_large'; // Set custom error for file size limit
+            $this->error = 'file_too_large';
+
             return $this;
         }
 
         $mimetype = $this->file->getMimeType();
+        $storageKey = FileStorage::key($this->destination, $this->filename);
+        $visibility = FileStorage::visibility($this->access);
 
-        // Move the uploaded file to the destination
-        $this->file->move($this->getUploadPath(), $this->filename);
+        $stored = $this->disk->putFileAs(
+            $this->destination,
+            $this->file,
+            $this->filename,
+            ['visibility' => $visibility],
+        );
+
+        if ($stored === false) {
+            $this->error = 'upload_failed';
+
+            return $this;
+        }
 
         $this->result = [
             'filename' => $this->filename,
@@ -120,8 +144,10 @@ class FileUploader
             'extension' => $this->extension,
             'mimetype' => $mimetype,
             'size' => $this->size,
-            'path' => $this->getUploadPath(),
-            'file' => $this->getUploadPath() . $this->filename,
+            'path' => $this->destination,
+            'file' => $storageKey,
+            'disk' => $this->diskName,
+            'package' => $this->package,
         ];
 
         if ($this->isInsert) {
@@ -129,7 +155,7 @@ class FileUploader
         }
 
         if ($this->isThumb) {
-            $this->createThumbnail();
+            $this->createThumbnail($storageKey);
         }
 
         return $this;
@@ -138,27 +164,15 @@ class FileUploader
     public function delete(FileModel $fileModel): static
     {
         $this->fileModel = $fileModel;
-        $path = path($fileModel->file_path, $fileModel->app);
-        $originalFile = $path . '/' . $fileModel->file_name;
-        $thumbnailFile = $path . '/thumbs/thumb_' . $fileModel->file_name;
-
-        if (file_exists($originalFile)) unlink($originalFile);
-        if (file_exists($thumbnailFile)) unlink($thumbnailFile);
-
         $this->callEvents(Event::Delete);
 
         return $this;
     }
 
-    /**
-     * Set the maximum allowed file size in bytes.
-     *
-     * @param int $maxFileSize
-     * @return static
-     */
     public function setMaxFileSize(int $maxFileSize): static
     {
         $this->maxFileSize = $maxFileSize;
+
         return $this;
     }
 
@@ -179,7 +193,6 @@ class FileUploader
         return $this;
     }
 
-
     public function getAccess(): string
     {
         return $this->access;
@@ -192,7 +205,16 @@ class FileUploader
 
     public function getMetaData(): ?array
     {
-        return $this->metadata;
+        $metadata = $this->metadata ?? [];
+
+        if (!is_array($metadata)) {
+            $metadata = [];
+        }
+
+        $metadata['disk'] = $this->diskName;
+        $metadata['package'] = $this->package;
+
+        return $metadata;
     }
 
     public function setHashId($hash_id): static
@@ -200,7 +222,6 @@ class FileUploader
         $this->hashId = $hash_id;
 
         return $this;
-
     }
 
     public function setMetaData($metadata): static
@@ -239,38 +260,14 @@ class FileUploader
         return $this->size;
     }
 
-    public function getPath(): string
-    {
-        return $this->path;
-    }
-
     public function getFileModel(): FileModel
     {
         return $this->fileModel;
     }
 
-    public function setPath(string $path): static
-    {
-        $this->path = $path;
-
-        return $this;
-    }
-
     public function getFileRealname(): string
     {
         return $this->fileRealname;
-    }
-
-    public function getUploadPath(): string
-    {
-        return $this->uploadPath;
-    }
-
-    private function setUploadPath(): static
-    {
-        $this->uploadPath = $this->path . '/' . $this->destination;
-
-        return $this;
     }
 
     public function getResult($key = null): mixed
@@ -285,46 +282,6 @@ class FileUploader
         return $this;
     }
 
-    private function isImage(): bool
-    {
-        $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
-        $fileExtension = strtolower($this->file->getClientOriginalExtension());
-
-        return in_array($fileExtension, $allowedExtensions);
-    }
-
-    private function createThumbnail(): void
-    {
-        if ($this->isImage()) {
-            $originalImage = $this->getUploadPath() . '/' . $this->filename;
-            $thumbnailFolder = $this->getUploadPath() . '/thumbs/';
-            $thumbnailName = 'thumb_' . $this->filename;
-            $thumbnailPath = $thumbnailFolder . $thumbnailName;
-
-            if (!file_exists($thumbnailFolder))
-                mkdir($thumbnailFolder, 0755, true);
-
-            Image::read($originalImage)
-                ->scale($this->thumbInfo['width'], $this->thumbInfo['height'])
-                ->save($thumbnailPath);
-        }
-    }
-
-    /**
-     * Set the allowed file extensions for upload.
-     *
-     * @param array $extensions List of allowed extensions.
-     * @return static
-     */
-    public function setAllowedExtensions(array $extensions): static
-    {
-        $this->allowedExtensions = array_map('strtolower', $extensions);
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getGroup(): string
     {
         return $this->group;
@@ -335,4 +292,49 @@ class FileUploader
         return !empty($this->error);
     }
 
+    public function getDiskName(): string
+    {
+        return $this->diskName;
+    }
+
+    public function getPackage(): string
+    {
+        return $this->package;
+    }
+
+    private function isImage(): bool
+    {
+        return in_array($this->extension, ['jpg', 'jpeg', 'png', 'gif', 'webp'], true);
+    }
+
+    private function createThumbnail(string $storageKey): void
+    {
+        if (!$this->isImage()) {
+            return;
+        }
+
+        $thumbKey = FileStorage::thumbKey($this->destination, $this->filename);
+        $thumbDir = trim(dirname($thumbKey), '/');
+
+        if ($thumbDir !== '' && $thumbDir !== '.') {
+            $this->disk->makeDirectory($thumbDir);
+        }
+
+        $source = $this->file->getPathname();
+        $tempThumb = tempnam(sys_get_temp_dir(), 'pin_thumb_');
+
+        Image::read($source)
+            ->scale($this->thumbInfo['width'], $this->thumbInfo['height'])
+            ->save($tempThumb);
+
+        $this->disk->put(
+            $thumbKey,
+            (string) file_get_contents($tempThumb),
+            ['visibility' => FileStorage::visibility($this->access)],
+        );
+
+        if (is_file($tempThumb)) {
+            unlink($tempThumb);
+        }
+    }
 }

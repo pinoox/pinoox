@@ -1,21 +1,9 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
 
+use Pinoox\Component\Date\JalaliDate;
 use Pinoox\Portal\Date;
 
 if (!function_exists('now')) {
-    /**
-     * Create a new Carbon instance for the current time.
-     */
     function now(DateTimeZone|string|null $tz = null)
     {
         return Date::now($tz);
@@ -23,27 +11,68 @@ if (!function_exists('now')) {
 }
 
 if (!function_exists('today')) {
-    /**
-     * Create a new Carbon instance for the current date.
-     */
-
     function today(DateTimeZone|string|null $tz = null)
     {
         return Date::today($tz);
     }
 }
 
+if (!function_exists('carbon')) {
+    function carbon(mixed $time = null, DateTimeZone|string|null $timezone = null)
+    {
+        return Date::parse($time, $timezone);
+    }
+}
+
+if (!function_exists('jalali')) {
+    function jalali(mixed $time = null, DateTimeZone|string|null $timezone = null): JalaliDate
+    {
+        return Date::jalali($time, $timezone);
+    }
+}
 
 if (!function_exists('format_date')) {
-    function format_date($time = null, string $format = 'Y-m-d H:i:s', ?string $timezone = null): string
+    function format_date(mixed $time = null, ?string $format = null, ?string $timezone = null): string
     {
+        return Date::format($time, $format, null);
+    }
+}
+
+if (!function_exists('jformat')) {
+    function jformat(mixed $time = null, ?string $format = null, DateTimeZone|string|null $timezone = null): string
+    {
+        $format ??= Date::formatKey('datetime', 'jalali');
+
+        return Date::jalali($time, $timezone)->format($format);
+    }
+}
+
+if (!function_exists('format_jalali')) {
+    function format_jalali(mixed $time = null, ?string $format = null, DateTimeZone|string|null $timezone = null): string
+    {
+        return jformat($time, $format, $timezone);
+    }
+}
+
+if (!function_exists('gdate')) {
+    function gdate(mixed $time = null, ?string $format = null, DateTimeZone|string|null $timezone = null): string
+    {
+        $format ??= Date::formatKey('datetime', 'gregorian');
+
         return Date::parse($time, $timezone)->format($format);
     }
 }
 
-if (!function_exists('carbon')) {
-    function carbon($time = null, ?string $timezone = null)
+if (!function_exists('date_format_smart')) {
+    function date_format_smart(mixed $time = null, ?string $format = null): string
     {
-        return Date::parse($time, $timezone);
+        return Date::format($time, $format);
+    }
+}
+
+if (!function_exists('date_ago')) {
+    function date_ago(mixed $time = null, bool|int $exactAfterDays = false, ?string $format = null): ?string
+    {
+        return Date::approximateDate($time ?? 'now', $exactAfterDays, $format ?? Date::formatKey('date'));
     }
 }

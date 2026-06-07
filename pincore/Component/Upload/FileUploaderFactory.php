@@ -12,27 +12,34 @@
 
 namespace Pinoox\Component\Upload;
 
-
+use Pinoox\Component\File\FileConfig;
 use Pinoox\System\Model\FileModel;
-use Pinoox\Portal\App\App;
 
 class FileUploaderFactory
 {
-
-    public function store($destination, $file, $access = 'public'): FileUploader
+    /**
+     * @param array{package?: string, disk?: string}|null $options
+     */
+    public function store($destination, $file, $access = 'public', ?array $options = null): FileUploader
     {
+        $config = FileConfig::resolve();
+        $options ??= [];
+
         return new FileUploader(
-            path(''),
-            $destination,
-            $file,
-            $access
+            destination: trim((string) $destination, '/'),
+            fileKey: $file,
+            access: $access,
+            package: $options['package'] ?? $config['package'],
+            disk: $options['disk'] ?? $config['disk'],
         );
     }
 
     public function delete(int $file_id): FileUploader|bool
     {
         $fileModel = FileModel::find($file_id);
-        if (empty($fileModel)) return false;
+        if (empty($fileModel)) {
+            return false;
+        }
 
         return (new FileUploader())->delete($fileModel);
     }
@@ -41,5 +48,4 @@ class FileUploaderFactory
     {
         FileUploader::addEvent($type, $event);
     }
-
 }
