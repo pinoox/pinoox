@@ -28,7 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'migrate:rollback',
-    description: 'Rollback the database migrations.',
+    description: 'Rollback the last batch of migrations',
 )]
 class MigrateRollbackCommand extends Terminal
 {
@@ -41,8 +41,10 @@ class MigrateRollbackCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas');
-        $this->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints');
+        $this
+            ->setHelp('Example: php pinoox migrate:rollback com_my_shop')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key checks during rollback');
 
     }
 

@@ -1,14 +1,15 @@
 const PINOOX = {
+    // urls
     URL: {
         CURRENT: window.location.href,
-        BASE: '{{ url("^/") }}',
-        API: '{{ url("^api/v1/") }}',
-        SITE: '{{ url("~") }}',
-        THEME: '{{ assets("/") }}',
+        APP: '{{ url() }}',
+        APP_PATH: '{{ asset() }}',
+        BASE: '{{ url("", "relative") }}',
+        API: '{{ url("/api/v1/") }}',
+        SITE: '{{ url("", "site") }}',
+        THEME: '{{ assets() }}',
+        RES: '{{ asset("resources/") }}',
+        AVATAR: '{{ asset("resources/avatar.png") }}',
+        APP_ICON: '{{ asset("resources/default.png") }}',
     },
-    OPTIONS: {
-        lang: '{{ currentLang }}',
-        version: '{{ config("~pinoox.version_name") }}',
-    },
-    LANG: {{ _lang|raw }},
-}; 
+};

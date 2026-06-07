@@ -1,60 +1,60 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @link https://www.pinoox.com/
- * @link https://www.pinoox.com/
- * @license  https://opensource.org/licenses/MIT MIT License
- */
 
 namespace Pinoox\Terminal\Pincore;
 
-use Pinoox\Component\Dir;
-use Pinoox\Component\File;
-use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\FileSystem;
-use Pinoox\Portal\Pinker;
-use Pinoox\Support\SystemApp;
+use Pinoox\Terminal\Concerns\SelectsPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
-
-// the "name" and "description" arguments of AsCommand replace the
-// static $defaultName and $defaultDescription properties
 #[AsCommand(
     name: 'reset',
-    description: 'Reset to factory.',
+    description: 'Remove Pinker baked files and restore app config from source',
 )]
 class ResetCommand extends Terminal
 {
+    use SelectsPackage;
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to reset to factory');
+        $this
+            ->setHelp(
+                <<<'HELP'
+Deletes Pinker cache folders so config is rebuilt from source on next request.
+
+
+
+Examples:
+
+  php pinoox reset
+
+  php pinoox reset com_my_shop
+
+HELP
+            )
+            ->addArgument('package', InputArgument::OPTIONAL, $this->packageArgumentHelp());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $package = $input->getArgument('package');
+        $io = new SymfonyStyle($input, $output);
+        $package = $this->resolvePackageRequired($input, $output, $io, [
+            'sectionTitle' => 'Reset Pinker for',
+        ]);
 
-        $package = (!empty($package) && AppEngine::exists($package)) ? $package : 'pincore';
         foreach ($this->pinkerDirs($package) as $pinkerDir) {
             FileSystem::remove($pinkerDir);
         }
 
-        self::success('Pinker directory [' . $package . '] removed successfully.');
+        $io->success('Pinker directory [' . $package . '] removed successfully.');
 
         return Command::SUCCESS;
     }
@@ -70,17 +70,4 @@ class ResetCommand extends Terminal
 
         return [path('~/pinker/apps/' . $package)];
     }
-
-    /**
-     * @throws Exception
-     */
-    private function printMessages($messages): void
-    {
-        if (empty($messages)) throw new Exception($messages);
-
-        foreach ($messages as $message) {
-            $this->success($message);
-        }
-    }
-
 }

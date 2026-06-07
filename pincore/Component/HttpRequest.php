@@ -339,7 +339,7 @@ class HttpRequest
 
             // options
             $headers = $this->getHeaders();
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, Url::isHttps());
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, Url::isSecure());
             curl_setopt($curl, CURLOPT_URL, $url);
             curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);

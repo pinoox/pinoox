@@ -26,7 +26,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'test:create',
-    description: 'Create Test',
+    description: 'Create a Pest test file in an app or pincore',
 )]
 class TestCreateCommand extends Terminal
 {
@@ -34,10 +34,12 @@ class TestCreateCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('TestName', InputArgument::REQUIRED, 'Name of the test class')
-            ->addArgument('package', InputArgument::OPTIONAL, 'Package to create the test for')
-            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite existing test case file')
-            ->addOption('unit', null, InputOption::VALUE_NONE, 'Create a unit test in the Unit path');
+        $this
+            ->setHelp('Example: php pinoox test:create ProductTest com_my_shop --feature')
+            ->addArgument('TestName', InputArgument::REQUIRED, 'Test class name (e.g. ProductTest)')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Overwrite an existing test file')
+            ->addOption('unit', null, InputOption::VALUE_NONE, 'Create under tests/Unit instead of tests/Feature');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -60,7 +62,7 @@ class TestCreateCommand extends Terminal
             mkdir(dirname($exportPath), 0777, true);
         }
 
-        if (TestFile::create($exportPath, $testName, 'something')) {
+        if (TestFile::create($exportPath, $testName, $package, (bool) $input->getOption('unit'))) {
             $this->success("Test file created successfully: $exportPath");
             return Command::SUCCESS;
         } else {

@@ -27,7 +27,8 @@ use Pinoox\Portal\Event;
 use Pinoox\Portal\Kernel\HttpKernel;
 use Pinoox\Portal\Kernel\Terminal;
 use Pinoox\Portal\Session;
-use Symfony\Component\ErrorHandler\Debug;
+use Pinoox\Component\Kernel\Debug\PinooxDebug;
+use Pinoox\Component\Runtime\RuntimeMode;
 
 /**
  * @method static AppProvider prerequisite()
@@ -66,7 +67,11 @@ class AppProvider extends Portal
     {
         SessionStarter::configureSavePath();
         Dumper::register();
-        Debug::enable();
+
+        if (RuntimeMode::bootDebugEnabled()) {
+            PinooxDebug::enable();
+        }
+
         Env::register();
         DB::register();
     }

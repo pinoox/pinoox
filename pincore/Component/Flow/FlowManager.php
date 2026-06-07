@@ -42,7 +42,11 @@ class FlowManager
         $alias = $this->getAliasNestedValue($flow);
         if (!empty($alias)) {
             $values = $alias;
-            if (is_array($values)) {
+            if ($values instanceof FlowInterface) {
+                $next = function ($request) use ($values, $next) {
+                    return $values->response($request, $next);
+                };
+            } elseif (is_array($values)) {
                 foreach ($values as $value) {
                     $next = $this->handleRow($value, $request, $next);
                 }

@@ -1,0 +1,12 @@
+<?php
+{{ copyright }}
+
+namespace App\{{package}}\Model;
+
+/**
+ * Table name constants for this app (prefix applied by DB::tableName).
+ */
+final class Table
+{
+    // public const EXAMPLE = 'example';
+}

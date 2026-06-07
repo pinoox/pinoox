@@ -7,33 +7,38 @@ use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\StubGenerator;
 use Pinoox\Support\SystemConfig;
+use Pinoox\Terminal\Migrate\SelectsMigrationPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'patch:create',
-    description: 'Create a new app patch.',
+    description: 'Create a data patch file for one-time DB or config updates',
 )]
 class PatchCreateCommand extends Terminal
 {
+    use SelectsMigrationPackage;
+
     private string $package;
     private string $patch;
 
     protected function configure(): void
     {
         $this
-            ->addArgument('patch', InputArgument::REQUIRED, 'The name of the patch')
-            ->addArgument('package', InputArgument::OPTIONAL, 'The package to create the patch in', $this->getDefaultPackage());
+            ->setHelp('Example: php pinoox patch:create fix_user_roles com_my_shop')
+            ->addArgument('patch', InputArgument::REQUIRED, 'Patch name (e.g. fix_user_roles)')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $this->package = (string)$input->getArgument('package');
+        $this->package = $this->resolvePackage($input, $output, new SymfonyStyle($input, $output));
         $this->patch = (string)$input->getArgument('patch');
 
         $isCreated = StubGenerator::generate('patch.create.stub', $this->getExportPath(), [
@@ -71,7 +76,7 @@ class PatchCreateCommand extends Terminal
             return SystemConfig::path('system_patches');
         }
 
-        return AppEngine::path($this->package) . '/' . trim(SystemConfig::rawPath('app_patches', 'database/patches'), '/\\');
+        return AppEngine::path($this->package) . '/' . trim(SystemConfig::rawPath('app_patches', 'patches'), '/\\');
     }
 
     private function getPatchFileName(): string
@@ -84,7 +89,7 @@ class PatchCreateCommand extends Terminal
     private function getNamespace(): string
     {
         return $this->package === 'pincore'
-            ? 'Pinoox\\Database\\patches'
-            : 'App\\' . $this->package . '\\database\\patches';
+            ? 'Pinoox\\Patches'
+            : 'App\\' . $this->package . '\\patches';
     }
 }

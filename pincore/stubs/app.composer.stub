@@ -1,0 +1,15 @@
+{
+    "name": "pinoox/{{package}}",
+    "description": "{{description}}",
+    "type": "pinoox-app",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "{{developer}}"
+        }
+    ],
+    "require": {},
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -24,7 +24,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'migrate:status',
-    description: 'Show the status of each migration.',
+    description: 'Show migration status for an app or pincore',
 )]
 class MigrateStatusCommand extends Terminal
 {
@@ -36,7 +36,9 @@ class MigrateStatusCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app');
+        $this
+            ->setHelp('Example: php pinoox migrate:status com_my_shop')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

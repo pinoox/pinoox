@@ -1,0 +1,10 @@
+<?php
+
+it('{{test_title}}', function () {
+    // Arrange
+
+    // Act
+
+    // Assert
+    expect(true)->toBeTrue();
+});

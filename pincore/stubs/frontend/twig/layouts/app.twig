@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ currentLang|default('en') }}">
+<head>
+    {% include 'partials/head.twig' %}
+    <link rel="stylesheet" href="{{ assets('assets/app.css') }}">
+</head>
+<body>
+{% block body %}
+<main class="layout">
+    <h1>{{ title|default(appName|default('Pinoox App')) }}</h1>
+    <p>{{ message|default('Twig-only theme with server-rendered HTML for SEO.') }}</p>
+</main>
+{% endblock %}
+</body>
+</html>

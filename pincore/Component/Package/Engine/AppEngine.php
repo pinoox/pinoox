@@ -14,6 +14,10 @@
 namespace Pinoox\Component\Package\Engine;
 
 
+use Pinoox\Component\AppEvent\AppBootstrap;
+use Pinoox\Component\Cache\AppCacheConfig;
+use Pinoox\Component\Cache\Store\RouteCacheStore;
+use Pinoox\Component\Router\Action\ActionRegistry;
 use Pinoox\Component\Package\AppManager;
 use Pinoox\Component\Package\Loader\ArrayLoader;
 use Pinoox\Component\Package\Loader\ChainLoader;
@@ -138,8 +142,22 @@ class AppEngine implements EngineInterface
         $routes = $this->config($packageName)->get('router.routes');
         if (empty($this->router[$packageName][$path])) {
             $this->router[$packageName][$path] = \Pinoox\Portal\Router::build($path, $routes);
+            AppBootstrap::applyRoutes($packageName, $this->router[$packageName][$path], false);
+            self::warmRouteCache($packageName);
         }
         return $this->router[$packageName][$path];
+    }
+
+    private static function warmRouteCache(string $package): void
+    {
+        if (!AppCacheConfig::storeEnabled('routes', $package)) {
+            return;
+        }
+
+        $actions = RouteCacheStore::loadActions($package);
+        if ($actions !== null) {
+            ActionRegistry::importManifest($package, $actions, mergeRuntimeHandlers: true);
+        }
     }
 
     public function manager(ReferenceInterface|string $packageName): AppManager

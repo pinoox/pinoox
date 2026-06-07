@@ -2,62 +2,67 @@
 
 namespace Pinoox\Terminal\Pincore;
 
+use Pinoox\Component\Cache\AppCacheManager;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\FileSystem;
-use Pinoox\Support\SystemApp;
+use Pinoox\Terminal\Concerns\SelectsPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'cache:clear',
-    description: 'Clear Pinker (stub/config) cache for all packages'
+    description: 'Clear app runtime cache (routes, API, Twig, GraphQL, Pinker)',
 )]
 class CacheClearCommand extends Terminal
 {
+    use SelectsPackage;
+
     protected function configure(): void
     {
-        // No arguments needed by default; you can optionally pass a package name
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Optional package name to clear only one package');
+        $this
+            ->setHelp(
+                <<<'HELP'
+Removes cached files from pinker/apps/{package}/cache/.
+
+
+
+Examples:
+
+  php pinoox cache:clear
+
+  php pinoox cache:clear com_my_shop
+
+  php pinoox cache:clear com_my_shop --only=twig
+
+HELP
+            )
+            ->addArgument('package', InputArgument::OPTIONAL, $this->packageArgumentHelp(allowAll: true))
+            ->addOption('only', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Clear only these stores: routes, api, boot, twig, graphql, pinker');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $package = $input->getArgument('package');
+        $io = new SymfonyStyle($input, $output);
+        $package = $this->resolvePackageRequired($input, $output, $io, [
+            'allowAll' => true,
+            'default' => 'all',
+            'sectionTitle' => 'Clear cache for',
+        ]);
+        $only = array_values(array_filter(array_map('trim', $input->getOption('only') ?? [])));
 
-        // Determine packages to clear
-        if (!empty($package)) {
-            $packages = [$package];
-        } else {
-            // Get all registered apps including core
-            $packages = ['pincore', ...array_keys(AppEngine::all())];
-        }
+        AppCacheManager::clear(
+            $package === 'all' ? null : $package,
+            $only === [] ? null : $only,
+        );
 
-        foreach ($packages as $pkg) {
-            foreach ($this->pinkerDirs($pkg) as $pinkerDir) {
-                FileSystem::remove($pinkerDir);
-            }
-
-            $output->writeln("<info>Pinker cache cleared for [{$pkg}]</info>");
-        }
+        $io->success('App cache cleared.');
 
         return Command::SUCCESS;
     }
-
-    private function pinkerDirs(string $package): array
-    {
-        if ($package === 'pincore') {
-            return [
-                path('~/pinker/pincore'),
-                path('~/pinker/system'),
-            ];
-        }
-
-        return [path('~/pinker/apps/' . $package)];
-    }
-} 
+}

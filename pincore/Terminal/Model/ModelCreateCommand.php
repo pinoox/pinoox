@@ -2,54 +2,58 @@
 
 namespace Pinoox\Terminal\Model;
 
-use Pinoox\Component\Helpers\PhpFile\ModelFile;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Helpers\StubBuilderHelper;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\AppManager;
-use Pinoox\Portal\StubGenerator;
+use Pinoox\Terminal\Concerns\SelectsPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Finder\Finder;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'model:create',
-    description: 'Create a new model class.',
+    description: 'Create a new Eloquent model class in an app',
 )]
 class ModelCreateCommand extends Terminal
 {
-    private string $package;
-    private string $model;
-    private string $table;
-    private string $classname;
-    private string $sub;
+    use SelectsPackage;
 
     protected function configure(): void
     {
         $this
-            ->addArgument('model', InputArgument::REQUIRED, 'Enter name of model class')
-            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas', $this->getDefaultPackage());
+            ->setHelp(
+                <<<'HELP'
+Creates a model stub inside apps/{package}/Model/.
+
+
+
+Example:
+
+  php pinoox model:create ProductModel com_my_shop
+
+HELP
+            )
+            ->addArgument('model', InputArgument::REQUIRED, 'Model class name (e.g. ProductModel)')
+            ->addArgument('package', InputArgument::OPTIONAL, $this->packageArgumentHelp());
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
+        $io = new SymfonyStyle($input, $output);
         $model = $input->getArgument('model');
-        $package = $input->getArgument('package');
+        $package = $this->resolvePackageRequired($input, $output, $io, [
+            'sectionTitle' => 'Create model in',
+        ]);
         $table = Str::toUnderScore($model);
-        $table = str_replace(['\\','\\_'],'',$table);
-
-        if (!AppEngine::exists($package)) {
-            $this->error('Package not found');
-        }
+        $table = str_replace(['\\', '\\_'], '', $table);
 
         $stub = new StubBuilderHelper($model, $package, 'model');
-        $isCreated =  $stub->generate('model.create.stub', [
+        $isCreated = $stub->generate('model.create.stub', [
             'table' => $table,
         ]);
 

@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 use Pinoox\Component\Helpers\HelperArray;
 use Pinoox\Component\Router\Collection;
 use Pinoox\Component\Router\QueryRouteResolver;
-use Pinoox\Component\Upload\FileUploader;
+use Pinoox\Component\File\UploadBuilder;
 use Pinoox\Component\Validation\Factory as ValidationFactory;
 use Pinoox\Component\Http\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
@@ -271,6 +271,28 @@ class Request extends RequestSymfony
         return $request;
     }
 
+    public function getBasePath(): string
+    {
+        $basePath = parent::getBasePath();
+
+        if ($basePath !== '') {
+            return $basePath;
+        }
+
+        return $this->derivedInstallBasePath();
+    }
+
+    public function getBaseUrl(): string
+    {
+        $baseUrl = parent::getBaseUrl();
+
+        if ($baseUrl !== '') {
+            return $baseUrl;
+        }
+
+        return $this->derivedInstallBasePath();
+    }
+
     public function getPathInfo(): string
     {
         $queryRoutePath = $this->attributes->get('_query_route_path');
@@ -283,7 +305,31 @@ class Request extends RequestSymfony
             return $path;
         }
 
-        return parent::getPathInfo();
+        $pathInfo = parent::getPathInfo();
+        $basePath = $this->getBasePath();
+
+        if ($basePath !== '' && $basePath !== '/' && str_starts_with($pathInfo, $basePath)) {
+            $pathInfo = substr($pathInfo, strlen($basePath)) ?: '/';
+        }
+
+        if ($pathInfo === '') {
+            $pathInfo = '/';
+        }
+
+        return $pathInfo;
+    }
+
+    private function derivedInstallBasePath(): string
+    {
+        $scriptName = str_replace('\\', '/', (string)$this->server->get('SCRIPT_NAME', ''));
+
+        if ($scriptName === '' || $scriptName === '/index.php' || !str_contains($scriptName, '/')) {
+            return '';
+        }
+
+        $derived = rtrim(dirname($scriptName), '/');
+
+        return ($derived === '' || $derived === '.') ? '' : $derived;
     }
 
     public function isQueryRoute(): bool
@@ -363,7 +409,7 @@ class Request extends RequestSymfony
         return $default;
     }
 
-    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?FileUploader
+    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?UploadBuilder
     {
         return $this->file($key, $default)?->store($destination, $access);
     }

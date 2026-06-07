@@ -25,7 +25,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'test',
-    description: 'Run Tests.',
+    description: 'Run Pest/PHPUnit tests for an app or pincore',
 )]
 class TestCommand extends Terminal
 {
@@ -33,13 +33,15 @@ class TestCommand extends Terminal
 
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Package to run tests for')
-            ->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Filter tests by name or annotation')
-            ->addOption('unit', 'u', InputOption::VALUE_NONE, 'Run only unit tests')
-            ->addOption('feature', null, InputOption::VALUE_NONE, 'Run only feature tests')
-            ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Run tests belonging to specific groups')
-            ->addOption('coverage', 'c', InputOption::VALUE_NONE, 'Generate code coverage report')
-            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'Run tests for specific app');
+        $this
+            ->setHelp('Examples: php pinoox test | php pinoox test com_my_shop --feature')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addOption('filter', 'f', InputOption::VALUE_REQUIRED, 'Run tests matching a name pattern')
+            ->addOption('unit', 'u', InputOption::VALUE_NONE, 'Run only Unit tests')
+            ->addOption('feature', null, InputOption::VALUE_NONE, 'Run only Feature tests')
+            ->addOption('group', 'g', InputOption::VALUE_REQUIRED, 'Run tests in a @group')
+            ->addOption('coverage', 'c', InputOption::VALUE_NONE, 'Generate a code coverage report')
+            ->addOption('app', 'a', InputOption::VALUE_REQUIRED, 'Same as package (alias)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

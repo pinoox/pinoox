@@ -29,7 +29,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 // static $defaultName and $defaultDescription properties
 #[AsCommand(
     name: 'migrate',
-    description: 'Migrate schemas.',
+    description: 'Run pending database migrations for an app or pincore',
 )]
 class MigrateCommand extends Terminal
 {
@@ -40,12 +40,24 @@ class MigrateCommand extends Terminal
      */
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name that you want to migrate schemas')
-            ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key constraints')
-            ->addOption('dbconfig', null, InputOption::VALUE_NONE, 'Show current database configuration')
-            ->addOption('status', 's', InputOption::VALUE_NONE, 'Show migration status')
-            ->addOption('reset', 'r', InputOption::VALUE_NONE, 'Reset all migrations')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Force migration even if tables exist');
+        $this
+            ->setHelp(
+                <<<'HELP'
+Runs new migration files from database/migrations/.
+
+Examples:
+  php pinoox migrate
+  php pinoox migrate com_my_shop
+  php pinoox migrate --status
+  php pinoox migrate --reset
+HELP
+            )
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.')
+            ->addOption('ignore-fk', 'f', InputOption::VALUE_NONE, 'Disable foreign key checks during migration')
+            ->addOption('dbconfig', null, InputOption::VALUE_NONE, 'Print the active database connection settings')
+            ->addOption('status', 's', InputOption::VALUE_NONE, 'Show which migrations ran and which are pending')
+            ->addOption('reset', 'r', InputOption::VALUE_NONE, 'Rollback all migrations, then run them again')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Run even when tables already exist');
     }
 
     /**

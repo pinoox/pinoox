@@ -131,16 +131,7 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
      */
     public function stable(string $packageName): bool
     {
-        $enable = false;
-
-        if ($this->exists($packageName)) {
-            try {
-                $enable = (bool)$this->get('enable');
-            } catch (Exception $e) {
-            }
-        }
-
-        return $enable === true;
+        return $this->appEngine->stable($packageName);
     }
 
     /**
@@ -339,17 +330,6 @@ class App implements UrlMatcherInterface, RequestMatcherInterface
         $namespace = 'App\\' . $packageName . '\\';
         $this->classLoader->addPsr4($namespace, $dir);
         $this->autoloadedPackages[$packageName] = $dir;
-
-        spl_autoload_register(function ($class) use ($namespace, $dir) {
-            if (str_starts_with($class, $namespace)) {
-                $class = str_replace($namespace, '', $class);
-                $filename = str_replace('\\', '/', $class) . '.php';
-                $filePath = $dir . '/' . $filename;
-                if (file_exists($filePath)) {
-                    require $filePath;
-                }
-            }
-        });
     }
 
     public function dataAlias(): DataManager

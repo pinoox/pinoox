@@ -7,73 +7,93 @@
  *      *     *  *    **  ****  ****  *    *
  * @author   Pinoox
  * @link https://www.pinoox.com/
- * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
 namespace Pinoox\Terminal\Wizard;
 
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Package\Pinx\PinxInstaller;
 use Pinoox\Component\Terminal;
-use Pinoox\Portal\Wizard\AppWizard;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Support\SystemConfig;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'wizard:install',
-    description: 'Install apps or templates',
+    description: 'Install apps or themes (delegates to pinx:install)',
 )]
 class WizardInstallCommand extends Terminal
 {
-    const PATH = 'pins/';
-
     protected function configure(): void
     {
         $this
-            ->addArgument('package', InputArgument::REQUIRED, 'Enter package name')
-            ->addOption('force', 'f', null, 'if the package is already installed, you can force the installation. example:[wizard [package_name] -f]')
-            ->addOption('migration', 'm', null, 'migrate database tables. example:[wizard [package_name] -m]');
-
+            ->addArgument('package', InputArgument::REQUIRED, 'Package file name or path (.pinx/.pin)')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force install/update')
+            ->addOption('migration', 'm', InputOption::VALUE_NONE, 'Deprecated alias; migrations run by default')
+            ->addOption('skip-migrate', null, InputOption::VALUE_NONE, 'Skip database migrations');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-      
-        $package = $input->getArgument('package');
-        $force = $input->getOption('force')  ?? null;
-        $migration = $input->getOption('migration')  ?? null;
+        $io = new SymfonyStyle($input, $output);
+        $packageArg = (string) $input->getArgument('package');
+        $packagePath = $this->resolvePackagePath($packageArg);
 
-        $package = str_replace('.pin', '', $package);
-        $pin = Loader::getBasePath() .'/'. $package . '.pin';
-
-        if (!file_exists($pin)) {
-            $this->error('package file not found: "' . $pin . '"');
+        if (!is_file($packagePath)) {
+            $this->error('Package file not found: "' . $packagePath . '"');
         }
 
-        $wizard = AppWizard::open($pin);
+        $this->warning('wizard:install is deprecated. Use pinx:install instead.');
 
-        $wizard->force($force);
-        $wizard->migration($migration);
+        $installer = new PinxInstaller(
+            AppEngine::___(),
+            SystemConfig::path('wizard_tmp'),
+        );
 
-        if ($wizard->isInstalled() && !$force) {
-            // Continue installation
-            $confirm = $this->confirm('The package already installed, Do you want to continue installation? (yes/no) ', $input, $output);
-            if ($confirm) {
-                $wizard->force();
-            } else {
-                $this->error('Installation canceled.');
-            }
+        $result = $installer->install($packagePath, [
+            'force' => (bool) $input->getOption('force'),
+            'skip_migrate' => (bool) $input->getOption('skip-migrate'),
+        ]);
+
+        if (!$result->success) {
+            $io->error($result->message);
+            return Command::FAILURE;
         }
 
-        $result = $wizard->install();
-        $this->success($result['message'] . ': "' . $package.'"');
+        $this->success($result->message);
 
         return Command::SUCCESS;
     }
 
+    private function resolvePackagePath(string $packageArg): string
+    {
+        $base = str_replace(['.pinx', '.pin'], '', $packageArg);
+
+        foreach ([$packageArg, $base . '.pinx', $base . '.pin'] as $candidate) {
+            if (is_file($candidate)) {
+                return $candidate;
+            }
+        }
+
+        $pin = Loader::getBasePath() . '/pins/' . basename($base) . '.pin';
+        if (is_file($pin)) {
+            return $pin;
+        }
+
+        $pinx = Loader::getBasePath() . '/pins/' . basename($base) . '.pinx';
+        if (is_file($pinx)) {
+            return $pinx;
+        }
+
+        return $base . '.pinx';
+    }
 }

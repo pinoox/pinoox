@@ -33,7 +33,7 @@ class Token implements BootInterface
 
     public static function deleteAllExpired()
     {
-        $now = Date::g('Y-m-d H:i:s');
+        $now = now()->format('Y-m-d H:i:s');
         return TokenModel::withoutGlobalScopes(['app'])->where('expiration_date', '<', $now)->delete();
     }
 

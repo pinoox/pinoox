@@ -80,21 +80,21 @@ class DelegatingEngine implements EngineInterface
 
     public function path(ReferenceInterface|string $packageName, string $path = ''): string
     {
-        $this->getEngine($packageName)->path($packageName);
+        return $this->getEngine($packageName)->path($packageName, $path);
     }
 
     public function lang(ReferenceInterface|string $packageName): Translator
     {
-        $this->getEngine($packageName)->lang($packageName);
+        return $this->getEngine($packageName)->lang($packageName);
     }
 
     public function router(ReferenceInterface|string $packageName, string $path = ''): Router
     {
-        $this->getEngine($packageName)->router($packageName);
+        return $this->getEngine($packageName)->router($packageName, $path);
     }
 
     public function stable(ReferenceInterface|string $packageName): bool
     {
-        $this->getEngine($packageName)->stable($packageName);
+        return $this->getEngine($packageName)->stable($packageName);
     }
 }

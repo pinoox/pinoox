@@ -16,7 +16,7 @@ use Symfony\Component\Finder\Finder;
 
 #[AsCommand(
     name: 'migrate:create',
-    description: 'Create a new Migration Schema.',
+    description: 'Create a new database migration file',
 )]
 class MigrateCreateCommand extends Terminal
 {
@@ -35,8 +35,9 @@ class MigrateCreateCommand extends Terminal
     protected function configure(): void
     {
         $this
-            ->addArgument('migration', InputArgument::REQUIRED, 'Enter name of migration name')
-            ->addArgument('package', InputArgument::OPTIONAL, 'Enter the package name of app you want to migrate schemas');
+            ->setHelp('Example: php pinoox migrate:create create_products_table com_my_shop')
+            ->addArgument('migration', InputArgument::REQUIRED, 'Migration name (e.g. create_products_table)')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

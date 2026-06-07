@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * App-level service bindings for constructor injection (opt-in).
+ *
+ * Enable in app.php:
+ * 'container' => ['enabled' => true, 'autowire_controllers' => true],
+ *
+ * @return array<class-string, class-string>
+ */
+return [
+    // ExampleInterface::class => ExampleService::class,
+];

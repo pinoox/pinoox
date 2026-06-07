@@ -2,8 +2,8 @@
 
 namespace Pinoox\Terminal\Pincore;
 
+use Pinoox\Component\Helpers\PhpFile\TestFile;
 use Pinoox\Portal\FileSystem;
-use Pinoox\Component\File;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\Pinker;
 use Pinoox\Support\SystemApp;
@@ -16,13 +16,24 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(
     name: 'app:create',
-    description: 'Create a new Pinoox application boilerplate under apps/'
+    description: 'Scaffold a new app under apps/ with routes, theme, and boot files',
 )]
 class MakeAppCommand extends Terminal
 {
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::REQUIRED, 'Package name (e.g. com_my_app)');
+        $this
+            ->setHelp(
+                <<<'HELP'
+Creates a new HMVC app folder with default MVC structure.
+
+Example:
+  php pinoox app:create com_my_shop
+
+You will be asked for display name, developer, and description.
+HELP
+            )
+            ->addArgument('package', InputArgument::REQUIRED, 'New package name (e.g. com_my_shop — must match folder name)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -70,7 +81,16 @@ class MakeAppCommand extends Terminal
             "{$appDir}",
             "{$appDir}/{$configFolder}",
             "{$appDir}/Controller",
-            "{$appDir}/router",
+            "{$appDir}/Router",
+            "{$appDir}/routes",
+            "{$appDir}/Flow",
+            "{$appDir}/Model",
+            "{$appDir}/Component",
+            "{$appDir}/Portal",
+            "{$appDir}/lang/en",
+            "{$appDir}/database/migrations",
+            "{$appDir}/database/seed",
+            "{$appDir}/patches",
             "{$appDir}/theme/default",
         ]);
 
@@ -89,6 +109,24 @@ return [
     'icon'          => 'icon.png',
     'enable'        => true,
     'theme'         => 'default',
+    // 'theme-extends' => 'base', // inherit twig/assets from another theme folder
+    // Multi-theme contexts (site/panel/...): see docs/pinoox-theme-contexts.md
+    // 'theme-context' => 'site',
+    // 'theme-contexts' => ['site' => ['theme' => 'default'], 'panel' => ['theme' => 'admin']],
+    // 'alias' => array_merge(['auth' => ...], theme_flow_aliases(['site', 'panel'])),
+    'lang'          => 'en',
+    'router'        => [
+        'routes' => [
+            'routes/web.php',
+            'routes/actions.php',
+        ],
+    ],
+    // Boot-only site plugin: 'boot-global' => true,
+    // Route-only (no boot.php): 'boot' => false,
+    // 'runtime' => ['mode' => null, 'debug' => null],
+    // 'alias' => ['auth' => App\\{$name}\\Flow\\AuthFlow::class],
+    // 'build' => ['gitignore' => true, 'exclude' => ['tests', 'node_modules']],
+    // 'pinx' => ['type' => 'app', 'minpin' => 0],
 ];
 PHP;
         FileSystem::dumpFile("{$appDir}/{$appFile}", $appConfig);
@@ -97,43 +135,66 @@ PHP;
         $stubsPath = rtrim(SystemConfig::path('stubs'), '/') . '/';
         $copyrightStub = file_get_contents($stubsPath . 'copyright.stub');
 
-        // Generate router/actions.php
+        // Generate Router/Actions.php
+        $actionsClassFile = <<<PHP
+<?php
+{$copyrightStub}
+
+namespace App\\{$name}\\Router;
+
+final class Actions
+{
+    public const HOME = 'home';
+    public const PINOOXJS = 'pinooxjs';
+}
+PHP;
+        FileSystem::dumpFile("{$appDir}/Router/Actions.php", $actionsClassFile);
+
+        // Generate routes/actions.php
         $actionsFile = <<<PHP
 <?php
 {$copyrightStub}
 
+use App\\{$name}\\Controller\\MainController;
+use App\\{$name}\\Router\\Actions;
 use Pinoox\Portal\View;
-use function Pinoox\Router\{action};
-use App\\{$name}\Controller\MainController;
+use function Pinoox\Router\action;
 
-action('index', MainController::class);
-action('pinooxjs', fn() => View::jsResponse('pinoox'));
+action(Actions::HOME, [MainController::class, 'index']);
+
+action(Actions::PINOOXJS, fn () => View::jsResponse('pinoox'));
 PHP;
-        FileSystem::dumpFile("{$appDir}/router/actions.php", $actionsFile);
+        FileSystem::dumpFile("{$appDir}/routes/actions.php", $actionsFile);
 
-        // Generate router/routes.php
+        // Generate routes/web.php
         $routesFile = <<<PHP
 <?php
 {$copyrightStub}
 
-use function Pinoox\Router\{get};
+use App\\{$name}\\Router\\Actions;
+use function Pinoox\Router\get;
 
-get(
-    path: '/',
-    action: '@index',
-);
-
-get(
-    path: '/dist/pinoox.js',
-    action: '@pinooxjs',
-);
-
-get(
-    path: '*',
-    action: fn() => redirect(url('/')),
-);
+get('/', '@' . Actions::HOME);
+get('/dist/pinoox.js', '@' . Actions::PINOOXJS);
+get('*', fn() => redirect(url('/')));
 PHP;
-        FileSystem::dumpFile("{$appDir}/router/routes.php", $routesFile);
+        FileSystem::dumpFile("{$appDir}/routes/web.php", $routesFile);
+
+        // Generate schedule.php
+        $scheduleFile = <<<PHP
+<?php
+{$copyrightStub}
+
+use Pinoox\Cron\Schedule;
+
+return function (Schedule \$schedule): void {
+    // \$schedule->command('cache:clear')->dailyAt('02:00')->name('clear-cache');
+};
+PHP;
+        FileSystem::dumpFile("{$appDir}/schedule.php", $scheduleFile);
+
+        $bootStub = file_get_contents($stubsPath . 'boot.stub');
+        FileSystem::dumpFile("{$appDir}/boot.php", $bootStub);
 
         // Generate Controller/MainController.php
         $controllerFile = <<<PHP
@@ -147,7 +208,7 @@ use Pinoox\Portal\View;
 
 class MainController extends Controller
 {
-    public function __invoke()
+    public function index()
     {
         return View::render('hello');
     }
@@ -164,9 +225,36 @@ PHP;
         $pinooxStub = file_get_contents($stubsPath . 'pinoox.twig.stub');
         FileSystem::dumpFile("{$appDir}/theme/default/pinoox.twig", $pinooxStub);
 
+        $stubVars = [
+            '{{ copyright }}' => $copyrightStub,
+            '{{package}}' => $name,
+            '{{displayName}}' => $displayName,
+            '{{description}}' => $description,
+            '{{developer}}' => $developer,
+        ];
+
+        $themeManifestStub = str_replace(
+            array_keys($stubVars),
+            array_values($stubVars),
+            file_get_contents($stubsPath . 'theme.php.stub'),
+        );
+        FileSystem::dumpFile("{$appDir}/theme/default/theme.php", $themeManifestStub);
+
         // Generate functions.php from stub
         $functionsStub = file_get_contents($stubsPath . 'functions.php.stub');
         FileSystem::dumpFile("{$appDir}/theme/default/functions.php", $functionsStub);
+
+        foreach ([
+            'app.flow.boot.stub' => 'Flow/BootFlow.php',
+            'app.model.table.stub' => 'Model/Table.php',
+            'app.lang.stub' => 'lang/en/app.lang.php',
+            'app.composer.stub' => 'composer.json',
+        ] as $stubFile => $target) {
+            $content = str_replace(array_keys($stubVars), array_values($stubVars), file_get_contents($stubsPath . $stubFile));
+            FileSystem::dumpFile("{$appDir}/{$target}", $content);
+        }
+
+        TestFile::scaffoldAppTests($name, $appDir);
 
         // Ask user to update only the Pinker baked router config
         $confirm = new \Symfony\Component\Console\Question\ConfirmationQuestion(
@@ -206,6 +294,9 @@ PHP;
         }
 
         $output->writeln("<info>App '{$name}' created successfully in {$appDir}</info>");
+        $output->writeln("<info>HMVC folders: Controller, Model, Flow, routes, lang, database, patches, theme</info>");
+        $output->writeln("<info>Optional: run composer install inside the app for extra dependencies</info>");
+        $output->writeln("<info>Tests scaffolded in {$appDir}/tests — run: php pinoox test {$name}</info>");
         return Command::SUCCESS;
     }
 } 

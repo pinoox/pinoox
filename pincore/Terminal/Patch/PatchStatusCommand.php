@@ -5,28 +5,34 @@ namespace Pinoox\Terminal\Patch;
 use Pinoox\Component\Database\Patch\PatchToolkit;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Terminal;
+use Pinoox\Terminal\Migrate\SelectsMigrationPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'patch:status',
-    description: 'Show app patch status.',
+    description: 'Show which patches ran and which are pending',
 )]
 class PatchStatusCommand extends Terminal
 {
+    use SelectsMigrationPackage;
+
     protected function configure(): void
     {
-        $this->addArgument('package', InputArgument::OPTIONAL, 'The package to inspect', $this->getDefaultPackage());
+        $this
+            ->setHelp('Example: php pinoox patch:status com_my_shop')
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package or pincore. Leave empty to pick from the list.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $package = (string)$input->getArgument('package');
+        $package = $this->resolvePackage($input, $output, new SymfonyStyle($input, $output));
 
         try {
             (new Migrator('pincore'))->run();
@@ -50,15 +56,23 @@ class PatchStatusCommand extends Terminal
 
             $rows = [];
             foreach ($patches as $patch) {
+                $record = $patch['record'] ?? [];
+                $checksum = $patch['checksum'] ? substr($patch['checksum'], 0, 12) : '-';
+
                 $rows[] = [
                     $package,
                     $patch['name'],
-                    $patch['ran'] ? 'ran' : 'pending',
+                    $patch['status'],
+                    $patch['should_run'] ? 'yes' : 'no',
+                    $checksum,
+                    $record['duration_ms'] ?? '-',
+                    $record['executed_at'] ?? '-',
                     $patch['created_at'],
+                    $patch['description'] ?: '-',
                 ];
             }
 
-            $this->table(['App', 'Patch', 'Status', 'Created at'], $rows);
+            $this->table(['App', 'Patch', 'Status', 'Should run', 'Checksum', 'Duration ms', 'Executed at', 'Created at', 'Description'], $rows);
 
             return Command::SUCCESS;
         } catch (\Throwable $e) {

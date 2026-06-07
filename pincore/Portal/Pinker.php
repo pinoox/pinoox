@@ -57,7 +57,7 @@ class Pinker extends Portal
 	 */
 	public static function file(string|ReferenceInterface $fileName): ObjectPortal1
 	{
-		$mainFilePath = self::ds(Path::createPath($fileName, 'pincore'));
+		$mainFilePath = self::ds(Path::resolve($fileName, 'pincore'));
 		$mainFile = is_file($mainFilePath) ? $mainFilePath : '';
 		$bakedFile = self::bakedFileFromSource($mainFilePath);
 		return self::create($mainFile, $bakedFile);

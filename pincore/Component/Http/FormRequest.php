@@ -15,7 +15,7 @@ namespace Pinoox\Component\Http;
 
 use Illuminate\Support\MessageBag;
 use Illuminate\Support\ValidatedInput;
-use Pinoox\Component\Upload\FileUploader;
+use Pinoox\Component\File\UploadBuilder;
 use Pinoox\Component\Validation\AuthorizationException;
 use Pinoox\Component\Validation\ValidationException;
 use Illuminate\Validation\Validator;
@@ -84,12 +84,19 @@ abstract class FormRequest
         return true;
     }
 
+    protected function authorizeAbility(string|array $abilities, bool $requireAll = false): void
+    {
+        if (!\Pinoox\Portal\Access::can($abilities, null, $requireAll)) {
+            throw new AuthorizationException('This action is unauthorized.');
+        }
+    }
+
     public function file(string $key, mixed $default = null): UploadedFile
     {
         return $this->global->file($key, $default);
     }
 
-    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?FileUploader
+    public function store(string $key, $destination, $access = 'public', mixed $default = null): ?UploadBuilder
     {
         return $this->global->store($key, $destination, $access, $default);
     }

@@ -202,6 +202,8 @@ abstract class Portal
      */
     protected static function callMethod(string $method, array $args): mixed
     {
+        PortalCallSite::capture(static::class, $method, $args, debug_backtrace(\DEBUG_BACKTRACE_IGNORE_ARGS, 18));
+
         $instance = static::__instance();
 
         if (empty($instance) || self::checkMethodHasExclude($method) || !self::checkMethodHasInclude($method)) {

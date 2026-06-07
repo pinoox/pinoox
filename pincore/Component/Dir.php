@@ -14,6 +14,7 @@ namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Kernel\Loader;
+use Pinoox\Component\Template\Theme\ThemeStack;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Url;
 
@@ -57,8 +58,16 @@ class Dir
      */
     public static function theme($url = null, $theme = null, $path = null)
     {
-        if (empty($theme))
-            $theme = (empty(self::$theme)) ? App::get('theme') : self::$theme;
+        if (empty($theme)) {
+            try {
+                $theme = (empty(self::$theme)) ? ThemeStack::activeName() : self::$theme;
+            } catch (\Throwable) {
+                $theme = (empty(self::$theme)) ? App::get('theme') : self::$theme;
+                if (is_array($theme)) {
+                    $theme = ThemeStack::activeNameFromConfig(['theme' => $theme]);
+                }
+            }
+        }
         if (empty($path))
             $path = (empty(self::$pathTheme)) ? self::path(App::get('path-theme')) : self::$pathTheme;
         return self::path($path . '/' . $theme . '/' . $url);
@@ -89,10 +98,10 @@ class Dir
         if (!is_null($path)) {
             if (!$isBase) {
                 $path = Str::firstDelete($path, self::app());
-                $path = Str::firstDelete($path, Url::app());
+                $path = Str::firstDelete($path, Url::forApp());
             } else {
                 $path = Str::firstDelete($path, Loader::getBasePath());
-                $path = Str::firstDelete($path, Url::site());
+                $path = Str::firstDelete($path, Url::origin());
             }
             $path = self::ds($path);
             $path = Str::firstDelete($path,'/');

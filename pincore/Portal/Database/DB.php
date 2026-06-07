@@ -36,6 +36,7 @@ use Illuminate\Pagination\Paginator;
 use PDO as ObjectPortal8;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Runtime\RuntimeMode;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
@@ -227,7 +228,13 @@ class DB extends Portal
 
     public static function mode()
     {
-        return Config::name('~pinoox')->get('mode');
+        try {
+            return \Pinoox\Portal\Mode::databaseConnection();
+        } catch (\Throwable) {
+            $global = RuntimeMode::readGlobal();
+
+            return $global['mode'] === RuntimeMode::TEST ? 'test' : 'development';
+        }
     }
 
     public static function __replace(): array

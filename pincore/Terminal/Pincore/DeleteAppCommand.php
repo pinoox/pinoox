@@ -7,6 +7,7 @@ use Pinoox\Component\Terminal;
 use Pinoox\Portal\Pinker;
 use Pinoox\Support\SystemApp;
 use Pinoox\Support\SystemConfig;
+use Pinoox\Terminal\Concerns\SelectsPackage;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -14,27 +15,43 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Question\Question;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:delete',
-    description: 'Delete a Pinoox application and its route configurations'
+    description: 'Delete an app folder and remove its URL routes',
 )]
 class DeleteAppCommand extends Terminal
 {
+    use SelectsPackage;
+
     protected function configure(): void
     {
         $this
-            ->addArgument('package', InputArgument::REQUIRED, 'Package name to delete (e.g. com_my_app)')
-            ->addOption('route-only', 'r', InputOption::VALUE_NONE, 'Only delete routes, keep the app directory')
-            ->addOption('specific-route', 's', InputOption::VALUE_OPTIONAL, 'Specify a specific route to remove');
+            ->setHelp(
+                <<<'HELP'
+Permanently removes an app from apps/ and cleans router.config.php entries.
+
+Examples:
+  php pinoox app:delete com_my_shop
+  php pinoox app:delete com_my_shop --route-only
+  php pinoox app:delete com_my_shop -s /shop
+HELP
+            )
+            ->addArgument('package', InputArgument::OPTIONAL, 'App package to delete (e.g. com_my_shop). Leave empty to pick from the list.')
+            ->addOption('route-only', 'r', InputOption::VALUE_NONE, 'Only remove routes; keep the app folder')
+            ->addOption('specific-route', 's', InputOption::VALUE_OPTIONAL, 'Remove one route path (e.g. /shop)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         parent::execute($input, $output);
 
-        $packageName = $input->getArgument('package');
+        $io = new SymfonyStyle($input, $output);
+        $packageName = $this->resolvePackageRequired($input, $output, $io, [
+            'appsOnly' => true,
+            'sectionTitle' => 'Delete app',
+        ]);
         $appDir = SystemConfig::path('apps') . '/' . $packageName;
         $routeOnly = $input->getOption('route-only');
         $specificRoute = $input->getOption('specific-route');

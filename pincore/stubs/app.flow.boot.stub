@@ -1,0 +1,15 @@
+<?php
+{{ copyright }}
+
+namespace App\{{package}}\Flow;
+
+use Pinoox\Component\Flow\Flow;
+use Pinoox\Component\Http\Request;
+
+class BootFlow extends Flow
+{
+    protected function before(Request $request): void
+    {
+        // App-wide boot logic (auth, locale, …)
+    }
+}

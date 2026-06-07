@@ -103,27 +103,7 @@ class SeederToolkit
 
     private function seederSearchPaths(): array
     {
-        $paths = [];
-
-        if (is_dir($this->seederPath)) {
-            $paths[] = $this->seederPath;
-        }
-
-        $legacyPath = $this->legacySeederPath();
-        if (is_dir($legacyPath) && $legacyPath !== $this->seederPath) {
-            $paths[] = $legacyPath;
-        }
-
-        return $paths;
-    }
-
-    private function legacySeederPath(): string
-    {
-        if ($this->package === 'pincore') {
-            return SystemConfig::resolvePath('~system/Database/seeders');
-        }
-
-        return AppEngine::path($this->package) . '/Database/Seeders';
+        return is_dir($this->seederPath) ? [$this->seederPath] : [];
     }
 
     private function addError(\Exception|\Throwable|string $error): void

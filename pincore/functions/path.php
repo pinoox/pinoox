@@ -10,50 +10,70 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use Pinoox\Component\Path\Url;
+use Pinoox\Component\Router\QueryRouteResolver;
 use Pinoox\Portal\Path;
-use Pinoox\Portal\Url;
 use Pinoox\Portal\View;
 
-if (!function_exists('url')) {
-    function url(string $link = ''): string
+if (!function_exists('url_is_route_path')) {
+    function url_is_route_path(string $link): bool
     {
-        return Url::get($link);
+        return \Pinoox\Portal\Url::isRoutePath($link);
+    }
+}
+
+if (!function_exists('rewrite_active')) {
+    function rewrite_active(): bool
+    {
+        return QueryRouteResolver::rewriteAppearsActive();
+    }
+}
+
+if (!function_exists('url')) {
+    function url(string $link = '', string $scope = Url::SCOPE_APP, string $mode = Url::MODE_AUTO): string
+    {
+        return \Pinoox\Portal\Url::link($link, $scope, $mode);
+    }
+}
+
+if (!function_exists('assets_is_filesystem_path')) {
+    function assets_is_filesystem_path(string $path): bool
+    {
+        return View::isFilesystemPath($path);
     }
 }
 
 if (!function_exists('assets')) {
     function assets(string $link = '', bool $isPath = false): string
     {
-        $path = View::path()->assets($link);
-        return $isPath ? $path : furl($path);
+        return View::assets($link, $isPath);
     }
 }
 
-if (!function_exists('furl')) {
-    function furl(string $path = ''): string
+if (!function_exists('asset')) {
+    function asset(string $path = '', ?string $package = null): string
     {
-        return Url::path($path);
+        return \Pinoox\Portal\Url::asset($path, $package);
     }
 }
 
 if (!function_exists('path')) {
-    function path($path = '', $package = '')
+    function path(string $reference = '', ?string $package = ''): string
     {
-        return Path::get($path, $package);
+        return Path::get($reference, $package);
     }
 }
 
-if (!function_exists('getAppUrls')) {
-    function getAppUrls($package)
+if (!function_exists('app_urls')) {
+    function app_urls(string $package): array
     {
-        return Url::getAppUrls($package);
+        return \Pinoox\Portal\Url::appUrls($package);
     }
 }
 
-if (!function_exists('getAppUrlFirst')) {
-    function getAppUrlFirst($package)
+if (!function_exists('app_url')) {
+    function app_url(string $package): ?string
     {
-        $urls = Url::getAppUrls($package);
-        return $urls[0] ?? '#';
+        return \Pinoox\Portal\Url::appUrl($package);
     }
 }

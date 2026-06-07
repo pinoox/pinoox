@@ -14,7 +14,7 @@ namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Schema\Builder;
 use Pinoox\System\Model\Table;
-use Pinoox\System\Model\MigrationModel;
+use Pinoox\System\Model\HistoryModel;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Support\SystemConfig;
@@ -103,7 +103,7 @@ class MigrationToolkit
                 $migrationTableMigration = null;
                 foreach ($migrations as $migration) {
                     $migrationInfo = $this->extractMigrationInfo($migration);
-                    if (strpos($migrationInfo['fileName'], 'create_migration_table') !== false) {
+                    if ($this->isHistoryTableMigration($migrationInfo['fileName'])) {
                         $migrationTableMigration = $migrationInfo;
                         break;
                     }
@@ -131,7 +131,7 @@ class MigrationToolkit
     public function isExistsMigrationTable(): bool
     {
         try {
-            return DB::schema('pincore')->hasTable(DB::tableName(Table::MIGRATION, 'pincore'));
+            return DB::schema('pincore')->hasTable(DB::tableName(Table::HISTORY, 'pincore'));
         } catch (\Exception $e) {
             $this->addError($e);
             return false;
@@ -265,7 +265,7 @@ class MigrationToolkit
             $migrationInfo = $this->extractMigrationInfo($migration);
 
             // If this is the migration table creation migration, handle it separately
-            if (strpos($migrationInfo['fileName'], 'create_migration_table') !== false) {
+            if ($this->isHistoryTableMigration($migrationInfo['fileName'])) {
                 $migrationTableMigration = $migrationInfo;
                 continue;
             }
@@ -289,11 +289,11 @@ class MigrationToolkit
      */
     private function shouldSkipFile(string $filename): bool
     {
-        if ($this->action === self::ACTION_INIT && !str_contains($filename, 'migration')) {
+        if ($this->action === self::ACTION_INIT && !$this->isHistoryTableMigration($filename)) {
             return true;
         }
 
-        if ($this->action === self::ACTION_RUN && str_contains($filename, 'migration')) {
+        if ($this->action === self::ACTION_RUN && $this->isHistoryTableMigration($filename)) {
             return true;
         }
 
@@ -408,27 +408,7 @@ class MigrationToolkit
 
     private function migrationSearchPaths(): array
     {
-        $paths = [];
-
-        if (is_dir($this->migrationPath)) {
-            $paths[] = $this->migrationPath;
-        }
-
-        $legacyPath = $this->legacyMigrationPath();
-        if ($legacyPath !== null && is_dir($legacyPath) && $legacyPath !== $this->migrationPath) {
-            $paths[] = $legacyPath;
-        }
-
-        return $paths;
-    }
-
-    private function legacyMigrationPath(): ?string
-    {
-        if ($this->package === 'pincore') {
-            return SystemConfig::resolvePath('~system/migrations');
-        }
-
-        return AppEngine::path($this->package) . '/migrations';
+        return is_dir($this->migrationPath) ? [$this->migrationPath] : [];
     }
 
     /**
@@ -505,7 +485,10 @@ class MigrationToolkit
                 return null;
             }
 
-            return MigrationModel::where('app', $this->package)->get()->toArray();
+            return HistoryModel::where('type', MigrationQuery::TYPE_MIGRATION)
+                ->where('app', $this->package)
+                ->get()
+                ->toArray();
         } catch (\Exception $e) {
             $this->addError($e);
             return null;
@@ -518,5 +501,11 @@ class MigrationToolkit
     public function getMigrationFiles(): array
     {
         return $this->loadMigrationFiles();
+    }
+
+    private function isHistoryTableMigration(string $filename): bool
+    {
+        return str_contains($filename, 'create_history_table')
+            || str_contains($filename, 'create_migration_table');
     }
 }

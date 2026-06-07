@@ -15,7 +15,8 @@ namespace Pinoox\Component\Migration;
 use Exception;
 use Illuminate\Database\QueryException;
 use Pinoox\Portal\Database\DB;
-use Pinoox\System\Model\MigrationModel;
+use Pinoox\Portal\Logger;
+use Pinoox\System\Model\HistoryModel;
 use Pinoox\System\Model\Table;
 
 /**
@@ -131,6 +132,7 @@ class Migrator
             }
 
             $result = $this->executeMigrations();
+            MigrationQuery::importLegacyMigrationRecords();
             $this->log('Migration system initialized successfully.');
 
             return $result;
@@ -320,7 +322,9 @@ class Migrator
                 }
 
                 // Delete all migration records for this package
-                MigrationModel::where('app', $this->package)->delete();
+                HistoryModel::where('type', MigrationQuery::TYPE_MIGRATION)
+                    ->where('app', $this->package)
+                    ->delete();
 
                 return ['Successfully reset all migrations for package: ' . $this->package];
             } finally {
@@ -438,7 +442,8 @@ class Migrator
     private function hasBeenRun(string $migrationName): bool
     {
         try {
-            return DB::table(DB::tableName(Table::MIGRATION, 'pincore'), null, 'pincore')
+            return DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')
+                ->where('type', MigrationQuery::TYPE_MIGRATION)
                 ->where('migration', $migrationName)
                 ->where('app', $this->package)
                 ->exists();
@@ -452,7 +457,8 @@ class Migrator
     private function recordMigration(string $migrationName): void
     {
         try {
-            DB::table(DB::tableName(Table::MIGRATION, 'pincore'), null, 'pincore')->insert([
+            DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')->insert([
+                'type' => MigrationQuery::TYPE_MIGRATION,
                 'migration' => $migrationName,
                 'app' => $this->package,
                 'batch' => $this->getBatchNumber(),
@@ -468,7 +474,8 @@ class Migrator
     private function getBatchNumber(): int
     {
         try {
-            $lastBatch = DB::table(DB::tableName(Table::MIGRATION, 'pincore'), null, 'pincore')
+            $lastBatch = DB::table(DB::tableName(Table::HISTORY, 'pincore'), null, 'pincore')
+                ->where('type', MigrationQuery::TYPE_MIGRATION)
                 ->where('app', $this->package)
                 ->max('batch');
             return ($lastBatch ?? 0) + 1;
@@ -743,6 +750,11 @@ class Migrator
         if ($this->options['verbose']) {
             echo "[{$timestamp}] [{$level}] {$message}\n";
         }
+
+        try {
+            Logger::channel('migration')->log($level, $message);
+        } catch (\Throwable) {
+        }
     }
 
     /**
@@ -760,6 +772,7 @@ class Migrator
      */
     private function isMigrationTableCreation(array $migration): bool
     {
-        return strpos($migration['fileName'], 'create_migration_table') !== false;
+        return strpos($migration['fileName'], 'create_history_table') !== false
+            || strpos($migration['fileName'], 'create_migration_table') !== false;
     }
 }

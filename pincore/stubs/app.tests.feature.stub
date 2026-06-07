@@ -1,0 +1,11 @@
+<?php
+
+it('{{test_title}}', function () {
+    // Arrange
+    $package = appPackage();
+
+    // Act
+
+    // Assert
+    expect($package)->toBe('{{package}}');
+});
