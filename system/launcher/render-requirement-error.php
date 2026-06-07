@@ -86,9 +86,39 @@ function pinoox_requirement_logo_url(): string
     $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
     $base = rtrim($scriptDir, '/');
 
-    $corePath = function_exists('pinoox_public_core_path') ? pinoox_public_core_path() : 'pincore';
+    $systemPath = function_exists('pinoox_public_system_path') ? pinoox_public_system_path() : 'system';
 
-    return $base . '/' . $corePath . '/resource/images/logo.png';
+    return $base . '/' . $systemPath . '/resource/images/logo.png';
+}
+
+function pinoox_requirement_kalameh_css_url(): string
+{
+    $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+    $base = rtrim($scriptDir, '/');
+
+    $systemPath = function_exists('pinoox_public_system_path') ? pinoox_public_system_path() : 'system';
+
+    return $base . '/' . $systemPath . '/resource/views/no-route/css/fonts-kalameh.css';
+}
+
+function pinoox_requirement_font_link(string $locale): void
+{
+    if ($locale !== 'fa' || PHP_SAPI === 'cli') {
+        return;
+    }
+
+    $href = htmlspecialchars(pinoox_requirement_kalameh_css_url(), ENT_QUOTES, 'UTF-8');
+    echo '<link rel="stylesheet" href="' . $href . '">';
+}
+
+function pinoox_requirement_font_styles(string $locale): string
+{
+    if ($locale !== 'fa') {
+        return '';
+    }
+
+    return 'html[lang="fa"] body,html[lang="fa"] .lang-bar,html[lang="fa"] .card{font-family:Kalameh,Tahoma,Segoe UI,sans-serif}'
+        . 'html[lang="fa"] code,html[lang="fa"] .command code,html[lang="fa"] .output,html[lang="fa"] .console-body{font-family:Consolas,Monaco,monospace}';
 }
 
 function pinoox_render_requirement_page(array $copy, array $facts, array $hints, int $status = 503): void
@@ -124,8 +154,10 @@ function pinoox_render_requirement_page(array $copy, array $facts, array $hints,
     echo '<!doctype html><html lang="' . $copy['lang'] . '" dir="' . $copy['dir'] . '"><head>';
     echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<title>' . $title . '</title>';
+    pinoox_requirement_font_link($copy['lang']);
     echo '<style>';
     echo 'body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;font-family:Tahoma,Segoe UI,sans-serif;background:linear-gradient(135deg,#1f7a8c,#022b3a);color:#fff;}';
+    echo pinoox_requirement_font_styles($copy['lang']);
     echo pinoox_requirement_lang_switcher_styles();
     echo '.card{width:100%;max-width:34rem;padding:1.75rem 1.65rem;border-radius:1.15rem;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);box-shadow:0 22px 48px rgba(0,0,0,.22);backdrop-filter:blur(14px);}';
     echo '.brand{text-align:center;margin-bottom:.85rem;} .brand img{width:3.5rem;height:3.5rem;border-radius:1rem;}';
@@ -268,9 +300,11 @@ function pinoox_render_vendor_missing_error(): void
     echo '<!doctype html><html lang="' . $copy['lang'] . '" dir="' . $dir . '"><head>';
     echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">';
     echo '<title>' . $title . '</title>';
+    pinoox_requirement_font_link($copy['lang']);
     echo '<style>';
     echo '*,*::before,*::after{box-sizing:border-box}';
     echo 'body{margin:0;min-height:100vh;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:1rem;font-family:Tahoma,Segoe UI,sans-serif;background:radial-gradient(circle at top,#2a9d8f 0,#1f7a8c 28%,#022b3a 100%);color:#fff}';
+    echo pinoox_requirement_font_styles($copy['lang']);
     echo '.page-wrap{display:flex;flex-direction:column;align-items:stretch;gap:.55rem;width:min(100%,58rem);max-height:calc(100vh - 2rem)}';
     echo pinoox_requirement_lang_switcher_styles();
     echo '.card{width:100%;max-height:100%;display:flex;flex-direction:column;gap:.85rem;padding:1.15rem 1.25rem;border-radius:1.1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px rgba(0,0,0,.24);backdrop-filter:blur(16px);overflow:hidden}';

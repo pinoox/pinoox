@@ -9,5 +9,7 @@ return [
     'minute' => 'دقیقه',
     'second' => 'ثانیه',
     'before' => 'پیش',
+    'after' => 'بعد',
     'some_sec_before' => 'لحظاتی پیش',
+    'invalid' => 'تاریخ نامعتبر است',
 ];

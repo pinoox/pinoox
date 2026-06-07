@@ -9,5 +9,7 @@ return [
     'minute' => 'minute',
     'second' => 'second',
     'before' => 'before',
+    'after' => 'later',
     'some_sec_before' => 'seconds ago',
+    'invalid' => 'Invalid date',
 ];

@@ -118,7 +118,7 @@ class UserModel extends Model
 
     public function getAvatarAttribute()
     {
-        $defaultImagePath = $this->defaultAvatarLink ?? furl('resources/avatar.png');
+        $defaultImagePath = $this->defaultAvatarLink ?? asset('resources/avatar.png');
 
         $file = FileModel::where('file_id', $this->avatar_id)->first();
 
@@ -147,6 +147,16 @@ class UserModel extends Model
     public function file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
+    }
+
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(
+            RoleModel::class,
+            Table::USER_ROLE,
+            'user_id',
+            'role_id',
+        );
     }
 
     public function getFullNameAttribute()

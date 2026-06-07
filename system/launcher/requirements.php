@@ -37,7 +37,31 @@ function pinoox_core_path(): string
 
 function pinoox_system_path(): string
 {
+    $configured = getenv('PINOOX_SYSTEM_PATH');
+
+    if (is_string($configured) && $configured !== '') {
+        $configured = pinoox_normalize_path($configured);
+
+        if (!preg_match('/^[A-Za-z]:\//', $configured) && !str_starts_with($configured, '/')) {
+            $configured = pinoox_normalize_path(pinoox_base_path() . '/' . $configured);
+        }
+
+        return $configured;
+    }
+
     return pinoox_base_path() . '/system';
+}
+
+function pinoox_public_system_path(): string
+{
+    $systemPath = pinoox_system_path();
+    $basePath = pinoox_base_path();
+
+    if (str_starts_with($systemPath, $basePath . '/')) {
+        return ltrim(substr($systemPath, strlen($basePath)), '/');
+    }
+
+    return 'system';
 }
 
 function pinoox_system_app_path(): string

@@ -19,7 +19,12 @@ class Table
     const USER = 'user';
     const FILE = 'file';
     const TOKEN = 'token';
-    const MIGRATION = 'migration';
+    const HISTORY = 'history';
+    const MIGRATION = 'history';
+    const ROLE = 'role';
+    const PERMISSION = 'permission';
+    const ROLE_PERMISSION = 'role_permission';
+    const USER_ROLE = 'user_role';
 
     public static function __callStatic(string $name, array $arguments)
     {

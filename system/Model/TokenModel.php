@@ -15,7 +15,7 @@
 namespace Pinoox\System\Model;
 
 use Pinoox\Component\Database\Model;
-use Pinoox\Component\User;
+use Pinoox\Portal\User;
 use Pinoox\System\Model\Scope\AppScope;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Url;
