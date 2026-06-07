@@ -1,0 +1,1061 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Manager API</title><style>:root {
+    --bg: #fafafa;
+    --panel: #ffffff;
+    --border: #e3e8ee;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --accent: #3b4151;
+    --sidebar: #1b1f2a;
+    --sidebar-text: #cbd5e1;
+    --sidebar-active: #ffffff;
+    --get: #61affe;
+    --post: #49cc90;
+    --put: #fca130;
+    --patch: #50e3c2;
+    --delete: #f93e3e;
+    --query: #e535ab;
+    --mutation: #0f766e;
+    --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+    color: #fff;
+    box-shadow: var(--shadow);
+}
+
+.topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.topbar h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.topbar-subtitle {
+    margin: 4px 0 0;
+    color: rgba(255,255,255,0.72);
+    font-size: 13px;
+}
+
+.topbar-icon,
+.app-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+}
+
+.app-icon-fallback,
+.topbar-icon.app-icon-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    color: #fff;
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.topbar-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    background: rgba(255,255,255,0.14);
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    min-height: calc(100vh - 72px);
+}
+
+.sidebar {
+    position: sticky;
+    top: 72px;
+    height: calc(100vh - 72px);
+    overflow: auto;
+    background: var(--sidebar);
+    color: var(--sidebar-text);
+    padding: 18px 16px 32px;
+}
+
+.sidebar input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 10px;
+    background: rgba(255,255,255,0.06);
+    color: #fff;
+    margin-bottom: 16px;
+}
+
+.sidebar input::placeholder { color: rgba(255,255,255,0.55); }
+
+.tag-group { margin-bottom: 18px; }
+.tag-title {
+    font-size: 12px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.55);
+    margin: 0 0 8px;
+}
+
+.tag-count {
+    color: rgba(255,255,255,0.35);
+    font-weight: 600;
+}
+
+.tag-description {
+    margin: 0 0 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: rgba(255,255,255,0.45);
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    margin-bottom: 4px;
+    font-size: 13px;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: rgba(255,255,255,0.08);
+    color: var(--sidebar-active);
+}
+
+.method {
+    min-width: 58px;
+    text-align: center;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.method-GET { background: var(--get); }
+.method-POST { background: var(--post); }
+.method-PUT { background: var(--put); }
+.method-PATCH { background: var(--patch); }
+.method-DELETE { background: var(--delete); }
+.method-QUERY { background: var(--query); }
+.method-MUTATION { background: var(--mutation); }
+
+.content {
+    padding: 24px;
+    max-width: 1100px;
+}
+
+.info-card,
+.operation {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.info-card { padding: 24px; }
+
+.app-hero-head {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+}
+
+.app-description {
+    margin: 8px 0 0;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.stat-item {
+    background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+}
+
+.stat-item span {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.stat-item strong {
+    font-size: 18px;
+    color: var(--text);
+}
+
+.tag-overview {
+    background: #fff;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+}
+
+.tag-overview h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+}
+
+.tag-overview p {
+    margin: 0;
+    color: var(--muted);
+}
+
+.global-flow {
+    margin: 16px 0 0;
+    color: var(--muted);
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.info-item {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+}
+
+.info-item strong {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.op-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid transparent;
+}
+
+.op-header:hover { background: #fcfdff; }
+
+.op-header.open { border-bottom-color: var(--border); }
+
+.op-path {
+    font-family: Consolas, monospace;
+    font-size: 15px;
+    word-break: break-all;
+}
+
+.op-summary {
+    margin-left: auto;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.op-body { display: none; padding: 0 20px 20px; }
+.op-body.open { display: block; }
+
+.op-description {
+    margin: 0 0 16px;
+    color: var(--muted);
+}
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+
+.tab-btn {
+    border: 1px solid var(--border);
+    background: #fff;
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+th, td {
+    border-bottom: 1px solid var(--border);
+    padding: 10px 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--muted);
+}
+
+.required {
+    color: #dc2626;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+pre {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 16px;
+    border-radius: 12px;
+    overflow: auto;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.code-block {
+    position: relative;
+}
+
+.copy-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border: 0;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.meta-chip {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+.meta-chip span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 4px;
+}
+
+.deprecated {
+    color: #b45309;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.empty {
+    color: var(--muted);
+    font-style: italic;
+    padding: 8px 0;
+}
+
+@media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar {
+        position: static;
+        height: auto;
+    }
+    .op-summary { display: none; }
+}
+</style></head><body><header class="topbar"><div class="topbar-brand"><img class="topbar-icon" src="../icon.png" alt="App icon"><div><h1>Manager API</h1><p class="topbar-subtitle">Pinoox Team</p></div></div><div class="topbar-meta"><span class="badge">REST</span><span class="badge">API v1</span><span class="badge">App 2.1.0</span><span class="badge">com_pinoox_manager</span></div></header><div class="layout"><aside class="sidebar"><input type="search" id="doc-search" placeholder="Search operations..."><div class="tag-group" data-tag="Authentication"><p class="tag-title">Authentication <span class="tag-count">(4)</span></p><p class="tag-description">Login, logout, lock screen, and session endpoints.</p><a class="nav-item" href="#post_auth_login" data-search="/api/v1/auth/login post login"><span class="method method-POST">POST</span><span>/api/v1/auth/login</span></a><a class="nav-item" href="#get_auth_logout" data-search="/api/v1/auth/logout get logout"><span class="method method-GET">GET</span><span>/api/v1/auth/logout</span></a><a class="nav-item" href="#get_auth_get" data-search="/api/v1/auth/get get get auth state"><span class="method method-GET">GET</span><span>/api/v1/auth/get</span></a><a class="nav-item" href="#get_auth_lock" data-search="/api/v1/auth/lock get lock"><span class="method method-GET">GET</span><span>/api/v1/auth/lock</span></a></div><div class="tag-group" data-tag="Assets"><p class="tag-title">Assets <span class="tag-count">(1)</span></p><p class="tag-description">Static assets such as wallpapers.</p><a class="nav-item" href="#get_wallpapers_show" data-search="/api/v1/wallpapers/{name} get get wallpaper"><span class="method method-GET">GET</span><span>/api/v1/wallpapers/{name}</span></a></div><div class="tag-group" data-tag="Users"><p class="tag-title">Users <span class="tag-count">(7)</span></p><p class="tag-description">User profile, avatar, password, and account management.</p><a class="nav-item" href="#get_user_get" data-search="/api/v1/user/get get get"><span class="method method-GET">GET</span><span>/api/v1/user/get</span></a><a class="nav-item" href="#get_user_getOptions" data-search="/api/v1/user/getoptions get get options"><span class="method method-GET">GET</span><span>/api/v1/user/getOptions</span></a><a class="nav-item" href="#get_user_deleteAvatar" data-search="/api/v1/user/deleteavatar get delete avatar"><span class="method method-GET">GET</span><span>/api/v1/user/deleteAvatar</span></a><a class="nav-item" href="#post_user_changeAvatar" data-search="/api/v1/user/changeavatar post change avatar"><span class="method method-POST">POST</span><span>/api/v1/user/changeAvatar</span></a><a class="nav-item" href="#post_user_changeInfo" data-search="/api/v1/user/changeinfo post change info"><span class="method method-POST">POST</span><span>/api/v1/user/changeInfo</span></a><a class="nav-item" href="#post_user_changePassword" data-search="/api/v1/user/changepassword post change password"><span class="method method-POST">POST</span><span>/api/v1/user/changePassword</span></a><a class="nav-item" href="#get_user_getUsers_packageName" data-search="/api/v1/user/getusers/{packagename} get package name"><span class="method method-GET">GET</span><span>/api/v1/user/getUsers/{packageName}</span></a></div><div class="tag-group" data-tag="Options"><p class="tag-title">Options <span class="tag-count">(6)</span></p><p class="tag-description">Manager settings, wallpapers, and UI preferences.</p><a class="nav-item" href="#get_options_get" data-search="/api/v1/options/get get get"><span class="method method-GET">GET</span><span>/api/v1/options/get</span></a><a class="nav-item" href="#get_options_changeBackground_name" data-search="/api/v1/options/changebackground/{name} get name"><span class="method method-GET">GET</span><span>/api/v1/options/changeBackground/{name}</span></a><a class="nav-item" href="#post_options_uploadWallpaper" data-search="/api/v1/options/uploadwallpaper post upload wallpaper"><span class="method method-POST">POST</span><span>/api/v1/options/uploadWallpaper</span></a><a class="nav-item" href="#post_options_deleteWallpaper_name" data-search="/api/v1/options/deletewallpaper/{name} post name"><span class="method method-POST">POST</span><span>/api/v1/options/deleteWallpaper/{name}</span></a><a class="nav-item" href="#get_options_changeLockTime_minutes" data-search="/api/v1/options/changelocktime/{minutes} get minutes"><span class="method method-GET">GET</span><span>/api/v1/options/changeLockTime/{minutes}</span></a><a class="nav-item" href="#get_options_toggleDockPin_packageName" data-search="/api/v1/options/toggledockpin/{packagename} get package name"><span class="method method-GET">GET</span><span>/api/v1/options/toggleDockPin/{packageName}</span></a></div><div class="tag-group" data-tag="Localization"><p class="tag-title">Localization <span class="tag-count">(1)</span></p><p class="tag-description">Language switching and locale payloads.</p><a class="nav-item" href="#get_changeLang_lang" data-search="/api/v1/changelang/{lang} get lang"><span class="method method-GET">GET</span><span>/api/v1/changeLang/{lang}</span></a></div><div class="tag-group" data-tag="Widgets"><p class="tag-title">Widgets <span class="tag-count">(6)</span></p><p class="tag-description">Dashboard widgets and shortcuts.</p><a class="nav-item" href="#get_widget_clock" data-search="/api/v1/widget/clock get clock"><span class="method method-GET">GET</span><span>/api/v1/widget/clock</span></a><a class="nav-item" href="#get_widget_storage" data-search="/api/v1/widget/storage get storage"><span class="method method-GET">GET</span><span>/api/v1/widget/storage</span></a><a class="nav-item" href="#get_widget_storageBrowse" data-search="/api/v1/widget/storagebrowse get storage browse"><span class="method method-GET">GET</span><span>/api/v1/widget/storageBrowse</span></a><a class="nav-item" href="#get_widget_settings" data-search="/api/v1/widget/settings get settings"><span class="method method-GET">GET</span><span>/api/v1/widget/settings</span></a><a class="nav-item" href="#post_widget_saveWidgets" data-search="/api/v1/widget/savewidgets post save widgets"><span class="method method-POST">POST</span><span>/api/v1/widget/saveWidgets</span></a><a class="nav-item" href="#post_widget_storageSettings" data-search="/api/v1/widget/storagesettings post storage settings"><span class="method method-POST">POST</span><span>/api/v1/widget/storageSettings</span></a></div><div class="tag-group" data-tag="Apps"><p class="tag-title">Apps <span class="tag-count">(10)</span></p><p class="tag-description">Installed apps, packages, and app lifecycle actions.</p><a class="nav-item" href="#get_app_getAll" data-search="/api/v1/app/getall get get all"><span class="method method-GET">GET</span><span>/api/v1/app/getAll</span></a><a class="nav-item" href="#get_app_get_filter" data-search="/api/v1/app/get/{filter?} get filter"><span class="method method-GET">GET</span><span>/api/v1/app/get/{filter?}</span></a><a class="nav-item" href="#get_app_getConfig_packageName" data-search="/api/v1/app/getconfig/{packagename} get package name"><span class="method method-GET">GET</span><span>/api/v1/app/getConfig/{packageName}</span></a><a class="nav-item" href="#post_app_setConfig_packageName_key" data-search="/api/v1/app/setconfig/{packagename}/{key} post key"><span class="method method-POST">POST</span><span>/api/v1/app/setConfig/{packageName}/{key}</span></a><a class="nav-item" href="#post_app_install" data-search="/api/v1/app/install post install"><span class="method method-POST">POST</span><span>/api/v1/app/install</span></a><a class="nav-item" href="#get_app_installPackage_filename" data-search="/api/v1/app/installpackage/{filename} get filename"><span class="method method-GET">GET</span><span>/api/v1/app/installPackage/{filename}</span></a><a class="nav-item" href="#get_app_files" data-search="/api/v1/app/files get files"><span class="method method-GET">GET</span><span>/api/v1/app/files</span></a><a class="nav-item" href="#post_app_deleteFile" data-search="/api/v1/app/deletefile post delete file"><span class="method method-POST">POST</span><span>/api/v1/app/deleteFile</span></a><a class="nav-item" href="#post_app_filesUpload" data-search="/api/v1/app/filesupload post files upload"><span class="method method-POST">POST</span><span>/api/v1/app/filesUpload</span></a><a class="nav-item" href="#post_app_remove_packageName" data-search="/api/v1/app/remove/{packagename} post package name"><span class="method method-POST">POST</span><span>/api/v1/app/remove/{packageName}</span></a></div><div class="tag-group" data-tag="Routing"><p class="tag-title">Routing <span class="tag-count">(3)</span></p><p class="tag-description">Project route mapping and URL configuration.</p><a class="nav-item" href="#get_router_getAll" data-search="/api/v1/router/getall get get all"><span class="method method-GET">GET</span><span>/api/v1/router/getAll</span></a><a class="nav-item" href="#post_router_remove" data-search="/api/v1/router/remove post remove"><span class="method method-POST">POST</span><span>/api/v1/router/remove</span></a><a class="nav-item" href="#post_router_save" data-search="/api/v1/router/save post save"><span class="method method-POST">POST</span><span>/api/v1/router/save</span></a></div><div class="tag-group" data-tag="Account"><p class="tag-title">Account <span class="tag-count">(3)</span></p><p class="tag-description">Account-level manager settings.</p><a class="nav-item" href="#get_account_getConnectData" data-search="/api/v1/account/getconnectdata get get connect data"><span class="method method-GET">GET</span><span>/api/v1/account/getConnectData</span></a><a class="nav-item" href="#get_account_connect" data-search="/api/v1/account/connect get connect"><span class="method method-GET">GET</span><span>/api/v1/account/connect</span></a><a class="nav-item" href="#get_account_logout" data-search="/api/v1/account/logout get logout"><span class="method method-GET">GET</span><span>/api/v1/account/logout</span></a></div><div class="tag-group" data-tag="Market"><p class="tag-title">Market <span class="tag-count">(7)</span></p><p class="tag-description">Marketplace browsing and package operations.</p><a class="nav-item" href="#get_market_getDownloads" data-search="/api/v1/market/getdownloads get get downloads"><span class="method method-GET">GET</span><span>/api/v1/market/getDownloads</span></a><a class="nav-item" href="#post_market_deleteDownload" data-search="/api/v1/market/deletedownload post delete download"><span class="method method-POST">POST</span><span>/api/v1/market/deleteDownload</span></a><a class="nav-item" href="#get_market_getApps_keyword" data-search="/api/v1/market/getapps/{keyword?} get keyword"><span class="method method-GET">GET</span><span>/api/v1/market/getApps/{keyword?}</span></a><a class="nav-item" href="#get_market_getOneApp_package_name" data-search="/api/v1/market/getoneapp/{package_name} get package name"><span class="method method-GET">GET</span><span>/api/v1/market/getOneApp/{package_name}</span></a><a class="nav-item" href="#post_market_downloadRequest_package_name" data-search="/api/v1/market/downloadrequest/{package_name} post package name"><span class="method method-POST">POST</span><span>/api/v1/market/downloadRequest/{package_name}</span></a><a class="nav-item" href="#get_market_getTemplates_package_name" data-search="/api/v1/market/gettemplates/{package_name} get package name"><span class="method method-GET">GET</span><span>/api/v1/market/getTemplates/{package_name}</span></a><a class="nav-item" href="#post_market_downloadRequestTemplate_uid" data-search="/api/v1/market/downloadrequesttemplate/{uid} post uid"><span class="method method-POST">POST</span><span>/api/v1/market/downloadRequestTemplate/{uid}</span></a></div><div class="tag-group" data-tag="Notifications"><p class="tag-title">Notifications <span class="tag-count">(3)</span></p><p class="tag-description">Notification center endpoints.</p><a class="nav-item" href="#get_notification" data-search="/api/v1/notification get notification"><span class="method method-GET">GET</span><span>/api/v1/notification</span></a><a class="nav-item" href="#post_notification_hide" data-search="/api/v1/notification/hide post hide"><span class="method method-POST">POST</span><span>/api/v1/notification/hide</span></a><a class="nav-item" href="#post_notification_seen" data-search="/api/v1/notification/seen post seen"><span class="method method-POST">POST</span><span>/api/v1/notification/seen</span></a></div><div class="tag-group" data-tag="Updates"><p class="tag-title">Updates <span class="tag-count">(2)</span></p><p class="tag-description">Core and app update checks.</p><a class="nav-item" href="#get_update_checkVersion_type" data-search="/api/v1/update/checkversion/{type?} get type"><span class="method method-GET">GET</span><span>/api/v1/update/checkVersion/{type?}</span></a><a class="nav-item" href="#get_update_install" data-search="/api/v1/update/install get install"><span class="method method-GET">GET</span><span>/api/v1/update/install</span></a></div><div class="tag-group" data-tag="Templates"><p class="tag-title">Templates <span class="tag-count">(5)</span></p><p class="tag-description">Theme and template management.</p><a class="nav-item" href="#get_template_get_packageName" data-search="/api/v1/template/get/{packagename} get package name"><span class="method method-GET">GET</span><span>/api/v1/template/get/{packageName}</span></a><a class="nav-item" href="#get_template_install_uid_packageName" data-search="/api/v1/template/install/{uid}/{packagename} get package name"><span class="method method-GET">GET</span><span>/api/v1/template/install/{uid}/{packageName}</span></a><a class="nav-item" href="#get_template_installPackage_filename" data-search="/api/v1/template/installpackage/{filename} get filename"><span class="method method-GET">GET</span><span>/api/v1/template/installPackage/{filename}</span></a><a class="nav-item" href="#get_template_set_packageName_folderName" data-search="/api/v1/template/set/{packagename}/{foldername} get folder name"><span class="method method-GET">GET</span><span>/api/v1/template/set/{packageName}/{folderName}</span></a><a class="nav-item" href="#get_template_remove_packageName_folderName" data-search="/api/v1/template/remove/{packagename}/{foldername} get folder name"><span class="method method-GET">GET</span><span>/api/v1/template/remove/{packageName}/{folderName}</span></a></div></aside><main class="content"><section class="info-card app-hero" id="overview"><div class="app-hero-head"><img class="app-icon" src="../icon.png" alt="App icon"><div><h2>Manager API</h2><p class="app-description">REST endpoints for the Pinoox manager panel, authentication, apps, routing, updates, and user settings.</p></div></div><div class="stats-grid"><div class="stat-item"><span>Operations</span><strong>58</strong></div><div class="stat-item"><span>Tags</span><strong>13</strong></div><div class="stat-item"><span>Base URL</span><strong>/api/v1</strong></div><div class="stat-item"><span>Generated</span><strong>2026-06-06 22:09:27</strong></div></div><div class="info-grid"><div class="info-item"><strong>App name</strong><code>manager</code></div><div class="info-item"><strong>Package</strong><code>com_pinoox_manager</code></div><div class="info-item"><strong>Developer</strong><code>Pinoox Team</code></div><div class="info-item"><strong>App version</strong><code>2.1.0</code></div><div class="info-item"><strong>API version</strong><code>v1</code></div><div class="info-item"><strong>Language</strong><code>fa</code></div><div class="info-item"><strong>Theme</strong><code>spark</code></div><div class="info-item"><strong>Prefix</strong><code></code></div></div></section><section class="tag-overview"><h3>Account</h3><p>Account-level manager settings.</p></section><section class="tag-overview"><h3>Apps</h3><p>Installed apps, packages, and app lifecycle actions.</p></section><section class="tag-overview"><h3>Assets</h3><p>Static assets such as wallpapers.</p></section><section class="tag-overview"><h3>Authentication</h3><p>Login, logout, lock screen, and session endpoints.</p></section><section class="tag-overview"><h3>Localization</h3><p>Language switching and locale payloads.</p></section><section class="tag-overview"><h3>Market</h3><p>Marketplace browsing and package operations.</p></section><section class="tag-overview"><h3>Notifications</h3><p>Notification center endpoints.</p></section><section class="tag-overview"><h3>Options</h3><p>Manager settings, wallpapers, and UI preferences.</p></section><section class="tag-overview"><h3>Routing</h3><p>Project route mapping and URL configuration.</p></section><section class="tag-overview"><h3>Templates</h3><p>Theme and template management.</p></section><section class="tag-overview"><h3>Updates</h3><p>Core and app update checks.</p></section><section class="tag-overview"><h3>Users</h3><p>User profile, avatar, password, and account management.</p></section><section class="tag-overview"><h3>Widgets</h3><p>Dashboard widgets and shortcuts.</p></section><article class="operation" id="post_auth_login" data-search="/api/v1/auth/login login"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/auth/login</code><span class="op-summary">Login</span></div><div class="op-body open"><p class="op-description">Authenticate a manager user and start a session.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>auth.login</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AuthController::login</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/auth/login&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/auth/login`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/auth/login&quot;);</code></pre></div></div></div></article><article class="operation" id="get_auth_logout" data-search="/api/v1/auth/logout logout"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/auth/logout</code><span class="op-summary">Logout</span></div><div class="op-body open"><p class="op-description">Destroy the current manager session.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>auth.logout</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AuthController::logout</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/auth/logout&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/auth/logout`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/auth/logout&quot;);</code></pre></div></div></div></article><article class="operation" id="get_auth_get" data-search="/api/v1/auth/get get auth state"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/auth/get</code><span class="op-summary">Get auth state</span></div><div class="op-body open"><p class="op-description">Returns the current authenticated user state.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>auth.get</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AuthController::get</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/auth/get&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/auth/get`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/auth/get&quot;);</code></pre></div></div></div></article><article class="operation" id="get_wallpapers_show" data-search="/api/v1/wallpapers/{name} get wallpaper"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/wallpapers/{name}</code><span class="op-summary">Get wallpaper</span></div><div class="op-body open"><p class="op-description">Serve a manager wallpaper image by file name.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>wallpapers.show</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::wallpaper</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td>Wallpaper file name</td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/wallpapers/{name}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/wallpapers/{name}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/wallpapers/{name}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_auth_lock" data-search="/api/v1/auth/lock lock"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/auth/lock</code><span class="op-summary">Lock</span></div><div class="op-body open"><p class="op-description">Lock via `GET /api/v1/auth/lock`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>auth.lock</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AuthController::lock</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/auth/lock&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/auth/lock`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/auth/lock&quot;);</code></pre></div></div></div></article><article class="operation" id="get_user_get" data-search="/api/v1/user/get get"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/user/get</code><span class="op-summary">Get</span></div><div class="op-body open"><p class="op-description">Get via `GET /api/v1/user/get`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.get</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::get</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/user/get&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/get`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/get&quot;);</code></pre></div></div></div></article><article class="operation" id="get_user_getOptions" data-search="/api/v1/user/getoptions get options"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/user/getOptions</code><span class="op-summary">Get Options</span></div><div class="op-body open"><p class="op-description">Get Options via `GET /api/v1/user/getOptions`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.getOptions</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::getOptions</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/user/getOptions&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/getOptions`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/getOptions&quot;);</code></pre></div></div></div></article><article class="operation" id="get_user_deleteAvatar" data-search="/api/v1/user/deleteavatar delete avatar"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/user/deleteAvatar</code><span class="op-summary">Delete Avatar</span></div><div class="op-body open"><p class="op-description">Delete Avatar via `GET /api/v1/user/deleteAvatar`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.deleteAvatar</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::deleteAvatar</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/user/deleteAvatar&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/deleteAvatar`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/deleteAvatar&quot;);</code></pre></div></div></div></article><article class="operation" id="post_user_changeAvatar" data-search="/api/v1/user/changeavatar change avatar"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/user/changeAvatar</code><span class="op-summary">Change Avatar</span></div><div class="op-body open"><p class="op-description">Change Avatar via `POST /api/v1/user/changeAvatar`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.changeAvatar</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::changeAvatar</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/user/changeAvatar&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/changeAvatar`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/changeAvatar&quot;);</code></pre></div></div></div></article><article class="operation" id="post_user_changeInfo" data-search="/api/v1/user/changeinfo change info"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/user/changeInfo</code><span class="op-summary">Change Info</span></div><div class="op-body open"><p class="op-description">Change Info via `POST /api/v1/user/changeInfo`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.changeInfo</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::changeInfo</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/user/changeInfo&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/changeInfo`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/changeInfo&quot;);</code></pre></div></div></div></article><article class="operation" id="post_user_changePassword" data-search="/api/v1/user/changepassword change password"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/user/changePassword</code><span class="op-summary">Change Password</span></div><div class="op-body open"><p class="op-description">Change Password via `POST /api/v1/user/changePassword`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.changePassword</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::changePassword</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/user/changePassword&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/changePassword`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/changePassword&quot;);</code></pre></div></div></div></article><article class="operation" id="get_user_getUsers_packageName" data-search="/api/v1/user/getusers/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/user/getUsers/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/user/getUsers/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>user.getUsers.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UserController::getUsers</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/user/getUsers/{packageName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/user/getUsers/{packageName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/user/getUsers/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_options_get" data-search="/api/v1/options/get get"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/options/get</code><span class="op-summary">Get</span></div><div class="op-body open"><p class="op-description">Get via `GET /api/v1/options/get`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.get</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::getOptions</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/options/get&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/get`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/get&quot;);</code></pre></div></div></div></article><article class="operation" id="get_options_changeBackground_name" data-search="/api/v1/options/changebackground/{name} name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/options/changeBackground/{name}</code><span class="op-summary">Name</span></div><div class="op-body open"><p class="op-description">Name via `GET /api/v1/options/changeBackground/{name}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.changeBackground.name</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::changeBackground</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/options/changeBackground/{name}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/changeBackground/{name}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/changeBackground/{name}&quot;);</code></pre></div></div></div></article><article class="operation" id="post_options_uploadWallpaper" data-search="/api/v1/options/uploadwallpaper upload wallpaper"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/options/uploadWallpaper</code><span class="op-summary">Upload Wallpaper</span></div><div class="op-body open"><p class="op-description">Upload Wallpaper via `POST /api/v1/options/uploadWallpaper`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.uploadWallpaper</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::uploadWallpaper</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/options/uploadWallpaper&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/uploadWallpaper`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/uploadWallpaper&quot;);</code></pre></div></div></div></article><article class="operation" id="post_options_deleteWallpaper_name" data-search="/api/v1/options/deletewallpaper/{name} name"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/options/deleteWallpaper/{name}</code><span class="op-summary">Name</span></div><div class="op-body open"><p class="op-description">Name via `POST /api/v1/options/deleteWallpaper/{name}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.deleteWallpaper.name</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::deleteWallpaper</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/options/deleteWallpaper/{name}&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/deleteWallpaper/{name}`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/deleteWallpaper/{name}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_options_changeLockTime_minutes" data-search="/api/v1/options/changelocktime/{minutes} minutes"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/options/changeLockTime/{minutes}</code><span class="op-summary">Minutes</span></div><div class="op-body open"><p class="op-description">Minutes via `GET /api/v1/options/changeLockTime/{minutes}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.changeLockTime.minutes</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::changeLockTime</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>minutes</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/options/changeLockTime/{minutes}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/changeLockTime/{minutes}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/changeLockTime/{minutes}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_options_toggleDockPin_packageName" data-search="/api/v1/options/toggledockpin/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/options/toggleDockPin/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/options/toggleDockPin/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>options.toggleDockPin.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::toggleDockPin</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/options/toggleDockPin/{packageName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/options/toggleDockPin/{packageName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/options/toggleDockPin/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_changeLang_lang" data-search="/api/v1/changelang/{lang} lang"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/changeLang/{lang}</code><span class="op-summary">Lang</span></div><div class="op-body open"><p class="op-description">Lang via `GET /api/v1/changeLang/{lang}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>changeLang.lang</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\OptionController::changeLang</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>lang</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/changeLang/{lang}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/changeLang/{lang}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/changeLang/{lang}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_widget_clock" data-search="/api/v1/widget/clock clock"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/widget/clock</code><span class="op-summary">Clock</span></div><div class="op-body open"><p class="op-description">Clock via `GET /api/v1/widget/clock`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.clock</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::clock</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/widget/clock&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/clock`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/clock&quot;);</code></pre></div></div></div></article><article class="operation" id="get_widget_storage" data-search="/api/v1/widget/storage storage"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/widget/storage</code><span class="op-summary">Storage</span></div><div class="op-body open"><p class="op-description">Storage via `GET /api/v1/widget/storage`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.storage</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::storage</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/widget/storage&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/storage`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/storage&quot;);</code></pre></div></div></div></article><article class="operation" id="get_widget_storageBrowse" data-search="/api/v1/widget/storagebrowse storage browse"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/widget/storageBrowse</code><span class="op-summary">Storage Browse</span></div><div class="op-body open"><p class="op-description">Storage Browse via `GET /api/v1/widget/storageBrowse`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.storageBrowse</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::browseStorage</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/widget/storageBrowse&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/storageBrowse`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/storageBrowse&quot;);</code></pre></div></div></div></article><article class="operation" id="get_widget_settings" data-search="/api/v1/widget/settings settings"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/widget/settings</code><span class="op-summary">Settings</span></div><div class="op-body open"><p class="op-description">Settings via `GET /api/v1/widget/settings`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.settings</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::settings</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/widget/settings&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/settings`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/settings&quot;);</code></pre></div></div></div></article><article class="operation" id="post_widget_saveWidgets" data-search="/api/v1/widget/savewidgets save widgets"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/widget/saveWidgets</code><span class="op-summary">Save Widgets</span></div><div class="op-body open"><p class="op-description">Save Widgets via `POST /api/v1/widget/saveWidgets`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.saveWidgets</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::saveWidgets</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/widget/saveWidgets&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/saveWidgets`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/saveWidgets&quot;);</code></pre></div></div></div></article><article class="operation" id="post_widget_storageSettings" data-search="/api/v1/widget/storagesettings storage settings"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/widget/storageSettings</code><span class="op-summary">Storage Settings</span></div><div class="op-body open"><p class="op-description">Storage Settings via `POST /api/v1/widget/storageSettings`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>widget.storageSettings</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\WidgetController::saveStorageSettings</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/widget/storageSettings&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/widget/storageSettings`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/widget/storageSettings&quot;);</code></pre></div></div></div></article><article class="operation" id="get_app_getAll" data-search="/api/v1/app/getall get all"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/app/getAll</code><span class="op-summary">Get All</span></div><div class="op-body open"><p class="op-description">Get All via `GET /api/v1/app/getAll`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.getAll</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::getAll</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/app/getAll&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/getAll`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/getAll&quot;);</code></pre></div></div></div></article><article class="operation" id="get_app_get_filter" data-search="/api/v1/app/get/{filter?} filter"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/app/get/{filter?}</code><span class="op-summary">Filter</span></div><div class="op-body open"><p class="op-description">Filter via `GET /api/v1/app/get/{filter?}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.get.filter</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::get</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>filter?</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/app/get/{filter?}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/get/{filter?}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/get/{filter?}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_app_getConfig_packageName" data-search="/api/v1/app/getconfig/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/app/getConfig/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/app/getConfig/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.getConfig.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::getConfig</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/app/getConfig/{packageName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/getConfig/{packageName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/getConfig/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="post_app_setConfig_packageName_key" data-search="/api/v1/app/setconfig/{packagename}/{key} key"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/app/setConfig/{packageName}/{key}</code><span class="op-summary">Key</span></div><div class="op-body open"><p class="op-description">Key via `POST /api/v1/app/setConfig/{packageName}/{key}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.setConfig.packageName.key</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::setConfig</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr><tr><td><code>key</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/app/setConfig/{packageName}/{key}&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/setConfig/{packageName}/{key}`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/setConfig/{packageName}/{key}&quot;);</code></pre></div></div></div></article><article class="operation" id="post_app_install" data-search="/api/v1/app/install install"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/app/install</code><span class="op-summary">Install</span></div><div class="op-body open"><p class="op-description">Install via `POST /api/v1/app/install`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.install</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::install</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/app/install&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/install`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/install&quot;);</code></pre></div></div></div></article><article class="operation" id="get_app_installPackage_filename" data-search="/api/v1/app/installpackage/{filename} filename"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/app/installPackage/{filename}</code><span class="op-summary">Filename</span></div><div class="op-body open"><p class="op-description">Filename via `GET /api/v1/app/installPackage/{filename}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.installPackage.filename</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::installPackage</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>filename</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/app/installPackage/{filename}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/installPackage/{filename}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/installPackage/{filename}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_app_files" data-search="/api/v1/app/files files"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/app/files</code><span class="op-summary">Files</span></div><div class="op-body open"><p class="op-description">Files via `GET /api/v1/app/files`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.files</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::files</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/app/files&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/files`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/files&quot;);</code></pre></div></div></div></article><article class="operation" id="post_app_deleteFile" data-search="/api/v1/app/deletefile delete file"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/app/deleteFile</code><span class="op-summary">Delete File</span></div><div class="op-body open"><p class="op-description">Delete File via `POST /api/v1/app/deleteFile`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.deleteFile</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::deleteFile</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/app/deleteFile&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/deleteFile`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/deleteFile&quot;);</code></pre></div></div></div></article><article class="operation" id="post_app_filesUpload" data-search="/api/v1/app/filesupload files upload"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/app/filesUpload</code><span class="op-summary">Files Upload</span></div><div class="op-body open"><p class="op-description">Files Upload via `POST /api/v1/app/filesUpload`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.filesUpload</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::filesUpload</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/app/filesUpload&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/filesUpload`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/filesUpload&quot;);</code></pre></div></div></div></article><article class="operation" id="post_app_remove_packageName" data-search="/api/v1/app/remove/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/app/remove/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `POST /api/v1/app/remove/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>app.remove.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AppController::remove</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/app/remove/{packageName}&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/app/remove/{packageName}`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/app/remove/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_router_getAll" data-search="/api/v1/router/getall get all"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/router/getAll</code><span class="op-summary">Get All</span></div><div class="op-body open"><p class="op-description">Get All via `GET /api/v1/router/getAll`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>router.getAll</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\RouterController::getAll</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/router/getAll&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/router/getAll`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/router/getAll&quot;);</code></pre></div></div></div></article><article class="operation" id="post_router_remove" data-search="/api/v1/router/remove remove"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/router/remove</code><span class="op-summary">Remove</span></div><div class="op-body open"><p class="op-description">Remove via `POST /api/v1/router/remove`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>router.remove</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\RouterController::remove</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/router/remove&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/router/remove`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/router/remove&quot;);</code></pre></div></div></div></article><article class="operation" id="post_router_save" data-search="/api/v1/router/save save"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/router/save</code><span class="op-summary">Save</span></div><div class="op-body open"><p class="op-description">Save via `POST /api/v1/router/save`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>router.save</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\RouterController::save</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/router/save&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/router/save`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/router/save&quot;);</code></pre></div></div></div></article><article class="operation" id="get_account_getConnectData" data-search="/api/v1/account/getconnectdata get connect data"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/account/getConnectData</code><span class="op-summary">Get Connect Data</span></div><div class="op-body open"><p class="op-description">Get Connect Data via `GET /api/v1/account/getConnectData`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>account.getConnectData</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AccountController::getConnectData</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/account/getConnectData&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/account/getConnectData`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/account/getConnectData&quot;);</code></pre></div></div></div></article><article class="operation" id="get_account_connect" data-search="/api/v1/account/connect connect"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/account/connect</code><span class="op-summary">Connect</span></div><div class="op-body open"><p class="op-description">Connect via `GET /api/v1/account/connect`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>account.connect</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AccountController::connect</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/account/connect&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/account/connect`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/account/connect&quot;);</code></pre></div></div></div></article><article class="operation" id="get_account_logout" data-search="/api/v1/account/logout logout"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/account/logout</code><span class="op-summary">Logout</span></div><div class="op-body open"><p class="op-description">Logout via `GET /api/v1/account/logout`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>account.logout</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\AccountController::logout</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/account/logout&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/account/logout`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/account/logout&quot;);</code></pre></div></div></div></article><article class="operation" id="get_market_getDownloads" data-search="/api/v1/market/getdownloads get downloads"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/market/getDownloads</code><span class="op-summary">Get Downloads</span></div><div class="op-body open"><p class="op-description">Get Downloads via `GET /api/v1/market/getDownloads`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.getDownloads</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::getDownloads</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/market/getDownloads&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/getDownloads`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/getDownloads&quot;);</code></pre></div></div></div></article><article class="operation" id="post_market_deleteDownload" data-search="/api/v1/market/deletedownload delete download"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/market/deleteDownload</code><span class="op-summary">Delete Download</span></div><div class="op-body open"><p class="op-description">Delete Download via `POST /api/v1/market/deleteDownload`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.deleteDownload</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::deleteDownload</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/market/deleteDownload&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/deleteDownload`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/deleteDownload&quot;);</code></pre></div></div></div></article><article class="operation" id="get_market_getApps_keyword" data-search="/api/v1/market/getapps/{keyword?} keyword"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/market/getApps/{keyword?}</code><span class="op-summary">Keyword</span></div><div class="op-body open"><p class="op-description">Keyword via `GET /api/v1/market/getApps/{keyword?}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.getApps.keyword</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::getApps</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>keyword?</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/market/getApps/{keyword?}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/getApps/{keyword?}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/getApps/{keyword?}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_market_getOneApp_package_name" data-search="/api/v1/market/getoneapp/{package_name} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/market/getOneApp/{package_name}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/market/getOneApp/{package_name}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.getOneApp.package_name</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::getOneApp</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>package_name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/market/getOneApp/{package_name}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/getOneApp/{package_name}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/getOneApp/{package_name}&quot;);</code></pre></div></div></div></article><article class="operation" id="post_market_downloadRequest_package_name" data-search="/api/v1/market/downloadrequest/{package_name} package name"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/market/downloadRequest/{package_name}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `POST /api/v1/market/downloadRequest/{package_name}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.downloadRequest.package_name</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::downloadRequest</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>package_name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/market/downloadRequest/{package_name}&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/downloadRequest/{package_name}`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/downloadRequest/{package_name}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_market_getTemplates_package_name" data-search="/api/v1/market/gettemplates/{package_name} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/market/getTemplates/{package_name}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/market/getTemplates/{package_name}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.getTemplates.package_name</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::getTemplates</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>package_name</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/market/getTemplates/{package_name}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/getTemplates/{package_name}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/getTemplates/{package_name}&quot;);</code></pre></div></div></div></article><article class="operation" id="post_market_downloadRequestTemplate_uid" data-search="/api/v1/market/downloadrequesttemplate/{uid} uid"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/market/downloadRequestTemplate/{uid}</code><span class="op-summary">Uid</span></div><div class="op-body open"><p class="op-description">Uid via `POST /api/v1/market/downloadRequestTemplate/{uid}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>market.downloadRequestTemplate.uid</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\MarketController::downloadRequestTemplate</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>uid</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/market/downloadRequestTemplate/{uid}&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/market/downloadRequestTemplate/{uid}`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/market/downloadRequestTemplate/{uid}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_notification" data-search="/api/v1/notification notification"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/notification</code><span class="op-summary">Notification</span></div><div class="op-body open"><p class="op-description">Notification via `GET /api/v1/notification`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>notification</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\NotificationController::index</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/notification&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/notification`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/notification&quot;);</code></pre></div></div></div></article><article class="operation" id="post_notification_hide" data-search="/api/v1/notification/hide hide"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/notification/hide</code><span class="op-summary">Hide</span></div><div class="op-body open"><p class="op-description">Hide via `POST /api/v1/notification/hide`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>notification.hide</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\NotificationController::hide</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/notification/hide&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/notification/hide`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/notification/hide&quot;);</code></pre></div></div></div></article><article class="operation" id="post_notification_seen" data-search="/api/v1/notification/seen seen"><div class="op-header open" data-toggle><span class="method method-POST">POST</span><code class="op-path">/api/v1/notification/seen</code><span class="op-summary">Seen</span></div><div class="op-body open"><p class="op-description">Seen via `POST /api/v1/notification/seen`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>notification.seen</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\NotificationController::seen</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X POST &quot;/api/v1/api/v1/notification/seen&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -H &quot;Accept: application/json&quot; \
+  -d &#039;[]&#039;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/notification/seen`, {
+  method: &#039;POST&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  },
+  body: JSON.stringify([])
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/notification/seen&quot;);</code></pre></div></div></div></article><article class="operation" id="get_update_checkVersion_type" data-search="/api/v1/update/checkversion/{type?} type"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/update/checkVersion/{type?}</code><span class="op-summary">Type</span></div><div class="op-body open"><p class="op-description">Type via `GET /api/v1/update/checkVersion/{type?}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>update.checkVersion.type</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UpdateController::checkVersion</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>type?</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/update/checkVersion/{type?}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/update/checkVersion/{type?}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/update/checkVersion/{type?}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_update_install" data-search="/api/v1/update/install install"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/update/install</code><span class="op-summary">Install</span></div><div class="op-body open"><p class="op-description">Install via `GET /api/v1/update/install`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>update.install</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\UpdateController::install</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><p class="empty">No parameters.</p></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/update/install&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/update/install`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/update/install&quot;);</code></pre></div></div></div></article><article class="operation" id="get_template_get_packageName" data-search="/api/v1/template/get/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/template/get/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/template/get/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>template.get.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\TemplateController::get</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/template/get/{packageName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/template/get/{packageName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/template/get/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_template_install_uid_packageName" data-search="/api/v1/template/install/{uid}/{packagename} package name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/template/install/{uid}/{packageName}</code><span class="op-summary">Package Name</span></div><div class="op-body open"><p class="op-description">Package Name via `GET /api/v1/template/install/{uid}/{packageName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>template.install.uid.packageName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\TemplateController::install</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>uid</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/template/install/{uid}/{packageName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/template/install/{uid}/{packageName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/template/install/{uid}/{packageName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_template_installPackage_filename" data-search="/api/v1/template/installpackage/{filename} filename"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/template/installPackage/{filename}</code><span class="op-summary">Filename</span></div><div class="op-body open"><p class="op-description">Filename via `GET /api/v1/template/installPackage/{filename}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>template.installPackage.filename</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\TemplateController::installPackage</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>filename</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/template/installPackage/{filename}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/template/installPackage/{filename}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/template/installPackage/{filename}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_template_set_packageName_folderName" data-search="/api/v1/template/set/{packagename}/{foldername} folder name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/template/set/{packageName}/{folderName}</code><span class="op-summary">Folder Name</span></div><div class="op-body open"><p class="op-description">Folder Name via `GET /api/v1/template/set/{packageName}/{folderName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>template.set.packageName.folderName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\TemplateController::set</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr><tr><td><code>folderName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/template/set/{packageName}/{folderName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/template/set/{packageName}/{folderName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/template/set/{packageName}/{folderName}&quot;);</code></pre></div></div></div></article><article class="operation" id="get_template_remove_packageName_folderName" data-search="/api/v1/template/remove/{packagename}/{foldername} folder name"><div class="op-header open" data-toggle><span class="method method-GET">GET</span><code class="op-path">/api/v1/template/remove/{packageName}/{folderName}</code><span class="op-summary">Folder Name</span></div><div class="op-body open"><p class="op-description">Folder Name via `GET /api/v1/template/remove/{packageName}/{folderName}`.</p><div class="meta-grid"><div class="meta-chip"><span>Route name</span><code>template.remove.packageName.folderName</code></div><div class="meta-chip"><span>Handler</span><code>App\com_pinoox_manager\Controller\TemplateController::remove</code></div><div class="meta-chip"><span>Flow</span><code>manager.auth</code></div><div class="meta-chip"><span>Access</span><code>Authenticated</code></div></div><div class="tabs"><button class="tab-btn active" data-tab="params">Parameters</button><button class="tab-btn" data-tab="body">Request Body</button><button class="tab-btn" data-tab="responses">Responses</button><button class="tab-btn" data-tab="examples">Examples</button></div><div class="tab-panel active" data-panel="params"><table><thead><tr><th>Name</th><th>In</th><th>Type</th><th>Required</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><code>packageName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr><tr><td><code>folderName</code></td><td>path</td><td>string</td><td><span class="required">required</span></td><td></td><td><code></code></td></tr></tbody></table></div><div class="tab-panel" data-panel="body"><p class="empty">No request body.</p></div><div class="tab-panel" data-panel="responses"><p class="empty">No documented responses.</p></div><div class="tab-panel" data-panel="examples"><h4>cURL</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>curl -X GET &quot;/api/v1/api/v1/template/remove/{packageName}/{folderName}&quot; \
+  -H &quot;Accept: application/json&quot;</code></pre></div><h4>JavaScript fetch</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>fetch(`/api/v1/api/v1/template/remove/{packageName}/{folderName}`, {
+  method: &#039;GET&#039;,
+  headers: {
+    &#039;Accept&#039;: &#039;application/json&#039;,
+    &#039;Content-Type&#039;: &#039;application/json&#039;
+  }
+})
+  .then(response =&gt; response.json())
+  .then(console.log);</code></pre></div><h4>PHP</h4><div class="code-block"><button class="copy-btn" type="button">Copy</button><pre><code>$response = file_get_contents(&quot;/api/v1/api/v1/template/remove/{packageName}/{folderName}&quot;);</code></pre></div></div></div></article></main></div><script>
+document.querySelectorAll('[data-toggle]').forEach((header) => {
+    header.addEventListener('click', () => {
+        const body = header.nextElementSibling;
+        header.classList.toggle('open');
+        body.classList.toggle('open');
+    });
+});
+
+document.querySelectorAll('.operation .tab-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+        const root = button.closest('.operation');
+        root.querySelectorAll('.tab-btn').forEach((item) => item.classList.remove('active'));
+        root.querySelectorAll('.tab-panel').forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        root.querySelector('[data-panel="' + button.dataset.tab + '"]').classList.add('active');
+    });
+});
+
+document.querySelectorAll('.copy-btn').forEach((button) => {
+    button.addEventListener('click', () => {
+        const code = button.parentElement.querySelector('code').innerText;
+        navigator.clipboard.writeText(code).then(() => {
+            button.textContent = 'Copied';
+            setTimeout(() => button.textContent = 'Copy', 1200);
+        });
+    });
+});
+
+const searchInput = document.getElementById('doc-search');
+if (searchInput) {
+    searchInput.addEventListener('input', () => {
+        const query = searchInput.value.trim().toLowerCase();
+        document.querySelectorAll('.nav-item').forEach((item) => {
+            item.style.display = !query || item.dataset.search.includes(query) ? 'flex' : 'none';
+        });
+        document.querySelectorAll('.operation').forEach((item) => {
+            item.style.display = !query || item.dataset.search.includes(query) ? 'block' : 'none';
+        });
+    });
+}
+</script></body></html>
