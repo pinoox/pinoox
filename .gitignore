@@ -20,5 +20,8 @@ vendor
 # MacOS
 .DS_Store
 
-# Settings and Configs - only ignore config in settings
-setting/config/**
+# Test artifacts (generated during pest/phpunit runs)
+/tests/Fixtures/**/*
+!/tests/Fixtures/**/.gitkeep
+/apps/com_test_*/
+/apps/com_boot_*/
