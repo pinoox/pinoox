@@ -71,6 +71,10 @@
     }
 
     function setToggleState(toggle, expand) {
+        if (!toggle) {
+            return;
+        }
+
         var selector = toggle.getAttribute('data-toggle-selector');
         var element = selector ? document.querySelector(selector) : null;
         if (!element) {
@@ -83,9 +87,67 @@
         element.classList.toggle('sf-toggle-hidden', !expand);
     }
 
+    function isPincoreHidden() {
+        return body.classList.contains('px-hide-pincore');
+    }
+
+    function isVendorHidden() {
+        return body.classList.contains('px-hide-vendor');
+    }
+
+    function syncFilterButtons() {
+        document.querySelectorAll('[data-action="filter-pincore"]').forEach(function (button) {
+            var hidden = isPincoreHidden();
+            var label = hidden ? 'Show pincore frames' : 'Hide pincore frames';
+            if (button.classList.contains('px-tool-card')) {
+                var title = button.querySelector('strong');
+                if (title) {
+                    title.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+                }
+            } else {
+                button.textContent = label;
+            }
+            button.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+        });
+
+        document.querySelectorAll('[data-action="filter-vendor"]').forEach(function (button) {
+            var hidden = isVendorHidden();
+            var label = hidden ? 'Show vendor frames' : 'Hide vendor frames';
+            if (button.classList.contains('px-tool-card')) {
+                var title = button.querySelector('strong');
+                if (title) {
+                    title.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+                }
+            } else {
+                button.textContent = label;
+            }
+            button.setAttribute('aria-pressed', hidden ? 'false' : 'true');
+        });
+    }
+
+    function setPincoreHidden(hidden, silent) {
+        body.classList.toggle('px-hide-pincore', hidden);
+        syncFilterButtons();
+        if (!silent) {
+            toast(hidden ? 'Pincore frames hidden' : 'Pincore frames shown');
+        }
+    }
+
+    function setVendorHidden(hidden, silent) {
+        body.classList.toggle('px-hide-vendor', hidden);
+        syncFilterButtons();
+        if (!silent) {
+            toast(hidden ? 'Vendor frames hidden' : 'Vendor frames shown');
+        }
+    }
+
     function toggleTraces(mode) {
+        var expand = mode === 'expand';
         document.querySelectorAll('.px-trace-wrap .sf-toggle').forEach(function (toggle) {
-            setToggleState(toggle, mode === 'expand');
+            if (!toggle.getAttribute('data-toggle-selector')) {
+                return;
+            }
+            setToggleState(toggle, expand);
         });
     }
 
@@ -165,42 +227,38 @@
         });
     });
 
-    var vendorToggle = document.querySelector('[data-action="filter-vendor"]');
-    if (vendorToggle) {
-        vendorToggle.addEventListener('click', function () {
-            var hide = !body.classList.contains('px-hide-vendor');
-            body.classList.toggle('px-hide-vendor', hide);
-            toast(hide ? 'Vendor frames hidden' : 'Vendor frames shown');
-        });
-    }
+    document.addEventListener('click', function (event) {
+        var target = event.target.closest('[data-action]');
+        if (!target) {
+            return;
+        }
 
-    var pincoreToggle = document.querySelector('[data-action="filter-pincore"]');
-    if (pincoreToggle) {
-        pincoreToggle.addEventListener('click', function () {
-            var hide = !body.classList.contains('px-hide-pincore');
-            body.classList.toggle('px-hide-pincore', hide);
-            pincoreToggle.textContent = hide ? 'Show pincore frames' : 'Hide pincore frames';
-            toast(hide ? 'Pincore frames hidden' : 'Pincore frames shown');
-        });
-    }
+        var action = target.getAttribute('data-action');
 
-    var jumpOrigin = document.querySelector('[data-action="jump-origin"]');
-    if (jumpOrigin) {
-        jumpOrigin.addEventListener('click', function () {
+        if (action === 'jump-origin') {
+            event.preventDefault();
             var origin = document.getElementById('px-trace-origin');
             if (!origin) {
                 toast('Origin frame not found');
                 return;
             }
 
-            body.classList.add('px-hide-pincore');
-            if (pincoreToggle) {
-                pincoreToggle.textContent = 'Show pincore frames';
+            var exceptionTab = document.querySelector('[data-px-tab="exception"]');
+            if (exceptionTab) {
+                exceptionTab.click();
             }
+
+            setPincoreHidden(true, true);
 
             var toggle = origin.querySelector('.trace-line-header.sf-toggle');
             if (toggle) {
                 setToggleState(toggle, true);
+            }
+
+            var traceBox = origin.closest('.trace-as-html');
+            var traceBoxToggle = traceBox ? traceBox.querySelector('.trace-head > .sf-toggle') : null;
+            if (traceBoxToggle) {
+                setToggleState(traceBoxToggle, true);
             }
 
             origin.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -208,6 +266,27 @@
             setTimeout(function () {
                 origin.classList.remove('px-trace-flash');
             }, 1400);
+        }
+    });
+
+    document.querySelectorAll('[data-action="filter-pincore"], [data-action="filter-vendor"]').forEach(function (button) {
+        button.addEventListener('click', function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            var action = button.getAttribute('data-action');
+            if (action === 'filter-pincore') {
+                setPincoreHidden(!isPincoreHidden());
+            } else if (action === 'filter-vendor') {
+                setVendorHidden(!isVendorHidden());
+            }
         });
-    }
+    });
+
+    syncFilterButtons();
+
+    document.querySelectorAll('.px-disclosure-response').forEach(function (node) {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+            node.removeAttribute('open');
+        }
+    });
 })();

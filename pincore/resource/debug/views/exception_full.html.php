@@ -4,7 +4,7 @@
     <head>
         <meta charset="<?= $this->charset; ?>" />
         <meta name="robots" content="noindex,nofollow" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
         <title><?= $_message; ?> · Pinoox</title>
         <?php if (!empty($pinoox['logo_data_uri'])) { ?>
         <link rel="icon" type="image/png" href="<?= htmlspecialchars((string) $pinoox['logo_data_uri'], ENT_QUOTES); ?>" />
@@ -12,15 +12,27 @@
         <style><?= $this->include('assets/css/exception.css'); ?></style>
         <style><?= $this->include('assets/css/exception_full.css'); ?></style>
         <style><?= $this->include('assets/css/pinoox-exception.css'); ?></style>
+        <style><?= $this->include('assets/css/exception_controls.css'); ?></style>
+        <style><?= $this->include('assets/css/exception_embed.css'); ?></style>
     </head>
-    <body class="pinoox-exception-page sf-reset px-hide-pincore px-hide-vendor<?= \Pinoox\Component\Kernel\Debug\Support\TraceFrameClassifier::isFrameworkSurfacePath(str_replace('\\', '/', (string) $exception->getFile()), (string) ($pinoox['project_root'] ?? '') ?: null) ? ' px-thrown-in-pincore' : ''; ?><?= !empty($pinoox['portal']['via_portal']) ? ' px-portal-error' : ''; ?>">
-        <script>
-            (function () {
-                var saved = localStorage.getItem('pinoox/debug-theme');
-                var theme = saved === 'light' ? 'theme-light' : 'theme-dark';
-                document.body.classList.add(theme);
-            })();
-        </script>
+    <body class="pinoox-exception-page sf-reset<?= \Pinoox\Component\Kernel\Debug\Support\TraceFrameClassifier::isFrameworkSurfacePath(str_replace('\\', '/', (string) $exception->getFile()), (string) ($pinoox['project_root'] ?? '') ?: null) ? ' px-thrown-in-pincore' : ''; ?><?= !empty($pinoox['portal']['via_portal']) ? ' px-portal-error' : ''; ?><?= !empty($networkPreview) ? ' px-network-preview' : ''; ?>">
+        <div class="px-focus-guard" aria-hidden="true">
+            <input type="checkbox" id="px-theme-light" class="px-sr-input">
+            <input type="checkbox" id="px-filter-pincore" class="px-sr-input">
+            <input type="checkbox" id="px-filter-vendor" class="px-sr-input">
+            <input type="checkbox" id="px-expand-all" class="px-sr-input">
+            <input type="radio" name="px-tab" id="px-tab-exception" class="px-tab-input" checked>
+            <?php if (!empty($networkPreview)) { ?>
+            <input type="radio" name="px-tab" id="px-tab-pincore" class="px-tab-input">
+            <input type="radio" name="px-tab" id="px-tab-vendor" class="px-tab-input">
+            <?php } ?>
+            <input type="radio" name="px-tab" id="px-tab-stack" class="px-tab-input">
+            <?php if ($logger) { ?>
+            <input type="radio" name="px-tab" id="px-tab-logs" class="px-tab-input">
+            <?php } ?>
+            <input type="radio" name="px-tab" id="px-tab-context" class="px-tab-input">
+            <input type="radio" name="px-tab" id="px-tab-tools" class="px-tab-input">
+        </div>
 
         <header class="px-topbar">
             <div class="px-container px-topbar-inner">
@@ -37,9 +49,8 @@
                 </a>
 
                 <div class="px-topbar-actions">
-                    <button type="button" class="px-btn" data-copy="message" title="Copy error message">Copy message</button>
-                    <button type="button" class="px-btn" data-copy="trace" title="Copy stack trace">Copy trace</button>
-                    <button type="button" class="px-btn px-btn-ghost" id="px-theme-toggle" title="Switch to light mode">Light mode</button>
+                    <label for="px-tab-tools" class="px-btn px-control-label px-full-only">Copy fields</label>
+                    <label for="px-theme-light" class="px-btn px-btn-ghost px-control-label"><span class="px-theme-label-text" aria-hidden="true"></span><span class="px-sr-only">Toggle light/dark theme</span></label>
                     <a class="px-btn px-btn-primary" href="<?= htmlspecialchars((string) ($pinoox['docs_url'] ?? 'https://www.pinoox.com/docs'), ENT_QUOTES); ?>" target="_blank" rel="noopener">
                         <?= htmlspecialchars((string) ($pinoox['docs_label'] ?? 'Pinoox Docs'), ENT_QUOTES); ?>
                     </a>
@@ -56,22 +67,8 @@
             'currentContent' => $currentContent,
             'pinoox' => $pinoox,
             'hints' => $hints,
+            'networkPreview' => $networkPreview ?? false,
         ]); ?>
-
-        <script type="application/json" id="px-exception-payload"><?= htmlspecialchars(json_encode([
-            'message' => strip_tags((string) $exceptionMessage),
-            'status' => (int) $statusCode,
-            'class' => $exception->getClass(),
-            'file' => $exception->getFile(),
-            'line' => $exception->getLine(),
-            'url' => (string) ($pinoox['request']['url'] ?? ''),
-            'method' => (string) ($pinoox['request']['method'] ?? 'GET'),
-            'headers' => $pinoox['request']['headers'] ?? [],
-            'body' => (string) ($pinoox['request']['body'] ?? ''),
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES), ENT_NOQUOTES); ?></script>
-
-        <script><?= $this->include('assets/js/exception.js'); ?></script>
-        <script><?= $this->include('assets/js/pinoox-exception.js'); ?></script>
     </body>
 </html>
 <!-- <?= $_message; ?> -->

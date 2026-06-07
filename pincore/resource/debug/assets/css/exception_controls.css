@@ -1,0 +1,261 @@
+/* CSS-only exception UI — no JavaScript required (works in DevTools Network preview) */
+
+.px-focus-guard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    z-index: -1;
+    pointer-events: none;
+}
+
+.px-sr-input {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    opacity: 0;
+}
+
+.px-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.px-control-label {
+    cursor: pointer;
+    user-select: none;
+}
+
+.px-control-label:active {
+    transform: translateY(1px);
+}
+
+/* Theme */
+.pinoox-exception-page:has(#px-theme-light:checked) {
+    --px-bg: #eef2f8;
+    --px-panel: #ffffff;
+    --px-panel-2: #f8fafc;
+    --px-border: #dbe3ef;
+    --px-text: #0f172a;
+    --px-muted: #64748b;
+    --px-accent-soft: rgba(37, 99, 235, 0.08);
+    --px-danger-soft: rgba(239, 68, 68, 0.08);
+    --px-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+    --px-code-bg: #f6f8fa;
+    --px-code-fg: #1f2328;
+    --px-code-muted: #656d76;
+    --px-code-keyword: #cf222e;
+    --px-code-string: #0a3069;
+    --px-code-fn: #8250df;
+    --px-code-accent: #0550ae;
+    --highlight-default: var(--px-code-fg);
+    --highlight-comment: var(--px-code-muted);
+    --highlight-keyword: var(--px-code-keyword);
+    --highlight-string: var(--px-code-string);
+}
+
+label[for="px-theme-light"] .px-theme-label-text {
+    font-size: 0;
+}
+
+label[for="px-theme-light"] .px-theme-label-text::after {
+    font-size: 13px;
+}
+
+.pinoox-exception-page:has(#px-theme-light:checked) label[for="px-theme-light"] .px-theme-label-text::after {
+    content: 'Dark mode';
+}
+
+label[for="px-theme-light"] .px-theme-label-text::after {
+    content: 'Light mode';
+}
+
+/* Stack frame filters */
+.pinoox-exception-page .trace-from-pincore,
+.pinoox-exception-page .trace-from-vendor {
+    display: none;
+}
+
+.pinoox-exception-page:has(#px-filter-pincore:checked) .trace-from-pincore {
+    display: block;
+}
+
+.pinoox-exception-page:has(#px-filter-vendor:checked) .trace-from-vendor {
+    display: block;
+}
+
+.pinoox-exception-page:has(#px-filter-pincore:checked) label[for="px-filter-pincore"] {
+    box-shadow: inset 0 0 0 1px var(--px-accent);
+    color: var(--px-text);
+}
+
+.pinoox-exception-page:has(#px-filter-vendor:checked) label[for="px-filter-vendor"] {
+    box-shadow: inset 0 0 0 1px var(--px-accent);
+    color: var(--px-text);
+}
+
+.pinoox-exception-page:has(#px-expand-all:checked) label[for="px-expand-all"] {
+    box-shadow: inset 0 0 0 1px var(--px-accent);
+}
+
+.pinoox-exception-page:has(#px-expand-all:checked) .trace-code {
+    display: block !important;
+}
+
+/* Tabs — radios live in body .px-focus-guard to avoid scroll jump on tab change */
+.px-tab-input {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    opacity: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.px-tab-panel,
+.px-trace-stage {
+    display: none;
+}
+
+.pinoox-exception-page:not(.px-network-preview):has(#px-tab-exception:checked) .px-workspace [data-px-panel="exception"],
+.pinoox-exception-page:has(#px-tab-stack:checked) .px-workspace [data-px-panel="stack"],
+.pinoox-exception-page:has(#px-tab-logs:checked) .px-workspace [data-px-panel="logs"],
+.pinoox-exception-page:has(#px-tab-context:checked) .px-workspace [data-px-panel="context"],
+.pinoox-exception-page:has(#px-tab-tools:checked) .px-workspace [data-px-panel="tools"] {
+    display: block;
+}
+
+.pinoox-exception-page.px-network-preview:has(#px-tab-exception:checked) .px-trace-stage,
+.pinoox-exception-page.px-network-preview:has(#px-tab-pincore:checked) .px-trace-stage,
+.pinoox-exception-page.px-network-preview:has(#px-tab-vendor:checked) .px-trace-stage {
+    display: block;
+}
+
+.pinoox-exception-page:has(#px-tab-exception:checked) .px-workspace label[for="px-tab-exception"],
+.pinoox-exception-page:has(#px-tab-pincore:checked) .px-workspace label[for="px-tab-pincore"],
+.pinoox-exception-page:has(#px-tab-vendor:checked) .px-workspace label[for="px-tab-vendor"],
+.pinoox-exception-page:has(#px-tab-stack:checked) .px-workspace label[for="px-tab-stack"],
+.pinoox-exception-page:has(#px-tab-logs:checked) .px-workspace label[for="px-tab-logs"],
+.pinoox-exception-page:has(#px-tab-context:checked) .px-workspace label[for="px-tab-context"],
+.pinoox-exception-page:has(#px-tab-tools:checked) .px-workspace label[for="px-tab-tools"] {
+    background: var(--px-panel-2);
+    color: var(--px-text);
+    box-shadow: inset 0 -2px 0 var(--px-accent);
+}
+
+label.px-tool-card {
+    display: block;
+    width: 100%;
+    text-align: left;
+    font: inherit;
+    color: inherit;
+    appearance: none;
+}
+
+.px-panel-hint {
+    margin: 0 0 12px;
+    color: var(--px-muted);
+    font-size: 13px;
+}
+
+label[for="px-tab-tools"].px-btn {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Details-based trace frames */
+.px-trace-box {
+    border: 1px solid var(--px-border);
+    border-radius: 12px;
+    margin-bottom: 12px;
+    overflow: hidden;
+}
+
+.px-trace-box > summary.trace-head {
+    list-style: none;
+    cursor: pointer;
+    padding: 12px 14px;
+    background: var(--px-panel-2);
+}
+
+.px-trace-box > summary.trace-head::-webkit-details-marker {
+    display: none;
+}
+
+.px-trace-frame {
+    border-top: 1px solid var(--px-border);
+}
+
+.px-trace-frame > summary.trace-line-header {
+    list-style: none;
+    cursor: pointer;
+    padding: 10px 12px;
+}
+
+.px-trace-frame > summary.trace-line-header::-webkit-details-marker {
+    display: none;
+}
+
+.px-trace-frame[open] > summary.trace-line-header {
+    background: var(--px-accent-soft);
+}
+
+.px-trace-frame > summary.trace-line-header::before {
+    content: '+ ';
+    color: var(--px-muted);
+    font-weight: 700;
+}
+
+.px-trace-frame[open] > summary.trace-line-header::before,
+.pinoox-exception-page:has(#px-expand-all:checked) .px-trace-frame > summary.trace-line-header::before {
+    content: '− ';
+}
+
+.px-copy-field {
+    width: 100%;
+    min-height: 88px;
+    margin: 0;
+    padding: 12px;
+    border: 1px solid var(--px-border);
+    border-radius: 10px;
+    background: var(--px-code-bg);
+    color: var(--px-code-fg);
+    font-family: var(--px-font-mono);
+    font-size: 12px;
+    line-height: 1.5;
+    resize: vertical;
+    user-select: all;
+}
+
+.px-copy-field:focus {
+    outline: 2px solid var(--px-accent);
+    outline-offset: 2px;
+}
+
+#px-trace-origin:target {
+    scroll-margin-top: 80px;
+    outline: 2px solid var(--px-accent);
+    outline-offset: 2px;
+}

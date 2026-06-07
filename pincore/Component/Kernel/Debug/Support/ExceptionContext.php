@@ -206,7 +206,49 @@ class ExceptionContext
             'accept' => (string) ($_SERVER['HTTP_ACCEPT'] ?? ''),
             'referer' => (string) ($_SERVER['HTTP_REFERER'] ?? ''),
             'headers' => $headers,
+            'curl' => self::curlReplay($method, ($host !== '' ? $scheme . '://' . $host : '') . $uri, $headers, self::requestBody()),
         ];
+    }
+
+    public static function curlReplay(string $method, string $url, array $headers = [], string $body = ''): string
+    {
+        $method = strtoupper(trim($method));
+        if ($method === '') {
+            $method = 'GET';
+        }
+
+        $parts = ['curl -X ' . $method];
+
+        if ($url !== '') {
+            $parts[] = self::shellArg($url);
+        }
+
+        foreach ($headers as $name => $value) {
+            if (!is_string($name) || !is_scalar($value)) {
+                continue;
+            }
+
+            if (preg_match('/^cookie$/i', $name)) {
+                continue;
+            }
+
+            $parts[] = '-H ' . self::shellArg($name . ': ' . (string) $value);
+        }
+
+        if ($body !== '' && !in_array($method, ['GET', 'HEAD'], true)) {
+            $parts[] = '--data ' . self::shellArg($body);
+        }
+
+        return implode(" \\\n  ", $parts);
+    }
+
+    private static function shellArg(string $value): string
+    {
+        if ($value === '') {
+            return "''";
+        }
+
+        return "'" . str_replace("'", "'\\''", $value) . "'";
     }
 
     private static function serverSnapshot(): array
@@ -310,3 +352,4 @@ class ExceptionContext
         return (bool) preg_match('/pass(word)?|secret|token|api[_-]?key|authorization|cookie/i', $key);
     }
 }
+

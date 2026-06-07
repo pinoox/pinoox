@@ -29,10 +29,54 @@ $thrownInFramework = TraceFrameClassifier::isFrameworkSurfacePath($primaryFile, 
 $thrownInPortal = $portalError && str_contains($primaryFile, '/Component/Source/Portal.php');
 $thrownInProjectEntry = TraceFrameClassifier::isProjectEntryPath($primaryFile, $projectRootArg);
 $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootArg);
+
+$plainMessage = html_entity_decode(strip_tags((string) $exceptionMessage), ENT_QUOTES, 'UTF-8');
+$plainMessageLine = $exception->getClass() . ': ' . $plainMessage;
+if ($exception->getFile()) {
+    $plainMessageLine .= "\n at " . $exception->getFile() . ':' . $exception->getLine();
+}
+
+$stackTraceParts = [];
+foreach ($exceptionAsArray as $i => $e) {
+    $chunk = $e['class'] . ":\n";
+    if (!empty($e['message'])) {
+        $chunk .= $e['message'] . "\n";
+    }
+    foreach ($e['trace'] as $trace) {
+        $chunk .= "\n  ";
+        if (!empty($trace['function'])) {
+            $chunk .= 'at ' . $trace['class'] . $trace['type'] . $trace['function'] . '(' . (isset($trace['args']) ? $this->formatArgsAsText($trace['args']) : '') . ')';
+        }
+        if (!empty($trace['file']) && !empty($trace['line'])) {
+            $chunk .= (!empty($trace['function']) ? "\n     (" : 'at ') . $trace['file'] . ':' . $trace['line'] . (!empty($trace['function']) ? ')' : '');
+        }
+    }
+    $stackTraceParts[] = trim($chunk);
+}
+$plainStackTrace = implode("\n\n", $stackTraceParts);
+
+$traceWrapHtml = '';
+foreach ($exceptionAsArray as $i => $e) {
+    $traceWrapHtml .= $this->include('views/traces.html.php', [
+        'exception' => $e,
+        'index' => $i + 1,
+        'expand' => in_array($i, $exceptionWithUserCode, true) || ([] === $exceptionWithUserCode && 0 === $i),
+        'portalError' => $portalError,
+        'projectRoot' => $projectRootArg,
+    ]);
+}
 ?>
 
 <main class="px-main">
     <div class="px-container">
+        <?php if (!empty($networkPreview)) { ?>
+        <section class="px-preview-banner" role="note">
+            <p>
+                <strong>Network preview</strong> — tabs work without JavaScript. Use the cURL block in Tools to replay this request.
+            </p>
+        </section>
+        <?php } ?>
+
         <section class="px-hero">
             <div class="px-hero-top">
                 <div class="px-badges">
@@ -87,16 +131,10 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
             </p>
             <?php } ?>
 
-            <div class="px-quick-stats">
-                <div class="px-stat"><span>Pinoox</span><strong><?= htmlspecialchars((string) ($pinoox['pinoox_version']['label'] ?? '—'), ENT_QUOTES); ?></strong></div>
-                <div class="px-stat"><span>App</span><strong><?= htmlspecialchars((string) ($pinoox['app_version']['label'] ?? '—'), ENT_QUOTES); ?></strong></div>
-                <div class="px-stat"><span>Method</span><strong><?= htmlspecialchars((string) ($pinoox['request']['method'] ?? '—'), ENT_QUOTES); ?></strong></div>
-                <div class="px-stat"><span>Package</span><strong><?= htmlspecialchars((string) (($pinoox['package'] ?? '') !== '' ? $pinoox['package'] : '—'), ENT_QUOTES); ?></strong></div>
-                <div class="px-stat"><span>PHP</span><strong><?= htmlspecialchars((string) ($pinoox['php_version'] ?? ''), ENT_QUOTES); ?></strong></div>
-                <div class="px-stat"><span>Memory</span><strong><?= htmlspecialchars((string) ($pinoox['memory'] ?? ''), ENT_QUOTES); ?></strong></div>
-            </div>
+            <?= $this->include('views/partials/exception_meta_bar.html.php', ['pinoox' => $pinoox]); ?>
         </section>
 
+        <?php if (empty($networkPreview)) { ?>
         <?php if (!empty($pinoox['portal']['source']['snippet'])) { ?>
         <section class="px-portal-context">
             <div class="px-route-context-head">
@@ -193,49 +231,51 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
             'pinoox' => $pinoox,
         ]); ?>
         <?php } ?>
+        <?php } ?>
 
         <section class="px-workspace">
             <nav class="px-tabs" role="tablist">
-                <button type="button" class="px-tab is-active" data-px-tab="exception" role="tab" aria-selected="true">Exception</button>
-                <button type="button" class="px-tab" data-px-tab="stack" role="tab">Stack trace</button>
-                <?php if ($logger) { ?>
-                <button type="button" class="px-tab" data-px-tab="logs" role="tab">
-                    Logs<?php if ($logger->countErrors()) { ?><span class="px-tab-badge"><?= $logger->countErrors(); ?></span><?php } ?>
-                </button>
+                <?php if (!empty($networkPreview)) { ?>
+                <label for="px-tab-exception" class="px-tab px-control-label" role="tab">Your code</label>
+                <label for="px-tab-pincore" class="px-tab px-control-label" role="tab">Pincore</label>
+                <label for="px-tab-vendor" class="px-tab px-control-label" role="tab">Vendor</label>
+                <?php } else { ?>
+                <label for="px-tab-exception" class="px-tab px-control-label" role="tab">Exception</label>
                 <?php } ?>
-                <button type="button" class="px-tab" data-px-tab="context" role="tab">Context</button>
-                <button type="button" class="px-tab" data-px-tab="tools" role="tab">Tools</button>
+                <label for="px-tab-stack" class="px-tab px-control-label" role="tab">Stack trace</label>
+                <?php if ($logger) { ?>
+                <label for="px-tab-logs" class="px-tab px-control-label" role="tab">
+                    Logs<?php if ($logger->countErrors()) { ?><span class="px-tab-badge"><?= $logger->countErrors(); ?></span><?php } ?>
+                </label>
+                <?php } ?>
+                <label for="px-tab-context" class="px-tab px-control-label" role="tab">Context</label>
+                <label for="px-tab-tools" class="px-tab px-control-label" role="tab">Tools</label>
             </nav>
 
             <div class="px-tab-panels">
-                <div class="px-tab-panel is-active" data-px-panel="exception" role="tabpanel">
-                    <div class="px-panel-toolbar">
-                        <button type="button" class="px-btn px-btn-small px-btn-primary" data-action="jump-origin">Jump to your code</button>
-                        <button type="button" class="px-btn px-btn-small px-btn-ghost" data-action="filter-pincore">Show pincore frames</button>
-                        <button type="button" class="px-btn px-btn-small px-btn-ghost" data-action="filter-vendor">Show vendor frames</button>
-                        <button type="button" class="px-btn px-btn-small" data-toggle-traces="expand">Expand all</button>
-                        <button type="button" class="px-btn px-btn-small px-btn-ghost" data-toggle-traces="collapse">Collapse all</button>
-                    </div>
+                <?php if (!empty($networkPreview)) { ?>
+                <div class="px-trace-stage" data-px-trace-stage>
                     <div class="px-trace-wrap">
-                        <?php
-                        foreach ($exceptionAsArray as $i => $e) {
-                            echo $this->include('views/traces.html.php', [
-                                'exception' => $e,
-                                'index' => $i + 1,
-                                'expand' => in_array($i, $exceptionWithUserCode, true) || ([] === $exceptionWithUserCode && 0 === $i),
-                                'portalError' => $portalError,
-                                'projectRoot' => $projectRootArg,
-                            ]);
-                        }
-                        ?>
+                        <?= $traceWrapHtml; ?>
                     </div>
                 </div>
-
-                <div class="px-tab-panel" data-px-panel="stack" role="tabpanel" hidden>
-                    <div class="px-panel-toolbar">
-                        <button type="button" class="px-btn px-btn-small" data-copy="trace">Copy stack trace</button>
+                <?php } else { ?>
+                <div class="px-tab-panel" data-px-panel="exception" role="tabpanel">
+                    <div class="px-panel-toolbar px-panel-toolbar--scroll px-full-only">
+                        <a class="px-btn px-btn-small px-btn-primary" href="#px-trace-origin">Jump to your code</a>
+                        <label for="px-filter-pincore" class="px-btn px-btn-small px-btn-ghost px-control-label">Show pincore frames</label>
+                        <label for="px-filter-vendor" class="px-btn px-btn-small px-btn-ghost px-control-label">Show vendor frames</label>
+                        <label for="px-expand-all" class="px-btn px-btn-small px-control-label">Expand all</label>
                     </div>
-                    <div class="px-stack-wrap">
+                    <div class="px-trace-wrap">
+                        <?= $traceWrapHtml; ?>
+                    </div>
+                </div>
+                <?php } ?>
+
+                <div class="px-tab-panel" data-px-panel="stack" role="tabpanel">
+                    <p class="px-panel-hint">Select the text below to copy the stack trace.</p>
+                    <div class="px-stack-wrap" id="px-copy-trace">
                         <?php
                         foreach ($exceptionAsArray as $i => $e) {
                             echo $this->include('views/traces_text.html.php', [
@@ -249,7 +289,7 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
                 </div>
 
                 <?php if ($logger) { ?>
-                <div class="px-tab-panel" data-px-panel="logs" role="tabpanel" hidden>
+                <div class="px-tab-panel" data-px-panel="logs" role="tabpanel">
                     <?php if ($logger->getLogs()) { ?>
                         <?= $this->include('views/logs.html.php', ['logs' => $logger->getLogs()]); ?>
                     <?php } else { ?>
@@ -258,8 +298,24 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
                 </div>
                 <?php } ?>
 
-                <div class="px-tab-panel" data-px-panel="context" role="tabpanel" hidden>
-                    <?php if (!empty($pinoox['route'])) { ?>
+                <div class="px-tab-panel" data-px-panel="context" role="tabpanel">
+                    <?php if (!empty($networkPreview)) { ?>
+                    <?= $this->include('views/partials/exception_extra_context.html.php', [
+                        'pinoox' => $pinoox,
+                        'hints' => $hints,
+                    ]); ?>
+                    <?php } ?>
+
+                    <?php if ($currentContent) { ?>
+                    <details class="px-disclosure px-disclosure-response" open>
+                        <summary><span>Response body</span><span class="px-disclosure-meta">output</span></summary>
+                        <div class="px-disclosure-body">
+                            <pre class="px-code-block px-output-buffer"><?= htmlspecialchars(strip_tags((string) $currentContent), ENT_QUOTES); ?></pre>
+                        </div>
+                    </details>
+                    <?php } ?>
+
+                    <?php if (!empty($pinoox['route']) && empty($networkPreview)) { ?>
                     <details class="px-disclosure" open>
                         <summary><span>Matched route</span></summary>
                         <div class="px-disclosure-body">
@@ -342,28 +398,53 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
                     </details>
                 </div>
 
-                <div class="px-tab-panel" data-px-panel="tools" role="tabpanel" hidden>
-                    <div class="px-tools-grid">
-                        <button type="button" class="px-tool-card" data-copy="url">
-                            <strong>Copy request URL</strong>
-                            <span>Paste into browser or API client</span>
-                        </button>
-                        <button type="button" class="px-tool-card" data-copy="message">
-                            <strong>Copy error message</strong>
-                            <span>Share in issue tracker or chat</span>
-                        </button>
-                        <button type="button" class="px-tool-card" data-copy="trace">
-                            <strong>Copy full stack trace</strong>
-                            <span>Plain text for debugging</span>
-                        </button>
-                        <button type="button" class="px-tool-card" data-copy="curl">
-                            <strong>Copy as cURL</strong>
-                            <span>Replay this request in terminal</span>
-                        </button>
-                        <button type="button" class="px-tool-card" data-action="filter-vendor">
-                            <strong>Toggle vendor frames</strong>
-                            <span>Hide or show /vendor/ stack frames</span>
-                        </button>
+                <div class="px-tab-panel" data-px-panel="tools" role="tabpanel">
+                    <p class="px-panel-hint px-preview-only">Select text in each box, then Ctrl+C to copy.</p>
+                    <p class="px-panel-hint px-full-only">All fields are selectable — use Ctrl+A inside each box to copy.</p>
+
+                    <details class="px-disclosure" open>
+                        <summary><span>Error message</span></summary>
+                        <div class="px-disclosure-body">
+                            <textarea readonly class="px-copy-field" id="px-copy-message" rows="4"><?= htmlspecialchars($plainMessageLine, ENT_QUOTES); ?></textarea>
+                        </div>
+                    </details>
+
+                    <details class="px-disclosure" open>
+                        <summary><span>Stack trace</span></summary>
+                        <div class="px-disclosure-body">
+                            <textarea readonly class="px-copy-field" rows="12"><?= htmlspecialchars($plainStackTrace, ENT_QUOTES); ?></textarea>
+                        </div>
+                    </details>
+
+                    <details class="px-disclosure" open>
+                        <summary><span>Request URL</span></summary>
+                        <div class="px-disclosure-body">
+                            <textarea readonly class="px-copy-field" id="px-copy-url" rows="2"><?= htmlspecialchars((string) ($pinoox['request']['url'] ?? ''), ENT_QUOTES); ?></textarea>
+                        </div>
+                    </details>
+
+                    <?php if (!empty($pinoox['request']['curl'])) { ?>
+                    <details class="px-disclosure" open>
+                        <summary><span>Replay with cURL</span></summary>
+                        <div class="px-disclosure-body">
+                            <textarea readonly class="px-copy-field" id="px-copy-curl" rows="6"><?= htmlspecialchars((string) $pinoox['request']['curl'], ENT_QUOTES); ?></textarea>
+                        </div>
+                    </details>
+                    <?php } ?>
+
+                    <div class="px-tools-grid px-full-only">
+                        <label for="px-filter-pincore" class="px-tool-card px-control-label">
+                            <strong>Show pincore frames</strong>
+                            <span>Reveal framework / system stack frames</span>
+                        </label>
+                        <label for="px-filter-vendor" class="px-tool-card px-control-label">
+                            <strong>Show vendor frames</strong>
+                            <span>Reveal Composer / vendor stack frames</span>
+                        </label>
+                        <label for="px-expand-all" class="px-tool-card px-control-label">
+                            <strong>Expand all frames</strong>
+                            <span>Show every source snippet at once</span>
+                        </label>
                         <a class="px-tool-card" href="<?= htmlspecialchars((string) ($pinoox['docs_url'] ?? 'https://www.pinoox.com/docs'), ENT_QUOTES); ?>" target="_blank" rel="noopener">
                             <strong>Open Pinoox Docs</strong>
                             <span>Troubleshooting guides</span>
@@ -395,3 +476,4 @@ $thrownInSystem = TraceFrameClassifier::isSystemPath($primaryFile, $projectRootA
         </section>
     </div>
 </main>
+

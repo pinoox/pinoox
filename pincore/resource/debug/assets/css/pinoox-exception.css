@@ -1,5 +1,3 @@
-/* Pinoox Exception — overrides Symfony profiler styles for a cleaner debug UI */
-
 .pinoox-exception-page {
     --px-bg: #0b1220;
     --px-panel: #121a2b;
@@ -95,6 +93,10 @@
 .px-container {
     width: min(1180px, calc(100% - 32px));
     margin: 0 auto;
+}
+
+.px-container--wide {
+    width: min(1180px, calc(100% - 16px));
 }
 
 /* Hide legacy Symfony hero — we use px-hero instead */
@@ -357,6 +359,87 @@
     display: block;
     margin-top: 6px;
     font-size: 13px;
+}
+
+.px-meta-bar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin: 14px 0 0;
+    padding: 10px 12px;
+    background: var(--px-panel-2);
+    border: 1px solid var(--px-border);
+    border-radius: 10px;
+}
+
+.px-meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    margin: 0;
+}
+
+.px-meta-item dt {
+    margin: 0;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--px-muted);
+    line-height: 1.2;
+}
+
+.px-meta-item dd {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--px-text);
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.px-meta-item dd.px-meta-mono {
+    font-family: var(--px-font-mono);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+@media (min-width: 769px) {
+    .px-meta-bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0;
+        padding: 8px 14px;
+    }
+
+    .px-meta-item {
+        flex-direction: row;
+        align-items: baseline;
+        gap: 6px;
+        padding: 4px 14px;
+        border-inline-end: 1px solid var(--px-border);
+    }
+
+    .px-meta-item:first-child {
+        padding-inline-start: 0;
+    }
+
+    .px-meta-item:last-child {
+        border-inline-end: none;
+        padding-inline-end: 0;
+    }
+
+    .px-meta-item dt::after {
+        content: ':';
+    }
+}
+
+@media (max-width: 480px) {
+    .px-meta-bar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
 }
 
 .px-portal-context {
@@ -724,6 +807,14 @@
 
 .px-tab-panels {
     padding: 14px;
+    min-height: 0;
+}
+
+.px-code-block,
+.px-output-buffer {
+    max-width: 100%;
+    white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .px-tab-panel[hidden] {
@@ -734,9 +825,34 @@
     display: flex;
     gap: 8px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
-.px-trace-wrap .tab > .tab-title,
+.px-panel-toolbar--scroll {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    padding-bottom: 4px;
+    margin-right: -4px;
+    margin-left: -4px;
+    padding-left: 4px;
+    padding-right: 4px;
+}
+
+.px-panel-toolbar--scroll .px-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.pinoox-exception-page .sf-toggle-content.sf-toggle-hidden {
+    display: none !important;
+}
+
+.pinoox-exception-page .sf-toggle-content.sf-toggle-visible {
+    display: block !important;
+}
 .px-trace-wrap.sf-tabs > .tab:not(.active) .tab-content {
     display: none;
 }
@@ -1110,6 +1226,252 @@
     .px-kv-grid dt {
         margin-top: 8px;
     }
+
+    .px-route-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .px-route-grid dt {
+        margin-top: 6px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pinoox-exception-page {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .px-container,
+    .px-container--wide {
+        width: calc(100% - 16px);
+    }
+
+    .px-topbar {
+        position: relative;
+    }
+
+    .px-topbar-inner {
+        align-items: center;
+        padding: 10px 0;
+        min-height: 0;
+        gap: 10px;
+    }
+
+    .px-brand-text small {
+        display: none;
+    }
+
+    .px-brand-text strong {
+        font-size: 15px;
+    }
+
+    .px-logo,
+    .px-logo-fallback {
+        width: 34px;
+        height: 34px;
+    }
+
+    .px-topbar-actions {
+        width: auto;
+        flex: 1 1 auto;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px;
+        padding-bottom: 2px;
+    }
+
+    .px-topbar-actions::-webkit-scrollbar {
+        display: none;
+    }
+
+    .px-topbar-actions .px-btn[data-copy] {
+        display: none;
+    }
+
+    .px-topbar-actions .px-btn {
+        flex: 0 0 auto;
+        min-height: 40px;
+        padding: 8px 10px;
+        font-size: 12px;
+    }
+
+    .px-main {
+        padding: 12px 0 24px;
+    }
+
+    .px-hero {
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .px-hero-message {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+
+    .px-hero-location,
+    .px-hero-origin {
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .px-hero-meta[open] .px-hero-meta-summary::after {
+        transform: rotate(-90deg);
+    }
+
+    .px-hero-meta-summary {
+        list-style: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 0 0 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px dashed var(--px-border);
+        color: var(--px-muted);
+        font-size: 12px;
+        font-weight: 600;
+        user-select: none;
+    }
+
+    .px-hero-meta-summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .px-hero-meta-summary::after {
+        content: '›';
+        transform: rotate(90deg);
+        color: var(--px-muted);
+    }
+
+    .px-quick-stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .px-stat {
+        padding: 8px 10px;
+    }
+
+    .px-stat span {
+        font-size: 10px;
+    }
+
+    .px-stat strong {
+        font-size: 12px;
+    }
+
+    .px-workspace {
+        display: flex;
+        flex-direction: column;
+        min-height: min(72dvh, 720px);
+    }
+
+    .px-tabs {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        background: var(--px-panel);
+        padding-top: 8px;
+        margin: 0;
+        flex-shrink: 0;
+    }
+
+    .px-tab {
+        min-height: 42px;
+        padding: 10px 12px;
+        touch-action: manipulation;
+    }
+
+    .px-tab-panels {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+        padding: 12px;
+    }
+
+    .px-panel-toolbar--scroll {
+        flex-wrap: wrap;
+        overflow-x: visible;
+        overflow-y: visible;
+    }
+
+    .px-panel-toolbar--scroll .px-btn {
+        min-height: 40px;
+        touch-action: manipulation;
+    }
+
+    .px-topbar-actions .px-btn-primary {
+        padding-inline: 10px;
+        font-size: 0;
+    }
+
+    .px-topbar-actions .px-btn-primary::after {
+        content: 'Docs';
+        font-size: 12px;
+    }
+
+    .px-disclosure-response .px-output-buffer {
+        max-height: min(40dvh, 320px);
+        overflow: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .px-trace-wrap .trace-head .trace-class {
+        font-size: 14px;
+    }
+
+    .px-trace-wrap .trace-line-header {
+        padding-left: 6px;
+    }
+
+    .px-trace-line-body {
+        flex-wrap: wrap;
+    }
+
+    .px-toast {
+        left: 12px;
+        right: 12px;
+        bottom: 12px;
+        text-align: center;
+    }
+
+    .px-portal-context,
+    .px-route-context {
+        padding: 14px;
+    }
+}
+
+@media (min-width: 769px) {
+    .px-hero-meta {
+        display: block;
+    }
+
+    .px-hero-meta-summary {
+        display: none;
+    }
+
+    .px-hero-meta > .px-quick-stats {
+        display: grid;
+    }
+}
+
+@media (max-width: 768px) {
+    .px-hero-meta > .px-quick-stats {
+        margin-top: 4px;
+    }
+
+    .px-disclosure-response {
+        border-color: color-mix(in srgb, var(--px-danger) 30%, var(--px-border));
+    }
 }
 
 @media (max-width: 640px) {
@@ -1117,11 +1479,40 @@
         align-items: flex-start;
     }
 
-    .px-topbar-actions {
-        width: 100%;
+    .px-brand-text strong {
+        font-size: 14px;
     }
 
     .px-btn {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
+    }
+
+    .px-tools-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-height: 640px) and (max-width: 900px) {
+    .px-topbar-inner {
+        padding: 8px 0;
+    }
+
+    .px-hero {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+
+    .px-hero-message {
+        font-size: 16px;
+        margin-bottom: 8px;
+    }
+
+    .px-hero-location,
+    .px-hero-origin {
+        margin-bottom: 8px;
+    }
+
+    .px-workspace {
+        min-height: 50dvh;
     }
 }

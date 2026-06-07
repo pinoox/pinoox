@@ -1,0 +1,107 @@
+/* Network preview tweaks — full Exception workspace stays visible (CSS-only UI) */
+
+body.px-network-preview,
+body.px-network-preview.pinoox-exception-page {
+    overflow: auto !important;
+    height: auto !important;
+    min-height: 100%;
+}
+
+body.px-network-preview .px-topbar {
+    position: relative !important;
+}
+
+body.px-network-preview .px-workspace {
+    overflow: visible !important;
+    min-height: 0 !important;
+}
+
+body.px-network-preview .px-preview-banner {
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border: 1px solid var(--px-border);
+    border-radius: var(--px-radius);
+    background: var(--px-accent-soft);
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+body.px-network-preview .px-preview-banner strong {
+    color: var(--px-text);
+}
+
+body.px-network-preview .px-preview-banner p {
+    margin: 0;
+}
+
+body.px-network-preview .px-full-only {
+    display: none !important;
+}
+
+body.px-network-preview .px-preview-only {
+    display: block;
+}
+
+body:not(.px-network-preview) .px-preview-only {
+    display: none;
+}
+
+body.px-network-preview .px-brand-text small {
+    display: none;
+}
+
+.px-meta-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    margin: 10px 0 0;
+    padding: 8px 12px;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--px-muted);
+    background: var(--px-panel-2);
+    border: 1px solid var(--px-border);
+    border-radius: 8px;
+}
+
+.px-meta-compact span {
+    white-space: nowrap;
+}
+
+.px-meta-compact em {
+    font-style: normal;
+    color: var(--px-text);
+    font-weight: 600;
+    margin-inline-end: 4px;
+}
+
+/* Network preview — frame tabs instead of filter checkboxes */
+body.px-network-preview .px-trace-stage .px-trace-frame {
+    display: none;
+}
+
+body.px-network-preview.pinoox-exception-page:has(#px-tab-exception:checked) .px-trace-stage .px-trace-frame:not(.trace-from-pincore):not(.trace-from-vendor) {
+    display: block;
+}
+
+body.px-network-preview.pinoox-exception-page:has(#px-tab-pincore:checked) .px-trace-stage .trace-from-pincore {
+    display: block;
+}
+
+body.px-network-preview.pinoox-exception-page:has(#px-tab-vendor:checked) .px-trace-stage .trace-from-vendor {
+    display: block;
+}
+
+body.px-network-preview.pinoox-exception-page:has(#px-tab-pincore:checked) .px-trace-stage .trace-code,
+body.px-network-preview.pinoox-exception-page:has(#px-tab-vendor:checked) .px-trace-stage .trace-code {
+    display: block !important;
+}
+
+body.px-network-preview .px-extra-context {
+    margin-bottom: 16px;
+}
+
+body.px-network-preview .px-extra-context .px-portal-context,
+body.px-network-preview .px-extra-context .px-route-context {
+    margin-bottom: 14px;
+}

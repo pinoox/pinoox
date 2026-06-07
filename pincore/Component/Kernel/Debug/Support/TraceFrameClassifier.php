@@ -174,3 +174,4 @@ class TraceFrameClassifier
         return str_replace('\\', '/', $path);
     }
 }
+

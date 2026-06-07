@@ -40,6 +40,7 @@ namespace Symfony\Component\ErrorHandler\Internal;
  */
 class TentativeTypes
 {
+
     public const RETURN_TYPES = [
 
 EOPHP;
@@ -82,3 +83,4 @@ echo <<<EOPHP
 }
 
 EOPHP;
+
