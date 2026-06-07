@@ -2,19 +2,24 @@
 
 namespace Tests;
 
-use PHPUnit\Framework\TestCase as BaseTestCase;
+use Pinoox\Component\Test\AppTestKit;
 
-abstract class TestCase extends BaseTestCase
+abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
     protected function setUp(): void
     {
         parent::setUp();
-        // Add any setup code here
+        AppTestKit::boot();
     }
 
     protected function tearDown(): void
     {
+        try {
+            AppTestKit::cleanupTransientArtifacts();
+        } catch (\Throwable) {
+            // Keep teardown resilient so filesystem cleanup still runs on the next test.
+        }
+
         parent::tearDown();
-        // Add any cleanup code here
     }
-} 
+}

@@ -28,6 +28,13 @@ it('resolves configurable project paths from env values', function () {
         ->and(SystemConfig::path('wizard_tmp'))->toBe($basePath . '/tests/Fixtures/system_config/custom_pinker/tmp/wizard');
 });
 
+it('uses top-level patch paths outside the database folders', function () {
+    $basePath = str_replace('\\', '/', dirname(__DIR__, 2));
+
+    expect(SystemConfig::path('system_patches'))->toBe($basePath . '/system/patches')
+        ->and(SystemConfig::rawPath('app_patches'))->toBe('patches');
+});
+
 it('lets the app engine discover apps from a custom env path', function () {
     $appsPath = systemConfigTestRoot() . '/custom_apps';
     $appPath = $appsPath . '/com_test_custom';

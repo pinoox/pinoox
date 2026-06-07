@@ -61,7 +61,7 @@ function componentCatalogReadSymbol(string $file): array
             continue;
         }
 
-        $kind = componentCatalogTokenKind($token);
+        $kind = componentCatalogTokenKind($token, $tokens, $index);
         if ($kind !== null) {
             return [$namespace . '\\' . componentCatalogReadName($tokens, $index), $kind];
         }
@@ -70,10 +70,25 @@ function componentCatalogReadSymbol(string $file): array
     return [null, null];
 }
 
-function componentCatalogTokenKind(mixed $token): ?string
+function componentCatalogTokenKind(mixed $token, array $tokens = [], int $index = 0): ?string
 {
     if (!is_array($token)) {
         return null;
+    }
+
+    if ($token[0] === T_CLASS) {
+        for ($i = $index - 1; $i >= 0; $i--) {
+            $previous = $tokens[$i];
+            if (is_array($previous) && in_array($previous[0], [T_WHITESPACE, T_COMMENT, T_DOC_COMMENT], true)) {
+                continue;
+            }
+
+            if ($previous === ':' || (is_array($previous) && $previous[0] === T_DOUBLE_COLON)) {
+                return null;
+            }
+
+            break;
+        }
     }
 
     return match ($token[0]) {
@@ -121,6 +136,12 @@ function componentCatalogClassLoader(): ClassLoader
         if (is_array($autoloadFunction) && $autoloadFunction[0] instanceof ClassLoader) {
             return $autoloadFunction[0];
         }
+    }
+
+    $loader = require dirname(__DIR__, 2) . '/vendor/autoload.php';
+
+    if ($loader instanceof ClassLoader) {
+        return $loader;
     }
 
     throw new RuntimeException('Composer class loader was not registered.');
