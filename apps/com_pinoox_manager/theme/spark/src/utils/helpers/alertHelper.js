@@ -1,27 +1,26 @@
 import {toast} from "@/utils/global.js";
+import {isApiEnvelope, readApiErrorMessage, readApiMessage} from "@utils/apiEnvelope.js";
 
 export function showSuccessAlert(response) {
-    if (
-        !response ||
-        !response.data.message ||
-        typeof response.data.message !== 'string' || // Check if message is not a string
-        response.config.alert === false
-    ) return;
+    if (!response || response.config?.alert === false) return;
+
+    const title = readApiMessage(response.data);
+    if (!title || typeof title !== 'string') return;
 
     toast({
-        title: response.data.message,
+        title,
         type: 'success',
     });
 }
 
 export function showErrorAlert(error) {
-    if (!error.response || error.config.alert === false) return;
+    if (!error.response || error.config?.alert === false) return;
 
-    let res = error.response;
-    let type = (res.status >= 300 && res.status <= 400) ? 'warn' : 'error';
+    const res = error.response;
+    const type = (res.status >= 300 && res.status <= 400) ? 'warn' : 'error';
 
     toast({
-        title: error.response.data.error,
+        title: readApiErrorMessage(error),
         type: type,
     });
 }

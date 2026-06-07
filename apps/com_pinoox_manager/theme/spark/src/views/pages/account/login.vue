@@ -41,6 +41,7 @@ import {nextTick, ref} from "vue";
 import {useRouter} from "vue-router";
 import {authAPI} from "@api/auth.js";
 import {useAuthStore} from "@/stores/modules/auth.js";
+import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 
 const authStore = useAuthStore();
 const router = useRouter()
@@ -53,7 +54,7 @@ const params = ref({
 const handleLogin = () => {
     isLoading.value = true;
     authAPI.login(params.value).then((response) => {
-        let login_key = response.data.result;
+        let login_key = unwrapResponse(response);
         authStore.login(login_key);
     }).then(async () => {
         await authStore.canUserAccess(true);

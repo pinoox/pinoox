@@ -59,7 +59,7 @@ class MarketController extends Api
         $pinVer = config('~pinoox');
         return [
             'token' => $auth['token'] ?? null,
-            'remote_url' => Url::site(),
+            'remote_url' => Url::origin(),
             'user_agent' => ($_SERVER['HTTP_USER_AGENT'] ?? 'Pinoox') . ';Pinoox/' . ($pinVer['version_name'] ?? '') . ' Manager',
         ];
     }

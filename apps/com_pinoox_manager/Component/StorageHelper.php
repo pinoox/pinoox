@@ -245,12 +245,6 @@ class StorageHelper
         return $candidate;
     }
 
-    /** @deprecated Use resolveDirectoryPath() */
-    public static function resolvePath(string $path): ?string
-    {
-        return self::resolveDirectoryPath($path);
-    }
-
     /**
      * @return array{bytes: int, complete: bool}
      */

@@ -25,7 +25,7 @@ class AppHelper
 {
     public static function getAll(null|bool $sysApp = null,bool $isCheckHidden = false,bool $isCheckRouter = false)
     {
-        $icon_default = Url::path('resources/default.png');
+        $icon_default = Url::asset('resources/default.png');
         $apps = AppEngine::all();
         $result = [];
         /**
@@ -58,7 +58,7 @@ class AppHelper
                 }
             }
 
-            $icon = Url::path(Path::get($appConfig->get('icon'), $app->package()));
+            $icon = Url::reference($appConfig->get('icon'), $app->package());
             $result[$app->package()] = [
                 'package_name' => $app->package(),
                 'hidden' => $isHidden,
@@ -82,7 +82,7 @@ class AppHelper
 
     public static function getOne($packageName)
     {
-        $icon_default = Url::path('resources/default.png');
+        $icon_default = Url::asset('resources/default.png');
         $result = null;
         if (AppEngine::exists($packageName)) {
             $app = AppEngine::config($packageName);
@@ -99,7 +99,7 @@ class AppHelper
                 'version' => $app->get('version-name'),
                 'version_code' => $app->get('version-code'),
                 'developer' => $app->get('developer'),
-                'icon' => Url::check(Url::path($app->get('icon'), $packageName), $icon_default),
+                'icon' => Url::check(Url::asset($app->get('icon'), $packageName), $icon_default),
                 'build' => $app->get('build')
             ];
         }

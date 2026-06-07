@@ -15,7 +15,7 @@ namespace App\com_pinoox_manager\Controller;
 use App\com_pinoox_manager\Component\AppHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
-use Pinoox\Component\User;
+use Pinoox\Portal\Auth;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppProvider;
@@ -25,13 +25,13 @@ class AppViewController
 {
     public function run(Request $request, string $packageName, string $subPath = '')
     {
-        if (!$this->authenticate($request))
+        if (!Auth::check())
             return redirect(url('login'));
 
         if (!$this->canPreview($packageName))
             return redirect(url('login'));
 
-        User::reset();
+        Auth::reset();
 
         $layerPath = App::pathRoute() .'/app/' . $packageName;
 
@@ -46,7 +46,7 @@ class AppViewController
 
     private function authenticate(): bool
     {
-        return User::isLoggedIn();
+        return Auth::check();
     }
 
     private function canPreview(string $packageName): bool

@@ -1,4 +1,5 @@
 import axios from "axios";
+import {readApiErrorMessage} from "@utils/apiEnvelope.js";
 
 const baseUrl = import.meta.env.MODE === 'production' ? PINOOX.URL.API : import.meta.env.VITE_API_PATH;
 
@@ -73,8 +74,8 @@ http.interceptors.response.use((response) => {
 
     if (!error.config.error)
         return Promise.reject(error);
-    else
-        return Promise.reject(error.response.data.error);
+
+    return Promise.reject(readApiErrorMessage(error));
 });
 
 http.token = getTokenAuth();

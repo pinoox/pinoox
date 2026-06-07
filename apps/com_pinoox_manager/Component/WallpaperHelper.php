@@ -120,7 +120,7 @@ class WallpaperHelper
 
     public static function url(string $fileName): string
     {
-        return Url::get('api/v1/wallpapers/' . rawurlencode(basename($fileName)));
+        return Url::to('api/v1/wallpapers/' . rawurlencode(basename($fileName)));
     }
 
     public static function mimeType(string $filePath): string

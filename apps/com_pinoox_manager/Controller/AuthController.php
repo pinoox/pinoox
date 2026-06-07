@@ -13,60 +13,79 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\User;
-use Pinoox\System\Model\UserModel;
-use Pinoox\Portal\Hash;
+use Pinoox\Portal\Auth;
 
 class AuthController extends Api
 {
     public function login(Request $request)
     {
-        if (User::isLoggedIn())
+        Auth::boot();
+
+        if (!Auth::guest()) {
             return $this->error(t('user.already_logged_in'), 401);
+        }
 
         $validation = $request->validation([
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        if ($validation->fails())
+        if ($validation->fails()) {
             return $this->error($validation->errors()->first());
+        }
 
         $input = $validation->validate();
+        $remember = (bool) ($input['remember'] ?? false);
 
-        $user = UserModel::where('username', $input['username'])->first();
-        $user?->makeVisible('password');
+        $result = Auth::attemptResult([
+            'username' => $input['username'],
+            'password' => $input['password'],
+        ], $remember);
 
-        if (!$user || !Hash::check($input['password'], $user->password))
-            return $this->error(t('user.username_or_password_is_wrong'));
+        if (!$result->success) {
+            return $this->error($result->message ?? t('user.username_or_password_is_wrong'));
+        }
 
-        User::type(User::JWT);
-        User::setUserSessionKey('manager_pinoox');
-        User::setToken($user);
-
-        return $this->message(t('user.logged_in_successfully'), User::$login_key);
+        return $this->message(t('user.logged_in_successfully'), $result->token);
     }
 
     public function get()
     {
-        if (User::isLoggedIn())
-            return User::get();
+        if (Auth::check()) {
+            return Auth::get();
+        }
 
         return $this->error(t('user.you_must_login'), 401);
     }
 
     public function logout()
     {
-        User::logout();
+        Auth::logout();
 
         return $this->message('logout');
     }
 
     public function lock()
     {
-        if (User::isLoggedIn())
-            User::append('isLock', true);
+        return $this->message(Auth::lock());
+    }
 
-        return $this->message(UserController::getDataUser());
+    public function unlock(Request $request)
+    {
+        $validation = $request->validation([
+            'password' => 'required',
+        ]);
+
+        if ($validation->fails()) {
+            return $this->error($validation->errors()->first());
+        }
+
+        $result = Auth::unlock($validation->validate()['password']);
+
+        if ($result !== true) {
+            return $this->error(is_string($result) ? $result : t('user.password_is_wrong'));
+        }
+
+        return $this->message(Auth::profile());
     }
 }

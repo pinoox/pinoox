@@ -16,7 +16,6 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\StorageHelper;
 use App\com_pinoox_manager\Component\WidgetHelper;
-use Morilog\Jalali\Jalalian;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\Date;
 
@@ -24,14 +23,14 @@ class WidgetController extends Api
 {
     public function clock()
     {
-        $timezone = 'Asia/Tehran';
-        $isFa = app('lang') === 'fa';
+        $timezone = Date::timezone();
+        $isFa = Date::isJalali() || app('lang') === 'fa';
 
         if ($isFa) {
-            $now = Jalalian::now(new \DateTimeZone($timezone));
+            $now = Date::jalali('now', $timezone);
             $date = $now->format('%A %d %B %Y');
             $moment = $now->format('H:i');
-            $timestamp = $now->toCarbon()->getTimestamp();
+            $timestamp = $now->timestamp();
         } else {
             $now = Date::now($timezone);
             $date = $now->format('l d F Y');

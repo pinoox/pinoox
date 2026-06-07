@@ -21,7 +21,7 @@ use Pinoox\Component\Http\Request;
 use Pinoox\Component\Validation\ValidationException;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
-use Pinoox\Portal\FileUploader;
+use Pinoox\Portal\File;
 use Pinoox\Portal\Wizard\AppWizard;
 
 class AppController extends Api
@@ -91,12 +91,16 @@ class AppController extends Api
             return $this->error($e->first());
         }
 
-        $path = 'uploads/apps/';
+        $result = File::upload('file')
+            ->to('uploads/apps')
+            ->diskOnly()
+            ->save();
 
-        $up = FileUploader::store($path, 'file')
-            ->upload();
+        if (!$result->success || empty($result->path)) {
+            return $this->error('manager.error_happened');
+        }
 
-        $pin = $up->getResult('file');
+        $pin = $result->path;
 
         try {
             $wizard = AppWizard::open($pin);

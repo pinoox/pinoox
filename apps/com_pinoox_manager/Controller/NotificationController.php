@@ -13,8 +13,8 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\NotificationHelper;
-use Pinoox\Component\Date;
 use Pinoox\Component\Http\Request;
+use Pinoox\Portal\Date;
 
 class NotificationController extends Api
 {
@@ -22,7 +22,7 @@ class NotificationController extends Api
     {
         $result = NotificationHelper::getAll();
         $result = array_map(function ($ntf) {
-            $ntf['insert_jDate'] = Date::j('d F Y', $ntf['insert_date']);
+            $ntf['insert_jDate'] = Date::jalali($ntf['insert_date'])->format('d F Y');
             return $ntf;
         }, $result);
 

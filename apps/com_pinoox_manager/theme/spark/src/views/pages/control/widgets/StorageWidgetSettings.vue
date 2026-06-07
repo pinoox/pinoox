@@ -126,7 +126,7 @@
     <template v-else-if="form.mode === 'database'">
       <p class="storageSettings__manual-note">
         حجم مصرف‌شده از مجموع ستون <code dir="ltr">file_size</code> در جدول
-        <code dir="ltr">pincore_file</code> (همه اپ‌ها) محاسبه می‌شود — سریع و بدون اسکن پوشه.
+        <code dir="ltr">pinx_file</code> (همه اپ‌ها) محاسبه می‌شود — سریع و بدون اسکن پوشه.
       </p>
 
       <label class="storageSettings__field">
