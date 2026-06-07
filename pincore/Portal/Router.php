@@ -38,7 +38,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface as ObjectPortal1;
  * @method static Collection collection(string $path = '', \Pinoox\Component\Router\Router|array|callable|null|string $routes = NULL, mixed $controller = NULL, array|string $methods = [], \Closure|array|string $action = '', array $defaults = [], array $filters = [], string $prefixName = '', array $data = [], array $flows = [], array $tags = [])
  * @method static string canonicalizePath(string $path)
  * @method static ObjectPortal3 build($path, $routes)
- * @method static Router action(string $name, \Closure|array|string $action)
+ * @method static \Pinoox\Component\Router\Action\ActionBuilder|null action(string $name, \Closure|array|string|null $handler = NULL)
+ * @method static mixed resolveAction(string $name, ?string $collectionPrefix = NULL)
+ * @method static string|null findRouteByActionReference(string $reference, ?string $collectionPrefix = NULL)
  * @method static Collection currentCollection()
  * @method static \Pinoox\Component\Router\Collection|null getCollection($index = 0)
  * @method static array all()
@@ -118,7 +120,6 @@ class Router extends Portal
 	{
 		return [
 		    'add',
-		    'action'
 		];
 	}
 }

@@ -14,6 +14,7 @@
 namespace Pinoox\Component\Kernel\Listener;
 
 use Pinoox\Component\Helpers\Str;
+use Pinoox\Component\Router\Action\ActionReference;
 use Pinoox\Portal\App\App;
 use Pinoox\Component\Router\Route;
 use Pinoox\Portal\Router;
@@ -62,28 +63,47 @@ class ActionRoutesManageListener implements EventSubscriberInterface
     {
         $action = $controller;
         if (is_string($controller)) {
-
             /**
              * @var Route $route
              */
             $route = $event->getRequest()->attributes->get('_router');
+            $collectionPrefix = $route instanceof Route ? $route->getCollection()->name : '';
 
-            $actionName = null;
-
-            if (Str::firstHas($controller, '&')) {
-                $controller = Str::firstDelete($controller, '&');
-                $prefix = $route->getCollection()->name;
-                $actionName = $prefix . $controller;
-            } else if (Str::firstHas($controller, '@')) {
-                $actionName = Str::firstDelete($controller, '@');
-            }
-
-            if (!empty($actionName) && $controller = App::router()->getAction($actionName)) {
-                $action = $controller;
+            if (ActionReference::isReference($controller)) {
+                $resolved = App::router()->resolveAction($controller, $collectionPrefix);
+                if ($resolved !== false) {
+                    $action = $resolved;
+                    $this->mergeActionFlows($event, $controller, $collectionPrefix);
+                }
             }
         }
 
         return $this->getCollection($event)->buildAction($action);
+    }
+
+    private function mergeActionFlows(RequestEvent $event, string $reference, string $collectionPrefix): void
+    {
+        $resolvedKey = ActionReference::resolveKey(
+            $reference,
+            $collectionPrefix,
+            array_keys(App::router()->actions),
+        );
+
+        if ($resolvedKey === null) {
+            return;
+        }
+
+        $actionFlows = App::router()->actionFlows($resolvedKey);
+        if ($actionFlows === []) {
+            return;
+        }
+
+        $route = $event->getRequest()->attributes->get('_router');
+        if (!$route instanceof Route) {
+            return;
+        }
+
+        $route->flows = array_values(array_unique(array_merge($route->flows, $actionFlows)));
     }
 
     private function getCollection(RequestEvent $event): Collection

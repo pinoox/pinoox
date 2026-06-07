@@ -13,135 +13,140 @@
 namespace Pinoox\Component\Package;
 
 use Exception;
-use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Package\Engine\EngineInterface;
+use Pinoox\Component\Package\Routing\AppRouteMatcher;
+use Pinoox\Component\Package\Routing\Domain;
+use Pinoox\Component\Package\Routing\DomainMatch;
 use Pinoox\Component\Store\Config\ConfigInterface;
-
 
 class AppRouter
 {
+    private ?AppLayer $resolved = null;
 
     public function __construct(
         private ConfigInterface $appRouteConfig,
         private EngineInterface $appEngine,
-        private Request         $request
+        private Request         $request,
     )
     {
     }
 
-    /**
-     * Set default route
-     *
-     * @param $packageName
-     */
-    public function setDefault($packageName)
+    public function setDefault(string $packageName): void
     {
         $this->set('*', $packageName);
     }
 
-    private function parts(?string $index = null): string
-    {
-        $parts = $this->request->getPathInfo();
-
-        if (!is_null($index)) {
-            $partsArr = explode('/', $parts);
-            if ($index == 'first') return reset($partsArr);
-            if ($index == 'last') return end($partsArr);
-
-            return $partsArr[$index] ?? '';
-        }
-        return $parts;
-    }
-
     /**
-     * @param string|null $url
-     * @return AppLayer
+     * Resolve the active app for the current HTTP request.
+     *
+     * Order:
+     * 1. Host mapping from system/config/domain.config.php (explicit hosts only)
+     * 2. Longest path prefix from system/config/app/router.config.php
+     * 3. Default route "/"
+     * 4. Wildcard route "*"
+     * 5. Fallback welcome app
+     *
+     * Any host that is not listed in domain.config.php is treated as the
+     * default domain and follows path routing. Configure `default` for the
+     * canonical public hostname used by CLI/docs.
      */
     public function find(string|null $url = null): AppLayer
     {
-        $apps = $this->get();
-        $packageName = null;
-        $path = null;
- 
-        // set app default
-        if (isset($apps['/'])) {
-            if ($this->stable($apps['/'])) {
-                $packageName = $apps['/'];
-            }
-            unset($apps['/']);
-        }
-        
-        // set app current
-        $url = empty($url) ? $this->parts() : $url;
-        $parts = !empty($url) ? Str::explodeDropping('/', $url) : [];
-        foreach ($parts as $part) {
-            $part = '/' . $part;
-            if (isset($apps[$part])) {
-                $package = $apps[$part];
-                if ($this->stable($package)) {
-                    $path = $part;
-                    $packageName = $package;
-                    break;
-                }
-            }
+        $pathInfo = $url ?? $this->requestPathInfo();
+        $host = $this->host();
+        $routes = $this->routes();
+        $domainContext = $this->domainContext($host);
+
+        $domainMatch = Domain::match($host);
+        if ($domainMatch !== null && $this->stable($domainMatch->package)) {
+            return $this->resolved = $this->layerFromDomain($domainMatch);
         }
 
-        $path = !empty($path) ? $path : '/';
-        $packageName = !empty($packageName) ? $packageName : 'com_pinoox_welcome';
-        return new AppLayer($path, $packageName);
+        $pathMatch = AppRouteMatcher::match($pathInfo, $routes, fn(string $package): bool => $this->stable($package));
+        if ($pathMatch !== null) {
+            return $this->resolved = new AppLayer(
+                $pathMatch['path'],
+                $pathMatch['package'],
+                array_merge($domainContext, [
+                    'matched_by' => Domain::isDefaultHost($host) ? 'default_domain' : 'path',
+                ]),
+            );
+        }
+
+        if (isset($routes['*']) && $this->stable($routes['*'])) {
+            return $this->resolved = new AppLayer('/', $routes['*'], array_merge($domainContext, [
+                'matched_by' => Domain::isDefaultHost($host) ? 'default_domain' : 'wildcard',
+            ]));
+        }
+
+        if (isset($routes['/']) && $this->stable($routes['/'])) {
+            return $this->resolved = new AppLayer('/', $routes['/'], array_merge($domainContext, [
+                'matched_by' => Domain::isDefaultHost($host) ? 'default_domain' : 'default',
+            ]));
+        }
+
+        return $this->resolved = new AppLayer('/', 'com_pinoox_welcome', array_merge($domainContext, [
+            'matched_by' => 'fallback',
+        ]));
     }
 
+    public function resolved(): ?AppLayer
+    {
+        return $this->resolved;
+    }
+
+    public function host(): string
+    {
+        return Domain::normalizeHost($this->request->getHost());
+    }
+
+    public function subdomain(): ?string
+    {
+        return $this->resolved?->subdomain() ?? Domain::match($this->host())?->subdomain;
+    }
+
+    public function domainMatch(): ?DomainMatch
+    {
+        return Domain::match($this->host());
+    }
 
     public function stable(string $packageName): bool
     {
-        $enable = false;
-
-        if ($this->appEngine->exists($packageName)) {
-            try {
-                $enable = (bool)$this->appEngine->config($packageName)->get('enable');
-            } catch (Exception $e) {
-            }
+        if (!$this->appEngine->exists($packageName)) {
+            return false;
         }
 
-        return $enable === true;
+        try {
+            return (bool)$this->appEngine->config($packageName)->get('enable');
+        } catch (Exception) {
+        }
+
+        return false;
     }
 
-    /**
-     * Set route
-     *
-     * @param $url
-     * @param $packageName
-     */
-    public function set($url, $packageName)
+    public function set(string $url, string $packageName): void
     {
+        $url = $url === '*' ? '*' : AppRouteMatcher::normalize($url);
+
         $this->appRouteConfig
             ->set($url, $packageName)
             ->save();
     }
 
-    /**
-     * Delete route by URL
-     *
-     * @param $url
-     */
-    public function delete(string $url)
+    public function delete(string $url): void
     {
+        $url = $url === '*' ? '*' : AppRouteMatcher::normalize($url);
+
         $this->appRouteConfig
             ->remove($url)
             ->save();
     }
 
-    /**
-     * Delete route by Package Name
-     *
-     * @param $packageName
-     */
-    public function deletePackage(string $packageName)
+    public function deletePackage(string $packageName): void
     {
-        $routes = $this->get();
-        $keys = array_keys($routes, $packageName);
-        foreach ($keys as $key) {
+        $routes = $this->routes();
+        foreach (array_keys($routes, $packageName, true) as $key) {
             unset($routes[$key]);
         }
 
@@ -150,89 +155,103 @@ class AppRouter
             ->save();
     }
 
-    /**
-     * Get routes
-     *
-     * @param string|null $value
-     * @param null $default
-     * @return mixed
-     */
-    public function get(?string $value = null,$default = null): mixed
+    public function get(?string $value = null, mixed $default = null): mixed
     {
-        return $this->appRouteConfig
-            ->get($value,$default);
+        return $this->appRouteConfig->get($value, $default);
     }
 
-    /**
-     * set data
-     *
-     * @param mixed|null $data
-     * @return void
-     */
-    public function setData(mixed $data = null)
+    public function setData(mixed $data = null): void
     {
+        $routes = is_array($data) ? AppRouteMatcher::normalizeRoutes($data) : [];
+
         $this->appRouteConfig
-            ->setData($data)
+            ->setData($routes)
             ->save();
     }
 
     /**
-     * Get routes by Package Name
-     *
-     * @param string $packageName
-     * @return array|null
+     * @return array<string, string>
      */
-    public function getByPackage(string $packageName): ?array
+    public function routes(): array
     {
         $routes = $this->get();
-        return array_filter($routes, function ($route) use ($packageName) {
-            return $route === $packageName;
-        });
+
+        return is_array($routes) ? AppRouteMatcher::normalizeRoutes($routes) : [];
     }
 
     /**
-     * Exists a route by URL
-     *
-     * @param string $url
-     * @return bool
+     * @return array<string, string>
      */
+    public function getByPackage(string $packageName): array
+    {
+        return array_filter(
+            $this->routes(),
+            static fn(string $routePackage): bool => $routePackage === $packageName,
+        );
+    }
+
     public function exists(string $url): bool
     {
+        $url = $url === '*' ? '*' : AppRouteMatcher::normalize($url);
+
         return !empty($this->get($url));
     }
 
-    /**
-     * Exists a route by Package Name
-     *
-     * @param string $packageName
-     * @return bool
-     */
     public function existByPackage(string $packageName): bool
     {
-        return !empty($this->getByPackage($packageName));
+        return $this->getByPackage($packageName) !== [];
     }
 
-    /**
-     * @return Request
-     */
     public function getRequest(): Request
     {
         return $this->request;
     }
 
-    /**
-     * @param Request $request
-     */
     public function setRequest(Request $request): void
     {
         $this->request = $request;
+        $this->resolved = null;
     }
 
-    /**
-     * @return ConfigInterface
-     */
     public function config(): ConfigInterface
     {
         return $this->appRouteConfig;
+    }
+
+    private function requestPathInfo(): string
+    {
+        return trim($this->request->getPathInfo(), '/');
+    }
+
+    private function layerFromDomain(DomainMatch $match): AppLayer
+    {
+        return new AppLayer(
+            $match->path,
+            $match->package,
+            array_merge($this->domainContext($match->host), [
+                'matched_by' => 'domain',
+                'subdomain' => $match->subdomain,
+                'domain_pattern' => $match->pattern,
+            ]),
+        );
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function domainContext(string $host): array
+    {
+        $context = [
+            'host' => $host,
+            'is_default_domain' => Domain::isDefaultHost($host),
+        ];
+
+        $canonical = Domain::defaultHost();
+        if ($canonical !== null) {
+            $context['canonical_default_host'] = $canonical;
+            $context['is_canonical_default'] = Domain::isCanonicalDefaultHost($host);
+        }
+
+        return $context;
     }
 }

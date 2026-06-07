@@ -16,6 +16,7 @@ class RouteBuilder
     private array $data = [];
     private array $flows = [];
     private array $tags = [];
+    private bool $registered = false;
 
     public function __construct(private readonly Router $router)
     {
@@ -110,6 +111,14 @@ class RouteBuilder
         return $this;
     }
 
+    public function permission(string $permission): self
+    {
+        $this->data['permission'] = $permission;
+        $this->flows = RouteManifest::withPermissionFlow($this->flows, $permission);
+
+        return $this;
+    }
+
     public function flows(array $flows): self
     {
         $this->flows = $flows;
@@ -117,14 +126,14 @@ class RouteBuilder
         return $this;
     }
 
+    public function themeContext(string $context): self
+    {
+        return $this->flow('theme.' . ltrim($context, '.'));
+    }
+
     public function flow(array|string $flow): self
     {
         return $this->appendFlows($flow);
-    }
-
-    public function middleware(array|string $middleware): self
-    {
-        return $this->appendFlows($middleware);
     }
 
     private function appendFlows(array|string $flows): self
@@ -150,6 +159,12 @@ class RouteBuilder
 
     public function register(): Router
     {
+        if ($this->registered) {
+            return $this->router;
+        }
+
+        $this->registered = true;
+
         $this->router->add(
             $this->path,
             $this->action,
@@ -164,5 +179,12 @@ class RouteBuilder
         );
 
         return $this->router;
+    }
+
+    public function __destruct()
+    {
+        if (!$this->registered) {
+            $this->register();
+        }
     }
 }
