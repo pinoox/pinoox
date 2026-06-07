@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Controller;
-
 
 use App\com_pinoox_manager\Component\AppHelper;
 use Pinoox\Component\Helpers\Str;
@@ -39,7 +38,7 @@ class RouterController extends Api
 
     public function remove(Request $request)
     {
-        $path = $request->json->get('path', '');
+        $path = $request->payload('path', '');
 
         if ($path == '/' || empty($path))
             return $this->error('manager.request_not_valid');
@@ -50,7 +49,7 @@ class RouterController extends Api
 
     public function save(Request $request)
     {
-        $data = $request->json('path,packageName,oldPath');
+        $data = $request->payloadMany('path,packageName,oldPath');
         $isEdit = !empty($data['oldPath']);
 
         if (empty($data['path'])) {
@@ -75,7 +74,6 @@ class RouterController extends Api
 
         if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
             return $this->error('setting/router.this_url_exists_before');
-
 
         if ($isEdit) {
             AppRouter::delete($data['oldPath']);

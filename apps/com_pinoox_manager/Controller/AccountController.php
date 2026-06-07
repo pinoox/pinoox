@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -79,3 +80,4 @@ class AccountController extends Api
         return $this->message('logout');
     }
 }
+

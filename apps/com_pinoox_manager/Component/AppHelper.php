@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -31,6 +32,7 @@ class AppHelper
         /**
          * @var AppManager $app
          */
+
         foreach ($apps as $app) {
             if (!$app->exists())
                 continue;
@@ -107,3 +109,4 @@ class AppHelper
         return $result;
     }
 }
+

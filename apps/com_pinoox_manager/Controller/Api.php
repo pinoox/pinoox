@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -14,8 +15,10 @@ namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Api\ApiResponse;
 use Pinoox\Component\Http\JsonResponse;
+use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\ResponseException;
 use Pinoox\Component\Kernel\Controller\ApiController;
+use Pinoox\Component\Validation\ValidationException;
 
 /**
  * Manager API base — maps legacy message()/error() calls to the standard envelope.
@@ -24,6 +27,18 @@ use Pinoox\Component\Kernel\Controller\ApiController;
  */
 class Api extends ApiController
 {
+    /**
+     * Validate request input and return validated data, or abort with a JSON error response.
+     */
+    protected function validated(Request $request, array $rules, array $messages = [], array $attributes = []): array
+    {
+        try {
+            return $request->validate($rules, $messages, $attributes);
+        } catch (ValidationException $e) {
+            ResponseException::call($this->error($e->first()));
+        }
+    }
+
     public function message($message, $result = null, ?int $code = 200, bool $exception = false): JsonResponse
     {
         $response = $this->buildMessageResponse($message, $result, $code, func_num_args() >= 2);
@@ -88,3 +103,4 @@ class Api extends ApiController
         return ApiResponse::error('API_ERROR', (string) $error, [], $code, false);
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WallpaperHelper
 {
+
     private const FOLDER = 'system/wallpapers';
 
     private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
@@ -174,3 +176,4 @@ class WallpaperHelper
         return (string) $index;
     }
 }
+

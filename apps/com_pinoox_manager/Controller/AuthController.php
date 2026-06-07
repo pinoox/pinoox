@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -25,16 +26,11 @@ class AuthController extends Api
             return $this->error(t('user.already_logged_in'), 401);
         }
 
-        $validation = $request->validation([
+        $input = $this->validated($request, [
             'username' => 'required',
             'password' => 'required',
         ]);
 
-        if ($validation->fails()) {
-            return $this->error($validation->errors()->first());
-        }
-
-        $input = $validation->validate();
         $remember = (bool) ($input['remember'] ?? false);
 
         $result = Auth::attemptResult([
@@ -72,15 +68,11 @@ class AuthController extends Api
 
     public function unlock(Request $request)
     {
-        $validation = $request->validation([
+        $input = $this->validated($request, [
             'password' => 'required',
         ]);
 
-        if ($validation->fails()) {
-            return $this->error($validation->errors()->first());
-        }
-
-        $result = Auth::unlock($validation->validate()['password']);
+        $result = Auth::unlock($input['password']);
 
         if ($result !== true) {
             return $this->error(is_string($result) ? $result : t('user.password_is_wrong'));
@@ -89,3 +81,4 @@ class AuthController extends Api
         return $this->message(Auth::profile());
     }
 }
+

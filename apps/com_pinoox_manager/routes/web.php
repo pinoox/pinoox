@@ -11,3 +11,4 @@ get('app/{packageName}/{subPath}', [AppViewController::class, 'run'])
     ->filters(['subPath' => '.+']);
 get('/dist/pinoox.js', fn () => View::jsResponse('pinoox'))->name('pinooxjs');
 get('*', fn () => View::render('main'))->name('fallback');
+

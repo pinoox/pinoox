@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -86,3 +87,4 @@ class UpdateController extends Api
         NotificationHelper::push($title, $message, 0, true, 'update_new_version_' . ($version['version_code'] ?? 0), $version);
     }
 }
+

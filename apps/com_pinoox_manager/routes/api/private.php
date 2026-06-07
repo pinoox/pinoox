@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @license  https://opensource.org/licenses/MIT MIT License
  */
@@ -406,3 +407,4 @@ return [
         'flow' => ['manager.auth'],
     ],
 ];
+

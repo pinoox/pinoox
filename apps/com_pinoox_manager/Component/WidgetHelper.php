@@ -11,14 +11,14 @@ class WidgetHelper
         return [
             'clock' => [
                 'id' => 'clock',
-                'title' => 'ساعت',
-                'description' => 'نمایش تاریخ و ساعت روی دسکتاپ',
+                'title' => t('widget/clock.title'),
+                'description' => t('widget/clock.description'),
                 'configurable' => false,
             ],
             'storage' => [
                 'id' => 'storage',
-                'title' => 'فضای ذخیره‌سازی',
-                'description' => 'نمایش فضای دیسک سرور یا پوشه پروژه',
+                'title' => t('widget/storage.title'),
+                'description' => t('widget/storage.description'),
                 'configurable' => true,
             ],
         ];
@@ -66,7 +66,7 @@ class WidgetHelper
         $registry = self::registry();
 
         if ($payload === [])
-            return ['saved' => false, 'message' => 'داده‌ای ارسال نشده'];
+            return ['saved' => false, 'message' => t('widget/storage.empty_payload')];
 
         $options = Config::name('options')->get() ?? [];
         $current = is_array($options['widgets'] ?? null) ? $options['widgets'] : self::defaults();

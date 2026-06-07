@@ -11,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Component;
-
 
 use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Portal\App\AppEngine;
@@ -30,6 +28,7 @@ use Pinoox\Portal\Zip;
 class Wizard
 {
     private static $isApp = false;
+
     private static $message = null;
 
     public static function installApp($pinFile)
@@ -273,7 +272,6 @@ class Wizard
         $filename = File::fullname($pinFile);
         $size = File::size($pinFile);
         $name = File::name($pinFile);
-
 
         $meta = TemplateWizard::open($pinFile)->getInfo();
 

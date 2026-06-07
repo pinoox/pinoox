@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,17 +11,12 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Controller;
-
 
 use App\com_pinoox_manager\Component\AppHelper;
 use App\com_pinoox_manager\Component\Wizard;
-use Pinoox\Component\File;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\Validation\ValidationException;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\File;
 use Pinoox\Portal\Wizard\AppWizard;
 
@@ -57,7 +53,7 @@ class AppController extends Api
 
     public function setConfig(Request $request, $packageName, $key)
     {
-        $config = $request->getPayload()->get('config');
+        $config = $request->payload('config');
 
         if ($key == 'dock')
             $config = !$config;
@@ -76,20 +72,17 @@ class AppController extends Api
 
     public function install(Request $request)
     {
-        try {
-            $request->validate([
-                'file' => [
-                    'file',
-                    function ($attribute, $value, $fail) {
-                        if ($value->getClientOriginalExtension() !== 'pin') {
-                            $fail('آپلود فایل با پسوند .pin مجاز است!');
-                        }
+        $this->validated($request, [
+            'file' => [
+                'file',
+                function ($attribute, $value, $fail) {
+                    if ($value->getClientOriginalExtension() !== 'pin') {
+                        $fail('آپلود فایل با پسوند .pin �
+جاز است!');
                     }
-                ],
-            ]);
-        } catch (ValidationException $e) {
-            return $this->error($e->first());
-        }
+                }
+            ],
+        ]);
 
         $result = File::upload('file')
             ->to('uploads/apps')
@@ -105,11 +98,10 @@ class AppController extends Api
         try {
             $wizard = AppWizard::open($pin);
             $wizard->migration(true);
-            if(!$wizard->isInstalled())
+            if (!$wizard->isInstalled())
                 $wizard->install();
             else
                 return $this->error('manager.error_happened');
-
 
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
@@ -167,7 +159,7 @@ class AppController extends Api
 
     public function deleteFile(Request $request)
     {
-        $filename = $request->json->get('filename');
+        $filename = $request->payload('filename');
 
         if (empty($filename))
             return $this->message(t('manager.error_happened'), false);
