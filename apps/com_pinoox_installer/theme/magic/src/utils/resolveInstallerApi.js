@@ -1,4 +1,4 @@
-import {unwrapApiBody} from '@/utils/apiEnvelope.js'
+import {unwrapApiBody, isApiEnvelope, normalizeApiError} from '@/utils/apiEnvelope.js'
 
 /** Pinoox query-route key (?_pnx=/path) — keep in sync with QueryRouteResolver::PARAMETER */
 export const QUERY_ROUTE_PARAM = '_pnx'
@@ -199,11 +199,17 @@ export function resolvePinooxJsUrl(useQueryRoute = false) {
 async function parseJson(response) {
     const body = await response.json().catch(() => ({}))
 
-    if (!response.ok) {
-        throw Object.assign(new Error('Request failed'), {response: {data: body, status: response.status}})
+    if (isApiEnvelope(body)) {
+        return unwrapApiBody(body, {status: response.status})
     }
 
-    return unwrapApiBody(body, {status: response.status})
+    if (!response.ok) {
+        throw normalizeApiError(Object.assign(new Error('Request failed'), {
+            response: {data: body, status: response.status},
+        }))
+    }
+
+    return body
 }
 
 export async function pingInstallerApi() {

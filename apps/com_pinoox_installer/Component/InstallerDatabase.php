@@ -3,6 +3,7 @@
 namespace App\com_pinoox_installer\Component;
 
 use Pinoox\Component\Database\DatabaseManager;
+use Pinoox\Component\Http\FormRequest;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\Database\DB;
 
@@ -33,16 +34,33 @@ final class InstallerDatabase
     /**
      * @return array<string, mixed>
      */
-    public static function readFromRequest(Request $request): array
+    public static function readFromRequest(Request|FormRequest $request): array
     {
-        $keys = 'host,database,username,password,prefix';
-        $data = $request->request($keys, '', '!empty');
+        $request = self::resolveRequest($request);
+        $keys = ['host', 'database', 'username', 'password', 'prefix', 'port'];
+        $nested = $request->payload('db');
 
-        if (empty($data['host']) && empty($data['database'])) {
-            $data = $request->json($keys, '', '!empty');
+        if (is_array($nested) && $nested !== []) {
+            return array_intersect_key($nested, array_flip($keys));
         }
 
-        return is_array($data) ? $data : [];
+        return $request->payloadMany('host,database,username,password,prefix,port', '', false);
+    }
+
+    /**
+     * Merge validated setup payload with the raw request (keeps password/prefix reliably).
+     *
+     * @param array<string, mixed> $validatedDb
+     * @return array<string, mixed>
+     */
+    public static function readForSetup(Request|FormRequest $request, array $validatedDb = []): array
+    {
+        return self::normalize(array_replace($validatedDb, self::readFromRequest($request)));
+    }
+
+    private static function resolveRequest(Request|FormRequest $request): Request
+    {
+        return $request instanceof FormRequest ? $request->global : $request;
     }
 
     /**
@@ -67,3 +85,4 @@ final class InstallerDatabase
         }
     }
 }
+

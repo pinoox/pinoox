@@ -10,7 +10,7 @@
                     <div class="page-panel">
                         <div v-if="isErr" class="page-alert page-alert--error" role="alert">
                             <Icon name="times"/>
-                            <span>{{ LANG.install.err_connect_to_database }}</span>
+                            <span>{{ err }}</span>
                         </div>
                         <div class="form" data-simplebar data-simplebar-auto-hide="false">
                             <div @keypress.enter="next()">
@@ -52,15 +52,13 @@
                                 </div>
                                 <div class="install-field">
                                     <label for="db-pass">{{ LANG.install.db_password }}</label>
-                                    <input
+                                    <PasswordInput
                                         id="db-pass"
                                         v-model="params.password"
-                                        type="password"
                                         name="password"
-                                        class="pin-input form-control ltr"
                                         placeholder="password"
                                         autocomplete="new-password"
-                                    >
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -92,8 +90,10 @@ import {computed, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {installAPI} from '@api/install.js'
+import {readApiErrorMessage} from '@/utils/apiEnvelope.js'
 import {useInstallStore} from '@/stores/install.js'
 import Icon from '@/components/icons/Icon.vue'
+import PasswordInput from '@/components/PasswordInput.vue'
 
 defineProps({
     steps: {
@@ -109,7 +109,9 @@ const store = useInstallStore()
 const {LANG, db} = storeToRefs(store)
 
 const isLoading = ref(false)
-const isErr = ref(false)
+const err = ref(null)
+
+const isErr = computed(() => err.value !== null && !!err.value)
 
 const params = computed({
     get: () => db.value,
@@ -124,13 +126,13 @@ onMounted(() => {
 
 function next() {
     isLoading.value = true
-    isErr.value = false
+    err.value = null
     installAPI.checkDB(params.value).then(() => {
         isLoading.value = false
         router.replace({name: 'user'})
-    }).catch(() => {
+    }).catch((error) => {
         isLoading.value = false
-        isErr.value = true
+        err.value = readApiErrorMessage(error, LANG.value?.install?.err_connect_to_database)
     })
 }
 

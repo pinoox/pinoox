@@ -70,6 +70,7 @@
 <script setup>
 import {computed, ref, watch} from 'vue'
 import Icon from '@/components/icons/Icon.vue'
+import {readApiErrorMessage} from '@/utils/apiEnvelope.js'
 import {createHtaccessFile, fetchHtaccessStatus} from '@/utils/resolveInstallerApi.js'
 
 const open = defineModel('open', {type: Boolean, default: false})
@@ -165,8 +166,8 @@ async function loadStatus() {
         } else if (!data.writable) {
             feedback.value = {type: 'warn', text: copy.value.not_writable}
         }
-    } catch {
-        feedback.value = {type: 'error', text: copy.value.load_failed}
+    } catch (error) {
+        feedback.value = {type: 'error', text: readApiErrorMessage(error, copy.value.load_failed)}
         canCreate.value = false
     } finally {
         loading.value = false
@@ -188,8 +189,8 @@ async function createFile() {
             emit('created')
             await loadStatus()
         }
-    } catch {
-        feedback.value = {type: 'error', text: copy.value.write_failed}
+    } catch (error) {
+        feedback.value = {type: 'error', text: readApiErrorMessage(error, copy.value.write_failed)}
     } finally {
         creating.value = false
     }

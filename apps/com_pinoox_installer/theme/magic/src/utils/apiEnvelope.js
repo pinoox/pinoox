@@ -33,3 +33,42 @@ export function unwrapApiBody(body, {status = null} = {}) {
 export function unwrapApiResponse(response) {
     return unwrapApiBody(response?.data, {status: response?.status ?? null})
 }
+
+export function readApiMessage(body) {
+    if (!isApiEnvelope(body)) {
+        return typeof body?.message === 'string' ? body.message : null
+    }
+
+    return typeof body.message === 'string' && body.message !== 'OK' ? body.message : null
+}
+
+export function normalizeApiError(error) {
+    if (error instanceof ApiClientError) {
+        return error
+    }
+
+    const body = error?.response?.data
+    const status = error?.response?.status ?? null
+
+    if (isApiEnvelope(body) && body.success === false) {
+        const apiError = body.error || {}
+
+        return new ApiClientError(apiError.message || apiError.code || 'Request failed', {
+            code: apiError.code || 'API_ERROR',
+            details: apiError.details || {},
+            status,
+        })
+    }
+
+    return error
+}
+
+export function readApiErrorMessage(error, fallback = 'Request failed') {
+    const normalized = normalizeApiError(error)
+
+    if (normalized instanceof ApiClientError) {
+        return normalized.message || fallback
+    }
+
+    return error?.message || fallback
+}

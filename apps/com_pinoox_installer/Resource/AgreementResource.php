@@ -13,3 +13,4 @@ final class AgreementResource extends ApiResource
         ];
     }
 }
+

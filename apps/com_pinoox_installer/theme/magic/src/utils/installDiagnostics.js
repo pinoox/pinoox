@@ -1,3 +1,5 @@
+import {isApiEnvelope, readApiErrorMessage} from '@/utils/apiEnvelope.js'
+
 function hint(text, tool = null) {
     if (!text) {
         return null
@@ -82,10 +84,15 @@ export function diagnoseApiError(error, LANG) {
         }
     }
 
+    const body = error.response.data
+    const apiMessage = isApiEnvelope(body)
+        ? readApiErrorMessage(error, install.err_connection_description ?? 'The server returned an unexpected response.')
+        : null
+
     return {
         type: 'http',
         title: install.err_connection_title ?? 'Cannot connect to installer',
-        message: install.err_connection_description ?? 'The server returned an unexpected response.',
+        message: apiMessage || (install.err_connection_description ?? 'The server returned an unexpected response.'),
         hints,
         apiUrl,
         status: error.response.status,

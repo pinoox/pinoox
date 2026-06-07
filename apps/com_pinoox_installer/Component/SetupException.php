@@ -17,3 +17,4 @@ final class SetupException extends RuntimeException
         return $this->messageKey;
     }
 }
+

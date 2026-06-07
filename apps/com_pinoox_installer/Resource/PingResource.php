@@ -15,3 +15,4 @@ final class PingResource extends ApiResource
         ];
     }
 }
+

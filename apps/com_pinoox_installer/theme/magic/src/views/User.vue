@@ -64,15 +64,13 @@
                                 </div>
                                 <div class="install-field">
                                     <label for="user-password">{{ LANG.user.password }}</label>
-                                    <input
+                                    <PasswordInput
                                         id="user-password"
                                         v-model="user.password"
-                                        type="password"
                                         name="password"
-                                        class="pin-input form-control ltr"
                                         placeholder="password"
                                         autocomplete="new-password"
-                                    >
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -83,21 +81,24 @@
                             {{ LANG.install.back }}
                         </button>
                         <button
-                            v-if="!isLoading"
                             type="button"
                             class="btn btn-light pin-btn"
+                            :disabled="isLoading"
                             @click="next()"
                         >
                             {{ LANG.install.setup }}
                         </button>
-                        <span v-else class="btn btn-light pin-btn pin-loading" aria-busy="true">
-                            <Icon name="spinner" spin/>
-                        </span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <InstallProgressModal
+        v-model:open="progressOpen"
+        :done="installDone"
+        @complete="onInstallComplete"
+    />
 </template>
 
 <script setup>
@@ -105,8 +106,11 @@ import {computed, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {installAPI} from '@api/install.js'
+import {readApiErrorMessage} from '@/utils/apiEnvelope.js'
 import {useInstallStore} from '@/stores/install.js'
 import Icon from '@/components/icons/Icon.vue'
+import PasswordInput from '@/components/PasswordInput.vue'
+import InstallProgressModal from '@/components/InstallProgressModal.vue'
 import {useInstaller} from '@/composables/useInstaller.js'
 
 defineProps({
@@ -124,6 +128,8 @@ const {LANG, db, user} = storeToRefs(store)
 const {redirect} = useInstaller()
 
 const isLoading = ref(false)
+const progressOpen = ref(false)
+const installDone = ref(false)
 const err = ref(null)
 
 const isErr = computed(() => err.value !== null && !!err.value)
@@ -133,20 +139,33 @@ onMounted(() => {
 })
 
 function next() {
+    if (isLoading.value) {
+        return
+    }
+
     isLoading.value = true
+    installDone.value = false
+    progressOpen.value = true
     err.value = null
+
     installAPI.setup({
         db: db.value,
         user: user.value,
     }).then(() => {
-        setTimeout(() => {
-            isLoading.value = false
-            redirect(PINOOX.URL.SITE, 0)
-        }, 3000)
+        installDone.value = true
     }).catch((error) => {
+        progressOpen.value = false
         isLoading.value = false
-        err.value = error?.message || LANG.value?.install?.err_insert_tables
+        installDone.value = false
+        err.value = readApiErrorMessage(error, LANG.value?.install?.err_insert_tables)
     })
+}
+
+function onInstallComplete() {
+    progressOpen.value = false
+    isLoading.value = false
+    installDone.value = false
+    redirect(PINOOX.URL.SITE, 0)
 }
 
 function prev() {

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -11,9 +12,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_installer\Controller;
-
 
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;

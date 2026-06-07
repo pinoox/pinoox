@@ -1,5 +1,6 @@
 import axios from 'axios'
 import axiosMethodOverride from 'axios-method-override'
+import {normalizeApiError} from '@/utils/apiEnvelope.js'
 import {
     QUERY_ROUTE_PARAM,
     resolveInstallerApiUrl,
@@ -106,10 +107,12 @@ http.interceptors.response.use((response) => {
         trackLoading(error.config, -1)
     }
 
-    callActions('error_response', error)
-    callActions('error', error)
+    const normalized = normalizeApiError(error)
 
-    return Promise.reject(error)
+    callActions('error_response', normalized)
+    callActions('error', normalized)
+
+    return Promise.reject(normalized)
 })
 
 export default http

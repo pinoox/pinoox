@@ -16,3 +16,4 @@ final class LangResource extends ApiResource
         ];
     }
 }
+

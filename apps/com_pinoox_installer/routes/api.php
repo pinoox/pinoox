@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -33,3 +34,4 @@ return routes([
         post('/setup', [ApiController::class, 'setup'])->name('setup');
     }),
 ]);
+
