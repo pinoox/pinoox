@@ -40,3 +40,4 @@ class Redis extends Portal
         return [];
     }
 }
+

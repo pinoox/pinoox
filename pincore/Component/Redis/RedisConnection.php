@@ -166,3 +166,4 @@ class RedisConnection
         return $unserialized === false && $value !== 'b:0;' ? $value : $unserialized;
     }
 }
+

@@ -61,7 +61,6 @@ class AppRouter extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -71,7 +70,6 @@ class AppRouter extends Portal
 		return 'app.router';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -80,7 +78,6 @@ class AppRouter extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -93,3 +90,4 @@ class AppRouter extends Portal
 		];
 	}
 }
+

@@ -50,3 +50,4 @@ trait SelectsApiPackage
         return isset($this->apiPackages()[$package]);
     }
 }
+

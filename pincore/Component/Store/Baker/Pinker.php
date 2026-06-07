@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Store\Baker;
 
@@ -23,7 +23,9 @@ use Pinoox\Component\Helpers\Str;
  */
 class Pinker
 {
+
     private const CACHE_SCHEMA = 2;
+
     private const OVERRIDE_SCHEMA = 1;
 
     private $data = null;
@@ -618,3 +620,4 @@ class Pinker
         return rtrim(str_replace('\\', '/', $path), '/');
     }
 }
+

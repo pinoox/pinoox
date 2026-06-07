@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Translator;
 
@@ -77,7 +77,6 @@ class Translator extends TranslatorIlluminate
     protected function getLine($namespace, $group, $locale, $item, array $replace): string|array|null
     {
         $this->load($namespace, $group, $locale);
-
 
         if (empty($item))
             $line = $this->loaded[$namespace][$group][$locale];

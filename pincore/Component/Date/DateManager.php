@@ -296,3 +296,4 @@ class DateManager
         return $match[0] ?? $date;
     }
 }
+

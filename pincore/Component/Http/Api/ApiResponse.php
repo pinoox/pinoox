@@ -63,3 +63,4 @@ final class ApiResponse
         return $translate ? (string) t($message) : $message;
     }
 }
+

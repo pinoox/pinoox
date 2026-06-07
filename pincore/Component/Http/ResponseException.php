@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Http;
-
 
 use Pinoox\Component\Helpers\HelperResponse;
 use RuntimeException;
@@ -47,3 +46,4 @@ class ResponseException extends RuntimeException
         $this->response = HelperResponse::normalize($response);
     }
 }
+

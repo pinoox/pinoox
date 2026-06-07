@@ -192,7 +192,6 @@ class DB extends Portal
         return false;
     }
 
-
     /**
      * @throws Exception
      */
@@ -211,7 +210,6 @@ class DB extends Portal
         self::bootEloquent();
     }
 
-
     /**
      * @throws Exception
      */
@@ -224,7 +222,6 @@ class DB extends Portal
 
         return $config[$key] ?? $config;
     }
-
 
     public static function mode()
     {
@@ -246,7 +243,6 @@ class DB extends Portal
         ];
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -255,7 +251,6 @@ class DB extends Portal
     {
         return 'database';
     }
-
 
     /**
      * Get method names for callback object.
@@ -291,3 +286,4 @@ class DB extends Portal
         });
     }
 }
+

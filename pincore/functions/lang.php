@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -27,3 +28,4 @@ if (!function_exists('t')) {
         return Lang::get($key, $replace, $locale, $fallback);
     }
 }
+

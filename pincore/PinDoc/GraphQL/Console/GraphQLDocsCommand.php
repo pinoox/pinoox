@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'graphql:docs',
     description: 'Generate GraphQL schema docs (Markdown or HTML) for an app',
 )]
+
 class GraphQLDocsCommand extends Terminal
 {
     use SelectsGraphQLPackage;
@@ -112,3 +113,4 @@ class GraphQLDocsCommand extends Terminal
         return Command::SUCCESS;
     }
 }
+

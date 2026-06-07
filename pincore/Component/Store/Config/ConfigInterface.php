@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Store\Config;
-
 
 interface ConfigInterface
 {
@@ -33,7 +32,6 @@ interface ConfigInterface
      * @return $this
      */
     public function set(string $key, mixed $value): static;
-
 
     /**
      * Set data in config

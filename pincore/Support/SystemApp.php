@@ -6,7 +6,9 @@ use Pinoox\Component\Kernel\Loader;
 
 class SystemApp
 {
+
     public const PACKAGE = 'system';
+
     public const PATH_ALIAS = 'system';
 
     public static function basePath(): string
@@ -66,3 +68,4 @@ class SystemApp
         return $path === '' ? '' : '/' . $path;
     }
 }
+

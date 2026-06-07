@@ -98,7 +98,6 @@ class Zip extends Portal
 		self::__bind(ZipFile::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -108,7 +107,6 @@ class Zip extends Portal
 		return 'zip';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -117,7 +115,6 @@ class Zip extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -136,3 +133,4 @@ class Zip extends Portal
 		];
 	}
 }
+

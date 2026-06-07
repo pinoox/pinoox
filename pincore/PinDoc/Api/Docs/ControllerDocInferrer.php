@@ -753,3 +753,4 @@ class ControllerDocInferrer
         return $normalized;
     }
 }
+

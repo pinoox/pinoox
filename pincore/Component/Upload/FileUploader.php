@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -34,6 +35,7 @@ class FileUploader
     private ?string $hashId = null;
     private ?array $metadata = null;
     private string $group;
+
     private static array $events;
     private $result;
     private $isInsert;
@@ -338,3 +340,4 @@ class FileUploader
         }
     }
 }
+

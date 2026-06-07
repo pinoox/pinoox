@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -20,3 +21,4 @@ interface PathInterface
 
     public function resolve(string|ReferenceInterface $fileName, string $defaultPackage = 'pincore'): string;
 }
+

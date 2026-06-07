@@ -64,7 +64,6 @@ class Finder extends Portal
 		self::__bind(\Symfony\Component\Finder\Finder::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -73,7 +72,6 @@ class Finder extends Portal
 	{
 		return 'finder';
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -84,7 +82,6 @@ class Finder extends Portal
 		return [];
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -94,3 +91,4 @@ class Finder extends Portal
 		return [];
 	}
 }
+

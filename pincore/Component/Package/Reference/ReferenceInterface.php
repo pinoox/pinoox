@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Package\Reference;
-
 
 /**
  *
@@ -38,3 +37,4 @@ interface ReferenceInterface
      */
     public function get(): ?string;
 }
+

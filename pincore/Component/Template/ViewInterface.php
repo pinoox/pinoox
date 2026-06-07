@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -66,7 +67,6 @@ interface ViewInterface
      * @return mixed
      */
     public function get(string|int $index): mixed;
-
 
     /**
      * Set global data

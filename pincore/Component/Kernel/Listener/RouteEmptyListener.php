@@ -109,3 +109,4 @@ class RouteEmptyListener implements EventSubscriberInterface
         return $available[0] ?? 'en';
     }
 }
+

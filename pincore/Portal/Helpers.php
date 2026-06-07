@@ -27,7 +27,6 @@ class Helpers extends Portal
 		return 'helpers';
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -36,7 +35,6 @@ class Helpers extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -47,3 +45,4 @@ class Helpers extends Portal
 		return [];
 	}
 }
+

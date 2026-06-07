@@ -15,3 +15,4 @@ if (!function_exists('cannot')) {
         return Access::cannot($abilities, $user);
     }
 }
+

@@ -8,6 +8,7 @@ class PinDocHtmlRenderer
     {
         return DocsVisibility::isVisible($document, $flag);
     }
+
     public function render(array $documents, ?string $extraMarkdown = null): string
     {
         $cssPath = __DIR__ . '/resources/pin-doc.css';
@@ -946,3 +947,4 @@ updateActiveNav();
 JS;
     }
 }
+

@@ -8,6 +8,7 @@ class PinDocMarkdownRenderer
     {
         return DocsVisibility::isVisible($document, $flag);
     }
+
     public function render(array $documents): string
     {
         $sections = [];
@@ -362,3 +363,4 @@ class PinDocMarkdownRenderer
         return '`' . str_replace('`', '', is_scalar($value) ? (string)$value : json_encode($value)) . '`';
     }
 }
+

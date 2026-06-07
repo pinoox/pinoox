@@ -61,3 +61,4 @@ class Logger extends Portal
         ];
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -18,6 +19,7 @@ use Pinoox\Component\Kernel\Loader;
 class QueryRouteResolver
 {
     /** Internal query key for Pinoox path routing when URL rewrite is unavailable (?_pnx=/path). */
+
     public const PARAMETER = '_pnx';
 
     private const SERVER_FLAG = 'PINOOX_QUERY_ROUTE_APPLIED';
@@ -378,3 +380,4 @@ class QueryRouteResolver
         return self::$config = QueryRouteConfigLoader::forRequest();
     }
 }
+

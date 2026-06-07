@@ -76,3 +76,4 @@ if (!function_exists('date_ago')) {
         return Date::approximateDate($time ?? 'now', $exactAfterDays, $format ?? Date::formatKey('date'));
     }
 }
+

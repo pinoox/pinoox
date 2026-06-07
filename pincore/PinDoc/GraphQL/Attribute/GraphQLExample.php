@@ -3,6 +3,7 @@
 namespace Pinoox\PinDoc\GraphQL\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+
 class GraphQLExample
 {
     public function __construct(
@@ -11,3 +12,4 @@ class GraphQLExample
     ) {
     }
 }
+

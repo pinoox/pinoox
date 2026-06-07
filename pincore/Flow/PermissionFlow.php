@@ -51,3 +51,4 @@ class PermissionFlow extends Flow
             || str_contains(strtolower($request->headers->get('Accept', '')), 'json');
     }
 }
+

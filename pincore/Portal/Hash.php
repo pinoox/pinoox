@@ -59,7 +59,6 @@ class Hash extends Portal
         ]);
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -68,7 +67,6 @@ class Hash extends Portal
     {
         return 'hash';
     }
-
 
     /**
      * Get exclude method names .
@@ -79,7 +77,6 @@ class Hash extends Portal
         return [];
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -89,3 +86,4 @@ class Hash extends Portal
         return [];
     }
 }
+

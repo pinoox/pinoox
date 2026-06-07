@@ -52,7 +52,6 @@ class StubBuilderHelper
         $this->sub = !empty($namespace) ? '\\' . $namespace : '';
     }
 
-
     public function get(): array
     {
         return [
@@ -65,7 +64,6 @@ class StubBuilderHelper
             'prefix' => $this->prefix,
         ];
     }
-
 
     public function generate($stubFilename, array $options = []): bool
     {
@@ -92,7 +90,6 @@ class StubBuilderHelper
             return false;
         }
     }
-
 
     private function getExportPath(): string
     {

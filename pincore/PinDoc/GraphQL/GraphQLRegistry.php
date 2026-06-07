@@ -121,3 +121,4 @@ class GraphQLRegistry
         return is_array($value) ? array_values($value) : [$value];
     }
 }
+

@@ -79,3 +79,4 @@ class RouteCacheStore implements CacheStoreInterface
         return ActionCache::resolveRouteFiles($package, $manager->path(), $routes);
     }
 }
+

@@ -30,7 +30,6 @@ class Terminal extends Portal
 		self::__bind(\Pinoox\Component\Kernel\Terminal::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -40,7 +39,6 @@ class Terminal extends Portal
 		return 'terminal';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -49,7 +47,6 @@ class Terminal extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -62,3 +59,4 @@ class Terminal extends Portal
 		];
 	}
 }
+

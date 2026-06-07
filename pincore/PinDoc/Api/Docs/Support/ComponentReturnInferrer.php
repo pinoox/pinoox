@@ -388,3 +388,4 @@ class ComponentReturnInferrer
         ];
     }
 }
+

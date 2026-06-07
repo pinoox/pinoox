@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Kernel\Listener;
 
@@ -45,7 +45,6 @@ class RouterListener implements EventSubscriberInterface
     {
         $this->routerListener->onKernelRequest($event);
     }
-
 
     public function onKernelFinishRequest(): void
     {

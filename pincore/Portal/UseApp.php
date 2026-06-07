@@ -31,3 +31,4 @@ class UseApp extends Portal
         return AppResource::get($reference, $default, $defaultPackage);
     }
 }
+

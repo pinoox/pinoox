@@ -22,7 +22,6 @@ use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 class Serializer extends Portal
 {
-
     public static function __register(): void
     {
         self::__bind(JsonEncoder::class, 'encoder.json');
@@ -53,7 +52,6 @@ class Serializer extends Portal
         return 'kernel.serializer';
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -62,7 +60,6 @@ class Serializer extends Portal
     {
         return [];
     }
-
 
     /**
      * Get exclude method names .
@@ -73,3 +70,4 @@ class Serializer extends Portal
         return [];
     }
 }
+

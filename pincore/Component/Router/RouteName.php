@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Router;
-
 
 use Pinoox\Component\Helpers\Str;
 
@@ -32,7 +31,6 @@ class RouteName
         } else {
             $name = $prefix . $name;
         }
-
 
         return static::$names[] = $name;
     }

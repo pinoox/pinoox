@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Validation;
-
 
 use Exception;
 use Pinoox\Component\Http\Response;
@@ -73,3 +72,4 @@ class AuthorizationException extends Exception
         return $response;
     }
 }
+

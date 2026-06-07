@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Helpers\PhpFile;
 
@@ -131,6 +131,7 @@ class PhpFile
             /* Note: PHP extensions may use empty names for reference arguments
              * or "..." for methods taking a variable number of arguments.
              */
+
             if ($name === '$' || $name === '$...') {
                 $name = '$arg' . $i;
             }
@@ -210,6 +211,7 @@ class PhpFile
             /* Note: PHP extensions may use empty names for reference arguments
              * or "..." for methods taking a variable number of arguments.
              */
+
             if ($name === '$' || $name === '$...') {
                 $name = '$arg' . $i;
             }
@@ -227,6 +229,5 @@ class PhpFile
 
         return implode(', ', $parameters);
     }
-
 
 }

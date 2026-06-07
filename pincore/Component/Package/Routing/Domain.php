@@ -68,3 +68,4 @@ final class Domain
         return DomainMatcher::normalizeHost($host);
     }
 }
+

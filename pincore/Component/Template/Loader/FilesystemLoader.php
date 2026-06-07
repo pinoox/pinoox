@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Template\Loader;
-
 
 use Twig\Error\LoaderError;
 use Twig\Loader\FilesystemLoader as FilesystemLoaderTwig;

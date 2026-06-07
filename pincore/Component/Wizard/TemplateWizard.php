@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -30,7 +31,6 @@ class TemplateWizard extends Wizard implements WizardInterface
         return $this;
     }
 
-
     /**
      * @throws ZipException
      */
@@ -42,7 +42,6 @@ class TemplateWizard extends Wizard implements WizardInterface
             'listFiles' => $zip->getListFiles(),
         ];
     }
-
 
     public function getInfo(): array|null
     {

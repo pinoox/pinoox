@@ -28,3 +28,4 @@ class ContainerControllerResolver extends ContainerControllerResolverSymfony
         return $controller;
     }
 }
+

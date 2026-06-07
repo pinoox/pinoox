@@ -38,3 +38,4 @@ if (!function_exists('app_dep_satisfied')) {
         return AppDependency::isSatisfied(AppDependency::normalize($depends), AppEngine::___());
     }
 }
+

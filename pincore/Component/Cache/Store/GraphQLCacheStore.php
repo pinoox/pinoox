@@ -89,3 +89,4 @@ class GraphQLCacheStore implements CacheStoreInterface
         return is_file($file) ? [str_replace('\\', '/', $file)] : [];
     }
 }
+

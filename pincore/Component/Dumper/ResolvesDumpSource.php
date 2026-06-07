@@ -171,3 +171,4 @@ trait ResolvesDumpSource
         static::$dumpSourceResolver = false;
     }
 }
+

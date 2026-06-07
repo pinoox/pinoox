@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Database\Sort;
-
 
 use Illuminate\Database\Eloquent\Builder;
 
@@ -98,7 +97,6 @@ class SortTable
             $type = $condition;
         }
 
-
         switch ($type) {
             case 'concat':
                 $inputs = explode(',', $condition);
@@ -114,7 +112,6 @@ class SortTable
                 break;
         }
     }
-
 
     /**
      * @return Builder

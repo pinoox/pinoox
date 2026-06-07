@@ -37,12 +37,10 @@ class Image extends Portal
 		self::__bind(ImageManager::class)->setArguments([new Driver()]);
 	}
 
-
 	public static function __name(): string
 	{
 		return 'image';
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -53,3 +51,4 @@ class Image extends Portal
 		return [];
 	}
 }
+

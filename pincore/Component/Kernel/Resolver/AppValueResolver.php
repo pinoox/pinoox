@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Kernel\Resolver;
-
 
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Package\App;
@@ -40,3 +39,4 @@ final class AppValueResolver implements ArgumentValueResolverInterface
         yield \Pinoox\Portal\App\App::___();
     }
 }
+

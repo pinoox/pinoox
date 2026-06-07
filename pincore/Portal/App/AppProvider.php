@@ -85,3 +85,4 @@ class AppProvider extends Portal
         return 'app.provider';
     }
 }
+

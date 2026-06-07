@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pinoox\Router;
 
 use Closure;
@@ -82,7 +81,6 @@ function route(string $name, array $parameters = [], bool $absolute = true): str
     return \Pinoox\Portal\Url::route(route_name($name, null), $parameters, $absolute);
 }
 
-
 /**
  * Route file helper — config manifest entry point.
  *
@@ -115,3 +113,4 @@ function routes(array|callable|null $definition = null): array|\Pinoox\Component
 
     return null;
 }
+

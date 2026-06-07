@@ -49,7 +49,6 @@ class Kernel extends HttpKernel
             return $this->handleThrowable($e, $request, $type);
         }
 
-
         $next = function ($request) use ($type, $catch) {
             return parent::handle($request, $type, $catch);
         };
@@ -130,3 +129,4 @@ class Kernel extends HttpKernel
         return $this->dispatcher;
     }
 }
+

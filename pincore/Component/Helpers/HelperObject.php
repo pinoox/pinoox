@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -90,8 +91,6 @@ class HelperObject
 
         return trim($source);
     }
-
-
 
 }
     

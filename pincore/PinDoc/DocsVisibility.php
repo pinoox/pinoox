@@ -4,7 +4,9 @@ namespace Pinoox\PinDoc;
 
 class DocsVisibility
 {
+
     public const AUDIENCE_EXTERNAL = 'external';
+
     public const AUDIENCE_INTERNAL = 'internal';
 
     public static function resolve(array $docs, ?string $cliAudience = null): array
@@ -142,3 +144,4 @@ class DocsVisibility
         return self::AUDIENCE_EXTERNAL;
     }
 }
+

@@ -54,3 +54,4 @@ trait SelectsGraphQLPackage
         return isset($this->graphQLPackages()[$package]);
     }
 }
+

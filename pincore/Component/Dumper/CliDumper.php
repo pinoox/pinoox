@@ -125,3 +125,4 @@ class CliDumper extends BaseCliDumper
         return $this->output->isDecorated();
     }
 }
+

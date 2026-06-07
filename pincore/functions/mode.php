@@ -23,3 +23,4 @@ if (!function_exists('runtime_production')) {
         return Mode::isProduction($package);
     }
 }
+

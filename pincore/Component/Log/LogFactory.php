@@ -36,3 +36,4 @@ class LogFactory
         return $logger;
     }
 }
+

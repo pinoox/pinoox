@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -127,7 +128,6 @@ class File
         if (empty($data)) {
             $data = "<Files ~ \"^.*\.(php|php*|cgi|pl|phtml|shtml|sql|asp|aspx)\">\nOrder allow,deny\nDeny from all\n</Files>\n<IfModule mod_php4.c>\nphp_flag engine off\n</IfModule>\n<IfModule mod_php5.c>\nphp_flag engine off\n</IfModule>\nRemoveType .php .php* .phtml .pl .cgi .asp .aspx .sql";
         }
-
 
         #generate the htaccess
         return (self::generate($folder . "/.htaccess", $data)) ? true : false;
@@ -488,7 +488,6 @@ class File
         else
             $result = $size . " " . $unit;
 
-
         return $result;
     }
 
@@ -733,7 +732,6 @@ class File
     {
         self::$whereDirectory[$key] = $value;
     }
-
 
     /**
      * Get type file

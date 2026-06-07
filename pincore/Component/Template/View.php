@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -13,13 +14,13 @@
 namespace Pinoox\Component\Template;
 
 use Pinoox\Component\Store\Config\Data\DataManager;
-use Pinoox\Portal\Url as UrlPortal;
 use Pinoox\Component\Template\Engine\PhpEngine;
 use Pinoox\Component\Template\Engine\PhpTwigEngine;
 use Pinoox\Component\Template\Engine\TwigEngine;
 use Pinoox\Component\Template\Parser\TemplateNameParser;
 use Pinoox\Component\Template\Engine\DelegatingEngine;
 use Pinoox\Component\Template\Reference\TemplatePathReference;
+use Pinoox\Component\Template\Theme\ThemeAssets;
 use Twig\Extension\DebugExtension;
 use Twig\Extension\StringLoaderExtension;
 
@@ -67,8 +68,7 @@ class View implements ViewInterface
 
         // instance engines
         $this->phpEngine = new PhpEngine($this->parser, $this->themePaths); // .php engine
-        $this->twigEngine = new TwigEngine($this->parser, $this->themePaths); // .twig engine
-        $this->applyTwigRuntimeOptions($this->twigEngine);
+        $this->twigEngine = new TwigEngine($this->parser, $this->themePaths, $this->twigEnvironmentOptions()); // .twig engine
         $this->phpTwigEngine = new PhpTwigEngine($this->parser, $this->phpEngine, $this->twigEngine); // .twig.php engine
 
         // set main template engine
@@ -87,6 +87,8 @@ class View implements ViewInterface
         $internalFunctions = $this->twigOption('functions', []);
         $this->twigEngine->addInternalFunction(array_merge($internalFunctions, [
             'url',
+            'package',
+            'theme',
             'asset',
             'lang' => 't',
             't',
@@ -179,22 +181,29 @@ class View implements ViewInterface
         return false;
     }
 
-    private function applyTwigRuntimeOptions(TwigEngine $engine): void
+    /**
+     * @return array<string, mixed>
+     */
+    private function twigEnvironmentOptions(): array
     {
+        $options = [];
+
         if (isset($this->twigOptions['cache']) && is_string($this->twigOptions['cache'])) {
             if (!is_dir($this->twigOptions['cache'])) {
                 mkdir($this->twigOptions['cache'], 0777, true);
             }
-            $engine->template->setCache($this->twigOptions['cache']);
+            $options['cache'] = $this->twigOptions['cache'];
         }
 
         if (array_key_exists('auto_reload', $this->twigOptions)) {
-            $engine->template->setAutoReload((bool) $this->twigOptions['auto_reload']);
+            $options['auto_reload'] = (bool) $this->twigOptions['auto_reload'];
         }
 
         if (!empty($this->twigOptions['debug'])) {
-            $engine->template->enableDebug();
+            $options['debug'] = true;
         }
+
+        return $options;
     }
 
     public function twigOption(?string $key = null, mixed $default = null): mixed
@@ -329,20 +338,12 @@ class View implements ViewInterface
 
     /**
      * Resolve a theme asset to a public URL, or return the filesystem path.
+     *
+     * @param string $link Relative file, or @theme/file for another theme in the same app.
      */
-    public function assets(string $link = '', bool $asPath = false): string
+    public function assets(string $link = '', bool $asPath = false, ?string $theme = null): string
     {
-        $path = $this->path()->assets($link);
-
-        if ($asPath) {
-            return $path;
-        }
-
-        if (self::isFilesystemPath($path)) {
-            return UrlPortal::fromPath($path);
-        }
-
-        return UrlPortal::asset($path);
+        return ThemeAssets::resolve($link, $theme, null, $asPath, $this->themePaths);
     }
 
     public function asstes(string $file = ''): string

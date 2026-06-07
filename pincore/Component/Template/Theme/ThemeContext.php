@@ -12,6 +12,7 @@ use Pinoox\Portal\View;
 final class ThemeContext
 {
     /** @var array<string, string> */
+
     private static array $active = [];
 
     public static function active(?string $package = null): ?string
@@ -145,3 +146,4 @@ final class ThemeContext
         }
     }
 }
+

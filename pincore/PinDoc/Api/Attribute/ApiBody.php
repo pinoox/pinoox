@@ -3,6 +3,7 @@
 namespace Pinoox\PinDoc\Api\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD)]
+
 class ApiBody
 {
     public function __construct(
@@ -12,3 +13,4 @@ class ApiBody
     ) {
     }
 }
+

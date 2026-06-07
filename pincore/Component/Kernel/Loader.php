@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -17,7 +18,9 @@ use Composer\Autoload\ClassLoader;
 class Loader
 {
     private static ?LoaderManager $manager = null;
+
     private static ?ClassLoader $classLoader = null;
+
     private static ?string $basePath = null;
 
     public static function setBasePath(string $basePath): void

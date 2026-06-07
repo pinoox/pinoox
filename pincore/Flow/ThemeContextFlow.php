@@ -16,6 +16,7 @@ use Symfony\Component\HttpKernel\Event\RequestEvent;
 class ThemeContextFlow extends Flow
 {
     /** @var array<string, self> */
+
     private static array $instances = [];
 
     public function __construct(
@@ -35,3 +36,4 @@ class ThemeContextFlow extends Flow
         ThemeContextManager::activate($this->context);
     }
 }
+

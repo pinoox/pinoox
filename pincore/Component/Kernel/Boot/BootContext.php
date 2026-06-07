@@ -23,3 +23,4 @@ final class BootContext
         return $this->app->path($relative);
     }
 }
+

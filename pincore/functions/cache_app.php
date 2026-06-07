@@ -8,3 +8,4 @@ if (!function_exists('app_cache_build')) {
         return AppCache::build($package, $only, $force);
     }
 }
+

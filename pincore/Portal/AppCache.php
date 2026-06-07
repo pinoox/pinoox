@@ -54,3 +54,4 @@ class AppCache extends Portal
         return AppCacheConfig::enabled($package);
     }
 }
+

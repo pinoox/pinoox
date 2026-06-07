@@ -221,3 +221,4 @@ final class AppResource
         };
     }
 }
+

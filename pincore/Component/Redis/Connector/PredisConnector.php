@@ -38,3 +38,4 @@ class PredisConnector implements ConnectorInterface
         return new Client($parameters, $options);
     }
 }
+

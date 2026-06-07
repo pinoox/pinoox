@@ -32,7 +32,6 @@ class Dumper extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -41,7 +40,6 @@ class Dumper extends Portal
 	{
 		return 'dumper';
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -52,7 +50,6 @@ class Dumper extends Portal
 		return [];
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -62,3 +59,4 @@ class Dumper extends Portal
 		return [];
 	}
 }
+

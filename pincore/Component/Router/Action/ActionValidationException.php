@@ -7,6 +7,7 @@ use RuntimeException;
 class ActionValidationException extends RuntimeException
 {
     /** @param list<string> $errors */
+
     public function __construct(
         private readonly array $errors,
         string $message = 'Router action validation failed.',
@@ -15,8 +16,10 @@ class ActionValidationException extends RuntimeException
     }
 
     /** @return list<string> */
+
     public function errors(): array
     {
         return $this->errors;
     }
 }
+

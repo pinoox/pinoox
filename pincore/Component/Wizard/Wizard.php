@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -338,3 +339,4 @@ abstract class Wizard implements WizardInterface
             FileSystem::remove($this->tmpPathPackage);
     }
 }
+

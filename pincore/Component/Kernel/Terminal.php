@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -56,6 +57,7 @@ class Terminal
         /**
          * @var AppManager $app
          */
+
         foreach ($packages as $app) {
             $this->loadTerminals($app->path(), $app->package());
         }
@@ -78,6 +80,7 @@ class Terminal
         /**
          * @var SplFileInfo $f
          */
+
         foreach ($finder as $f) {
             $loc = $f->getPath();
             $namespace = !empty($package) ? "App\\" . $package . '\\' : "Pinoox" . '\\';

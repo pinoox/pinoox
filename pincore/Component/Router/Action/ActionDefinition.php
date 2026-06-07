@@ -37,6 +37,7 @@ class ActionDefinition
     }
 
     /** @return list<string> */
+
     public function routeNames(): array
     {
         return $this->routeNames;
@@ -74,6 +75,7 @@ class ActionDefinition
     }
 
     /** @return array<string, mixed> */
+
     public function toArray(): array
     {
         return [
@@ -92,3 +94,4 @@ class ActionDefinition
         ];
     }
 }
+

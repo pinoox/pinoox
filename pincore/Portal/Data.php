@@ -33,7 +33,6 @@ class Data extends Portal
         return 'data';
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -42,7 +41,6 @@ class Data extends Portal
     {
         return [];
     }
-
 
     /**
      * Get exclude method names .
@@ -53,3 +51,4 @@ class Data extends Portal
         return [];
     }
 }
+

@@ -198,3 +198,4 @@ class DocsAppUrlResolver
         return $base . $path;
     }
 }
+

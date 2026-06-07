@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Package\Loader;
-
 
 final class ArrayLoader implements LoaderInterface
 {
@@ -36,7 +35,6 @@ final class ArrayLoader implements LoaderInterface
     {
         return isset($this->packages[$packageName]) && $this->checkExistsFile($packageName);
     }
-
 
     /**
      *  {@inheritDoc}

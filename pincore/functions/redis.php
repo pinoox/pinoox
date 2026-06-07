@@ -15,3 +15,4 @@ if (!function_exists('redis')) {
         return Redis::connection($connection);
     }
 }
+

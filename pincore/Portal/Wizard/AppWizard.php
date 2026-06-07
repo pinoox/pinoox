@@ -45,7 +45,6 @@ class AppWizard extends Portal
         ]);
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -55,7 +54,6 @@ class AppWizard extends Portal
         return 'app.wizard';
     }
 
-
     /**
      * Get exclude method names .
      * @return string[]
@@ -64,7 +62,6 @@ class AppWizard extends Portal
     {
         return [];
     }
-
 
     /**
      * Get method names for callback object.
@@ -77,3 +74,4 @@ class AppWizard extends Portal
         ];
     }
 }
+

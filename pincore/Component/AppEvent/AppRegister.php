@@ -144,3 +144,4 @@ class AppRegister
         return $this->collector;
     }
 }
+

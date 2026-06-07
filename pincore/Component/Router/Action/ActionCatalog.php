@@ -62,3 +62,4 @@ class ActionCatalog
         return array_values(array_unique($errors));
     }
 }
+

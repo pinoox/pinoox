@@ -80,3 +80,4 @@ final class AppRouteMatcher
         return $normalized;
     }
 }
+

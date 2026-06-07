@@ -11,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component;
-
 
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Helpers\Str;
@@ -26,7 +24,6 @@ class HttpRequest
     const PUT = 'PUT';
     const DELETE = 'DELETE';
     const PATCH = 'PATCH';
-
 
     const json = 'json';
     const form = 'form';

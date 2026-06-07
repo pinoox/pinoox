@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Kernel\Resolver;
-
 
 use Pinoox\Component\Http\FormRequest;
 use Pinoox\Component\Http\Request;
@@ -41,8 +40,10 @@ final class FormRequestValueResolver implements ArgumentValueResolverInterface
         /**
          * @var FormRequest $formRequest;
          */
+
         $formRequest = new $type($request);
         $formRequest->__resolve();
         yield $formRequest;
     }
 }
+

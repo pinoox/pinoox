@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -15,6 +16,7 @@ namespace Pinoox\Component\Helpers;
 class Str
 {
     // get unique form one string by time,md5,exists,uniqid,...
+
     public static function get_unique_string($string, $decoding_type = "", $prefix = "", $postfix = "", $i_loop = "", $dir = null, $ext = null)
     {
         #change it, time..
@@ -50,12 +52,14 @@ class Str
     }
 
     // change all Signs To One Sing
+
     public static function changeSignsToOneSing($string, $sign = '-')
     {
         return preg_replace('/[,.?\/*&^\\\$%#@()_!|"\~\'><=+}{; ]/', $sign, $string);
     }
 
     // change all english number to persian number
+
     public static function convertPersianNumbers($matches)
     {
         $farsi_array = array('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹');
@@ -68,7 +72,6 @@ class Str
     {
         return number_format((float)$number, $format, '.', '');
     }
-
 
     public static function truncateText($text, $chars = 25, $stripTags = false)
     {
@@ -117,7 +120,6 @@ class Str
      * $start : min length ext
      * $end : max length ext
      */
-
     public static function firstDelete($string, $search)
     {
         if (self::firstHas($string, $search)) {
@@ -363,7 +365,6 @@ class Str
         return mb_strwidth($string);
     }
 
-
     /**
      * find similar string in array of strings.
      *
@@ -404,3 +405,4 @@ class Str
         return str_replace('\\', '/', $path);
     }
 }
+

@@ -16,10 +16,15 @@ namespace Pinoox\Component\Package;
  */
 final class AppResourceReference
 {
+
     public const TYPE_CONFIG = 'config';
+
     public const TYPE_LANG = 'lang';
+
     public const TYPE_ACTION = 'action';
+
     public const TYPE_PATH = 'path';
+
     public const TYPE_CLASS = 'class';
 
     public function __construct(
@@ -121,3 +126,4 @@ final class AppResourceReference
         return preg_match('/^[a-z][a-z0-9_]*$/', $value) === 1 && str_contains($value, '_');
     }
 }
+

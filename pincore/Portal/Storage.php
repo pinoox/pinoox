@@ -107,7 +107,6 @@ class Storage extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -116,7 +115,6 @@ class Storage extends Portal
 	{
 		return 'storage';
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -127,7 +125,6 @@ class Storage extends Portal
 		return [];
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -137,3 +134,4 @@ class Storage extends Portal
 		return [];
 	}
 }
+

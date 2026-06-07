@@ -63,7 +63,6 @@ class Resolver extends Portal
         return 'kernel.resolver';
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -72,7 +71,6 @@ class Resolver extends Portal
     {
         return [];
     }
-
 
     /**
      * Get exclude method names .
@@ -83,3 +81,4 @@ class Resolver extends Portal
         return [];
     }
 }
+

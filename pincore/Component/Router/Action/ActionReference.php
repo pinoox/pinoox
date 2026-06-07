@@ -4,7 +4,9 @@ namespace Pinoox\Component\Router\Action;
 
 class ActionReference
 {
+
     public const GLOBAL_PREFIX = '@';
+
     public const SCOPED_PREFIX = '&';
 
     public static function isReference(mixed $value): bool
@@ -79,3 +81,4 @@ class ActionReference
         return null;
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Store\Config\Strategy;
 
@@ -46,7 +46,6 @@ interface ConfigStrategyInterface
      * @param null $default
      * @return array
      */
-
     public function get(?string $key = null,$default = null): mixed;
 
     public function all(): mixed;
@@ -89,3 +88,4 @@ interface ConfigStrategyInterface
     public function name(): string;
 
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Router;
 
@@ -132,6 +132,7 @@ class Router
         /**
          * @var RouteCapsule $route
          */
+
         foreach ($routes as $name => $route) {
             $paths[$name] = $route->getPath();
         }
@@ -298,6 +299,7 @@ class Router
     }
 
     /** @return list<string> */
+
     public function actionFlows(string $actionKey): array
     {
         return $this->actionMeta[$actionKey]['flows'] ?? [];
@@ -789,3 +791,4 @@ class Router
         return $this->getCollection()->routes->count();
     }
 }
+

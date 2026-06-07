@@ -6,6 +6,7 @@ use Pinoox\Support\SystemConfig;
 
 class DomainMatcher
 {
+
     private const RESERVED_KEYS = ['default', 'hosts'];
 
     private static ?array $config = null;
@@ -231,3 +232,4 @@ class DomainMatcher
         return self::$config = is_array($loaded) ? $loaded : [];
     }
 }
+

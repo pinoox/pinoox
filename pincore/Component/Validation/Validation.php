@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Validation;
 
@@ -101,7 +101,6 @@ class Validation extends Validator
         return $this->mixinData;
     }
 
-
     public function getDefaultMixin(): array
     {
         return $this->defaultMixinData;
@@ -120,3 +119,4 @@ class Validation extends Validator
         $this->defaultMixinData = $data;
     }
 }
+

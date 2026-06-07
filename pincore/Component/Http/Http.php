@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Http;
 
@@ -41,6 +41,7 @@ class Http
     /**
      * @var string[]
      */
+
     const METHODS = [
         self::HEAD,
         self::GET,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Database\Search;
 
@@ -176,7 +176,6 @@ class AdvancedSearch
             }, boolean: $logicalOperator);
             return;
         }
-
 
         // multiple rule
         $conditions = is_string($condition) ? explode('|', $condition) : $condition;

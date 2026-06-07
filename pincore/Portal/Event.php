@@ -51,7 +51,6 @@ class Event extends Portal
             ->addMethodCall('addSubscriber', [Listener::__ref('view')]);
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -61,7 +60,6 @@ class Event extends Portal
         return 'event';
     }
 
-
     /**
      * Get exclude method names .
      * @return string[]
@@ -70,7 +68,6 @@ class Event extends Portal
     {
         return [];
     }
-
 
     /**
      * Get method names for callback object.
@@ -83,3 +80,4 @@ class Event extends Portal
         ];
     }
 }
+

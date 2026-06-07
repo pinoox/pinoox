@@ -52,3 +52,4 @@ class GraphQLDocsGenerator
         return DocsVisibility::outputPath($docs, $format, $audience, 'graphql');
     }
 }
+

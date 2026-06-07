@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Kernel\Listener;
 
@@ -66,6 +66,7 @@ class ActionRoutesManageListener implements EventSubscriberInterface
             /**
              * @var Route $route
              */
+
             $route = $event->getRequest()->attributes->get('_router');
             $collectionPrefix = $route instanceof Route ? $route->getCollection()->name : '';
 

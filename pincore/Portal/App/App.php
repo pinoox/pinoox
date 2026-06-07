@@ -90,7 +90,6 @@ class App extends Portal
         });
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -99,7 +98,6 @@ class App extends Portal
     {
         return 'app';
     }
-
 
     public static function getDefaultAliases(): array
     {
@@ -126,7 +124,6 @@ class App extends Portal
         return [];
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -138,3 +135,4 @@ class App extends Portal
         ];
     }
 }
+

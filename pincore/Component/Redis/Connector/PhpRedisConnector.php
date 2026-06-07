@@ -46,3 +46,4 @@ class PhpRedisConnector implements ConnectorInterface
         return $client;
     }
 }
+

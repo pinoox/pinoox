@@ -33,7 +33,6 @@ class MigrationConfig extends Portal
 		self::__bind(ObjectPortal1::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -42,7 +41,6 @@ class MigrationConfig extends Portal
 	{
 		return 'migration.config';
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -55,3 +53,4 @@ class MigrationConfig extends Portal
 		];
 	}
 }
+

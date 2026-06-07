@@ -34,3 +34,4 @@ class ViewListener implements EventSubscriberInterface
         return [KernelEvents::VIEW => ['onView'], Kernel::HANDLE_AFTER => ['onView']];
     }
 }
+

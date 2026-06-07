@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Template\Engine;
 
@@ -41,9 +41,13 @@ class TwigEngine implements EngineInterface
     /**
      * @param TemplateNameParserInterface $parser
      * @param LoaderInterface|string|list<string> $paths Absolute theme paths or custom loader
+     * @param array<string, mixed> $environmentOptions Twig Environment constructor options
      */
-    public function __construct(TemplateNameParserInterface $parser, LoaderInterface|string|array $paths)
-    {
+    public function __construct(
+        TemplateNameParserInterface $parser,
+        LoaderInterface|string|array $paths,
+        array $environmentOptions = [],
+    ) {
         if ($paths instanceof LoaderInterface) {
             $this->fileLoader = $paths;
         } else {
@@ -53,14 +57,13 @@ class TwigEngine implements EngineInterface
             }
         }
 
-
         $this->arrayLoader = new ArrayLoader();
         $this->loader = new ChainLoader([
             $this->arrayLoader,
             $this->fileLoader
         ]);
         $this->parser = $parser;
-        $this->template = new Environment($this->loader);
+        $this->template = new Environment($this->loader, $environmentOptions);
     }
 
     /**
@@ -207,7 +210,6 @@ class TwigEngine implements EngineInterface
             }
         }
     }
-
 
     /**
      * render view

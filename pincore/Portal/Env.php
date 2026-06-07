@@ -38,7 +38,6 @@ class Env extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -48,7 +47,6 @@ class Env extends Portal
 		return 'env';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -57,7 +55,6 @@ class Env extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -70,3 +67,4 @@ class Env extends Portal
 		];
 	}
 }
+

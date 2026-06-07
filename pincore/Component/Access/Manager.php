@@ -13,6 +13,7 @@ use Pinoox\System\Model\UserModel;
 class Manager
 {
     /** @var array<string, Closure> */
+
     private static array $gates = [];
 
     /** @var array<int, list<string>> */
@@ -284,3 +285,4 @@ class Manager
         }, []);
     }
 }
+

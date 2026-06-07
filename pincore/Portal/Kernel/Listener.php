@@ -73,7 +73,6 @@ class Listener extends Portal
         return 'kernel.listener';
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -82,7 +81,6 @@ class Listener extends Portal
     {
         return [];
     }
-
 
     /**
      * Get exclude method names .
@@ -93,3 +91,4 @@ class Listener extends Portal
         return [];
     }
 }
+

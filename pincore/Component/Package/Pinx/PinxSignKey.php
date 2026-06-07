@@ -7,7 +7,9 @@ use Pinoox\Support\SystemConfig;
 
 final class PinxSignKey
 {
+
     public const ALGORITHM = 'ed25519';
+
     public const KEY_FILE = 'sign.key.json';
 
     /**
@@ -135,3 +137,4 @@ final class PinxSignKey
         return sodium_crypto_sign_verify_detached($signature, $message, $publicKey);
     }
 }
+

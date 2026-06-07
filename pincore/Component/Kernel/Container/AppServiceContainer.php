@@ -10,6 +10,7 @@ use Symfony\Component\Finder\Finder;
 class AppServiceContainer
 {
     /** @var array<string, array<string, mixed>> */
+
     private static array $compiled = [];
 
     public static function register(ContainerBuilder $builder, string $package): void
@@ -129,3 +130,4 @@ class AppServiceContainer
         return $classes;
     }
 }
+

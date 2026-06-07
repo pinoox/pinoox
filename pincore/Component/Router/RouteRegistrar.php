@@ -122,3 +122,4 @@ class RouteRegistrar
         return is_array($flows) ? array_values($flows) : [];
     }
 }
+

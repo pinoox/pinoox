@@ -66,7 +66,6 @@ class AppEngine extends Portal
 		);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -76,7 +75,6 @@ class AppEngine extends Portal
 		return 'app.engine';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -85,7 +83,6 @@ class AppEngine extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -98,3 +95,4 @@ class AppEngine extends Portal
 		];
 	}
 }
+

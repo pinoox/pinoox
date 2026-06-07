@@ -36,7 +36,6 @@ class TemplateWizard extends Portal
 		self::__bind(\Pinoox\Component\Wizard\TemplateWizard::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -45,7 +44,6 @@ class TemplateWizard extends Portal
 	{
 		return 'template.wizard';
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -56,3 +54,4 @@ class TemplateWizard extends Portal
 		return [];
 	}
 }
+

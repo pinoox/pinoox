@@ -20,3 +20,4 @@ final class PayloadResource extends ApiResource
         return ['value' => $this->resource];
     }
 }
+

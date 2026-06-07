@@ -19,3 +19,4 @@ class AppRoutesEvent extends Event
     ) {
     }
 }
+

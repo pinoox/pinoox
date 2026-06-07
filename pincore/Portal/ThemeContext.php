@@ -41,3 +41,4 @@ class ThemeContext extends Portal
         return ThemeContextManager::info($package);
     }
 }
+

@@ -36,3 +36,4 @@ class AppCacheFingerprint
             && PhpCacheFile::exists(AppCachePath::store($package, $store));
     }
 }
+

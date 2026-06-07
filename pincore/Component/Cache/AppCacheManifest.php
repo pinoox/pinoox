@@ -4,6 +4,7 @@ namespace Pinoox\Component\Cache;
 
 class AppCacheManifest
 {
+
     public const SCHEMA = 1;
 
     /**
@@ -57,3 +58,4 @@ class AppCacheManifest
         return $manifest['stores'][$store] ?? null;
     }
 }
+

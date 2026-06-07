@@ -222,3 +222,4 @@ class AppApiRegistry
         return is_array($value) ? array_values($value) : [$value];
     }
 }
+

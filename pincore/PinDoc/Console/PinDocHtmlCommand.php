@@ -21,6 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'pindoc:html',
     description: 'Build PinDoc HTML from API docs and/or custom Markdown.',
 )]
+
 class PinDocHtmlCommand extends Terminal
 {
     use SelectsApiPackage;
@@ -136,3 +137,4 @@ class PinDocHtmlCommand extends Terminal
         );
     }
 }
+

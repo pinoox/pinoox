@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -76,3 +77,4 @@ class ControllerBuilder
         return $firstPart . '\\';
     }
 }
+

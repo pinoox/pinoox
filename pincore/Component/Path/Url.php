@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -24,12 +25,19 @@ use Pinoox\Component\Router\QueryRouteResolver;
 
 class Url implements UrlInterface
 {
+
     public const SCOPE_APP = 'app';
+
     public const SCOPE_SITE = 'site';
+
     public const SCOPE_RELATIVE = 'relative';
 
+    public const SCOPE_APP_PATH = 'app-path';
+
     public const MODE_AUTO = 'auto';
+
     public const MODE_CLEAN = 'clean';
+
     public const MODE_QUERY = 'query';
 
     public function __construct(
@@ -152,6 +160,58 @@ class Url implements UrlInterface
         return rtrim($this->origin(), '/') . '/' . $route;
     }
 
+    /** Resolve scoped or active app package name. */
+    public function activePackage(?string $package = null): string
+    {
+        return ($package !== null && $package !== '') ? $package : $this->app->package();
+    }
+
+    /**
+     * Public path to the project root (leading slash, never empty).
+     */
+    public function sitePath(): string
+    {
+        $base = rtrim($this->base(), '/');
+
+        return $base === '' ? '/' : $base;
+    }
+
+    /**
+     * App route segment from App Router (e.g. "manager" for "/manager").
+     */
+    public function routeSegment(?string $package = null): string
+    {
+        return $this->routeSegmentForPackage($package ?? $this->app->package());
+    }
+
+    /**
+     * Public path to the app base (site path + app segment).
+     */
+    public function appPath(?string $package = null): string
+    {
+        return $this->joinPublicPath($this->sitePath(), $this->routeSegment($package));
+    }
+
+    /**
+     * Fluent URL accessor for the active request and app route.
+     */
+    public function accessor(?string $package = null): UrlAccessor
+    {
+        return new UrlAccessor($this, $package);
+    }
+
+    /** Fluent theme accessor (see global theme() helper). */
+    public function themeAccessor(?string $name = null, ?string $package = null): ThemeAccessor
+    {
+        return new ThemeAccessor($this, $package, $name);
+    }
+
+    /** Fluent app manifest accessor (see global package() helper). */
+    public function appAccessor(?string $package = null): AppAccessor
+    {
+        return new AppAccessor($this, $package);
+    }
+
     /**
      * Smart URL builder: handles references, query-route fallback, and rewrite-aware routing.
      */
@@ -199,12 +259,15 @@ class Url implements UrlInterface
         $manager->setBasePath(match ($scope) {
             self::SCOPE_SITE => rtrim($this->origin(), '/'),
             self::SCOPE_RELATIVE => rtrim($this->base(), '/'),
+            self::SCOPE_APP_PATH => $this->appPath(),
             default => $this->forApp(),
         });
 
         $built = $manager->get(ltrim($path, '/'));
 
-        if ($scope === self::SCOPE_RELATIVE && $built !== '' && !str_starts_with($built, '/')) {
+        if (($scope === self::SCOPE_RELATIVE || $scope === self::SCOPE_APP_PATH)
+            && $built !== ''
+            && !str_starts_with($built, '/')) {
             return '/' . $built;
         }
 
@@ -212,14 +275,82 @@ class Url implements UrlInterface
     }
 
     /**
-     * Public asset URL within an app (theme/resources/uploads exposed under the app route).
+     * Public asset URL under apps/{package}/ (direct filesystem exposure, not app route).
      */
     public function asset(string $path = '', ?string $package = null): string
     {
+        $path = $this->normalizeAppPublicPath($path, $package);
         $manager = new UrlManager();
-        $manager->setBasePath($this->forApp($package));
+        $manager->setBasePath(rtrim($this->origin(), '/'));
 
         return $manager->get(ltrim($path, '/'));
+    }
+
+    /**
+     * Path-only public asset URL under apps/{package}/.
+     */
+    public function assetPath(string $path = '', ?string $package = null): string
+    {
+        $path = $this->normalizeAppPublicPath($path, $package);
+        $manager = new UrlManager();
+        $manager->setBasePath($this->sitePath());
+        $built = $manager->get(ltrim($path, '/'));
+
+        if ($built !== '' && !str_starts_with($built, '/')) {
+            return '/' . $built;
+        }
+
+        return $built;
+    }
+
+    /**
+     * Normalize app-relative public paths to apps/{package}/… segments.
+     */
+    public function normalizeAppPublicPath(string $path, ?string $package = null): string
+    {
+        $package = $package ?? $this->app->package();
+        $path = str_replace('\\', '/', trim($path));
+        $projectRoot = rtrim(str_replace('\\', '/', $this->basePath), '/');
+
+        if ($projectRoot !== '' && str_starts_with($path, $projectRoot)) {
+            $path = ltrim(substr($path, $projectRoot), '/');
+        }
+
+        if (str_starts_with($path, '~/')) {
+            $path = ltrim($this->path->get($path, $package), '/');
+        }
+
+        $appsPrefix = $this->appsPublicPrefix();
+
+        if (preg_match('#^' . preg_quote($appsPrefix, '#') . '/([^/]+)(?:/(.*))?$#', $path, $matches)) {
+            $relative = ltrim((string) ($matches[2] ?? ''), '/');
+
+            return $relative === ''
+                ? $appsPrefix . '/' . $matches[1]
+                : $appsPrefix . '/' . $matches[1] . '/' . $relative;
+        }
+
+        if ($package === '') {
+            return ltrim($path, '/');
+        }
+
+        $relative = ltrim($path, '/');
+
+        return $relative === ''
+            ? $appsPrefix . '/' . $package
+            : $appsPrefix . '/' . $package . '/' . $relative;
+    }
+
+    private function appsPublicPrefix(): string
+    {
+        $appsRoot = rtrim(str_replace('\\', '/', $this->path->get('~apps')), '/');
+        $projectRoot = rtrim(str_replace('\\', '/', $this->basePath), '/');
+
+        if ($projectRoot !== '' && str_starts_with($appsRoot, $projectRoot)) {
+            return ltrim(substr($appsRoot, strlen($projectRoot)), '/');
+        }
+
+        return 'apps';
     }
 
     /**
@@ -439,7 +570,26 @@ class Url implements UrlInterface
             return ($base === '' ? '' : $base) . '/?' . $parameter . '=' . rawurlencode($resolved);
         }
 
+        if ($scope === self::SCOPE_APP_PATH) {
+            return QueryRouteResolver::buildUrl($this->appPath(), $path);
+        }
+
         return $this->queryRoute($path);
+    }
+
+    private function joinPublicPath(string $basePath, string $segment): string
+    {
+        $segment = trim($segment, '/');
+
+        if ($segment === '') {
+            return $basePath;
+        }
+
+        if ($basePath === '/') {
+            return '/' . $segment;
+        }
+
+        return $basePath . '/' . $segment;
     }
 
     private function normalizeLinkMode(string $mode): string
@@ -496,3 +646,4 @@ class Url implements UrlInterface
         return is_string($stripped) && $stripped !== '' ? $stripped : $value;
     }
 }
+

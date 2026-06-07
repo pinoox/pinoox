@@ -52,3 +52,4 @@ class AppBoot extends Portal
         ];
     }
 }
+

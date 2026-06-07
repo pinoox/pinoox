@@ -28,3 +28,4 @@ class ContextProcessor implements ProcessorInterface
         return $record->with(extra: $extra);
     }
 }
+

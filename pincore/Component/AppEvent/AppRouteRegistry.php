@@ -7,9 +7,11 @@ use Pinoox\Component\Router\Router;
 class AppRouteRegistry
 {
     /** @var array<string, list<callable>> */
+
     private static array $web = [];
 
     /** @var array<string, list<array<string, array|string|\Closure>>> */
+
     private static array $actions = [];
 
     public static function absorb(string $package, AppRegisterCollector $collector): void
@@ -51,3 +53,4 @@ class AppRouteRegistry
         self::$actions = [];
     }
 }
+

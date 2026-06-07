@@ -27,3 +27,4 @@ class GoogleListener implements EventSubscriberInterface
         return [KernelEvents::RESPONSE => 'onResponse'];
     }
 }
+

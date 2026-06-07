@@ -181,7 +181,6 @@ abstract class Model extends EloquentModel
         }
     }
 
-
     protected function getAlias($table = null)
     {
         $table = $table ?? $this->tableName();
@@ -241,3 +240,4 @@ abstract class Model extends EloquentModel
         return $this->getConnection()->transaction($callback, $attempts);
     }
 }
+

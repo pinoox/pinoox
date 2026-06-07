@@ -185,3 +185,4 @@ class GraphQLDocBuilder
         return '"' . addslashes((string)$value) . '"';
     }
 }
+

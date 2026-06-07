@@ -56,3 +56,4 @@ class QueryRouteCanonicalListener implements EventSubscriberInterface
         ];
     }
 }
+

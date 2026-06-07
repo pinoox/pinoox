@@ -9,3 +9,4 @@ if (!function_exists('app_boot')) {
         return AppBoot::ensure($package);
     }
 }
+

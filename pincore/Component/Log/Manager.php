@@ -10,6 +10,7 @@ use Stringable;
 class Manager implements LoggerInterface
 {
     /** @var array<string, self> */
+
     private static array $channels = [];
 
     private MonologLogger $monolog;
@@ -100,3 +101,4 @@ class Manager implements LoggerInterface
         );
     }
 }
+

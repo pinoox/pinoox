@@ -37,11 +37,19 @@ use Pinoox\Portal\App\AppRouter;
  * @method static string params()
  * @method static array parameters()
  * @method static string origin(bool $absolute = true)
+ * @method static string sitePath()
+ * @method static string routeSegment(?string $package = NULL)
+ * @method static string appPath(?string $package = NULL)
+ * @method static \Pinoox\Component\Path\UrlAccessor accessor(?string $package = NULL)
+ * @method static \Pinoox\Component\Path\ThemeAccessor themeAccessor(?string $name = NULL, ?string $package = NULL)
+ * @method static \Pinoox\Component\Path\AppAccessor appAccessor(?string $package = NULL)
  * @method static string forApp(?string $package = NULL)
  * @method static string link(string $link = '', string $scope = self::SCOPE_APP, string $mode = self::MODE_AUTO)
  * @method static bool isRoutePath(string $link)
  * @method static string to(string $path = '', string $scope = self::SCOPE_APP)
  * @method static string asset(string $path = '', ?string $package = NULL)
+ * @method static string assetPath(string $path = '', ?string $package = NULL)
+ * @method static string normalizeAppPublicPath(string $path, ?string $package = NULL)
  * @method static string fromPath(string $filesystemPath)
  * @method static string reference(\Pinoox\Component\Package\Reference\ReferenceInterface|string $ref, ?string $package = NULL)
  * @method static string route(string $name, array $parameters = [], bool $absolute = true)
@@ -64,6 +72,7 @@ use Pinoox\Portal\App\AppRouter;
  */
 class Url extends Portal
 {
+
 	public const SCOPE_APP = UrlComponent::SCOPE_APP;
 
 	public const SCOPE_SITE = UrlComponent::SCOPE_SITE;
@@ -75,6 +84,8 @@ class Url extends Portal
 	public const SITE = UrlComponent::SCOPE_SITE;
 
 	public const RELATIVE = UrlComponent::SCOPE_RELATIVE;
+
+	public const APP_PATH = UrlComponent::SCOPE_APP_PATH;
 
 	public const MODE_AUTO = UrlComponent::MODE_AUTO;
 
@@ -112,4 +123,15 @@ class Url extends Portal
 	{
 		return [];
 	}
+
+	public static function themeAccessor(?string $name = null, ?string $package = null): \Pinoox\Component\Path\ThemeAccessor
+	{
+		return self::___()->themeAccessor($name, $package);
+	}
+
+	public static function appAccessor(?string $package = null): \Pinoox\Component\Path\AppAccessor
+	{
+		return self::___()->appAccessor($package);
+	}
 }
+

@@ -14,15 +14,19 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class AppBootstrap
 {
     /** @var array<string, true> */
+
     private static array $booted = [];
 
     /** @var array<string, true> */
+
     private static array $integrated = [];
 
     /** @var array<string, AppRegisterCollector> */
+
     private static array $pendingIntegration = [];
 
     /** @var array<string, list<string>>|null */
+
     private static ?array $extenderIndex = null;
 
     private static bool $kernelReady = false;
@@ -82,6 +86,7 @@ class AppBootstrap
     }
 
     /** @var list<string>|null */
+
     private static ?array $globalBootPackagesCache = null;
 
     /**
@@ -405,3 +410,4 @@ class AppBootstrap
         return $index;
     }
 }
+

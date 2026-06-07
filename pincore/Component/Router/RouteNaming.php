@@ -129,3 +129,4 @@ class RouteNaming
         return $name === '' ? '' : $name . '.';
     }
 }
+

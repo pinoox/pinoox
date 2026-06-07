@@ -88,3 +88,4 @@ class PinDocMarkdownLoader
         return preg_match('/^[A-Za-z]:\//', $path) === 1 || str_starts_with($path, '/');
     }
 }
+

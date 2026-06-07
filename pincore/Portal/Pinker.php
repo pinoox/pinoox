@@ -36,7 +36,6 @@ class Pinker extends Portal
 		self::__bind(ObjectPortal1::class);
 	}
 
-
 	public static function folder(string $path, string $file): ObjectPortal1
 	{
 		$mainFilePath = self::ds($path . '/' . $file);
@@ -47,7 +46,6 @@ class Pinker extends Portal
 
 		return self::create($mainFile, $bakedFile);
 	}
-
 
 	/**
 	 * get pinker by file
@@ -62,7 +60,6 @@ class Pinker extends Portal
 		$bakedFile = self::bakedFileFromSource($mainFilePath);
 		return self::create($mainFile, $bakedFile);
 	}
-
 
 	/**
 	 * get pinker by path
@@ -111,12 +108,10 @@ class Pinker extends Portal
 		return preg_match('/^[A-Za-z]:\//', $path) === 1 || str_starts_with($path, '/');
 	}
 
-
 	public static function ds(string $path): string
 	{
 		return str_replace('\\', '/', $path);
 	}
-
 
 	/**
 	 * Get the registered name of the component.
@@ -127,7 +122,6 @@ class Pinker extends Portal
 		return 'pinker';
 	}
 
-
 	/**
 	 * Get include method names .
 	 * @return string[]
@@ -136,7 +130,6 @@ class Pinker extends Portal
 	{
 		return ['file', 'create','build'];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -147,3 +140,4 @@ class Pinker extends Portal
 		return [];
 	}
 }
+

@@ -56,7 +56,6 @@ class Session extends Portal
 		self::__bind(\Pinoox\Component\Store\Session::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -65,7 +64,6 @@ class Session extends Portal
 	{
 		return 'session';
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -76,7 +74,6 @@ class Session extends Portal
 		return [];
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -86,3 +83,4 @@ class Session extends Portal
 		return [];
 	}
 }
+

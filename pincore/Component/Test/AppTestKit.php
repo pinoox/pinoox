@@ -17,6 +17,7 @@ use Pinoox\Support\SystemConfig;
 class AppTestKit
 {
     private static bool $booted = false;
+
     private static ?string $activePackage = null;
 
     public static function boot(): void
@@ -349,3 +350,4 @@ class AppTestKit
         rmdir($dir);
     }
 }
+

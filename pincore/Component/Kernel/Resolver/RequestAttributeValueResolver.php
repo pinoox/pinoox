@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Kernel\Resolver;
 
@@ -39,3 +39,4 @@ final class RequestAttributeValueResolver implements ArgumentValueResolverInterf
         yield $request->attributes->get($argument->getName());
     }
 }
+

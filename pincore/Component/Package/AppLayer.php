@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -88,3 +89,4 @@ class AppLayer
         return (bool) $this->context('is_canonical_default', false);
     }
 }
+

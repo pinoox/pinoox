@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Helpers;
-
 
 use Pinoox\Component\Store\Config\Data\DataManager;
 use Pinoox\Portal\FileSystem;
@@ -23,6 +22,7 @@ use Symfony\Component\Templating\Storage\FileStorage;
 class Env
 {
     private static $dataManager;
+
     private static $initData;
 
     public function __construct(private readonly string $basePath = '')

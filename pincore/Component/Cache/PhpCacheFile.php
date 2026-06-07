@@ -7,7 +7,9 @@ namespace Pinoox\Component\Cache;
  */
 final class PhpCacheFile
 {
+
     public const EXT = 'php';
+
     public const LEGACY_EXT = 'json';
 
     /**
@@ -125,3 +127,4 @@ final class PhpCacheFile
         return "[\n" . implode(",\n", $items) . "\n" . $indent . ']';
     }
 }
+

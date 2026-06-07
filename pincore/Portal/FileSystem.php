@@ -47,7 +47,6 @@ class FileSystem extends Portal
 		self::__bind(\Symfony\Component\Filesystem\Filesystem::class);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -57,7 +56,6 @@ class FileSystem extends Portal
 		return 'file.system';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -66,7 +64,6 @@ class FileSystem extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -79,3 +76,4 @@ class FileSystem extends Portal
 		];
 	}
 }
+

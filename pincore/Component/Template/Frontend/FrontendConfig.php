@@ -141,3 +141,4 @@ class FrontendConfig
         return !empty($config['dev']['enabled']);
     }
 }
+

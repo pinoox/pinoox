@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -43,3 +44,4 @@ class QueryRouteListener implements EventSubscriberInterface
         ];
     }
 }
+

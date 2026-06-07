@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -95,7 +96,6 @@ class Config implements ConfigInterface
         return $this;
     }
 
-
     public function remove(string $key): static
     {
         $this->strategy->remove($key);
@@ -187,3 +187,4 @@ class Config implements ConfigInterface
         return $this->all();
     }
 }
+

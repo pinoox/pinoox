@@ -87,3 +87,4 @@ final class PinxVerifier
         return PinxSignature::fromJson($zip->getEntryContents(PinxSignature::FILE));
     }
 }
+

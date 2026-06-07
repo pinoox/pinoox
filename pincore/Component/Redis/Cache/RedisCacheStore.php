@@ -105,3 +105,4 @@ class RedisCacheStore implements CacheInterface
         return max(0, (int) $ttl);
     }
 }
+

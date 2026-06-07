@@ -7,8 +7,11 @@ use Pinoox\Component\Kernel\Exception;
 
 final class PinxSignature
 {
+
     public const FILE = 'signature.json';
+
     public const FORMAT = 'pinx-signature';
+
     public const VERSION = 1;
 
     /**
@@ -138,3 +141,4 @@ final class PinxSignature
         return $data;
     }
 }
+

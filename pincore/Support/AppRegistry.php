@@ -115,3 +115,4 @@ class AppRegistry
         return SystemConfig::resolvePath($path);
     }
 }
+

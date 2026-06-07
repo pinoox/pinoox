@@ -67,12 +67,10 @@ class Cache extends Portal
 		static::__container()->setAlias(CacheInterface::class, self::__id());
 	}
 
-
 	public static function __name(): string
 	{
 		return 'cache';
 	}
-
 
 	public static function __callback(): array
 	{
@@ -81,3 +79,4 @@ class Cache extends Portal
 		];
 	}
 }
+

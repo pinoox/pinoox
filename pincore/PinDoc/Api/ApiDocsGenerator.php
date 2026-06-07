@@ -54,3 +54,4 @@ class ApiDocsGenerator
         return DocsVisibility::outputPath($docs, $format, $audience);
     }
 }
+

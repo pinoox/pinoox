@@ -71,7 +71,6 @@ class Router extends Portal
 		    ->setArgument('app', App::__ref());
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -80,7 +79,6 @@ class Router extends Portal
 	{
 		return 'router';
 	}
-
 
 	public static function __replace(): array
 	{
@@ -101,7 +99,6 @@ class Router extends Portal
 		];
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -110,7 +107,6 @@ class Router extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -123,3 +119,4 @@ class Router extends Portal
 		];
 	}
 }
+

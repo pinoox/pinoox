@@ -5,9 +5,11 @@ namespace Pinoox\Component\AppEvent;
 class AppApiRegistryStore
 {
     /** @var array<string, list<array<string, mixed>>> */
+
     private static array $manifests = [];
 
     /** @var array<string, list<array<string, mixed>>> */
+
     private static array $routes = [];
 
     public static function absorb(string $package, AppRegisterCollector $collector): void
@@ -67,3 +69,4 @@ class AppApiRegistryStore
         }
     }
 }
+

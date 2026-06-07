@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,7 +11,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Helpers\PhpFile;
 
 use Illuminate\Database\Schema\Blueprint;
@@ -21,7 +21,6 @@ use Pinoox\Component\Migration\MigrationBase;
 
 class MigrationFile extends PhpFile
 {
-
     public static function create(string $exportPath, string $className, string $package, string $namespace): bool
     {
         $source = self::source();

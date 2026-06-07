@@ -10,12 +10,15 @@ use Closure;
 class RouteSourceRegistry
 {
     /** @var array<string, array<string, mixed>> */
+
     private static array $routes = [];
 
     /** @var array<string, array<string, mixed>> */
+
     private static array $actions = [];
 
     /** @var list<string> Active route files while include() runs (survives Portal delegation). */
+
     private static array $loadingFileStack = [];
 
     public static function pushLoadingFile(string $file): void
@@ -301,3 +304,4 @@ class RouteSourceRegistry
         return basename($file);
     }
 }
+

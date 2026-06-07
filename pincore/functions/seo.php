@@ -49,3 +49,4 @@ if (!function_exists('seo_tags')) {
         return seo($data)->renderTags();
     }
 }
+

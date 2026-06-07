@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,7 +11,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Lang;
 
@@ -105,7 +105,6 @@ class Lang
         return $value;
     }
 
-
     public function pluralize($key, $count)
     {
         if (isset($translations[$key])) {
@@ -124,7 +123,6 @@ class Lang
         // Handle missing translations
         return $key;
     }
-
 
     /**
      * @throws Exception

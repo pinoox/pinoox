@@ -44,7 +44,6 @@ class TemplateWizard extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -54,7 +53,6 @@ class TemplateWizard extends Portal
 		return 'template.wizard';
 	}
 
-
 	/**
 	 * Get exclude method names .
 	 * @return string[]
@@ -63,7 +61,6 @@ class TemplateWizard extends Portal
 	{
 		return [];
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -76,3 +73,4 @@ class TemplateWizard extends Portal
 		];
 	}
 }
+

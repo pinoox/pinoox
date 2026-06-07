@@ -90,3 +90,4 @@ class RouteRegister
         return new RouteEntryBuilder($this, $method, $path, $action);
     }
 }
+

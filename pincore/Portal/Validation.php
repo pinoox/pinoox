@@ -61,7 +61,6 @@ class Validation extends Portal
 		]);
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -70,7 +69,6 @@ class Validation extends Portal
 	{
 		return 'validation';
 	}
-
 
 	/**
 	 * Get exclude method names .
@@ -81,7 +79,6 @@ class Validation extends Portal
 		return [];
 	}
 
-
 	/**
 	 * Get method names for callback object.
 	 * @return string[]
@@ -91,3 +88,4 @@ class Validation extends Portal
 		return [];
 	}
 }
+

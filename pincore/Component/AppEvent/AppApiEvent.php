@@ -17,3 +17,4 @@ class AppApiEvent extends Event
     ) {
     }
 }
+

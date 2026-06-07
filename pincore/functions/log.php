@@ -31,3 +31,4 @@ if (!function_exists('log_debug')) {
         Logger::debug($message, $context);
     }
 }
+

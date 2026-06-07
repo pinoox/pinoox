@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -18,3 +19,4 @@ if (!function_exists('env')) {
         return SystemConfig::env($key, $default);
     }
 }
+

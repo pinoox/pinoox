@@ -3,6 +3,7 @@
 namespace Pinoox\PinDoc\Api\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
+
 class ApiParam
 {
     public function __construct(
@@ -15,3 +16,4 @@ class ApiParam
     ) {
     }
 }
+

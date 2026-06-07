@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'api:docs',
     description: 'Generate REST API docs (Markdown or HTML) for an app',
 )]
+
 class ApiDocsCommand extends Terminal
 {
     use SelectsApiPackage;
@@ -120,3 +121,4 @@ class ApiDocsCommand extends Terminal
         return Command::SUCCESS;
     }
 }
+

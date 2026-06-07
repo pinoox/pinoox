@@ -38,3 +38,4 @@ class RouteFile
         return RouteManifest::normalizeManifest($manifest);
     }
 }
+

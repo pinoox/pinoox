@@ -14,3 +14,4 @@ interface CacheStoreInterface
 
     public function path(string $package): string;
 }
+

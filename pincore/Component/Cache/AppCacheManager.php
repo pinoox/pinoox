@@ -13,6 +13,7 @@ use Pinoox\Portal\App\AppEngine;
 class AppCacheManager
 {
     /** @var array<string, CacheStoreInterface>|null */
+
     private static ?array $stores = null;
 
     /**
@@ -137,3 +138,4 @@ class AppCacheManager
         rmdir($dir);
     }
 }
+

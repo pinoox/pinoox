@@ -62,3 +62,4 @@ class PhpEngine implements EngineInterface
         return 'php' === $reference->get('engine');
     }
 }
+

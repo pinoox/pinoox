@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -11,9 +12,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Store\Baker;
-
 
 use Pinoox\Component\File;
 use Throwable;
@@ -21,13 +20,14 @@ use Throwable;
 /**
  * Class to handle file operations
  */
-
 /**
  * Class to handle file operations
  */
 class FileHandler implements FileHandlerInterface
 {
+
     private const LOCK_TIMEOUT_MICROSECONDS = 3000000;
+
     private const LOCK_SLEEP_MICROSECONDS = 50000;
 
     public function store(string $file, $data): void
@@ -133,3 +133,4 @@ class FileHandler implements FileHandlerInterface
     }
 
 }
+

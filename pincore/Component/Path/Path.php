@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -241,3 +242,4 @@ class Path implements PathInterface
         return $pathManager;
     }
 }
+

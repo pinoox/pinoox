@@ -28,4 +28,3 @@ require_once __DIR__ . '/router.php';
 require_once __DIR__ . '/view.php';
 require_once __DIR__ . '/seo.php';
 
-

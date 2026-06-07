@@ -7,6 +7,7 @@ use Pinoox\Portal\App\App;
 class GraphQLServiceProvider
 {
     /** @var array<string, true> */
+
     private static array $registered = [];
 
     public static function register(): void
@@ -29,3 +30,4 @@ class GraphQLServiceProvider
         self::$registered[$package] = true;
     }
 }
+

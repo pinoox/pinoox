@@ -175,3 +175,4 @@ class ViteHelper
         return self::forActiveTheme()->tags($name, $fileManifest);
     }
 }
+

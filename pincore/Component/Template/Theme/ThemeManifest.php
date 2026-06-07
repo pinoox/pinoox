@@ -3,6 +3,7 @@
 namespace Pinoox\Component\Template\Theme;
 
 use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Package\ManifestConfig;
 use Pinoox\Portal\App\AppEngine as AppEnginePortal;
 use Pinoox\Portal\Lang;
 
@@ -13,8 +14,11 @@ use Pinoox\Portal\Lang;
  */
 final class ThemeManifest
 {
+
     public const FILE = 'theme.php';
+
     public const FORMAT = 'pinoox-theme';
+
     public const FORMAT_VERSION = 1;
 
     /**
@@ -198,6 +202,14 @@ final class ThemeManifest
     }
 
     /**
+     * Manifest value(s) from theme.php (supports dot notation).
+     */
+    public function config(?string $key = null, mixed $default = null): mixed
+    {
+        return ManifestConfig::get($this->data, $key, $default);
+    }
+
+    /**
      * @return array<string, mixed>
      */
     public function toArray(): array
@@ -354,3 +366,4 @@ final class ThemeManifest
         return $unique;
     }
 }
+

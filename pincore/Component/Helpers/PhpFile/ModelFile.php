@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,7 +11,6 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Helpers\PhpFile;
 
 use Pinoox\Component\Database\Model;
@@ -18,7 +18,6 @@ use Pinoox\Component\File;
 
 class ModelFile extends PhpFile
 {
-
     public static function create(string $exportPath, string $className, string $package, string $namespace): bool
     {
         $source = self::source();
@@ -31,6 +30,5 @@ class ModelFile extends PhpFile
 
         return File::generate($exportPath, $source);
     }
-
 
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Package\Engine;
-
 
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Component\Package\Reference\ReferenceInterface;

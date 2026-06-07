@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -128,3 +129,4 @@ final class SessionStarter
         return is_dir($path) && is_writable($path);
     }
 }
+

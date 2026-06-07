@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Package\Engine;
-
 
 use Pinoox\Component\AppEvent\AppBootstrap;
 use Pinoox\Component\Cache\AppCacheConfig;
@@ -220,7 +219,6 @@ class AppEngine implements EngineInterface
         return $this->appConfig[$packageName];
     }
 
-
     /**
      * Exists app.
      *
@@ -301,7 +299,6 @@ class AppEngine implements EngineInterface
         return !!preg_match('/^[a-zA-Z]+[a-zA-Z0-9]*+[_]\s{0,1}[a-zA-Z0-9]+[_]\s{0,1}[a-zA-Z0-9]+[_]{0,1}[a-zA-Z0-9]+$/m', $packageName);
     }
 
-
     public function all(): array
     {
         $files = [];
@@ -321,6 +318,7 @@ class AppEngine implements EngineInterface
         /**
          * @var SplFileInfo $file
          */
+
         foreach ($files as $file) {
             $package = $file->getRelativePath();
             if ($this->supports($package)) {
@@ -330,3 +328,4 @@ class AppEngine implements EngineInterface
         return $result;
     }
 }
+

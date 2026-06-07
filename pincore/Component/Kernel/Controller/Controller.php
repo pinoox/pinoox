@@ -1,6 +1,5 @@
 <?php
 
-
 namespace Pinoox\Component\Kernel\Controller;
 
 use Illuminate\Validation\Validator;
@@ -51,7 +50,7 @@ abstract class Controller
 
     protected function getRequest(): Request
     {
-        return app()->getRequest();
+        return runtime()->getRequest();
     }
 
     protected function redirect(string $url, int $status = 302): RedirectResponse
@@ -169,3 +168,4 @@ abstract class Controller
         return new Response($content, $status, $headers);
     }
 }
+

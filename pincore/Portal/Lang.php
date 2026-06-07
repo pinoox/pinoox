@@ -62,6 +62,7 @@ use Pinoox\Support\SystemApp;
  */
 class Lang extends Portal
 {
+
     private const ext = '.lang';
 
     public static function __register(): void
@@ -86,12 +87,10 @@ class Lang extends Portal
         ]);
     }
 
-
     public static function __app(): string
     {
         return App::package();
     }
-
 
     /**
      * Get the registered name of the component.
@@ -102,7 +101,6 @@ class Lang extends Portal
         return 'lang';
     }
 
-
     /**
      * Get exclude method names .
      * @return string[]
@@ -111,7 +109,6 @@ class Lang extends Portal
     {
         return [];
     }
-
 
     /**
      * Get method names for callback object.
@@ -125,3 +122,4 @@ class Lang extends Portal
         ];
     }
 }
+

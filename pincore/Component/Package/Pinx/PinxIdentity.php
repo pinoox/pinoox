@@ -6,6 +6,7 @@ use Pinoox\Component\Kernel\Exception;
 
 final class PinxIdentity
 {
+
     public const FILE = '.pinx/identity.json';
 
     /**
@@ -82,3 +83,4 @@ final class PinxIdentity
         }
     }
 }
+

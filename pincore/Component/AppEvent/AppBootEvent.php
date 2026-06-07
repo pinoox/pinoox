@@ -18,3 +18,4 @@ class AppBootEvent extends Event
     ) {
     }
 }
+

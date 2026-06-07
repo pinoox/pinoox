@@ -39,13 +39,11 @@ class FlowManager extends Portal
     public static function __register(): void
     {
 
-
         self::__bind(\Pinoox\Component\Flow\FlowManager::class)->setArguments([
             self::getDefaultFlows(),
             App::aliases()
         ]);
     }
-
 
     private static function getDefaultFlows(): array
     {
@@ -59,7 +57,6 @@ class FlowManager extends Portal
         return App::package();
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -69,7 +66,6 @@ class FlowManager extends Portal
         return 'kernel.flow_manager';
     }
 
-
     /**
      * Get exclude method names .
      * @return string[]
@@ -78,7 +74,6 @@ class FlowManager extends Portal
     {
         return [];
     }
-
 
     /**
      * Get method names for callback object.
@@ -93,3 +88,4 @@ class FlowManager extends Portal
         ];
     }
 }
+

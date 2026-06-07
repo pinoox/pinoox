@@ -3,6 +3,7 @@
 namespace Pinoox\PinDoc\Api\Attribute;
 
 #[\Attribute(\Attribute::TARGET_METHOD | \Attribute::IS_REPEATABLE)]
+
 class ApiEndpoint
 {
     public function __construct(
@@ -13,3 +14,4 @@ class ApiEndpoint
     ) {
     }
 }
+

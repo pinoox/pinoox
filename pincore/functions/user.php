@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -33,3 +34,4 @@ if (!function_exists('isLogin')) {
         return Auth::check();
     }
 }
+

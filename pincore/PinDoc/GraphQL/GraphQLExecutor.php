@@ -54,3 +54,4 @@ class GraphQLExecutor
         return ApiResponse::error('GRAPHQL_OPERATION_NOT_FOUND', 'GraphQL operation was not found.', ['operation' => $operation], 404);
     }
 }
+

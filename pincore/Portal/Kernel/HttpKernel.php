@@ -78,7 +78,6 @@ class HttpKernel extends Portal
         self::__param('charset', 'UTF-8');
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -88,7 +87,6 @@ class HttpKernel extends Portal
         return 'kernel';
     }
 
-
     /**
      * Get exclude method names .
      * @return string[]
@@ -97,7 +95,6 @@ class HttpKernel extends Portal
     {
         return [];
     }
-
 
     /**
      * Get method names for callback object.
@@ -110,3 +107,4 @@ class HttpKernel extends Portal
         ];
     }
 }
+

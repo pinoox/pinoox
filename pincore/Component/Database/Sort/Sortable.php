@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -9,7 +10,6 @@
  * @link https://www.pinoox.com/
  * @license  https://opensource.org/licenses/MIT MIT License
  */
-
 
 namespace Pinoox\Component\Database\Sort;
 
@@ -27,7 +27,6 @@ trait Sortable
     public function scopeSortFiled(Builder $query, $field, $direction = 'asc', ?array $support = null): Builder
     {
         $support = is_null($support) ? $this->getSortableSupports() : $support;
-
 
         $sortTable = new SortTable($query, $field, $direction, $support, $this->getAllowedColumns());
         $sortTable->setEnableAllowedColumns(!$this->isAllowedAnySortable());

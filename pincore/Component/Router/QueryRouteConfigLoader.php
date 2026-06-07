@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -161,3 +162,4 @@ class QueryRouteConfigLoader
         return [];
     }
 }
+

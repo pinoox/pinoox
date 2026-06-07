@@ -31,3 +31,4 @@ class ScheduledTaskResult
         return $this->status === 'success';
     }
 }
+

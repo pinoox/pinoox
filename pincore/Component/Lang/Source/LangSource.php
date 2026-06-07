@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -12,7 +13,6 @@
  */
 
 namespace Pinoox\Component\Lang\Source;
-
 
 /**
  * The Abstract Class defines the contract for loading and saving language data from different sources.
@@ -55,7 +55,6 @@ abstract class LangSource
     {
         $this->fallback = $lang;
     }
-
 
     public function getFallback(): ?string
     {

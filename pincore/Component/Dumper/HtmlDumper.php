@@ -21,6 +21,7 @@ class HtmlDumper extends BaseHtmlDumper
      *
      * @var string
      */
+
     const EXPANDED_SEPARATOR = 'class=sf-dump-expanded>';
 
     /**
@@ -28,6 +29,7 @@ class HtmlDumper extends BaseHtmlDumper
      *
      * @var string
      */
+
     const NON_EXPANDED_SEPARATOR = "\n</pre><script>";
 
     /**
@@ -131,3 +133,4 @@ class HtmlDumper extends BaseHtmlDumper
         return sprintf('<span style="color: #A0A0A0;"> // %s</span>', $source);
     }
 }
+

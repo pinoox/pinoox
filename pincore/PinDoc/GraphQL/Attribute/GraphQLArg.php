@@ -3,6 +3,7 @@
 namespace Pinoox\PinDoc\GraphQL\Attribute;
 
 #[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
+
 class GraphQLArg
 {
     public function __construct(
@@ -14,3 +15,4 @@ class GraphQLArg
     ) {
     }
 }
+

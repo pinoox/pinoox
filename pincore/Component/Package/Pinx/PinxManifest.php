@@ -8,11 +8,17 @@ use Pinoox\Component\Template\Theme\ThemeManifest;
 
 class PinxManifest
 {
+
     public const FORMAT = 'pinx';
+
     public const FORMAT_VERSION = 1;
+
     public const TYPE_APP = 'app';
+
     public const TYPE_THEME = 'theme';
+
     public const MANIFEST_FILE = 'manifest.json';
+
     public const PAYLOAD_PREFIX = 'payload/';
 
     /**
@@ -321,3 +327,4 @@ class PinxManifest
         return $depends;
     }
 }
+

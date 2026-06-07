@@ -189,3 +189,4 @@ class SystemConfig
         return $path === '' ? $basePath : $basePath . '/' . $path;
     }
 }
+

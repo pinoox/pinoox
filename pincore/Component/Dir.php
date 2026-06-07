@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -153,7 +154,6 @@ class Dir
             $fix = true;
             $thumbSize = Str::lastDelete($thumbSize, 'f');
         }
-
 
         $dirThumb = Str::replaceData($path,[
             'name' => $name,

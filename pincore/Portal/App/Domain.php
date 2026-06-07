@@ -58,3 +58,4 @@ class Domain extends Portal
         return [];
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -49,3 +50,4 @@ class FileUploaderFactory
         FileUploader::addEvent($type, $event);
     }
 }
+

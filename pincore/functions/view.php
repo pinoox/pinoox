@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -102,3 +103,4 @@ if (!function_exists('within_theme')) {
         return ThemeContextManager::using($context, $callback, $package);
     }
 }
+

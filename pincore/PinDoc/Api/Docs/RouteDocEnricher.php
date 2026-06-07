@@ -4,6 +4,7 @@ namespace Pinoox\PinDoc\Api\Docs;
 
 class RouteDocEnricher
 {
+
     private const TAG_MAP = [
         'auth' => 'Authentication',
         'user' => 'Users',
@@ -132,3 +133,4 @@ class RouteDocEnricher
         return ucwords(trim($action));
     }
 }
+

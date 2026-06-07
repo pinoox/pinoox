@@ -28,3 +28,4 @@ class UploadedFile extends UploadedFileSymfony
         );
     }
 }
+

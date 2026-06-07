@@ -8,12 +8,17 @@ use Pinoox\Support\SystemConfig;
 
 final class RuntimeMode
 {
+
     public const DEVELOPMENT = 'development';
+
     public const PRODUCTION = 'production';
+
     public const TEST = 'test';
+
     public const STAGING = 'staging';
 
     /** @var array<string, string> */
+
     private const ALIASES = [
         'dev' => self::DEVELOPMENT,
         'local' => self::DEVELOPMENT,
@@ -274,6 +279,7 @@ final class RuntimeMode
     }
 
     /** @deprecated Use name() */
+
     public function get(?string $package = null): string
     {
         return $this->name($package);
@@ -327,3 +333,4 @@ final class RuntimeMode
         }
     }
 }
+

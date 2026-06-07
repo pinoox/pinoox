@@ -48,3 +48,4 @@ final class ThemeReference
         return $this->package . ':' . $this->name;
     }
 }
+

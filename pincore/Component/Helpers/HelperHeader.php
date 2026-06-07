@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -17,6 +18,7 @@ class HelperHeader
     private static $isContentType = false;
 
     // redirect url
+
     public static function redirect($url)
     {
         self::addHeader('Location', $url);
@@ -66,7 +68,6 @@ class HelperHeader
     /*
      * Content Transfer Encoding : BASE64 - QUOTED-PRINTABLE - 8BIT - 7BIT - BINARY - x-token
      */
-
     public static function contentDisposition($name, $isAttachment = false)
     {
         if (!empty($name)) {
@@ -82,7 +83,6 @@ class HelperHeader
     /*
      * Content Transfer Encoding : bytes - none
      */
-
     public static function contentTransferEncoding($typeEncoding)
     {
         self::addHeader('Content-Transfer-Encoding', $typeEncoding);
@@ -121,7 +121,6 @@ class HelperHeader
      * HelperHeader::cacheControl('no-cache, no-store, must-revalidate');
      *
      */
-
     public static function acceptRanges($unit = 'none')
     {
         self::addHeader('Accept-Ranges', $unit);
@@ -142,7 +141,6 @@ class HelperHeader
      *  if the Cache-Control header field is omitted in a request.
      *  Use Pragma only for backwards compatibility with HTTP/1.0 clients.
      */
-
     public static function cacheControl($string)
     {
         self::addHeader('Cache-control', $string);
@@ -156,7 +154,6 @@ class HelperHeader
      * #### Example #####
      * HelperHeader::expires('Wed, 21 Oct 2015 07:28:00 GMT');
      */
-
     public static function pragma($string)
     {
         self::addHeader('Pragma', $string);
@@ -176,7 +173,6 @@ class HelperHeader
      * + HelperHeader::expires('bytes',*,67589);
      * + HelperHeader::expires('bytes','200-1000',*);
      */
-
     public static function expires($dateTimeString)
     {
         self::addHeader('Expires', $dateTimeString);
@@ -215,7 +211,6 @@ class HelperHeader
     {
         return isset($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : null;
     }
-
 
     public static function isLocalhost()
     {

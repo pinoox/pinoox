@@ -75,7 +75,6 @@ class Schema extends Portal
 		self::__bind(DB::schema());
 	}
 
-
 	/**
 	 * Get the registered name of the component.
 	 * @return string
@@ -84,7 +83,6 @@ class Schema extends Portal
 	{
 		return 'schema';
 	}
-
 
 	/**
 	 * Get method names for callback object.
@@ -95,3 +93,4 @@ class Schema extends Portal
 		return [];
 	}
 }
+

@@ -42,3 +42,4 @@ readonly class UploadResult
         return new self(success: false, error: $error);
     }
 }
+

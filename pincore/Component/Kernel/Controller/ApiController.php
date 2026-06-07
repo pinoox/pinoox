@@ -40,3 +40,4 @@ abstract class ApiController extends Controller
         return $this->ok($resource, $message, $meta, $status);
     }
 }
+

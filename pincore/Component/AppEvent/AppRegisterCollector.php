@@ -47,3 +47,4 @@ class AppRegisterCollector
      */
     public static array $pendingWhen = [];
 }
+

@@ -64,3 +64,4 @@ class ApiRouteLoader
         return 'api.' . $route['version'] . '.' . $package . ($name !== '' ? '.' . $name : '');
     }
 }
+

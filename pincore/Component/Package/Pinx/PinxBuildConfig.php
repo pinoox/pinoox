@@ -18,6 +18,7 @@ class PinxBuildConfig
      *     gitignore: bool,
      *     exclude: list<string>,
      *     include_themes: list<string>,
+     *     composer: bool,
      *     sign: array{enabled: bool, require_signature: bool, key_path: ?string, key_id: ?string}
      * }
      */
@@ -65,6 +66,9 @@ class PinxBuildConfig
             'gitignore' => (bool) ($build['gitignore'] ?? true),
             'exclude' => $exclude,
             'include_themes' => self::stringList($build['include_themes'] ?? []),
+            'composer' => array_key_exists('composer', $build)
+                ? (bool) $build['composer']
+                : true,
             'sign' => $sign,
         ];
     }
@@ -114,3 +118,4 @@ class PinxBuildConfig
         return array_values(array_filter(array_map(static fn ($item) => trim((string) $item), $value)));
     }
 }
+

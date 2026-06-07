@@ -31,3 +31,4 @@ abstract class ApiResource implements JsonSerializable
         return $resources;
     }
 }
+

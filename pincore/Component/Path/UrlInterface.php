@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -22,3 +23,4 @@ interface UrlInterface
 
     public function asset(string $path = '', ?string $package = null): string;
 }
+

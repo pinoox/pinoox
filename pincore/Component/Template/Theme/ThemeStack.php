@@ -2,6 +2,7 @@
 
 namespace Pinoox\Component\Template\Theme;
 
+use Pinoox\Component\Package\AppManifest;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine as AppEnginePortal;
 use Pinoox\Portal\Path;
@@ -73,6 +74,20 @@ final class ThemeStack
     public static function stack(?string $package = null): array
     {
         return self::resolve($package)['stack'];
+    }
+
+    public static function pathTheme(?string $package = null): string
+    {
+        $package = self::resolvePackage($package);
+
+        return (string) (self::appConfig($package)['path-theme'] ?? 'theme');
+    }
+
+    public static function directory(string $themeName, ?string $package = null, ?string $pathTheme = null): string
+    {
+        $package = self::resolvePackage($package);
+
+        return self::themeDirectory($package, $themeName, $pathTheme);
     }
 
     /**
@@ -211,20 +226,9 @@ final class ThemeStack
     /**
      * @return array<string, mixed>
      */
-    private static function appConfig(string $package): array
+    public static function appConfig(?string $package = null): array
     {
-        if ($package === '' || !AppEnginePortal::exists($package)) {
-            return [];
-        }
-
-        $appFile = AppEnginePortal::path($package, 'app.php');
-        if (!is_file($appFile)) {
-            return [];
-        }
-
-        $data = include $appFile;
-
-        return is_array($data) ? $data : [];
+        return AppManifest::load($package);
     }
 
     private static function resolvePackage(?string $package): string
@@ -284,3 +288,4 @@ final class ThemeStack
         return $unique;
     }
 }
+

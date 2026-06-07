@@ -55,3 +55,4 @@ class MethodSourceReader
         return implode("\n", $slice);
     }
 }
+

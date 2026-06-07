@@ -5,6 +5,7 @@ namespace Pinoox\Component\AppEvent;
 class AppGraphQLRegistryStore
 {
     /** @var array<string, list<array<string, mixed>>> */
+
     private static array $manifests = [];
 
     public static function absorb(string $package, AppRegisterCollector $collector): void
@@ -64,3 +65,4 @@ class AppGraphQLRegistryStore
         return !empty(self::$manifests[$package]);
     }
 }
+

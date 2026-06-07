@@ -14,6 +14,7 @@ class ActionCache
     }
 
     /** @deprecated Old global layout before per-app pinker/apps/{package}/cache/ */
+
     public static function legacyGlobalPath(string $package): string
     {
         return rtrim(str_replace('\\', '/', SystemConfig::path('pinker')), '/')
@@ -21,6 +22,7 @@ class ActionCache
     }
 
     /** @return list<array<string, mixed>>|null */
+
     public static function load(string $package): ?array
     {
         $data = PhpCacheFile::read(self::path($package));
@@ -40,6 +42,7 @@ class ActionCache
     }
 
     /** @return list<array<string, mixed>>|null */
+
     private static function extractActions(array $data): ?array
     {
         if (isset($data['actions']) && is_array($data['actions'])) {
@@ -50,6 +53,7 @@ class ActionCache
     }
 
     /** @param list<array<string, mixed>> $manifest */
+
     public static function save(string $package, array $manifest): void
     {
         PhpCacheFile::write(self::path($package), [
@@ -58,6 +62,7 @@ class ActionCache
     }
 
     /** @param list<string> $routeFiles */
+
     public static function isStale(string $package, array $routeFiles): bool
     {
         $path = self::path($package);
@@ -77,6 +82,7 @@ class ActionCache
     }
 
     /** @return list<string> */
+
     public static function resolveRouteFiles(string $package, string $appPath, array $configuredRoutes): array
     {
         $files = [];
@@ -90,3 +96,4 @@ class ActionCache
         return $files;
     }
 }
+

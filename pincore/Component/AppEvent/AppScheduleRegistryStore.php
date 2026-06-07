@@ -7,6 +7,7 @@ use Pinoox\Cron\Schedule;
 class AppScheduleRegistryStore
 {
     /** @var array<string, list<callable(Schedule): void>> */
+
     private static array $callbacks = [];
 
     public static function absorb(string $package, AppRegisterCollector $collector): void
@@ -26,3 +27,4 @@ class AppScheduleRegistryStore
         return self::$callbacks[$package] ?? [];
     }
 }
+

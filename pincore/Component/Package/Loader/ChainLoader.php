@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace Pinoox\Component\Package\Loader;
-
 
 final class ChainLoader implements LoaderInterface
 {
@@ -69,3 +68,4 @@ final class ChainLoader implements LoaderInterface
         return false;
     }
 }
+

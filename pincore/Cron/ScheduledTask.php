@@ -56,13 +56,21 @@ class ScheduledTask
     }
 
     public function everyMinute(): self { return $this->cron('* * * * *'); }
+
     public function everyFiveMinutes(): self { return $this->cron('*/5 * * * *'); }
+
     public function everyTenMinutes(): self { return $this->cron('*/10 * * * *'); }
+
     public function everyFifteenMinutes(): self { return $this->cron('*/15 * * * *'); }
+
     public function everyThirtyMinutes(): self { return $this->cron('*/30 * * * *'); }
+
     public function hourly(): self { return $this->cron('0 * * * *'); }
+
     public function daily(): self { return $this->dailyAt('00:00'); }
+
     public function weekly(): self { return $this->cron('0 0 * * 0'); }
+
     public function monthly(): self { return $this->cron('0 0 1 * *'); }
 
     public function dailyAt(string $time): self
@@ -184,3 +192,4 @@ class ScheduledTask
         }
     }
 }
+

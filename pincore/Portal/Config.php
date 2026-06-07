@@ -33,7 +33,6 @@ class Config extends Portal
 {
     const ext = 'config.php';
 
-
     public static function __register(): void
     {
         self::__bind(FileConfigStrategy::class, 'strategy')->setArguments([
@@ -86,7 +85,6 @@ class Config extends Portal
         return self::create(new FileConfigStrategy($pinker));
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -95,7 +93,6 @@ class Config extends Portal
     {
         return 'config';
     }
-
 
     /**
      * Get include method names .
@@ -106,7 +103,6 @@ class Config extends Portal
         return ['name', 'create'];
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -116,3 +112,4 @@ class Config extends Portal
         return [];
     }
 }
+

@@ -3,6 +3,7 @@
 namespace Pinoox\Component\Package\Pinx;
 
 use Pinoox\Component\Kernel\Exception;
+use Pinoox\Component\Package\AppComposerVendor;
 use Pinoox\Component\Package\Engine\AppEngine;
 use ZipArchive;
 
@@ -20,7 +21,7 @@ class PinxBuilder
      *     sign_key?: ?string,
      *     key_id?: ?string
      * } $options
-     * @return array{path: string, manifest: PinxManifest, files: int, signed: bool, signature: ?array}
+     * @return array{path: string, manifest: PinxManifest, files: int, signed: bool, signature: ?array, composer: bool}
      */
     public function build(string $package, ?string $outputPath = null, array $options = []): array
     {
@@ -45,10 +46,21 @@ class PinxBuilder
             throw new Exception('Build source path not found: ' . $sourcePath);
         }
 
+        $composerPrepared = false;
+        $alwaysInclude = [];
+
+        if ($build['type'] === PinxManifest::TYPE_APP && $build['composer'] && AppComposerVendor::hasComposerJson($packagePath)) {
+            $composerPrepared = AppComposerVendor::prepare($packagePath)['prepared'];
+            if ($composerPrepared) {
+                $alwaysInclude[] = 'vendor';
+            }
+        }
+
         $buildConfig = [
             'gitignore' => $build['gitignore'],
             'exclude' => $build['exclude'],
             'include_themes' => $build['type'] === PinxManifest::TYPE_APP ? $build['include_themes'] : [],
+            'always_include' => $alwaysInclude,
         ];
 
         if ($build['type'] === PinxManifest::TYPE_APP) {
@@ -58,8 +70,8 @@ class PinxBuilder
             )));
         }
 
-        $finder = $this->selector->files($sourcePath, $buildConfig);
-        $fileCount = iterator_count($finder->files());
+        $payloadFiles = $this->selector->payloadFiles($sourcePath, $buildConfig);
+        $fileCount = count($payloadFiles);
 
         if ($fileCount === 0) {
             throw new Exception('No files selected for pinx build.');
@@ -81,15 +93,8 @@ class PinxBuilder
 
         /** @var array<string, string> $payloadHashes */
         $payloadHashes = [];
-        $finder = $this->selector->files($sourcePath, $buildConfig);
-        foreach ($finder->files() as $file) {
-            $relativePath = str_replace('\\', '/', $file->getRelativePathname());
+        foreach ($payloadFiles as $relativePath => $realPath) {
             $entry = PinxManifest::PAYLOAD_PREFIX . $this->payloadEntry($build['type'], $build['theme_name'], $relativePath);
-            $realPath = $file->getRealPath();
-            if ($realPath === false) {
-                continue;
-            }
-
             $payloadHashes[$entry] = hash('sha256', (string) file_get_contents($realPath));
             $zip->addFile($realPath, $entry);
         }
@@ -123,6 +128,7 @@ class PinxBuilder
             'files' => $fileCount,
             'signed' => $signed,
             'signature' => $signature,
+            'composer' => $composerPrepared,
         ];
     }
 
@@ -187,3 +193,4 @@ class PinxBuilder
         return $exportDir . '/' . $suffix . '_v' . $manifest->versionCode() . '_' . date('Ymd_His') . '.pinx';
     }
 }
+

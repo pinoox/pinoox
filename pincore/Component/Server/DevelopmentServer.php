@@ -8,6 +8,7 @@ use Symfony\Component\Process\Process;
 class DevelopmentServer
 {
     /** @var list<string> */
+
     public const PASSTHROUGH_ENV = [
         'PATH',
         'PATHEXT',
@@ -236,3 +237,4 @@ class DevelopmentServer
         return $this->host;
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -35,3 +36,4 @@ class SessionReleaseListener implements EventSubscriberInterface
         ];
     }
 }
+

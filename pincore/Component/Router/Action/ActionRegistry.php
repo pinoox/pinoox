@@ -8,9 +8,11 @@ use Pinoox\Component\Router\Router;
 class ActionRegistry
 {
     /** @var array<string, array<string, ActionDefinition>> */
+
     private static array $definitions = [];
 
     /** @var array<string, array<string, string>> routeName => actionKey */
+
     private static array $routeLinks = [];
 
     public static function reset(): void
@@ -35,6 +37,7 @@ class ActionRegistry
     }
 
     /** @return array<string, ActionDefinition> */
+
     public static function all(?string $package = null): array
     {
         if ($package !== null) {
@@ -45,6 +48,7 @@ class ActionRegistry
     }
 
     /** @return array<string, array<string, ActionDefinition>> */
+
     public static function groupedByPackage(): array
     {
         return self::$definitions;
@@ -72,6 +76,7 @@ class ActionRegistry
     }
 
     /** @return list<string> */
+
     public static function routesForAction(string $package, string $actionKey): array
     {
         $routes = [];
@@ -106,6 +111,7 @@ class ActionRegistry
     }
 
     /** @return list<array<string, mixed>> */
+
     public static function exportManifest(string $package): array
     {
         $manifest = [];
@@ -169,3 +175,4 @@ class ActionRegistry
             || str_contains($path, 'functions/router.php');
     }
 }
+

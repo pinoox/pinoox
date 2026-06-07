@@ -36,8 +36,7 @@ use Pinoox\Portal\App\App;
  * @method static \Pinoox\Component\Template\View add(array $data)
  * @method static \Pinoox\Component\Template\View setData(array $data)
  * @method static array engines()
- * @method static bool isFilesystemPath(string $path)
- * @method static string assets(string $link = '', bool $asPath = false)
+ * @method static string assets(string $link = '', bool $asPath = false, ?string $theme = null)
  * @method static string asstes(string $file = '')
  * @method static string render(array|null|string $name = NULL, array $parameters = [], bool $exist = true)
  * @method static string renderByEngine(array|null|string $name, array $parameters, bool $exist = true)
@@ -68,7 +67,6 @@ class View extends Portal
         ]);
     }
 
-
     public static function response(
         string  $name,
         array   $parameters = [],
@@ -84,7 +82,6 @@ class View extends Portal
             $response->setCharset($charset);
         return $response;
     }
-
 
     private static function getFunctionsLoader(): array
     {
@@ -113,7 +110,6 @@ class View extends Portal
         return $response;
     }
 
-
     public static function jsResponse(string $name, array $parameters = [], ?string $charset = 'UTF-8'): Response
     {
         return self::response($name, $parameters, 'application/javascript', $charset);
@@ -128,7 +124,6 @@ class View extends Portal
         self::set('_seo', $meta);
     }
 
-
     /**
      * Get the registered name of the component.
      * @return string
@@ -138,12 +133,10 @@ class View extends Portal
         return 'view';
     }
 
-
     public static function __app(): string
     {
         return App::package();
     }
-
 
     /**
      * Get exclude method names.
@@ -154,7 +147,6 @@ class View extends Portal
         return [];
     }
 
-
     /**
      * Get method names for callback object.
      * @return string[]
@@ -164,3 +156,4 @@ class View extends Portal
         return [];
     }
 }
+

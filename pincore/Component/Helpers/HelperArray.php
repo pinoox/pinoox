@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -213,7 +214,6 @@ class HelperArray
             $main = (is_numeric($main)) ? intval($main) : $main;
             $key = (is_numeric($key)) ? intval($key) : $key;
 
-
             if ($main === '*' || $main === $key) {
                 if (empty($p)) {
                     self::$resultArray[] = $value;
@@ -399,7 +399,6 @@ class HelperArray
         return $value;
     }
 
-
     /**
      * Parse one param an array
      */
@@ -480,7 +479,6 @@ class HelperArray
                 $temp = &$temp[$key];
             }
         }
-
 
         if ($action == 'add') {
             if (!isset($temp[$key])) {

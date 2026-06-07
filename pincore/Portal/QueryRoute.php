@@ -53,3 +53,4 @@ class QueryRoute extends Portal
         return [];
     }
 }
+

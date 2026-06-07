@@ -46,6 +46,72 @@ class PinxFileSelector
     }
 
     /**
+     * Collect files from a directory that must ship in the package even when gitignored.
+     *
+     * @return array<string, string> map of relative path => absolute path
+     */
+    public function forcedDirectoryFiles(string $sourcePath, string $relativeDir): array
+    {
+        $absolute = rtrim(str_replace('\\', '/', $sourcePath), '/') . '/' . ltrim(str_replace('\\', '/', $relativeDir), '/');
+        if (!is_dir($absolute)) {
+            return [];
+        }
+
+        $files = [];
+        $finder = new Finder();
+        $finder
+            ->in($absolute)
+            ->files()
+            ->ignoreVCS(true)
+            ->ignoreUnreadableDirs();
+
+        $prefix = trim(str_replace('\\', '/', $relativeDir), '/');
+
+        foreach ($finder as $file) {
+            $realPath = $file->getRealPath();
+            if ($realPath === false) {
+                continue;
+            }
+
+            $relativePath = $prefix . '/' . str_replace('\\', '/', $file->getRelativePathname());
+            $files[$relativePath] = $realPath;
+        }
+
+        return $files;
+    }
+
+    /**
+     * @param array{
+     *     gitignore?: bool,
+     *     exclude?: list<string>,
+     *     include_themes?: list<string>,
+     *     always_include?: list<string>
+     * } $buildConfig
+     * @return array<string, string> map of relative path => absolute path
+     */
+    public function payloadFiles(string $sourcePath, array $buildConfig): array
+    {
+        $files = [];
+
+        foreach ($this->files($sourcePath, $buildConfig)->files() as $file) {
+            $realPath = $file->getRealPath();
+            if ($realPath === false) {
+                continue;
+            }
+
+            $files[str_replace('\\', '/', $file->getRelativePathname())] = $realPath;
+        }
+
+        foreach ($buildConfig['always_include'] ?? [] as $relativeDir) {
+            foreach ($this->forcedDirectoryFiles($sourcePath, $relativeDir) as $relativePath => $realPath) {
+                $files[$relativePath] = $realPath;
+            }
+        }
+
+        return $files;
+    }
+
+    /**
      * @param list<string> $includeThemes
      */
     private function applyThemeFilter(Finder $finder, string $sourcePath, array $includeThemes): void
@@ -100,3 +166,4 @@ class PinxFileSelector
         }
     }
 }
+
