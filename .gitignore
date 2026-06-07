@@ -1,27 +1,80 @@
-# Pinoox
-pinker
+# =============================================================================
+# Pinoox — runtime, secrets, generated artifacts
+# =============================================================================
+
+# Baker cache & build output (~pinker)
+/pinker/
+
+# Writable storage (logs, cache, sessions, app files)
+/storage/*
+!/storage/.gitkeep
+!/storage/**/.gitkeep
+
+# User & package directories at project root
+/uploads/
+/downloads/
+
+# Environment & local credentials
 .env
+.env.*
+!.env.example
 
-# IntelliJ IDEA
-.idea
-.vscode
+# Local MAMP / PHP error dumps inside apps
+**/MAMP_php_error_log*
 
-# Node Js
-node_modules
-package-lock.json
-
-# Composer
-vendor
-/composer.lock
-
-# PHPUnit
-.phpunit.result.cache
-
-# MacOS
-.DS_Store
-
-# Test artifacts (generated during pest/phpunit runs)
+# Generated test fixtures (keep directory markers)
 /tests/Fixtures/**/*
 !/tests/Fixtures/**/.gitkeep
-/apps/com_test_*/
-/apps/com_boot_*/
+
+
+# =============================================================================
+# Project — PHP & Composer
+# =============================================================================
+
+/vendor/
+/composer.lock
+.phpunit.result.cache
+.phpunit.cache
+/auth.json
+_ide_helper.php
+
+
+# =============================================================================
+# Project — Node.js & frontend tooling
+# =============================================================================
+
+node_modules/
+package-lock.json
+
+
+# =============================================================================
+# Project — IDEs & editors
+# =============================================================================
+
+.idea/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Cursor (keep shared agent rules)
+.cursor/*
+!.cursor/rules/
+
+.zed/
+.nova/
+.phpactor.json
+.codex/
+Homestead.json
+Homestead.yaml
+
+
+# =============================================================================
+# Project — OS & misc
+# =============================================================================
+
+.DS_Store
+Thumbs.db
+*.log
