@@ -11,6 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use Pinoox\Component\Helpers\PinooxScriptHelper;
 use Pinoox\Component\Helpers\ViteHelper;
 use Pinoox\Component\Template\Theme\ThemeContext as ThemeContextManager;
 use Pinoox\Flow\ThemeContextFlow;
@@ -46,6 +47,20 @@ if (!function_exists('render')) {
     }
 }
 
+if (!function_exists('pinoox_bootstrap')) {
+    function pinoox_bootstrap(array $page = []): string
+    {
+        return PinooxScriptHelper::bootstrapTags($page);
+    }
+}
+
+if (!function_exists('pinoox_script')) {
+    function pinoox_script(?string $template = null): string
+    {
+        return PinooxScriptHelper::tags($template);
+    }
+}
+
 if (!function_exists('vite')) {
     function vite(string $name, ?string $fileManifest = null): void
     {
@@ -53,10 +68,40 @@ if (!function_exists('vite')) {
     }
 }
 
+if (!function_exists('theme_ssr_html')) {
+    /**
+     * Resolve SSR HTML for the active theme (static, dynamic, or auto fallback).
+     *
+     * @param array<string, mixed> $context bootstrap, url, ssr.dynamic, ...
+     */
+    function theme_ssr_html(array $context = []): ?string
+    {
+        try {
+            $stack = \Pinoox\Component\Template\Theme\ThemeStack::resolve(\Pinoox\Portal\App\App::package());
+            $themePath = $stack['paths'][0] ?? '';
+
+            if ($themePath === '') {
+                return null;
+            }
+
+            return \Pinoox\Component\Template\Frontend\ThemeSsr::html($themePath, $context);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+}
+
 if (!function_exists('vite_tags')) {
     function vite_tags(string $name, ?string $fileManifest = null): string
     {
         return ViteHelper::useViteTags($name, $fileManifest);
+    }
+}
+
+if (!function_exists('vite_css_tags')) {
+    function vite_css_tags(string $name, ?string $fileManifest = null): string
+    {
+        return ViteHelper::useCssTags($name, $fileManifest);
     }
 }
 
