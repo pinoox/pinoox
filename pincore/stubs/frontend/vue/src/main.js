@@ -1,7 +1,17 @@
+import './bootstrap.dev.js';
 import { createApp } from 'vue';
 import App from './App.vue';
+import { getBoot } from './boot.js';
 
-const mount = document.querySelector(window.__PINOOX_MOUNT__ || '#app');
-if (mount) {
-    createApp(App).mount(mount);
+const boot = getBoot();
+const html = document.documentElement;
+
+if (boot.locale && html.lang !== boot.locale) {
+    html.lang = boot.locale;
 }
+
+if (boot.direction) {
+    html.dir = boot.direction;
+}
+
+createApp(App).mount('#app');

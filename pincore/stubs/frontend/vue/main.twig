@@ -1,12 +1,10 @@
-<!doctype html>
-<html lang="{{ currentLang|default('en') }}">
-<head>
-    {% include 'partials/head.twig' %}
-    <script src="{{ url('dist/pinoox.js') }}"></script>
-    {{ vite_tags('src/main.js')|raw }}
-</head>
-<body>
-<div id="app"></div>
-<script>window.__PINOOX_MOUNT__ = '#app';</script>
-</body>
-</html>
+<!doctype html>
+<html lang="{{ bootstrap.locale|default(currentLang|default('en')) }}">
+<head>
+    {% include 'partials/head.twig' %}
+    {% include 'partials/scripts.twig' %}
+</head>
+<body>
+<div id="app"></div>
+</body>
+</html>

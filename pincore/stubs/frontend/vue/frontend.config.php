@@ -1,10 +1,11 @@
 <?php
 
 return [
+    'profile' => 'spa',
     'stack' => 'vue',
     'entry' => 'src/main.js',
     'manifest' => 'dist/.vite/manifest.json',
-    'pinoox_js' => 'dist/pinoox.js',
+    'pinoox' => 'pinoox',
     'mount' => '#app',
     'dev' => [
         'enabled' => (bool) _env('VITE_DEV', false),
