@@ -1,0 +1,217 @@
+<?php
+
+/**
+ * ***  *  *     *  ****  ****  *    *
+ *   *  *  * *   *  *  *  *  *   *  *
+ * ***  *  *  *  *  *  *  *  *    *
+ *      *  *   * *  *  *  *  *   *  *
+ *      *  *    **  ****  ****  *    *
+ *
+ * @author   Pinoox
+ * @link https://www.pinoox.com
+ * @license  https://opensource.org/licenses/MIT MIT License
+ */
+
+namespace Pinoox\Model;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
+use Pinoox\Component\Database\Model;
+use Pinoox\Component\Transport\TransportConfig;
+use Pinoox\Component\Transport\TransportScenario;
+use Pinoox\Portal\App\App;
+use Pinoox\Portal\Database\DB;
+use Pinoox\Portal\Hash;
+use Pinoox\Model\Scope\AppScope;
+
+
+/**
+ * @property mixed $user_id
+ * @property mixed $fname
+ * @property mixed $lname
+ * @property mixed $email
+ * @property string $status
+ * @property string $password
+ * @property string|null $app
+ */
+class UserModel extends Model
+{
+    const ACTIVE = 'active';
+    const INACTIVE = 'inactive';
+    const SUSPEND = 'suspend';
+    const PENDING = 'pending';
+
+    protected $table = Table::USER;
+    public $incrementing = true;
+
+    public $primaryKey = 'user_id';
+    public $timestamps = true;
+    private $defaultAvatarLink = null;
+
+    protected $hidden = ['password', 'session_id', 'app'];
+
+    protected $fillable = [
+        'session_id',
+        'avatar_id',
+        'personal_id',
+        'app',
+        'fname',
+        'lname',
+        'username',
+        'password',
+        'group_key',
+        'email',
+        'mobile',
+        'status',
+        'metadata',
+    ];
+
+    protected $appends = ['full_name', 'avatar'];
+
+    protected $casts = [
+        'metadata' => 'array',
+    ];
+
+    protected array $sortableSupports = [
+        'full_name' => 'concat:fname,lname',
+        'user_id',
+        'created_at',
+    ];
+
+    protected bool $allowedAnySortable = false;
+
+    public static function hashPassword($password)
+    {
+        return Hash::make($password);
+    }
+
+    public static function updatePassword($user_id, $new_password)
+    {
+        $hashed_password = self::hashPassword($new_password);
+        self::where('user_id', $user_id)->update(['password' => $hashed_password]);
+    }
+
+    public function scopeWhereMetadata(Builder $query, $metaKey, $operator = null, $value = null, $boolean = 'and')
+    {
+        return $query->where('metadata->' . $metaKey, $operator, $value, $boolean);
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (UserModel $user) {
+            $user->app = $user->app ?: self::getPackage();
+            $user->status = $user->status ?: self::ACTIVE;
+            if($user->password)
+                $user->password = self::hashPassword($user->password);
+        });
+
+        static::updating(function (UserModel $user) {
+            if ($user->isDirty('password')) {
+                $user->password = self::hashPassword($user->password);
+            }
+        });
+
+        static::deleting(function (UserModel $user) {
+            $user->file?->delete();
+        });
+    }
+
+    public function getAvatarAttribute()
+    {
+        $defaultImagePath = $this->defaultAvatarLink ?? asset('resources/avatar.png');
+
+        $file = FileModel::where('file_id', $this->avatar_id)->first();
+
+
+        if ($file) {
+            return [
+                'file_id' => $this->avatar_id,
+                'file_link' => $file->file_link,
+                'thumb_link' => $file->thumb_link,
+            ];
+        } else {
+            // Return the default image path if no avatar is found
+            return [
+                'file_id' => null,
+                'file_link' => $defaultImagePath,
+                'thumb_link' => $defaultImagePath,
+            ];
+        }
+    }
+
+    public function setDefaultAvatarLink(string $imageLink): void
+    {
+        $this->defaultAvatarLink = $imageLink;
+    }
+
+    public function file(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(FileModel::class, 'avatar_id', 'file_id');
+    }
+
+    public function roles(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(
+            RoleModel::class,
+            Table::USER_ROLE,
+            'user_id',
+            'role_id',
+        );
+    }
+
+    public function getFullNameAttribute()
+    {
+        return $this->fname . ' ' . $this->lname;
+    }
+
+    public static function setPackage(string $package): void
+    {
+        App::set('transport.' . TransportScenario::USER_TABLE, $package)->save();
+        self::addAppGlobalScope();
+    }
+
+    public static function getPackage(): string
+    {
+        return TransportConfig::package(TransportScenario::USER_TABLE);
+    }
+
+    protected static function booted(): void
+    {
+        self::addAppGlobalScope();
+    }
+
+    private static function addAppGlobalScope(): void
+    {
+        static::addGlobalScope('app', AppScope::for(
+            fn (): array => TransportConfig::scopeValues(TransportScenario::USER_TABLE),
+        ));
+    }
+
+    public static function ruleUnique($column = null, $ignoreUserId = null)
+    {
+        $rule = Rule::unique(DB::tableName(Table::USER, 'platform'), $column)->where('app', static::getPackage());
+
+        if (!is_null($ignoreUserId)) {
+            $rule = $rule->ignore($ignoreUserId, 'user_id');
+        }
+
+        return $rule;
+    }
+
+    public function scopeFlexibleOrderBy($query, $field, $direction = 'asc')
+    {
+        if ($field && $direction && $direction !== 'none') {
+            $direction = DB::orderDirection($direction);
+
+            if (in_array($field, $this->fillable) || $field === 'user_id') {
+                $query->orderBy($field, $direction);
+            } elseif ($field === 'full_name') {
+                $query->orderByRaw("CONCAT(fname, ' ', lname) $direction");
+            }
+        }
+
+        return $query;
+    }
+}

@@ -62,7 +62,6 @@
   "autoload": {
     "psr-4": {
       "Pinoox\\": "pincore/",
-      "Pinoox\\System\\": "system/",
       "App\\": "apps/"
     }
   },
@@ -80,7 +79,7 @@
     "nunomaduro/collision": "^v6.4.0"
   },
   "scripts": {
-    "check-platform": "@php system/launcher/check.php",
+    "check-platform": "@php launcher/check.php",
     "test": "pest",
     "test:core": "pest tests/Feature"
   },
