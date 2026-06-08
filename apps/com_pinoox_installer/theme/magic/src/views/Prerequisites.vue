@@ -172,7 +172,7 @@ const prerequisiteItems = [
     {key: 'free_space', labelKey: 'prerequisites_required_space', icon: 'hdd'},
     {key: 'php', labelKey: 'prerequisites_php', icon: 'code'},
     {key: 'mod_rewrite', labelKey: 'prerequisites_mod_rewrite', icon: 'link'},
-    {key: 'mysql', labelKey: 'prerequisites_mysql', icon: 'database'},
+    {key: 'database', labelKey: 'prerequisites_database', icon: 'database'},
 ]
 
 const defaultItem = () => ({
@@ -191,7 +191,7 @@ const prerequisites = reactive({
     free_space: defaultItem(),
     php: defaultItem(),
     mod_rewrite: defaultItem(),
-    mysql: defaultItem(),
+    database: defaultItem(),
 })
 
 const connectionError = ref(null)
@@ -421,8 +421,14 @@ async function loadPrerequisites() {
                     serverDetected: result.server_detected ?? null,
                     htaccessRequired: Boolean(result.htaccess_required),
                     htaccess: result.htaccess ?? null,
+                    available: result.available ?? [],
+                    connections: result.connections ?? {},
                 }
             }
+        }
+
+        if (Array.isArray(items.database?.available)) {
+            store.setAvailableDbConnections(items.database.available)
         }
 
         await verifyApiRouting()
@@ -477,7 +483,7 @@ function currentLabel(type) {
         free_space: 'prerequisites_current_space',
         php: 'prerequisites_current_php',
         mod_rewrite: 'prerequisites_current_rewrite',
-        mysql: 'prerequisites_current_mysql',
+        database: 'prerequisites_current_database',
     }
 
     return LANG.value.install[map[type]] ?? ''
@@ -588,7 +594,7 @@ function guideText(type) {
         free_space: 'prerequisites_tip_space',
         php: 'prerequisites_tip_php',
         mod_rewrite: 'prerequisites_tip_rewrite',
-        mysql: 'prerequisites_tip_mysql',
+        database: 'prerequisites_tip_database',
     }
 
     return LANG.value.install[map[type]] ?? ''
@@ -617,7 +623,7 @@ function helpText(type) {
     const map = {
         free_space: 'prerequisites_help_space_fail',
         php: 'prerequisites_help_php_fail',
-        mysql: 'prerequisites_help_mysql_fail',
+        database: 'prerequisites_help_database_fail',
     }
 
     return install[map[type]] ?? ''

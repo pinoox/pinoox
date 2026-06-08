@@ -1,3 +1,4 @@
+import {getUrl, hasBoot} from '@/boot.js'
 import {isApiEnvelope, readApiErrorMessage} from '@/utils/apiEnvelope.js'
 
 function hint(text, tool = null) {
@@ -10,14 +11,14 @@ function hint(text, tool = null) {
 
 function apiBaseUrl() {
     if (import.meta.env.MODE === 'production') {
-        return typeof PINOOX !== 'undefined' ? PINOOX.URL?.API : ''
+        return hasBoot() ? getUrl().API : ''
     }
 
     return import.meta.env.VITE_API_PATH ?? ''
 }
 
 export function isPinooxLoaded() {
-    return typeof PINOOX !== 'undefined' && PINOOX?.URL?.API
+    return hasBoot() && Boolean(getUrl().API)
 }
 
 export function diagnoseBootstrapError(LANG) {

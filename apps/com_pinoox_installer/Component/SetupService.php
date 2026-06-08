@@ -7,11 +7,11 @@ use Pinoox\Component\Package\Engine\AppEngine;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine as AppEnginePortal;
 use Pinoox\Portal\App\AppRouter;
-use Pinoox\Portal\Config;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Logger;
-use Pinoox\System\Model\Table;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\Table;
+use Pinoox\Model\UserModel;
+use Pinoox\Support\SystemConfig;
 
 final class SetupService
 {
@@ -47,12 +47,22 @@ final class SetupService
         } catch (\Throwable $e) {
             Logger::error('Installer setup failed: ' . $e->getMessage(), [
                 'exception' => $e,
+                'migration_path' => SystemConfig::platformPath('migrations'),
+                'patch_path' => SystemConfig::platformPath('patches'),
             ]);
 
             throw new SetupException('install.err_provision');
         }
 
-        $this->disableInstaller();
+        try {
+            $this->disableInstaller();
+        } catch (\Throwable $e) {
+            Logger::error('Installer disable step failed: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            throw new SetupException('install.err_provision');
+        }
     }
 
     /**
@@ -65,16 +75,18 @@ final class SetupService
         }
 
         $config = InstallerDatabase::normalize($dbInput);
+        $connectionName = InstallerDatabase::connectionName($dbInput);
 
         if (!InstallerDatabase::testConnection($dbInput)) {
             return false;
         }
 
-        if (!DatabaseCredentialsSync::persist($config)) {
+        if (!DatabaseCredentialsSync::persist($config, $connectionName)) {
             return false;
         }
 
-        $this->reconnectDatabase();
+        $this->applyInstallConnection($connectionName);
+        $this->reconnectDatabase($config);
 
         return true;
     }
@@ -114,23 +126,28 @@ final class SetupService
 
     private function disableInstaller(): void
     {
-        $appRoutes = Config::name('app')->get();
-        AppRouter::setData($appRoutes);
+        $routesFile = AppEnginePortal::path('com_pinoox_installer') . '/config/app.config.php';
+        $postInstallRoutes = is_file($routesFile) ? require $routesFile : [];
+
+        AppRouter::setData(is_array($postInstallRoutes) ? $postInstallRoutes : []);
         App::set('enable', false)->save();
     }
 
-    private function reconnectDatabase(): void
+    private function reconnectDatabase(array $config): void
     {
-        $manager = DB::___();
+        SystemConfig::clearCache();
+        DB::refreshCoreConnection($config);
+    }
 
-        foreach (['default', 'platform'] as $connection) {
-            try {
-                $manager->getDatabaseManager()->purge($connection);
-            } catch (\Throwable) {
-            }
+    private function applyInstallConnection(string $connectionName): void
+    {
+        foreach (['DB_CONNECTION'] as $key) {
+            $_ENV[$key] = $connectionName;
+            $_SERVER[$key] = $connectionName;
+            putenv($key . '=' . $connectionName);
         }
 
-        DB::register();
+        SystemConfig::clearCache();
     }
 
     private function coreTablesReady(): bool

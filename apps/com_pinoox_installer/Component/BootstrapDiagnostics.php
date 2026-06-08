@@ -145,7 +145,7 @@ class BootstrapDiagnostics
 
     private function mapPinooxTemplateStep(): array
     {
-        $path = $this->pinooxTwigPath();
+        $path = $this->themeIndexPath();
         $exists = is_file($path);
         $readable = $exists && is_readable($path);
         $valid = false;
@@ -153,8 +153,7 @@ class BootstrapDiagnostics
         if ($readable) {
             $content = @file_get_contents($path);
             $valid = is_string($content)
-                && str_contains($content, 'PINOOX')
-                && str_contains($content, 'URL');
+                && str_contains($content, 'pinoox_bootstrap');
         }
 
         return [
@@ -165,17 +164,17 @@ class BootstrapDiagnostics
         ];
     }
 
-    private function pinooxTwigPath(): string
+    private function themeIndexPath(): string
     {
         if (function_exists('path')) {
             $theme = @path('theme');
 
             if (is_string($theme) && $theme !== '') {
-                return rtrim($theme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'pinoox.twig';
+                return rtrim($theme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'index.twig';
             }
         }
 
-        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . 'magic' . DIRECTORY_SEPARATOR . 'pinoox.twig';
+        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . 'magic' . DIRECTORY_SEPARATOR . 'index.twig';
     }
 
     private function blocked(string $step, string $reason): array

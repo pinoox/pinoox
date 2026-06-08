@@ -24,6 +24,21 @@ body {
   margin: 0;
 }
 
+.route-fade-enter-active,
+.route-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.route-fade-enter-from,
+.route-fade-leave-to {
+  opacity: 0;
+}
+
+.install-step {
+  position: relative;
+  z-index: 1;
+}
+
 #app {
   min-height: 100vh;
   position: relative;
@@ -1038,6 +1053,12 @@ body.ltr {
       background: rgba(255, 80, 80, 0.16);
       border: 1px solid rgba(255, 120, 120, 0.32);
     }
+
+    &--success {
+      color: #d4ffd8;
+      background: rgba(80, 255, 120, 0.14);
+      border: 1px solid rgba(120, 255, 150, 0.32);
+    }
   }
 
   .app {
@@ -1923,6 +1944,55 @@ body.ltr {
     max-height: none;
     padding: 0.25rem 0;
 
+    &--scroll {
+      --form-scroll-gutter: 1.5rem;
+      max-height: min(52vh, 30rem);
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-gutter: stable;
+      padding-block: 0.15rem 0.65rem;
+      padding-left: 0.35rem;
+      padding-right: var(--form-scroll-gutter);
+      box-sizing: border-box;
+
+      @supports not (scrollbar-gutter: stable) {
+        overflow-y: scroll;
+      }
+
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.32) transparent;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      &::-webkit-scrollbar-track {
+        background: transparent;
+        margin-block: 0.35rem;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.32);
+        border-radius: 999px;
+        border: 2px solid transparent;
+        background-clip: padding-box;
+      }
+
+      .pin-input,
+      .form-control,
+      .password-input {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+      }
+    }
+
+    body.rtl &--scroll {
+      padding-left: var(--form-scroll-gutter);
+      padding-right: 0.35rem;
+    }
+
     .install-field {
       margin-bottom: 1.1rem;
 
@@ -1932,6 +2002,13 @@ body.ltr {
         font-size: 0.88rem;
         font-weight: 600;
         color: rgba(255, 255, 255, 0.92);
+      }
+
+      &__hint {
+        margin: 0.45rem 0 0;
+        font-size: 0.82rem;
+        line-height: 1.45;
+        color: rgba(255, 255, 255, 0.72);
       }
 
       .pin-input {
@@ -1949,15 +2026,16 @@ body.ltr {
 
       .password-input {
         position: relative;
+        direction: ltr;
 
         .pin-input {
           width: 100%;
-          padding-inline-end: 2.75rem;
+          padding-right: 2.75rem;
         }
 
         &__toggle {
           position: absolute;
-          inset-inline-end: 0.55rem;
+          right: 0.55rem;
           top: 50%;
           transform: translateY(-50%);
           display: inline-flex;
@@ -1988,6 +2066,47 @@ body.ltr {
             box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
           }
         }
+      }
+    }
+
+    .db-advanced {
+      margin-top: 0.35rem;
+
+      &__toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.35rem 0;
+        border: none;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.82);
+        font-size: 0.86rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: color 0.2s ease;
+
+        .icon-svg {
+          width: 1rem;
+          height: 1rem;
+          opacity: 0.85;
+        }
+
+        &:hover {
+          color: #fff;
+        }
+
+        &:focus-visible {
+          outline: none;
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.18);
+          border-radius: 0.35rem;
+        }
+      }
+
+      &__panel {
+        margin-top: 0.85rem;
+        padding-top: 0.85rem;
+        padding-bottom: 0.35rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.14);
       }
     }
 
@@ -2221,19 +2340,220 @@ body.ltr {
 }
 
 @media (max-width: 768px) {
-  #page {
-    padding-inline: 1rem;
+  html {
+    -webkit-text-size-adjust: 100%;
   }
 
-  .steps ul li {
-    padding: 0 25px;
+  body {
+    overflow-x: hidden;
+  }
 
-    span {
-      display: none;
+  .art-cloud {
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .steps {
+    top: 8px;
+    padding: 10px 6px;
+    height: auto;
+
+    ul {
+      justify-content: space-between;
+      gap: 0.15rem;
+
+      > li {
+        flex: 1 1 0;
+        padding: 0;
+        text-align: center;
+        font-size: 0;
+
+        span {
+          display: none;
+        }
+
+        &::before {
+          display: block;
+          margin: 0 auto;
+          width: 1.65rem;
+          height: 1.65rem;
+          line-height: 1.65rem;
+          font-size: 0.72rem;
+        }
+
+        &.current::before {
+          box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+        }
+      }
+    }
+  }
+
+  #page {
+    min-height: auto;
+    padding: 1rem 1.15rem calc(3.75rem + env(safe-area-inset-bottom, 0px));
+
+    .container {
+      padding-inline: 0;
     }
 
-    &.current::before {
-      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.2);
+    .page-header {
+      margin-bottom: 1rem;
+
+      .title {
+        margin-top: 0.75rem;
+      }
     }
+
+    h1.title {
+      margin-top: 0.75rem;
+      font-size: 1.28rem;
+    }
+
+    h2.description,
+    p.description {
+      font-size: 0.9rem;
+    }
+
+    .page-panel {
+      margin-top: 1rem;
+      padding: 1rem;
+    }
+
+    .form--scroll {
+      max-height: none;
+      scrollbar-gutter: stable;
+      padding-left: 0.35rem;
+      padding-right: var(--form-scroll-gutter, 1.5rem);
+    }
+
+    body.rtl & .form--scroll {
+      padding-left: var(--form-scroll-gutter, 1.5rem);
+      padding-right: 0.35rem;
+    }
+
+    .pin-input,
+    .form-control {
+      font-size: 16px;
+    }
+
+    .rules-scroll {
+      max-height: min(40dvh, 18rem);
+    }
+
+    .prerequisites-panel {
+      padding: 1rem;
+    }
+
+    .prerequisites-overview {
+      gap: 0.85rem;
+      padding: 0.85rem;
+
+      &__text strong {
+        font-size: 0.95rem;
+      }
+    }
+
+    .prerequisite-card {
+      padding: 0.85rem;
+
+      &__head {
+        flex-wrap: wrap;
+        gap: 0.35rem;
+      }
+
+      &__facts {
+        flex-wrap: wrap;
+      }
+    }
+
+    .acceptance {
+      padding: 0.85rem 1rem;
+      gap: 0.75rem;
+
+      &__text {
+        font-size: 0.88rem;
+      }
+    }
+  }
+
+  .page-actions {
+    gap: 0.65rem;
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+
+    .pin-btn {
+      min-width: 0;
+      flex: 1 1 calc(50% - 0.35rem);
+      padding-inline: 1rem;
+    }
+  }
+
+  .footer .links {
+    padding-inline: 1rem;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .install-progress-modal,
+  .htaccess-modal {
+    padding: 0.85rem;
+    align-items: flex-end;
+
+    &__panel {
+      max-height: min(88dvh, 640px);
+    }
+  }
+
+  .htaccess-modal__actions {
+    justify-content: stretch;
+
+    .pin-btn,
+    .btn {
+      flex: 1 1 100%;
+    }
+  }
+
+  .bootstrap-error__wrap {
+    min-height: auto;
+    padding: 1.25rem 1rem calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .install-alert {
+    flex-direction: column;
+    gap: 0.65rem;
+    padding: 0.85rem 0.95rem;
+
+    &__title {
+      font-size: 0.98rem;
+    }
+
+    &__message,
+    &__hints {
+      font-size: 0.84rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .page-actions {
+    flex-direction: column;
+    align-items: stretch;
+
+    .pin-btn {
+      flex: 1 1 auto;
+      width: 100%;
+    }
+  }
+
+  .app {
+    width: min(72vw, 10.5rem);
+    height: min(72vw, 10.5rem);
+    padding-top: 1rem;
+  }
+
+  .install-progress-modal__header,
+  .htaccess-modal__header {
+    flex-wrap: wrap;
   }
 }

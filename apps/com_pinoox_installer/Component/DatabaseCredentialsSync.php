@@ -13,108 +13,116 @@
 
 namespace App\com_pinoox_installer\Component;
 
-use Pinoox\Component\Database\DatabaseManager;
-use Pinoox\Component\Helpers\EnvFile;
-use Pinoox\Component\Runtime\RuntimeMode;
+use Pinoox\Component\Database\DatabaseConfig;
+use Pinoox\Component\Store\Baker\EnvSensitiveConfig;
+use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Portal\Config;
 use Pinoox\Support\SystemConfig;
 
 /**
- * Single entry point for installer database credentials.
+ * Persists installer database credentials to Pinker.
  *
- * - system/config/database.config.php: persisted for all environments
- * - runtime (putenv): current request only so migrate/setup can connect
- * - .env: never created or modified by the installer
+ * Writes the selected connection profile (e.g. connections.mariadb) and sets
+ * config default to that connection. Project `.env` stays developer-owned;
+ * when env keys exist they still override at runtime in development/test.
  */
 class DatabaseCredentialsSync
 {
     /**
-     * @param array<string, mixed> $config
+     * @param array<string, mixed> $config Normalized runtime connection config
      */
-    public static function persist(array $config): bool
+    public static function persist(array $config, string $connectionName = null): bool
     {
-        $mode = self::resolveRuntimeMode();
-        $env = self::toEnvVariables($config, $mode);
+        $connectionName = self::resolveConnectionName($connectionName);
 
-        EnvFile::forProject()->applyToRuntime($env);
-        SystemConfig::clearCache();
-
-        Config::name('~database')
-            ->set('production', $config)
-            ->set('development', $config)
-            ->save();
-
-        return true;
-    }
-
-    public static function resolveRuntimeMode(): string
-    {
         try {
-            $global = RuntimeMode::readGlobal();
-            $mode = (string) ($global['mode'] ?? '');
+            $database = Config::name('~database');
+            $strategy = $database->getStrategy();
 
-            if ($mode !== '') {
-                return RuntimeMode::normalize($mode);
+            if (!$strategy instanceof FileConfigStrategy) {
+                return false;
+            }
+
+            $pinker = $strategy->getPinker();
+            $overridePath = $pinker->getOverrideFile();
+            $overrideBackup = is_string($overridePath) && is_file($overridePath)
+                ? file_get_contents($overridePath)
+                : null;
+
+            try {
+                $pinker->restore();
+                $database->restore();
+
+                $root = $database->all();
+
+                if (!is_array($root)) {
+                    $root = [];
+                }
+
+                $root['default'] = $connectionName;
+
+                $connections = is_array($root['connections'] ?? null) ? $root['connections'] : [];
+                $connections[$connectionName] = array_replace(
+                    is_array($connections[$connectionName] ?? null) ? $connections[$connectionName] : [],
+                    self::storageConfig($config, $connectionName),
+                );
+                $root['connections'] = $connections;
+
+                $database->setData($root);
+
+                $pinker->forceOverridePaths([
+                    'default' => $connectionName,
+                ]);
+
+                $pinker->info([
+                    'env_sensitive' => 'yes',
+                    'env_priority' => EnvSensitiveConfig::envPriorityLabel(),
+                    'env_resolution' => EnvSensitiveConfig::resolutionLabel(),
+                    'stored_profiles' => 'default,' . DatabaseConfig::pinkerPathForConnection($connectionName),
+                ]);
+
+                $database->save();
+                SystemConfig::clearCache();
+
+                return true;
+            } catch (\Throwable $e) {
+                if ($overrideBackup !== null && is_string($overridePath)) {
+                    file_put_contents($overridePath, $overrideBackup);
+                    SystemConfig::clearCache();
+                }
+
+                throw $e;
             }
         } catch (\Throwable) {
+            return false;
         }
+    }
 
-        $fromEnv = SystemConfig::env('PINOOX_MODE', SystemConfig::env('APP_ENV', null));
+    private static function resolveConnectionName(?string $connectionName): string
+    {
+        $connectionName = strtolower(trim((string) ($connectionName ?? DatabaseConfig::DEFAULT_CONNECTION)));
 
-        if (is_string($fromEnv) && $fromEnv !== '') {
-            return RuntimeMode::normalize($fromEnv);
-        }
-
-        return RuntimeMode::DEVELOPMENT;
+        return in_array($connectionName, InstallerDatabase::INSTALLABLE_CONNECTIONS, true)
+            ? $connectionName
+            : DatabaseConfig::DEFAULT_CONNECTION;
     }
 
     /**
+     * Pinker stores the logical driver (mariadb stays mariadb); runtime may normalize to mysql.
+     *
      * @param array<string, mixed> $config
-     * @return array<string, scalar|null>
+     * @return array<string, mixed>
      */
-    public static function toEnvVariables(array $config, ?string $mode = null): array
+    private static function storageConfig(array $config, string $connectionName): array
     {
-        $mode = RuntimeMode::normalize($mode ?? self::resolveRuntimeMode());
-        $connection = self::databaseConnectionKey($mode);
-
-        $driver = (string) ($config['driver'] ?? 'mysql');
-        $host = (string) ($config['host'] ?? '127.0.0.1');
-        $port = (string) ($config['port'] ?? '3306');
-        $database = (string) ($config['database'] ?? '');
-        $username = (string) ($config['username'] ?? 'root');
-        $password = $config['password'] ?? '';
-        $charset = (string) ($config['charset'] ?? 'utf8mb4');
-        $collation = (string) ($config['collation'] ?? 'utf8mb4_bin');
-        $prefix = (string) ($config['prefix'] ?? DatabaseManager::DEFAULT_CORE_TABLE_PREFIX);
-        $strict = $config['strict'] ?? true;
-        $engine = $config['engine'] ?? null;
-        $timezone = (string) ($config['timezone'] ?? '+03:30');
-
-        return [
-            'PINOOX_MODE' => $mode,
-            'DB_CONNECTION' => $connection,
-            'DB_DRIVER' => $driver,
-            'DB_HOST' => $host,
-            'DB_PORT' => $port,
-            'DB_DATABASE' => $database,
-            'DB_USERNAME' => $username,
-            'DB_PASSWORD' => $password,
-            'DB_CHARSET' => $charset,
-            'DB_COLLATION' => $collation,
-            'DB_PREFIX' => $prefix,
-            'DB_STRICT' => $strict,
-            'DB_ENGINE' => $engine,
-            'DB_TIMEZONE' => $timezone,
-        ];
-    }
-
-    private static function databaseConnectionKey(string $mode): string
-    {
-        return match (RuntimeMode::normalize($mode)) {
-            RuntimeMode::PRODUCTION => RuntimeMode::PRODUCTION,
-            RuntimeMode::STAGING => RuntimeMode::STAGING,
-            RuntimeMode::TEST => RuntimeMode::TEST,
-            default => RuntimeMode::DEVELOPMENT,
+        $stored = $config;
+        $stored['driver'] = match ($connectionName) {
+            'mariadb' => 'mariadb',
+            'pgsql' => 'pgsql',
+            'sqlsrv' => 'sqlsrv',
+            default => 'mysql',
         };
+
+        return $stored;
     }
 }

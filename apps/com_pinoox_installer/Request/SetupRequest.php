@@ -28,9 +28,11 @@ class SetupRequest extends ApiFormRequest
             'db.host' => 'required',
             'db.database' => 'required',
             'db.username' => 'required',
+            'db.connection' => 'nullable|in:mysql,mariadb,pgsql,sqlsrv',
             'db.password' => 'nullable|string',
             'db.prefix' => 'nullable|string',
             'db.port' => 'nullable|string',
+            'db.timezone' => 'nullable|string',
         ];
     }
 }
