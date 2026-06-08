@@ -16,10 +16,6 @@ return [
     'minpin' => 2,
     'transport' => [
         'user' => 'platform',
-        'auth' => 'platform',
-        'token' => 'platform',
-        'file' => 'platform',
-        'access' => 'platform',
     ],
     'router' => [
         'routes' => [
