@@ -35,7 +35,7 @@ class FrontendConfig
             'stack' => $detected,
             'entry' => self::defaultEntry($detected),
             'manifest' => 'dist/.vite/manifest.json',
-            'pinoox_js' => 'dist/pinoox.js',
+            'pinoox' => 'pinoox',
             'mount' => '#app',
             'dev' => [
                 'enabled' => (bool) _env('VITE_DEV', false),
@@ -43,7 +43,13 @@ class FrontendConfig
             ],
             'ssr' => [
                 'enabled' => false,
-                'mode' => 'shell',
+                'mode' => 'hybrid',
+                'strategy' => ThemeSsr::STRATEGY_AUTO,
+                'fragment' => 'dist/ssr/app.html',
+                'meta' => 'dist/ssr/meta.json',
+                'server' => 'dist/server/entry-server.mjs',
+                'fallback' => ThemeSsr::FALLBACK_CSR,
+                'node' => null,
             ],
             'seo' => [
                 'defaults' => [],
@@ -139,6 +145,11 @@ class FrontendConfig
     public static function isDevEnabled(array $config): bool
     {
         return !empty($config['dev']['enabled']);
+    }
+
+    public static function isSsrEnabled(array $config): bool
+    {
+        return ThemeSsr::isEnabled($config);
     }
 }
 
