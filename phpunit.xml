@@ -4,8 +4,38 @@
          bootstrap="tests/bootstrap.php"
          colors="true">
     <testsuites>
-        <testsuite name="Pinoox Core">
+        <testsuite name="Pinoox">
             <directory>tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Server">
+            <directory>tests/Feature/Server</directory>
+        </testsuite>
+        <testsuite name="Routing">
+            <directory>tests/Feature/Routing</directory>
+        </testsuite>
+        <testsuite name="Http">
+            <directory>tests/Feature/Http</directory>
+        </testsuite>
+        <testsuite name="App">
+            <directory>tests/Feature/App</directory>
+        </testsuite>
+        <testsuite name="Portal">
+            <directory>tests/Feature/Portal</directory>
+        </testsuite>
+        <testsuite name="Installer">
+            <directory>tests/Feature/Installer</directory>
+        </testsuite>
+        <testsuite name="Theme">
+            <directory>tests/Feature/Theme</directory>
+        </testsuite>
+        <testsuite name="Config">
+            <directory>tests/Feature/Config</directory>
+        </testsuite>
+        <testsuite name="Database">
+            <directory>tests/Feature/Database</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>tests/Feature/Integration</directory>
         </testsuite>
     </testsuites>
 </phpunit>
