@@ -60,9 +60,8 @@ package-lock.json
 *.code-workspace
 
 # Cursor (keep shared agent rules)
-.cursor/*
-!.cursor/rules/
-
+.cursor/
+.editorconfig
 .zed/
 .nova/
 .phpactor.json
