@@ -25,6 +25,7 @@ if ($projectRoot !== '' && str_starts_with($primaryFile, $projectRoot)) {
 }
 
 $portalError = !empty($pinoox['portal']['via_portal']);
+$hasPortalContext = !empty($pinoox['portal']['source']['snippet']) || !empty($pinoox['portal']['call']);
 $thrownInFramework = TraceFrameClassifier::isFrameworkSurfacePath($primaryFile, $projectRootArg);
 $thrownInPortal = $portalError && str_contains($primaryFile, '/Component/Source/Portal.php');
 $thrownInProjectEntry = TraceFrameClassifier::isProjectEntryPath($primaryFile, $projectRootArg);
@@ -77,6 +78,24 @@ foreach ($exceptionAsArray as $i => $e) {
         </section>
         <?php } ?>
 
+        <?php if (!empty($pinoox['meeting']['active'])) {
+            $meetingHost = trim((string) ($pinoox['meeting']['host'] ?? ''));
+            $meetingGuest = trim((string) ($pinoox['meeting']['guest'] ?? ''));
+        ?>
+        <section class="px-preview-banner px-meeting-banner" role="note">
+            <p>
+                <strong>Meeting mode</strong> —
+                <?php if ($meetingHost !== '' && $meetingGuest !== '') { ?>
+                guest app <code><?= htmlspecialchars($meetingGuest, ENT_QUOTES); ?></code> running inside host <code><?= htmlspecialchars($meetingHost, ENT_QUOTES); ?></code>
+                <?php } elseif ($meetingGuest !== '') { ?>
+                guest app <code><?= htmlspecialchars($meetingGuest, ENT_QUOTES); ?></code>
+                <?php } else { ?>
+                a guest app invoked via <code>App::meeting()</code>
+                <?php } ?>
+            </p>
+        </section>
+        <?php } ?>
+
         <section class="px-hero">
             <div class="px-hero-top">
                 <div class="px-badges">
@@ -117,56 +136,10 @@ foreach ($exceptionAsArray as $i => $e) {
             </p>
             <?php } ?>
 
-            <?php if (!empty($pinoox['portal']['call'])) { ?>
-            <p class="px-hero-origin">
-                Called from
-                <?php if (!empty($pinoox['portal']['file'])) { ?>
-                <code><?= htmlspecialchars((string) $pinoox['portal']['file'], ENT_QUOTES); ?><?= !empty($pinoox['portal']['line']) ? ':' . (int) $pinoox['portal']['line'] : ''; ?></code>
-                <?php } ?>
-                as
-                <code class="px-hero-origin-call"><?= htmlspecialchars((string) $pinoox['portal']['call'], ENT_QUOTES); ?></code>
-                <?php if (!empty($pinoox['portal']['suggestion'])) { ?>
-                <span class="px-hero-origin-hint">→ did you mean <code><?= htmlspecialchars((string) $pinoox['portal']['portal'], ENT_QUOTES); ?>::<?= htmlspecialchars((string) $pinoox['portal']['suggestion'], ENT_QUOTES); ?>()</code>?</span>
-                <?php } ?>
-            </p>
-            <?php } ?>
-
             <?= $this->include('views/partials/exception_meta_bar.html.php', ['pinoox' => $pinoox]); ?>
         </section>
 
         <?php if (empty($networkPreview)) { ?>
-        <?php if (!empty($pinoox['portal']['source']['snippet'])) { ?>
-        <section class="px-portal-context">
-            <div class="px-route-context-head">
-                <h2>Portal call</h2>
-                <p>Your code invoked a Portal facade; the error surfaced inside <code>Portal.php</code> when delegating to the service.</p>
-            </div>
-
-            <dl class="px-route-grid">
-                <dt>Call</dt>
-                <dd><code><?= htmlspecialchars((string) ($pinoox['portal']['call'] ?? ''), ENT_QUOTES); ?></code></dd>
-                <?php if (!empty($pinoox['portal']['target'])) { ?>
-                <dt>Service</dt>
-                <dd><code><?= htmlspecialchars((string) $pinoox['portal']['target'], ENT_QUOTES); ?></code></dd>
-                <?php } ?>
-                <?php if (!empty($pinoox['portal']['suggestion'])) { ?>
-                <dt>Suggestion</dt>
-                <dd><code><?= htmlspecialchars((string) (($pinoox['portal']['portal'] ?? '') . '::' . $pinoox['portal']['suggestion'] . '()'), ENT_QUOTES); ?></code></dd>
-                <?php } ?>
-            </dl>
-
-            <details class="px-disclosure px-disclosure-route px-disclosure-route-primary" open>
-                <summary>
-                    <span>Your call site</span>
-                    <code class="px-disclosure-file"><?= htmlspecialchars((string) ($pinoox['portal']['source']['relative_file'] ?? ''), ENT_QUOTES); ?>:<?= (int) ($pinoox['portal']['source']['line'] ?? 0); ?></code>
-                </summary>
-                <div class="px-disclosure-body">
-                    <?= $this->include('views/partials/source_snippet.html.php', ['source' => $pinoox['portal']['source']]); ?>
-                </div>
-            </details>
-        </section>
-        <?php } ?>
-
         <?php if (!empty($pinoox['route'])) {
             $routeCtx = $pinoox['route'];
             $routeMethods = implode('|', (array) ($routeCtx['methods'] ?? ['GET']));
@@ -243,6 +216,9 @@ foreach ($exceptionAsArray as $i => $e) {
                 <label for="px-tab-exception" class="px-tab px-control-label" role="tab">Exception</label>
                 <?php } ?>
                 <label for="px-tab-stack" class="px-tab px-control-label" role="tab">Stack trace</label>
+                <?php if ($hasPortalContext) { ?>
+                <label for="px-tab-portal" class="px-tab px-control-label" role="tab">Portal</label>
+                <?php } ?>
                 <?php if ($logger) { ?>
                 <label for="px-tab-logs" class="px-tab px-control-label" role="tab">
                     Logs<?php if ($logger->countErrors()) { ?><span class="px-tab-badge"><?= $logger->countErrors(); ?></span><?php } ?>
@@ -288,6 +264,12 @@ foreach ($exceptionAsArray as $i => $e) {
                     </div>
                 </div>
 
+                <?php if ($hasPortalContext) { ?>
+                <div class="px-tab-panel" data-px-panel="portal" role="tabpanel">
+                    <?= $this->include('views/partials/portal_context_panel.html.php', ['pinoox' => $pinoox]); ?>
+                </div>
+                <?php } ?>
+
                 <?php if ($logger) { ?>
                 <div class="px-tab-panel" data-px-panel="logs" role="tabpanel">
                     <?php if ($logger->getLogs()) { ?>
@@ -304,6 +286,14 @@ foreach ($exceptionAsArray as $i => $e) {
                         'pinoox' => $pinoox,
                         'hints' => $hints,
                     ]); ?>
+                    <?php if ($hasPortalContext) { ?>
+                    <details class="px-disclosure">
+                        <summary><span>Portal call</span></summary>
+                        <div class="px-disclosure-body">
+                            <?= $this->include('views/partials/portal_context_panel.html.php', ['pinoox' => $pinoox]); ?>
+                        </div>
+                    </details>
+                    <?php } ?>
                     <?php } ?>
 
                     <?php if ($currentContent) { ?>
@@ -353,10 +343,16 @@ foreach ($exceptionAsArray as $i => $e) {
                         <div class="px-disclosure-body">
                             <dl class="px-kv-grid">
                                 <dt>Package</dt><dd><?= htmlspecialchars((string) (($pinoox['package'] ?? '') !== '' ? $pinoox['package'] : '—'), ENT_QUOTES); ?></dd>
+                                <?php if (!empty($pinoox['meeting']['active'])) {
+                                    $meetingHost = trim((string) ($pinoox['meeting']['host'] ?? ''));
+                                    if ($meetingHost !== '') { ?>
+                                <dt>Meeting host</dt><dd><?= htmlspecialchars($meetingHost, ENT_QUOTES); ?></dd>
+                                <?php } } ?>
                                 <dt>Pinoox version</dt><dd><?= htmlspecialchars((string) ($pinoox['pinoox_version']['label'] ?? '—'), ENT_QUOTES); ?></dd>
                                 <dt>App version</dt><dd><?= htmlspecialchars((string) ($pinoox['app_version']['label'] ?? '—'), ENT_QUOTES); ?></dd>
                                 <dt>Environment</dt><dd><?= htmlspecialchars((string) ($pinoox['env']['app_env'] ?? 'local'), ENT_QUOTES); ?></dd>
-                                <dt>Debug</dt><dd><?= htmlspecialchars((string) ($pinoox['env']['app_debug'] ?? 'true'), ENT_QUOTES); ?></dd>
+                                <dt>APP debug</dt><dd><?= htmlspecialchars((string) ($pinoox['env']['app_debug'] ?? 'false'), ENT_QUOTES); ?></dd>
+                                <dt>Pinoox Exception</dt><dd><?= htmlspecialchars((string) ($pinoox['env']['pinoox_exception'] ?? 'true'), ENT_QUOTES); ?></dd>
                                 <dt>Project root</dt><dd class="break-long-words"><?= htmlspecialchars((string) ($pinoox['project_root'] ?? ''), ENT_QUOTES); ?></dd>
                                 <dt>Core path</dt><dd class="break-long-words"><?= htmlspecialchars((string) ($pinoox['core_path'] ?? ''), ENT_QUOTES); ?></dd>
                             </dl>

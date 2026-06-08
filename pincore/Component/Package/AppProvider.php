@@ -111,10 +111,15 @@ class AppProvider
             $request = !empty($request) ? $request : $this->getRequest();
             $subRequest = $request->duplicate();
             $subRequest->session = null;
-            if (empty($attributes))
-                $attributes = $this->app->router()->matchRequest($request);
+            $subRequest->attributes = new ParameterBag();
+
+            if ($attributes === []) {
+                $attributes = $this->app->router()->matchRequest($subRequest);
+            }
+
             $subRequest->attributes->add($attributes);
-            return $this->handle($subRequest, 3);
+
+            return $this->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
         }, $path);
     }
     /**

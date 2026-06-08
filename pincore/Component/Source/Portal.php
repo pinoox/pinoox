@@ -66,11 +66,30 @@ abstract class Portal
     {
         $ids = static::__ids();
         foreach ($ids as $id) {
+            static::__rebuildService($id);
             static::__container()->removeDefinition($id);
         }
 
-        unset(static::$__registered[static::class], static::$__booted[static::class]);
+        unset(static::$__registered[static::__lifecycleKey()], static::$__booted[static::__lifecycleKey()]);
         static::__registerLifecycle();
+    }
+
+    private static function __rebuildService(string $id): void
+    {
+        $container = static::__container();
+
+        if (!$container->has($id)) {
+            return;
+        }
+
+        try {
+            $service = $container->get($id);
+
+            if (is_object($service) && method_exists($service, '__portalRebuild')) {
+                $service->__portalRebuild();
+            }
+        } catch (\Throwable) {
+        }
     }
 
     final protected function __args($index = null): array
@@ -108,27 +127,41 @@ abstract class Portal
         static::__ensureBooted();
     }
 
+    /**
+     * Lifecycle cache key. App-scoped portals ({@see __app()}) register once per package id.
+     */
+    final protected static function __lifecycleKey(): string
+    {
+        $app = static::__app();
+
+        if ($app !== null && $app !== '' && $app !== '~') {
+            return static::__id();
+        }
+
+        return static::class;
+    }
+
     final protected static function __ensureRegistered(): void
     {
-        $class = static::class;
+        $key = static::__lifecycleKey();
 
-        if (!empty(static::$__registered[$class])) {
+        if (!empty(static::$__registered[$key])) {
             return;
         }
 
-        static::$__registered[$class] = true;
+        static::$__registered[$key] = true;
         static::__register();
     }
 
     final protected static function __ensureBooted(): void
     {
-        $class = static::class;
+        $key = static::__lifecycleKey();
 
-        if (!empty(static::$__booted[$class])) {
+        if (!empty(static::$__booted[$key])) {
             return;
         }
 
-        static::$__booted[$class] = true;
+        static::$__booted[$key] = true;
         static::__boot();
     }
 

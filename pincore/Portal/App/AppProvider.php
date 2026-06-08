@@ -29,6 +29,8 @@ use Pinoox\Portal\Kernel\Terminal;
 use Pinoox\Portal\Session;
 use Pinoox\Component\Kernel\Debug\PinooxDebug;
 use Pinoox\Component\Runtime\RuntimeMode;
+use Pinoox\Component\Store\Config\Config as ConfigStore;
+use Pinoox\Support\SystemConfig;
 
 /**
  * @method static AppProvider prerequisite()
@@ -68,12 +70,17 @@ class AppProvider extends Portal
         SessionStarter::configureSavePath();
         Dumper::register();
 
+        Env::register();
+        SystemConfig::clearCache();
+        ConfigStore::reloadEnvSensitive();
+
         if (RuntimeMode::bootDebugEnabled()) {
             PinooxDebug::enable();
         }
 
-        Env::register();
-        DB::register();
+        if (PHP_SAPI !== 'cli') {
+            DB::register();
+        }
     }
 
     /**

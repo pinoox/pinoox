@@ -3,6 +3,7 @@
 namespace Pinoox\Terminal\Pincore;
 
 use Pinoox\Component\Helpers\PhpFile\TestFile;
+use Pinoox\Component\Package\AppEnv\AppEnvExample;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\Pinker;
@@ -131,6 +132,7 @@ return [
 ];
 PHP;
         FileSystem::dumpFile("{$appDir}/{$appFile}", $appConfig);
+        FileSystem::dumpFile("{$appDir}/.env.example", AppEnvExample::appFile());
 
         // Get copyright stub content
         $stubsPath = rtrim(SystemConfig::path('stubs'), '/') . '/';
@@ -147,8 +149,6 @@ final class Actions
 {
 
     public const HOME = 'home';
-
-    public const PINOOXJS = 'pinooxjs';
 }
 PHP;
         FileSystem::dumpFile("{$appDir}/Router/Actions.php", $actionsClassFile);
@@ -160,12 +160,9 @@ PHP;
 
 use App\\{$name}\\Controller\\MainController;
 use App\\{$name}\\Router\\Actions;
-use Pinoox\Portal\View;
 use function Pinoox\Router\action;
 
 action(Actions::HOME, [MainController::class, 'index']);
-
-action(Actions::PINOOXJS, fn () => View::jsResponse('pinoox'));
 PHP;
         FileSystem::dumpFile("{$appDir}/routes/actions.php", $actionsFile);
 
@@ -178,7 +175,6 @@ use App\\{$name}\\Router\\Actions;
 use function Pinoox\Router\get;
 
 get('/', '@' . Actions::HOME);
-get('/dist/pinoox.js', '@' . Actions::PINOOXJS);
 get('*', fn() => redirect(url('/')));
 PHP;
         FileSystem::dumpFile("{$appDir}/routes/web.php", $routesFile);
@@ -224,9 +220,8 @@ PHP;
         $indexContent = str_replace('{{appName}}', $displayName, $indexStub);
         FileSystem::dumpFile("{$appDir}/theme/default/hello.twig", $indexContent);
 
-        // Generate pinoox.twig from stub
-        $pinooxStub = file_get_contents($stubsPath . 'pinoox.twig.stub');
-        FileSystem::dumpFile("{$appDir}/theme/default/pinoox.twig", $pinooxStub);
+        // Theme partials for inline bootstrap + Vite
+        FileSystem::dumpFile("{$appDir}/theme/default/partials/scripts.twig", file_get_contents($stubsPath . 'frontend/vue/partials/scripts.twig'));
 
         $stubVars = [
             '{{ copyright }}' => $copyrightStub,
@@ -246,6 +241,7 @@ PHP;
         // Generate functions.php from stub
         $functionsStub = file_get_contents($stubsPath . 'functions.php.stub');
         FileSystem::dumpFile("{$appDir}/theme/default/functions.php", $functionsStub);
+        FileSystem::dumpFile("{$appDir}/theme/default/.env.example", AppEnvExample::themeFile());
 
         foreach ([
             'app.flow.boot.stub' => 'Flow/BootFlow.php',
@@ -280,7 +276,7 @@ PHP;
             }
 
             // Update Pinker-baked router config
-            $sourceRouter = SystemApp::path('config/app/router.config.php');
+            $sourceRouter = SystemApp::path('app-router.config.php');
             $bakedRouter = Pinker::bakedFileFromSource($sourceRouter);
             $routes = FileSystem::exists($bakedRouter)
                 ? include $bakedRouter

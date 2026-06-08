@@ -7,13 +7,14 @@ use Pinoox\Portal\App\AppEngine;
 use Pinoox\Support\Platform;
 
 /**
- * Resolves shared resources between apps (user, auth, token, file, access).
+ * Resolves shared resources between apps.
  *
- * Values in app.php → transport.*:
- * - local (default) — use the current app package
- * - platform        — shared platform scope / platform auth app
- * - host            — inherit from the app that opened this one (meeting / preview)
- * - {package}       — explicit app package name, e.g. com_pinoox_manager
+ * Granular keys (multi-word): user_table, auth_config, auth_cookie,
+ * session_token, file_storage, access_table.
+ *
+ * Scenario presets (single-word): full, user, storage, access.
+ *
+ * Scope values: local | platform | host | {package}
  */
 final class TransportConfig
 {
@@ -33,11 +34,34 @@ final class TransportConfig
     }
 
     /**
+     * App column values included in model global scope for a granular transport key.
+     *
+     * @return list<string>
+     */
+    public static function scopeValues(string $granularKey): array
+    {
+        $package = self::package($granularKey);
+
+        if ($package !== self::PLATFORM) {
+            return [$package];
+        }
+
+        $values = [self::PLATFORM];
+        $authPackage = self::platformAuthPackage();
+
+        if ($authPackage !== null) {
+            $values[] = $authPackage;
+        }
+
+        return array_values(array_unique($values));
+    }
+
+    /**
      * App package that provides auth settings, or null when auth stays local.
      */
     public static function authSource(?string $hostPackage = null): ?string
     {
-        $value = self::readTransportValue('auth');
+        $value = self::readAuthTransportValue();
 
         if ($value === null) {
             return null;
@@ -62,7 +86,12 @@ final class TransportConfig
             return null;
         }
 
-        $value = AppEngine::config($package)->get('transport.auth');
+        $transport = AppEngine::config($package)->get('transport');
+        if (!is_array($transport)) {
+            return $package;
+        }
+
+        $value = self::readAuthFromTransportBlock($transport);
 
         if ($value === null || $value === '' || $value === self::LOCAL) {
             return $package;
@@ -84,15 +113,90 @@ final class TransportConfig
         return $package === false ? null : $package;
     }
 
-    private static function readTransportValue(string $key): ?string
+    /**
+     * @return array<string, string|null>
+     */
+    public static function resolved(): array
     {
-        $value = App::get('transport.' . $key);
+        $resolved = [];
 
-        if ($value === null || $value === '') {
+        foreach (TransportScenario::granularKeys() as $key) {
+            $value = self::readTransportValue($key);
+            $resolved[$key] = $value === null ? self::LOCAL : $value;
+        }
+
+        return $resolved;
+    }
+
+    /**
+     * @return list<string>
+     */
+    public static function activeScenarios(?array $transport = null): array
+    {
+        $transport ??= App::get('transport') ?? [];
+        if (!is_array($transport)) {
+            return [];
+        }
+
+        $active = [];
+        foreach (TransportScenario::scenarioNames() as $scenario) {
+            if (!empty($transport[$scenario])) {
+                $active[] = $scenario;
+            }
+        }
+
+        return $active;
+    }
+
+    private static function readAuthTransportValue(): ?string
+    {
+        $transport = App::get('transport');
+        if (!is_array($transport)) {
             return null;
         }
 
-        return (string) $value;
+        return self::readAuthFromTransportBlock($transport);
+    }
+
+    private static function readAuthFromTransportBlock(array $transport): ?string
+    {
+        foreach ([TransportScenario::AUTH_CONFIG, TransportScenario::AUTH_COOKIE] as $key) {
+            $value = self::readFromTransportBlock($transport, $key);
+            if ($value !== null) {
+                return $value;
+            }
+        }
+
+        return null;
+    }
+
+    private static function readTransportValue(string $granularKey): ?string
+    {
+        $transport = App::get('transport');
+        if (!is_array($transport)) {
+            return null;
+        }
+
+        return self::readFromTransportBlock($transport, $granularKey);
+    }
+
+    private static function readFromTransportBlock(array $transport, string $granularKey): ?string
+    {
+        if (!empty($transport[$granularKey])) {
+            return (string) $transport[$granularKey];
+        }
+
+        foreach (TransportScenario::scenarioNames() as $scenario) {
+            if (empty($transport[$scenario])) {
+                continue;
+            }
+
+            if (in_array($granularKey, TransportScenario::keysForScenario($scenario), true)) {
+                return (string) $transport[$scenario];
+            }
+        }
+
+        return null;
     }
 
     private static function resolveScope(?string $value, string $fallback, ?string $hostPackage): string

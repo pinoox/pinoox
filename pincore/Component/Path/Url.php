@@ -22,6 +22,7 @@ use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Manager\PathManager;
 use Pinoox\Component\Path\Manager\UrlManager;
 use Pinoox\Component\Router\QueryRouteResolver;
+use Pinoox\Component\Router\RouteNaming;
 
 class Url implements UrlInterface
 {
@@ -391,8 +392,11 @@ class Url implements UrlInterface
         return $this->fromPath($filesystemPath);
     }
 
-    public function route(string $name, array $parameters = [], bool $absolute = true): string
+    public function route(string $name, array $parameters = [], bool $absolute = true, ?string $package = null): string
     {
+        $package ??= (string) ($this->app->package() ?? '');
+        $name = RouteNaming::full($name, $package !== '' ? $package : null);
+
         $manager = new UrlManager();
         $manager->setBasePath($absolute ? $this->origin() : rtrim($this->base(), '/'));
 

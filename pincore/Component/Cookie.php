@@ -29,7 +29,17 @@ class Cookie
      */
     public static function set($key, $value, $time = 86400, $path = "/", $domain = null, $https = false, $httpOnly = true)
     {
-        setcookie($key, $value, time() + $time, $path, $domain, $https, $httpOnly);
+        setcookie(
+            $key,
+            $value,
+            time() + $time,
+            $path ?? '/',
+            $domain ?? '',
+            $https,
+            $httpOnly,
+        );
+
+        $_COOKIE[$key] = $value;
     }
 
     /**

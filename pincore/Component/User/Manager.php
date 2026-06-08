@@ -3,9 +3,9 @@
 namespace Pinoox\Component\User;
 
 use Pinoox\Portal\Date;
-use Pinoox\System\Model\FileModel;
-use Pinoox\System\Model\TokenModel;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\FileModel;
+use Pinoox\Model\TokenModel;
+use Pinoox\Model\UserModel;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\File;
 use Pinoox\Portal\Hash;
@@ -99,6 +99,11 @@ class Manager
     public function setRequestToken(?string $token): void
     {
         $this->guard->setRequestToken($token);
+    }
+
+    public function persistClientJwt(string $jwt): void
+    {
+        $this->guard->persistClientJwt($jwt);
     }
 
     // ── Session helpers ─────────────────────────────────────────────────

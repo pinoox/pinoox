@@ -3,6 +3,7 @@
 namespace Pinoox\Component\User;
 
 use Pinoox\Component\Transport\TransportConfig;
+use Pinoox\Component\Transport\TransportScenario;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Env;
@@ -48,7 +49,7 @@ class AuthConfig
             $auth['source'] = null;
         }
 
-        $auth['provider'] = TransportConfig::package('user');
+        $auth['provider'] = TransportConfig::package(TransportScenario::USER_TABLE);
 
         self::$resolved = $auth;
 

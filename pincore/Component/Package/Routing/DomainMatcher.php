@@ -105,7 +105,7 @@ class DomainMatcher
 
     /**
      * Any host that is not explicitly mapped in domain.config.php is treated
-     * as the default domain and uses path routing from router.config.php.
+     * as the default domain and uses path routing from app-router.config.php.
      */
     public function isDefaultHost(?string $host): bool
     {

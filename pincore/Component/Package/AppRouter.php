@@ -19,6 +19,8 @@ use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Package\Routing\AppRouteMatcher;
 use Pinoox\Component\Package\Routing\Domain;
 use Pinoox\Component\Package\Routing\DomainMatch;
+use Pinoox\Component\Package\Routing\FrontControllerAppResolver;
+use Pinoox\Component\Server\ServeAppBinding;
 use Pinoox\Component\Store\Config\ConfigInterface;
 
 class AppRouter
@@ -42,8 +44,8 @@ class AppRouter
      * Resolve the active app for the current HTTP request.
      *
      * Order:
-     * 1. Host mapping from system/config/domain.config.php (explicit hosts only)
-     * 2. Longest path prefix from system/config/app/router.config.php
+     * 1. Host mapping from pincore/config/domain.config.php (explicit hosts only)
+     * 2. Longest path prefix from pincore/config/app-router.config.php
      * 3. Default route "/"
      * 4. Wildcard route "*"
      * 5. Fallback welcome app
@@ -59,9 +61,36 @@ class AppRouter
         $routes = $this->routes();
         $domainContext = $this->domainContext($host);
 
+        $serveApp = ServeAppBinding::resolveLayer(
+            $routes,
+            fn (string $package): bool => $this->stable($package),
+        );
+
+        if ($serveApp !== null) {
+            return $this->resolved = new AppLayer(
+                $serveApp->getPath(),
+                $serveApp->getPackageName(),
+                array_merge($domainContext, $serveApp->context()),
+            );
+        }
+
         $domainMatch = Domain::match($host);
         if ($domainMatch !== null && $this->stable($domainMatch->package)) {
             return $this->resolved = $this->layerFromDomain($domainMatch);
+        }
+
+        $normalizedPath = AppRouteMatcher::normalize(
+            $pathInfo === '' ? '/' : '/' . ltrim($pathInfo, '/'),
+        );
+
+        $frontController = FrontControllerAppResolver::resolve($this, $normalizedPath);
+
+        if ($frontController !== null) {
+            return $this->resolved = new AppLayer(
+                $frontController->getPath(),
+                $frontController->getPackageName(),
+                array_merge($domainContext, $frontController->context()),
+            );
         }
 
         $pathMatch = AppRouteMatcher::match($pathInfo, $routes, fn(string $package): bool => $this->stable($package));

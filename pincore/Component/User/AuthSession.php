@@ -8,8 +8,8 @@ use Pinoox\Component\Cookie;
 use Pinoox\Component\Session;
 use Pinoox\Component\Token;
 use Pinoox\Portal\Lang;
-use Pinoox\System\Model\TokenModel;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\TokenModel;
+use Pinoox\Model\UserModel;
 
 /**
  * Low-level session transport (cookie, PHP session, or JWT + DB token).
@@ -49,6 +49,8 @@ class AuthSession
 
     private static string $secret_key = 'BAF55D93DF7A2B3AA64722AA85448424AAB5CF4214AD2899CD9440BEC9B44894';
 
+    private static ?string $appliedFingerprint = null;
+
     /**
      * @param array{
      *     mode: string,
@@ -62,6 +64,16 @@ class AuthSession
      */
     public static function applyConfig(array $config): void
     {
+        $fingerprint = AuthConfig::fingerprint($config);
+
+        if (self::$appliedFingerprint !== null && self::$appliedFingerprint !== $fingerprint) {
+            self::$token_key = false;
+            self::$token = null;
+            self::$user = null;
+        }
+
+        self::$appliedFingerprint = $fingerprint;
+
         $nextType = match ($config['mode']) {
             AuthConfig::MODE_JWT => self::JWT,
             AuthConfig::MODE_SESSION => self::SESSION,
@@ -114,6 +126,7 @@ class AuthSession
         self::$user = null;
         self::$token_key = false;
         self::$requestToken = null;
+        self::$appliedFingerprint = null;
     }
 
     public static function setRequestToken(?string $token): void
@@ -122,6 +135,24 @@ class AuthSession
         self::$token_key = false;
         self::$token = null;
         self::$user = null;
+    }
+
+    /**
+     * Store a JWT client token in the auth cookie so iframe navigations keep the session.
+     */
+    public static function persistClientJwt(string $jwt): void
+    {
+        if (self::$type !== self::JWT || $jwt === '') {
+            return;
+        }
+
+        $jwt = self::normalizeBearerToken($jwt);
+
+        Cookie::set(
+            self::$user_session_key,
+            $jwt,
+            self::$lifetime,
+        );
     }
 
     public static function isLoggedIn(): bool

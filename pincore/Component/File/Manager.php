@@ -4,7 +4,7 @@ namespace Pinoox\Component\File;
 
 use Illuminate\Filesystem\FilesystemAdapter;
 use Pinoox\Component\File\FileStorage;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Manager

@@ -15,7 +15,7 @@
         <style><?= $this->include('assets/css/exception_controls.css'); ?></style>
         <style><?= $this->include('assets/css/exception_embed.css'); ?></style>
     </head>
-    <body class="pinoox-exception-page sf-reset<?= \Pinoox\Component\Kernel\Debug\Support\TraceFrameClassifier::isFrameworkSurfacePath(str_replace('\\', '/', (string) $exception->getFile()), (string) ($pinoox['project_root'] ?? '') ?: null) ? ' px-thrown-in-pincore' : ''; ?><?= !empty($pinoox['portal']['via_portal']) ? ' px-portal-error' : ''; ?><?= !empty($networkPreview) ? ' px-network-preview' : ''; ?>">
+    <body class="pinoox-exception-page sf-reset<?= \Pinoox\Component\Kernel\Debug\Support\TraceFrameClassifier::isFrameworkSurfacePath(str_replace('\\', '/', (string) $exception->getFile()), (string) ($pinoox['project_root'] ?? '') ?: null) ? ' px-thrown-in-pincore' : ''; ?><?= !empty($pinoox['portal']['via_portal']) ? ' px-portal-error' : ''; ?><?= !empty($pinoox['meeting']['active']) ? ' px-meeting-error' : ''; ?><?= !empty($networkPreview) ? ' px-network-preview' : ''; ?>">
         <div class="px-focus-guard" aria-hidden="true">
             <input type="checkbox" id="px-theme-light" class="px-sr-input">
             <input type="checkbox" id="px-filter-pincore" class="px-sr-input">
@@ -27,6 +27,7 @@
             <input type="radio" name="px-tab" id="px-tab-vendor" class="px-tab-input">
             <?php } ?>
             <input type="radio" name="px-tab" id="px-tab-stack" class="px-tab-input">
+            <input type="radio" name="px-tab" id="px-tab-portal" class="px-tab-input">
             <?php if ($logger) { ?>
             <input type="radio" name="px-tab" id="px-tab-logs" class="px-tab-input">
             <?php } ?>

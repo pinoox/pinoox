@@ -5,7 +5,7 @@ namespace Pinoox\Portal;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Component\User\LoginResult;
 use Pinoox\Component\User\Manager;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\UserModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**

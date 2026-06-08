@@ -23,12 +23,11 @@ final class AppManifest
             return [];
         }
 
-        $appFile = AppEnginePortal::path($package, self::FILE);
-        if (!is_file($appFile)) {
+        try {
+            $data = AppEnginePortal::config($package)->all();
+        } catch (\Throwable) {
             return [];
         }
-
-        $data = include $appFile;
 
         return is_array($data) ? $data : [];
     }

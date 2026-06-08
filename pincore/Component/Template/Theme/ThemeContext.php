@@ -2,8 +2,8 @@
 
 namespace Pinoox\Component\Template\Theme;
 
+use Pinoox\Component\Package\AppManifest;
 use Pinoox\Portal\App\App;
-use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\View;
 
 /**
@@ -117,18 +117,7 @@ final class ThemeContext
      */
     private static function appConfig(string $package): array
     {
-        if ($package === '' || !AppEngine::exists($package)) {
-            return [];
-        }
-
-        $appFile = AppEngine::path($package, 'app.php');
-        if (!is_file($appFile)) {
-            return [];
-        }
-
-        $data = include $appFile;
-
-        return is_array($data) ? $data : [];
+        return AppManifest::load($package);
     }
 
     private static function resolvePackage(?string $package): string

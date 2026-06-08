@@ -59,11 +59,13 @@ class Path implements PathInterface
     }
 
     /**
-     * System app directory (~system).
+     * Project config directory (~config, legacy ~system).
      */
     public function system(string $path = ''): string
     {
-        return $this->get($path === '' ? '~system' : '~system/' . ltrim($path, '/'));
+        $alias = $path === '' ? '~config' : '~config/' . ltrim($path, '/');
+
+        return $this->get($alias);
     }
 
     /**
@@ -132,7 +134,7 @@ class Path implements PathInterface
             return $this->paths[$key] = SystemConfig::resolvePath('~/' . ltrim($value, '/'));
         }
 
-        if ($package === SystemApp::PACKAGE) {
+        if ($package === SystemApp::PACKAGE || $package === SystemApp::LEGACY_PACKAGE) {
             return $this->paths[$key] = $this->systemPath($value);
         }
 
@@ -206,12 +208,12 @@ class Path implements PathInterface
     private function systemPath(string $value): string
     {
         foreach ([
-            SystemConfig::rawPath('app_config', 'config') => 'system_config',
-            SystemConfig::rawPath('app_lang', 'lang') => 'system_lang',
-            SystemConfig::rawPath('app_migrations', 'database/migrations') => 'system_migrations',
-            SystemConfig::rawPath('app_seed', 'database/seed') => 'system_seed',
-            SystemConfig::rawPath('app_patches', 'patches') => 'system_patches',
-            'Model' => 'system_models',
+            SystemConfig::rawPath('app_config', 'config') => 'project_config',
+            SystemConfig::rawPath('app_lang', 'lang') => 'platform_lang',
+            SystemConfig::rawPath('app_migrations', 'database/migrations') => 'platform_migrations',
+            SystemConfig::rawPath('app_seed', 'database/seed') => 'platform_seed',
+            SystemConfig::rawPath('app_patches', 'patches') => 'platform_patches',
+            'Model' => 'platform_models',
         ] as $folder => $pathKey) {
             $folder = trim($folder, '/');
 

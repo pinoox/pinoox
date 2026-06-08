@@ -51,7 +51,7 @@ class RouteEmptyListener implements EventSubscriberInterface
 
         Lang::setLocale($locale);
 
-        View::changeTheme('no-route', Path::get('~system/resource/views/'));
+        View::changeTheme('no-route', Path::get('~pincore/resource/views/no-route/'));
 
         return new Response(View::render('home', [
             'package' => $package,
@@ -68,7 +68,7 @@ class RouteEmptyListener implements EventSubscriberInterface
     private function availableLocales(): array
     {
         $locales = [];
-        $pattern = SystemConfig::path('system_lang') . '/*/no-route.lang.php';
+        $pattern = SystemConfig::path('platform_lang') . '/*/no-route.lang.php';
 
         foreach (glob($pattern) ?: [] as $file) {
             $code = basename(dirname($file));

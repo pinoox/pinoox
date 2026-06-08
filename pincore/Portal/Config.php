@@ -72,10 +72,14 @@ class Config extends Portal
 
         if ($ref->getPackageName() === '~') {
             $value = $ref->getValue();
-            $systemPrefix = $folder . '/' . SystemApp::PATH_ALIAS . '/';
 
-            if (is_string($value) && str_starts_with($value, $systemPrefix)) {
-                $value = $folder . '/' . substr($value, strlen($systemPrefix));
+            foreach ([SystemApp::PATH_ALIAS, SystemApp::LEGACY_PATH_ALIAS] as $alias) {
+                $prefix = $folder . '/' . $alias . '/';
+
+                if (is_string($value) && str_starts_with($value, $prefix)) {
+                    $value = $folder . '/' . substr($value, strlen($prefix));
+                    break;
+                }
             }
 
             $ref = NameReference::create(SystemApp::PACKAGE, $value);

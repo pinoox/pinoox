@@ -67,7 +67,8 @@ class Lang extends Portal
 
     public static function __register(): void
     {
-        $localeFallback = App::get('lang_fallback') ?? config('~pinoox.lang_fallback', 'en');
+        $localeFallback = App::get('lang_fallback')
+            ?? SystemConfig::get('pinoox', 'lang_fallback', 'en');
         $folder = SystemConfig::rawPath('app_lang', 'lang');
         $paths = [
             SystemConfig::path('system_lang'),

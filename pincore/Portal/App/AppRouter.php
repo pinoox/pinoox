@@ -51,8 +51,8 @@ class AppRouter extends Portal
 {
 	public static function __register(): void
 	{
-		$file = 'config/app/router.config.php';
-		$fileStrategy = new FileConfigStrategy(Pinker::folder(SystemApp::basePath(), $file));
+		$file = 'config/app-router.config.php';
+		$fileStrategy = new FileConfigStrategy(Pinker::folder(SystemApp::legacyCorePath(), $file));
 		$config = Config::create($fileStrategy);
 		self::__bind(\Pinoox\Component\Package\AppRouter::class)->setArguments([
 		    $config,

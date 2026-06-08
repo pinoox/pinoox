@@ -48,6 +48,7 @@ class Event extends Portal
             ->addMethodCall('addSubscriber', [Listener::__ref('transactional')])
             ->addMethodCall('addSubscriber', [Listener::__ref('sessionRelease')])
             ->addMethodCall('addSubscriber', [Listener::__ref('exception')])
+            ->addMethodCall('addSubscriber', [Listener::__ref('pinooxExceptionRender')])
             ->addMethodCall('addSubscriber', [Listener::__ref('view')]);
     }
 

@@ -4,7 +4,7 @@ namespace Pinoox\Component\User;
 
 use Illuminate\Database\Eloquent\Builder;
 use Pinoox\Portal\Hash;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\UserModel;
 
 class UserProvider
 {

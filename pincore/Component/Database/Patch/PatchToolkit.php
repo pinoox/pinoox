@@ -6,8 +6,8 @@ use Pinoox\Component\Migration\MigrationQuery;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Support\SystemConfig;
-use Pinoox\System\Model\HistoryModel;
-use Pinoox\System\Model\Table;
+use Pinoox\Model\HistoryModel;
+use Pinoox\Model\Table;
 use Symfony\Component\Finder\Finder;
 
 class PatchToolkit
@@ -157,7 +157,7 @@ class PatchToolkit
     private function initializePatchPath(): void
     {
         if ($this->package === 'platform') {
-            $this->patchPath = SystemConfig::path('system_patches');
+            $this->patchPath = SystemConfig::platformPath('patches');
             return;
         }
 

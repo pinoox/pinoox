@@ -2,7 +2,7 @@
 
 namespace Pinoox\Component\User;
 
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\UserModel;
 
 readonly class LoginResult
 {

@@ -6,7 +6,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use League\Flysystem\Visibility;
 use Pinoox\Portal\Storage;
 use Pinoox\Portal\Url;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 
 class FileStorage
 {

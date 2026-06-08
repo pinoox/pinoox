@@ -12,7 +12,7 @@ class DateFormatter
         Carbon|string|int|null $reference = null,
         bool|string $exactAfterDays = false,
         string $dateFormat = 'Y/m/d',
-        string $calendar = 'jalali',
+        string $calendar = 'gregorian',
     ): ?string {
         $reference = self::toCarbon($reference ?? 'now');
         $target = self::toCarbon($date);

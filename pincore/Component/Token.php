@@ -15,7 +15,7 @@ namespace Pinoox\Component;
 
 use Pinoox\Component\Helpers\HelperHeader;
 use Pinoox\Component\Kernel\BootInterface;
-use Pinoox\System\Model\TokenModel;
+use Pinoox\Model\TokenModel;
 
 class Token implements BootInterface
 {

@@ -63,6 +63,7 @@ HELP
         if ($package === 'platform') {
             return [
                 path('~/pinker/pincore'),
+                path('~/pinker/config'),
                 path('~/pinker/system'),
             ];
         }

@@ -27,6 +27,8 @@ use Pinoox\Component\Router\Action\ActionRegistry;
 use Pinoox\Component\Router\Action\ActionValidator;
 use Pinoox\Component\Router\RouteSourceRegistry;
 use Pinoox\Component\Runtime\RuntimeMode;
+use Pinoox\Component\Server\WebServerFix;
+use Pinoox\Component\Server\WebServerFixRegistry;
 use Pinoox\Portal\Mode;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Matcher\RequestMatcherInterface;
@@ -65,6 +67,8 @@ class Router
     private RouteName $routeName;
 
     private array $routeFileStack = [];
+
+    public string $appMountPath = '/';
 
     public function __construct(RouteName $routeName, App $app, ?Collection $collection = null, bool $isDefault = true)
     {
@@ -194,7 +198,34 @@ class Router
                 end($this->routeFileStack) ?: null,
             );
             $this->trackActionRoute($route, $name, $action);
+            $this->trackWebServerFixRoute($route, $name);
         }
+    }
+
+    private function trackWebServerFixRoute(Route $route, string $routeName): void
+    {
+        $package = (string) ($this->app->package() ?? '');
+
+        if ($package === '') {
+            return;
+        }
+
+        $routePath = $route->getPath();
+        $data = $route->getData();
+        $shouldFix = array_key_exists('fix_web_server', $data)
+            ? (bool) $data['fix_web_server']
+            : WebServerFix::pathHasStaticExtension($routePath);
+
+        if (!$shouldFix) {
+            return;
+        }
+
+        WebServerFixRegistry::register(
+            $package,
+            WebServerFix::relativeToMount($this->appMountPath, $routePath),
+            $routeName,
+            $routePath,
+        );
     }
 
     private function trackActionRoute(Route $route, string $routeName, mixed $declaredAction): void
@@ -501,6 +532,7 @@ class Router
 
         $collection->cast = -1;
         $router = new Router($this->routeName, $this->app, $collection);
+        $router->appMountPath = $this->canonicalizePath($path);
         $router->actions = $this->actions;
         $router->actionMeta = $this->actionMeta;
         $router->finalizeAfterBuild($routes);
@@ -533,6 +565,11 @@ class Router
         $this->syncActionRegistry();
 
         $package = (string) ($this->app->package() ?? '');
+
+        if ($package !== '') {
+            WebServerFixRegistry::flush($package);
+        }
+
         if ($package === '') {
             return;
         }
@@ -560,7 +597,7 @@ class Router
         try {
             return Mode::shouldValidateActions($package !== '' ? $package : null);
         } catch (\Throwable) {
-            return RuntimeMode::bootDebugEnabled();
+            return (bool) RuntimeMode::readGlobal()['debug'];
         }
     }
 

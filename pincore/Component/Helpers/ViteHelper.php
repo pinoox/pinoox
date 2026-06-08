@@ -174,5 +174,33 @@ class ViteHelper
     {
         return self::forActiveTheme()->tags($name, $fileManifest);
     }
+
+    public function cssTags(string $name, ?string $fileManifest = null): string
+    {
+        $fileManifest = $fileManifest ?? $this->fileManifest;
+
+        if ($devUrl = $this->resolveDevServerUrl()) {
+            return implode("\n\t", $this->devTags($devUrl, ltrim($name, '/')));
+        }
+
+        $manifest = $this->loadManifest($fileManifest);
+        if (empty($manifest[$name]['css'])) {
+            return '';
+        }
+
+        $mainDirectory = $this->findMainDirectory($fileManifest);
+        $tags = [];
+
+        foreach ($manifest[$name]['css'] as $css) {
+            $tags[] = '<link rel="stylesheet" href="' . assets($mainDirectory . '/' . $css) . '"/>';
+        }
+
+        return implode("\n\t", $tags);
+    }
+
+    public static function useCssTags(string $name, ?string $fileManifest = null): string
+    {
+        return self::forActiveTheme()->cssTags($name, $fileManifest);
+    }
 }
 

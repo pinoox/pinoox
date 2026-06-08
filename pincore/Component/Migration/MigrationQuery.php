@@ -13,8 +13,8 @@
 
 namespace Pinoox\Component\Migration;
 
-use Pinoox\System\Model\HistoryModel;
-use Pinoox\System\Model\Table;
+use Pinoox\Model\HistoryModel;
+use Pinoox\Model\Table;
 use Pinoox\Portal\Database\DB;
 
 class MigrationQuery

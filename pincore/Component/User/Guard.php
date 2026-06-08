@@ -7,7 +7,7 @@ use Pinoox\Component\User\Event\UserLoggedOut;
 use Pinoox\Component\User\Event\UserLoginFailed;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Lang;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\UserModel;
 
 class Guard
 {
@@ -158,6 +158,17 @@ class Guard
     {
         $this->boot();
         AuthSession::setRequestToken($token);
+    }
+
+    public function persistClientJwt(string $jwt): void
+    {
+        $this->boot();
+
+        if (!$this->check()) {
+            return;
+        }
+
+        AuthSession::persistClientJwt($jwt);
     }
 
     public function get(?string $field = null): mixed

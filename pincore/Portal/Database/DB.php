@@ -34,9 +34,9 @@ use Illuminate\Pagination\Cursor;
 use Illuminate\Pagination\CursorPaginator;
 use Illuminate\Pagination\Paginator;
 use PDO as ObjectPortal8;
+use Pinoox\Component\Database\DatabaseConfig;
 use Pinoox\Component\Kernel\Container;
 use Pinoox\Component\Kernel\Exception;
-use Pinoox\Component\Runtime\RuntimeMode;
 use Pinoox\Component\Source\Portal;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
@@ -168,6 +168,10 @@ use Pinoox\Portal\Config;
  */
 class DB extends Portal
 {
+    private static bool $coreRegistered = false;
+
+    private static bool $registering = false;
+
     public static function __register(): void
     {
         self::__bind(\Pinoox\Component\Database\DatabaseManager::class)->setArguments([
@@ -178,6 +182,22 @@ class DB extends Portal
     public static function __boot(): void
     {
         self::resolvePagination();
+    }
+
+    /**
+     * @param list<mixed> $args
+     */
+    protected static function callMethod(string $method, array $args): mixed
+    {
+        if (!self::$coreRegistered && !self::$registering && !self::allowsUnregisteredAccess($method)) {
+            self::register();
+        }
+
+        return parent::callMethod($method, $args);
+    }
+
+    public static function __before(string $name): void
+    {
     }
 
     public static function hasConnection(): bool
@@ -193,21 +213,73 @@ class DB extends Portal
     }
 
     /**
+     * Register the core database connection when a DB operation is first needed (CLI lazy boot).
+     *
+     * @throws Exception
+     */
+    public static function ensureRegistered(): void
+    {
+        if (!self::$coreRegistered && !self::$registering) {
+            self::register();
+        }
+    }
+
+    /**
+     * Re-register the core connection with fresh credentials (installer, config reload).
+     *
+     * @param array<string, mixed> $config Illuminate connection config (driver, host, …)
+     * @throws Exception
+     */
+    public static function refreshCoreConnection(array $config): void
+    {
+        self::$coreRegistered = false;
+        self::$registering = false;
+
+        $manager = self::___();
+
+        foreach (['default', 'platform'] as $connection) {
+            try {
+                $manager->getDatabaseManager()->purge($connection);
+            } catch (\Throwable) {
+            }
+        }
+
+        self::$registering = true;
+
+        try {
+            $manager->registerCoreConnection($config);
+            self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
+            self::setAsGlobal();
+            self::bootEloquent();
+            self::$coreRegistered = true;
+        } finally {
+            self::$registering = false;
+        }
+    }
+
+    /**
      * @throws Exception
      */
     public static function register(): void
     {
-        $config = self::getConfig();
-        // add default connection
-        self::registerCoreConnection($config);
+        if (self::$coreRegistered || self::$registering) {
+            return;
+        }
 
-        // Set the event dispatcher used by Eloquent models... (optional)
-        self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
+        self::$registering = true;
 
-        //Make this Capsule instance available globally.
-        self::setAsGlobal();
-        // Setup the Eloquent ORM... (optional; unless you've used setEventDispatcher())
-        self::bootEloquent();
+        try {
+            $config = self::getConfig();
+            self::registerCoreConnection($config);
+
+            self::setEventDispatcher(new Dispatcher(Container::Illuminate()));
+            self::setAsGlobal();
+            self::bootEloquent();
+
+            self::$coreRegistered = true;
+        } finally {
+            self::$registering = false;
+        }
     }
 
     /**
@@ -215,23 +287,26 @@ class DB extends Portal
      */
     public static function getConfig($key = null)
     {
-        //get configs
-        $mode = self::mode();
-        if (!($config = Config::name('~database')->getLinear(null, $mode)))
-            throw new Exception('Database config "' . $mode . '" not defined');
+        $root = Config::name('~database')->get();
 
-        return $config[$key] ?? $config;
+        if (!is_array($root)) {
+            throw new Exception('Database config is invalid.');
+        }
+
+        $config = DatabaseConfig::connectionConfig($root, self::connectionName());
+
+        return $key !== null ? ($config[$key] ?? null) : $config;
     }
 
+    public static function connectionName(): string
+    {
+        return DatabaseConfig::connectionName();
+    }
+
+    /** @deprecated Use {@see connectionName()} */
     public static function mode()
     {
-        try {
-            return \Pinoox\Portal\Mode::databaseConnection();
-        } catch (\Throwable) {
-            $global = RuntimeMode::readGlobal();
-
-            return $global['mode'] === RuntimeMode::TEST ? 'test' : 'development';
-        }
+        return self::connectionName();
     }
 
     public static function __replace(): array
@@ -284,6 +359,21 @@ class DB extends Portal
         CursorPaginator::currentCursorResolver(function ($cursorName = 'cursor') {
             return Cursor::fromEncoded(App::getRequest()->input()->get($cursorName));
         });
+    }
+
+    private static function allowsUnregisteredAccess(string $method): bool
+    {
+        return in_array($method, [
+            'getDatabaseManager',
+            'getContainer',
+            'setContainer',
+            'addConnection',
+            'registerCoreConnection',
+            'setAsGlobal',
+            'bootEloquent',
+            'setEventDispatcher',
+            'unsetEventDispatcher',
+        ], true);
     }
 }
 

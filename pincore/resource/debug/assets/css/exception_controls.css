@@ -141,6 +141,7 @@ label[for="px-theme-light"] .px-theme-label-text::after {
 
 .pinoox-exception-page:not(.px-network-preview):has(#px-tab-exception:checked) .px-workspace [data-px-panel="exception"],
 .pinoox-exception-page:has(#px-tab-stack:checked) .px-workspace [data-px-panel="stack"],
+.pinoox-exception-page:has(#px-tab-portal:checked) .px-workspace [data-px-panel="portal"],
 .pinoox-exception-page:has(#px-tab-logs:checked) .px-workspace [data-px-panel="logs"],
 .pinoox-exception-page:has(#px-tab-context:checked) .px-workspace [data-px-panel="context"],
 .pinoox-exception-page:has(#px-tab-tools:checked) .px-workspace [data-px-panel="tools"] {
@@ -157,6 +158,7 @@ label[for="px-theme-light"] .px-theme-label-text::after {
 .pinoox-exception-page:has(#px-tab-pincore:checked) .px-workspace label[for="px-tab-pincore"],
 .pinoox-exception-page:has(#px-tab-vendor:checked) .px-workspace label[for="px-tab-vendor"],
 .pinoox-exception-page:has(#px-tab-stack:checked) .px-workspace label[for="px-tab-stack"],
+.pinoox-exception-page:has(#px-tab-portal:checked) .px-workspace label[for="px-tab-portal"],
 .pinoox-exception-page:has(#px-tab-logs:checked) .px-workspace label[for="px-tab-logs"],
 .pinoox-exception-page:has(#px-tab-context:checked) .px-workspace label[for="px-tab-context"],
 .pinoox-exception-page:has(#px-tab-tools:checked) .px-workspace label[for="px-tab-tools"] {

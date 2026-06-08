@@ -18,7 +18,7 @@ class FileConfig
             ?? Storage::getDefaultDriver();
 
         return [
-            'package' => TransportConfig::package('file'),
+            'package' => TransportConfig::package(TransportScenario::FILE_STORAGE),
             'disk' => (string) $disk,
             'default_access' => (string) (App::get('filesystem.access') ?? App::get('filesystem.default_access') ?? 'public'),
             'thumb_width' => (int) (App::get('filesystem.thumb_width') ?? 512),

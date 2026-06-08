@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace Pinoox\Terminal\Log;
 

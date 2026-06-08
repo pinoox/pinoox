@@ -2,6 +2,8 @@
 
 namespace Pinoox\Component\Kernel\Debug\Support;
 
+use Pinoox\Component\Runtime\RuntimeMode;
+use Pinoox\Component\Transport\TransportContext;
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
 
 class ExceptionContext
@@ -10,6 +12,7 @@ class ExceptionContext
     {
         $package = self::activePackage();
         $request = self::requestSnapshot();
+        $meetingHost = TransportContext::host();
 
         return [
             'brand' => 'Pinoox',
@@ -29,10 +32,16 @@ class ExceptionContext
             'request' => $request,
             'route' => RouteContextResolver::resolve(),
             'portal' => PortalContextResolver::resolve($exception),
+            'meeting' => [
+                'active' => TransportContext::inMeeting(),
+                'host' => $meetingHost ?? '',
+                'guest' => $package,
+            ],
             'server' => self::serverSnapshot(),
             'env' => [
-                'app_env' => self::env('APP_ENV', 'local'),
-                'app_debug' => self::env('APP_DEBUG', 'true'),
+                'app_env' => RuntimeMode::fromEnv(),
+                'app_debug' => self::env('APP_DEBUG', 'false'),
+                'pinoox_exception' => self::env('PINOOX_EXCEPTION', 'true'),
             ],
         ];
     }
@@ -51,8 +60,8 @@ class ExceptionContext
     public static function logoDataUri(): string
     {
         $candidates = [
-            self::projectRoot() . '/system/resource/images/logo.png',
-            dirname(__DIR__, 4) . '/../system/resource/images/logo.png',
+            self::projectRoot() . '/pincore/resource/images/logo.png',
+            dirname(__DIR__, 4) . '/../pincore/resource/images/logo.png',
         ];
 
         foreach ($candidates as $path) {
@@ -104,7 +113,7 @@ class ExceptionContext
         }
 
         if ($name === '') {
-            $configFile = self::projectRoot() . '/system/config/pinoox.config.php';
+            $configFile = self::projectRoot() . '/pincore/config/pinoox.config.php';
             if (is_file($configFile)) {
                 $config = include $configFile;
                 if (is_array($config)) {

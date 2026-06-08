@@ -168,7 +168,7 @@ trait SelectsPackage
         $packages = $appsOnly ? [] : ['platform' => 'Core platform'];
 
         foreach (AppEngine::all() as $package => $manager) {
-            if ($excludeSystem && $package === SystemApp::PACKAGE) {
+            if ($excludeSystem && in_array($package, [SystemApp::PACKAGE, SystemApp::LEGACY_PACKAGE], true)) {
                 continue;
             }
 
@@ -245,7 +245,7 @@ trait SelectsPackage
             return true;
         }
 
-        if ($excludeSystem && $package === SystemApp::PACKAGE) {
+        if ($excludeSystem && in_array($package, [SystemApp::PACKAGE, SystemApp::LEGACY_PACKAGE], true)) {
             return false;
         }
 

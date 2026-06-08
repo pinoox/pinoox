@@ -6,14 +6,21 @@ use Pinoox\Component\Kernel\Loader;
 
 class SystemApp
 {
+    /** Logical package name for project-level config (legacy: system). */
+    public const PACKAGE = 'config';
 
-    public const PACKAGE = 'system';
+    /** Path alias for project config directory. Legacy ~system maps here too. */
+    public const PATH_ALIAS = 'config';
 
-    public const PATH_ALIAS = 'system';
+    /** @deprecated v3 */
+    public const LEGACY_PACKAGE = 'system';
+
+    /** @deprecated v3 */
+    public const LEGACY_PATH_ALIAS = 'system';
 
     public static function basePath(): string
     {
-        return SystemConfig::systemPath();
+        return SystemConfig::configPath();
     }
 
     public static function path(string $path = ''): string
@@ -28,10 +35,10 @@ class SystemApp
 
     public static function existingPath(string $path, bool $fallbackToCore = true): string
     {
-        $systemPath = self::path($path);
+        $configPath = self::path($path);
 
-        if (is_file($systemPath) || is_dir($systemPath) || !$fallbackToCore) {
-            return $systemPath;
+        if (is_file($configPath) || is_dir($configPath) || !$fallbackToCore) {
+            return $configPath;
         }
 
         return self::legacyCorePath($path);
@@ -45,20 +52,17 @@ class SystemApp
             $path = ltrim(substr($path, 1), '/');
         }
 
-        if ($path === self::PATH_ALIAS) {
-            return '';
-        }
+        foreach ([self::PATH_ALIAS, self::LEGACY_PATH_ALIAS] as $alias) {
+            if ($path === $alias) {
+                return '';
+            }
 
-        if (str_starts_with($path, self::PATH_ALIAS . '/')) {
-            return substr($path, strlen(self::PATH_ALIAS) + 1);
+            if (str_starts_with($path, $alias . '/')) {
+                return substr($path, strlen($alias) + 1);
+            }
         }
 
         return null;
-    }
-
-    private static function rootPath(): string
-    {
-        return SystemConfig::rootPath();
     }
 
     private static function suffix(string $path): string
@@ -68,4 +72,3 @@ class SystemApp
         return $path === '' ? '' : '/' . $path;
     }
 }
-

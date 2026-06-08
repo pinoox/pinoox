@@ -44,13 +44,19 @@ return [
         'lifetime' => 30,
         'lifetime_unit' => 'day',
     ],
-    // Shared resources between apps. Values: local | platform | host | {package}
+    // Transport: scenario presets (full, user, storage, access) or granular keys
+    // (user_table, auth, token, file, access_table). Values: local | platform | host | {package}
     'transport' => [
+        'full' => null,
         'user' => null,
-        'auth' => null,
-        'token' => null,
-        'file' => null,
+        'storage' => null,
         'access' => null,
+        'user_table' => null,
+        'auth_config' => null,
+        'auth_cookie' => null,
+        'session_token' => null,
+        'file_storage' => null,
+        'access_table' => null,
     ],
     'filesystem' => [
         'disk' => null,
@@ -90,7 +96,9 @@ return [
         'prefix' => null,
     ],
     'date' => [
+        // jalali | gregorian — null uses locale_calendar hint, then platform default
         'calendar' => null,
+        // null uses platform DATE_TIMEZONE / date.config.php
         'timezone' => null,
     ],
     'container' => [
