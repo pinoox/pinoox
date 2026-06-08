@@ -11,6 +11,10 @@ return [
     'enable' => true,
     'sys-app' => true,
     'theme' => 'welcome',
+    'frontend' => [
+        'profile' => 'hybrid',
+        'stack' => 'vue',
+    ],
     'minpin' => 2,
     'router' => [
         'routes' => [
