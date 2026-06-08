@@ -1,7 +1,8 @@
 import axios from "axios";
+import { getUrl } from '@/boot.js';
 import {readApiErrorMessage} from "@utils/apiEnvelope.js";
 
-const baseUrl = import.meta.env.MODE === 'production' ? PINOOX.URL.API : import.meta.env.VITE_API_PATH;
+const baseUrl = getUrl().API || import.meta.env.VITE_API_PATH || '/api/v1/';
 
 function getTokenAuth() {
     let token = localStorage.manager_pinoox;

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="{{ locale }}" dir="{{ dir }}" class="dark appViewError-page">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{{ title|default(t('manager.error')) }}</title>
+    <script>document.documentElement.classList.add(window.self !== window.top ? 'is-embedded' : 'is-standalone');</script>
+    {{ vite_tags('src/assets/styles/app-view-error.scss')|raw }}
+</head>
+<body class="{{ dir }}">
+<div class="appViewError">
+    <div class="appViewError__glow" aria-hidden="true"></div>
+    <div class="appViewError__card">
+        <div class="appViewError__badge" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 8v5m0 3h.01M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0Z" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <h1 class="appViewError__title">{{ message }}</h1>
+        {% if hint %}
+            <p class="appViewError__hint">{{ hint }}</p>
+        {% endif %}
+        <div class="appViewError__actions">
+            <div class="appViewError__actionsStandalone">
+                {% if login_url %}
+                    <a class="appViewError__btn appViewError__btn--primary" href="{{ login_url }}" target="_top">
+                        {{ t('manager.app_view_go_login') }}
+                    </a>
+                {% endif %}
+                {% if back_url %}
+                    <a class="appViewError__btn appViewError__btn--muted" href="{{ back_url }}" target="_top">
+                        {{ t('manager.back') }}
+                    </a>
+                {% endif %}
+            </div>
+            <button type="button" class="appViewError__btn appViewError__btn--muted appViewError__close">
+                {{ t('manager.close') }}
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    if (window.self === window.top) {
+        return;
+    }
+
+    var closeBtn = document.querySelector('.appViewError__close');
+    if (!closeBtn) {
+        return;
+    }
+
+    closeBtn.addEventListener('click', function () {
+        window.parent.postMessage({
+            type: 'pinoox:manager:app-view:close',
+            source: 'pinoox-app-view'
+        }, window.location.origin);
+    });
+})();
+</script>
+</body>
+</html>

@@ -3,7 +3,7 @@
     <PageSection title="تصویر پروفایل">
       <div class="flex items-center gap-6">
         <img
-            :src="authStore.user.avatar_thumb || PINOOX.URL.AVATAR"
+            :src="authStore.user.avatar_thumb || url.AVATAR"
             class="w-24 h-24 rounded-full object-cover cursor-pointer border-2 border-white/30"
             @click="avatarInput.click()"
             alt="avatar"
@@ -42,11 +42,13 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, ref } from 'vue';
+import { getUrl } from '@/boot.js';
 import { userAPI } from "@api/user.js";
 import { useAuthStore } from "@/stores/modules/auth.js";
 import { unwrapResponse } from "@utils/helpers/apiHelper.js";
 
+const url = getUrl();
 const authStore = useAuthStore();
 const avatarInput = ref(null);
 const isLoadingInfo = ref(false);

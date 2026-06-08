@@ -1,3 +1,4 @@
+import './bootstrap.dev.js';
 import { createApp } from "vue";
 import 'dockbar';
 import App from "./App.vue";

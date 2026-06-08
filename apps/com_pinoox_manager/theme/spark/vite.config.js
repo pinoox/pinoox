@@ -9,13 +9,17 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '')
+    const serverUrl = env.VITE_SERVER_URL || 'http://127.0.0.1:8000'
+    const projectPath = (env.VITE_PROJECT_PATH || '').replace(/\/$/, '')
+    const appPath = (env.VITE_APP_PATH || '/manager').replace(/\/$/, '')
+    const apiProxyPrefix = `${projectPath}${appPath}/api`.replace(/\/+/g, '/')
 
     return {
         base: './',
         build: {
             manifest: true,
             rollupOptions: {
-                input: ['src/main.js'],
+                input: ['src/main.js', 'src/assets/styles/app-view-error.scss'],
                 output: {
                     manualChunks(id) {
                         if (id.includes('vendor')) return 'plugins';
@@ -52,8 +56,10 @@ export default defineConfig(({command, mode}) => {
         },
         server: {
             proxy: {
-                '/api': env.VITE_SERVER_URL,
-                '/dist/pinoox.js': env.VITE_SERVER_URL,
+                [apiProxyPrefix]: {
+                    target: serverUrl,
+                    changeOrigin: true,
+                },
             },
         },
     }

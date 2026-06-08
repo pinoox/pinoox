@@ -55,6 +55,7 @@
 
 <script setup>
 import {ref} from 'vue';
+import { getUrl } from '@/boot.js';
 import {saxIcon} from '@/const/icons.js';
 import {openModal} from '@kolirt/vue-modal';
 import ModalGuide from '@views/components/commons/ModalGuide.vue';
@@ -66,7 +67,7 @@ import {useAppStore} from "@/stores/modules/app.js";
 const routeStore = useRouteStore();
 const appStore = useAppStore();
 
-const currentSite = PINOOX.URL.SITE;
+const currentSite = getUrl().SITE;
 
 const guideMessage = ref(
     `<p>در <strong>پینوکس</strong> می‌توانید مسیرهایی را تعریف کنید تا هر مسیر، اپلیکیشن خاصی را نمایش دهد.</p>` +

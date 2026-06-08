@@ -21,6 +21,8 @@ use Pinoox\Portal\Auth;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppProvider;
+use Pinoox\Portal\Lang;
+use Pinoox\Portal\Url;
 use Pinoox\Portal\View;
 
 class AppViewController
@@ -35,27 +37,44 @@ class AppViewController
         }
 
         if (!Auth::check()) {
-            return redirect(url('login'));
+            return $this->appViewError(
+                t('manager.app_view_open_error'),
+                t('manager.app_view_login_required'),
+            );
         }
 
         if (!$this->canPreview($packageName)) {
-            return redirect(url('/'));
+            return $this->appViewError(
+                t('manager.app_view_open_error'),
+                t('manager.app_view_not_available'),
+                loginUrl: null,
+            );
         }
 
         $hostPackage = App::package();
 
         if (!TransportConfig::sharesAuthWith($packageName, $hostPackage)) {
             Auth::reset();
+        } else {
+            Auth::boot();
         }
 
-        $layerPath = App::pathRoute() .'/app/' . $packageName;
+        if (is_string($managerToken) && $managerToken !== '') {
+            Auth::persistClientJwt($managerToken);
+        }
+
+        $layerPath = App::pathRoute() . '/app/' . $packageName;
 
         try {
-            $response = AppProvider::meetingHandle($packageName, $layerPath);
+            $response = AppProvider::meetingHandle($packageName, $layerPath, $request);
 
             return $response instanceof Response ? $response : new Response((string) $response);
-        } catch (\Throwable) {
-            return View::render('main');
+        } catch (\Throwable $e) {
+            return $this->appViewError(
+                t('manager.app_view_open_error'),
+                t('manager.app_view_not_available'),
+                loginUrl: null,
+            );
         }
     }
 
@@ -81,6 +100,21 @@ class AppViewController
             return false;
 
         return true;
+    }
+
+    private function appViewError(string $message, ?string $hint = null, ?string $loginUrl = null): string
+    {
+        $locale = Lang::locale();
+
+        return View::render('app-view-error', [
+            'message' => $message,
+            'hint' => $hint,
+            'login_url' => $loginUrl ?? url('login'),
+            'back_url' => url('/'),
+            'locale' => $locale,
+            'dir' => t('manager.direction'),
+            'title' => t('manager.error'),
+        ]);
     }
 }
 
