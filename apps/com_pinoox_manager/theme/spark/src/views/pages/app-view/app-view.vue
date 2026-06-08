@@ -38,12 +38,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { saxIcon } from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
 import { useAppStore } from '@/stores/modules/app.js';
 import { buildSecretViewEmbedUrl } from '@/views/composables/useSecretView.js';
+import { isAppViewCloseMessage } from '@/views/composables/useAppViewBridge.js';
 
 const props = defineProps({
   package_name: {
@@ -77,8 +78,31 @@ function reload() {
   frameKey.value += 1;
 }
 
+function closePreview() {
+  router.push({ name: 'desktop' });
+}
+
+function onFrameMessage(event) {
+  if (event.origin !== window.location.origin) {
+    return;
+  }
+
+  if (!isAppViewCloseMessage(event.data)) {
+    return;
+  }
+
+  closePreview();
+}
+
 onMounted(async () => {
-  if (!appStore.appList?.length)
+  window.addEventListener('message', onFrameMessage);
+
+  if (!appStore.appList?.length) {
     await appStore.getApps();
+  }
+});
+
+onUnmounted(() => {
+  window.removeEventListener('message', onFrameMessage);
 });
 </script>

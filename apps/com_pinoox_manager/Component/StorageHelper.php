@@ -4,7 +4,7 @@ namespace App\com_pinoox_manager\Component;
 
 use FilesystemIterator;
 use Pinoox\Component\File;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 use Pinoox\Portal\Config;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;

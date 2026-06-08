@@ -18,9 +18,6 @@ return [
     'lang' => 'fa',
     'transport' => [
         'user' => 'platform',
-        'token' => 'platform',
-        'file' => 'platform',
-        'access' => 'platform',
     ],
     'filesystem' => [
         'disk' => 'local',
