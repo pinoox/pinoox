@@ -1,6 +1,12 @@
 <?php
 require __DIR__ . '/bootstrap.php';
+
 uses(Tests\TestCase::class)->in('Feature');
+
+/*
+| Domain folders under tests/Feature/ — see tests/README.md
+| Run: php vendor/bin/pest --testsuite=Server
+*/
 beforeEach(function () {
     cleanupTestArtifacts();
 });

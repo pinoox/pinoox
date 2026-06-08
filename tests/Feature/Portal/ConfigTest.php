@@ -14,6 +14,6 @@ it('declares the Config portal contract', function () {
 });
 
 it('loads system app resources through portal aliases', function () {
-    expect(ConfigPortal::name('~system/test')->get('test.driver'))->toBe('mysql');
+    expect(ConfigPortal::name('~system/database')->get('development.driver'))->toBe('mysql');
 });
 

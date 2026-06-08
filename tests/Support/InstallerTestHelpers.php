@@ -127,7 +127,7 @@ function withInstallerTestDatabase(callable $callback)
     $projectRoot = dirname(__DIR__, 2);
     $envPath = $projectRoot . '/.env';
     $envBackup = is_file($envPath) ? file_get_contents($envPath) : null;
-    $dbConfigPath = $projectRoot . '/system/config/database.config.php';
+    $dbConfigPath = $projectRoot . '/pincore/config/database.config.php';
     $dbConfigBackup = is_file($dbConfigPath) ? file_get_contents($dbConfigPath) : null;
 
     try {

@@ -68,6 +68,34 @@ function cleanupTestArtifacts(): void
     AppTestKit::cleanupTransientArtifacts();
 }
 
+function testSandbox(string $relative = ''): string
+{
+    return \Tests\Support\TestSandbox::path($relative);
+}
+
+function testSandboxRoot(): string
+{
+    return \Tests\Support\TestSandbox::root();
+}
+
+function testPackage(string $suffix): string
+{
+    return \Tests\Support\TestSandbox::packageName($suffix);
+}
+
+function testProjectRoot(): string
+{
+    return str_replace('\\', '/', AppTestKit::projectRoot());
+}
+
+function testFixtures(string $relative = ''): string
+{
+    $base = testProjectRoot() . '/tests/Fixtures';
+    $relative = ltrim(str_replace('\\', '/', $relative), '/');
+
+    return $relative === '' ? $base : $base . '/' . $relative;
+}
+
 function expectPortalContract(string $class): void
 {
     $basePath = str_replace('\\', '/', dirname(__DIR__, 2) . '/pincore/');
