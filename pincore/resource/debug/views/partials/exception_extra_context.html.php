@@ -1,36 +1,4 @@
 <div class="px-extra-context">
-<?php if (!empty($pinoox['portal']['source']['snippet'])) { ?>
-<section class="px-portal-context">
-    <div class="px-route-context-head">
-        <h2>Portal call</h2>
-        <p>Your code invoked a Portal facade; the error surfaced inside <code>Portal.php</code> when delegating to the service.</p>
-    </div>
-
-    <dl class="px-route-grid">
-        <dt>Call</dt>
-        <dd><code><?= htmlspecialchars((string) ($pinoox['portal']['call'] ?? ''), ENT_QUOTES); ?></code></dd>
-        <?php if (!empty($pinoox['portal']['target'])) { ?>
-        <dt>Service</dt>
-        <dd><code><?= htmlspecialchars((string) $pinoox['portal']['target'], ENT_QUOTES); ?></code></dd>
-        <?php } ?>
-        <?php if (!empty($pinoox['portal']['suggestion'])) { ?>
-        <dt>Suggestion</dt>
-        <dd><code><?= htmlspecialchars((string) (($pinoox['portal']['portal'] ?? '') . '::' . $pinoox['portal']['suggestion'] . '()'), ENT_QUOTES); ?></code></dd>
-        <?php } ?>
-    </dl>
-
-    <details class="px-disclosure px-disclosure-route px-disclosure-route-primary" open>
-        <summary>
-            <span>Your call site</span>
-            <code class="px-disclosure-file"><?= htmlspecialchars((string) ($pinoox['portal']['source']['relative_file'] ?? ''), ENT_QUOTES); ?>:<?= (int) ($pinoox['portal']['source']['line'] ?? 0); ?></code>
-        </summary>
-        <div class="px-disclosure-body">
-            <?= $this->include('views/partials/source_snippet.html.php', ['source' => $pinoox['portal']['source']]); ?>
-        </div>
-    </details>
-</section>
-<?php } ?>
-
 <?php if (!empty($pinoox['route'])) {
     $routeCtx = $pinoox['route'];
     $routeMethods = implode('|', (array) ($routeCtx['methods'] ?? ['GET']));

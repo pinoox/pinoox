@@ -17,8 +17,8 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Logger;
-use Pinoox\System\Model\HistoryModel;
-use Pinoox\System\Model\Table;
+use Pinoox\Model\HistoryModel;
+use Pinoox\Model\Table;
 
 /**
  * Enhanced Migrator class with comprehensive migration management
@@ -181,6 +181,9 @@ class Migrator
                 if (!$this->toolkit->isSuccess()) {
                     throw new Exception($this->toolkit->getErrors());
                 }
+
+                MigrationQuery::importLegacyMigrationRecords();
+
                 return $this->executeMigrations();
             }
 
@@ -437,6 +440,15 @@ class Migrator
                     
                 } catch (Exception $e) {
                     MigrationBase::usePackage(null);
+
+                    if ($e instanceof QueryException && $this->isTableAlreadyExistsError($e)) {
+                        $this->log("Table already exists, adopting migration: {$migrationName}", 'warning');
+                        $this->adoptExistingMigration($migrationName);
+                        $skipped[] = $migrationName;
+
+                        continue;
+                    }
+
                     $this->log("Failed to execute migration {$migrationName}: " . $e->getMessage(), 'error');
                     throw new Exception("Migration {$migrationName} failed: " . $e->getMessage());
                 }
@@ -466,12 +478,36 @@ class Migrator
         }
 
         $recorded = $this->hasBeenRun($migrationName) || !empty($migration['sync']);
+        $tableExists = $this->targetTableExists($migration);
 
-        if (!$recorded) {
+        if ($recorded && $tableExists) {
+            return true;
+        }
+
+        if (!$recorded && $tableExists) {
+            return $this->adoptExistingMigration($migrationName);
+        }
+
+        return false;
+    }
+
+    private function adoptExistingMigration(string $migrationName): bool
+    {
+        if (!$this->toolkit->isExistsMigrationTable()) {
             return false;
         }
 
-        return $this->targetTableExists($migration);
+        try {
+            $this->recordMigration($migrationName);
+            $this->log("Adopted existing schema for migration: {$migrationName}");
+            $this->statistics['skipped_migrations']++;
+
+            return true;
+        } catch (Exception $e) {
+            $this->log("Cannot adopt migration {$migrationName}: " . $e->getMessage(), 'warning');
+
+            return false;
+        }
     }
 
     private function hasBeenRun(string $migrationName): bool

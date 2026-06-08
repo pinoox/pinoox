@@ -103,7 +103,7 @@ HELP
     private function getSeederPath(): string
     {
         if ($this->package === 'platform') {
-            return SystemConfig::path('system_seed');
+            return SystemConfig::platformPath('seed');
         }
 
         return AppEngine::path($this->package) . '/' . trim(SystemConfig::rawPath('app_seed', 'database/seed'), '/\\');

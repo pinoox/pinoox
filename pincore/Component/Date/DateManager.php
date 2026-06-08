@@ -16,6 +16,8 @@ class DateManager
 {
     private DateFactory $factory;
 
+    private ?string $calendarOverride = null;
+
     public function __construct(
         private array $config = [],
     ) {
@@ -45,15 +47,32 @@ class DateManager
         } catch (\Throwable) {
         }
 
-        return (string) ($this->config['timezone'] ?? 'Asia/Tehran');
+        return (string) ($this->config['timezone'] ?? 'UTC');
+    }
+
+    /**
+     * Use a specific calendar for this manager instance (does not mutate the portal singleton).
+     *
+     * Date::usingCalendar('jalali')->format($time);
+     */
+    public function usingCalendar(string $calendar): self
+    {
+        $instance = clone $this;
+        $instance->calendarOverride = $this->normalizeCalendar($calendar);
+
+        return $instance;
     }
 
     public function calendar(): string
     {
+        if ($this->calendarOverride !== null) {
+            return $this->calendarOverride;
+        }
+
         try {
             $appCalendar = App::get('date.calendar');
             if (is_string($appCalendar) && $appCalendar !== '') {
-                return $appCalendar;
+                return $this->normalizeCalendar($appCalendar);
             }
         } catch (\Throwable) {
         }
@@ -62,12 +81,21 @@ class DateManager
             $locale = (string) App::get('lang');
             $localeCalendar = $this->config['locale_calendar'][$locale] ?? null;
             if (is_string($localeCalendar) && $localeCalendar !== '') {
-                return $localeCalendar;
+                return $this->normalizeCalendar($localeCalendar);
             }
         } catch (\Throwable) {
         }
 
-        return (string) ($this->config['calendar'] ?? 'jalali');
+        return $this->normalizeCalendar((string) ($this->config['calendar'] ?? 'gregorian'));
+    }
+
+    private function normalizeCalendar(string $calendar): string
+    {
+        return match (strtolower(trim($calendar))) {
+            'jalali', 'jalaali', 'shamsi' => 'jalali',
+            'gregorian', 'gregory', 'miladi', 'g' => 'gregorian',
+            default => 'gregorian',
+        };
     }
 
     public function isJalali(): bool

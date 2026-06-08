@@ -18,6 +18,7 @@ use Pinoox\Component\Kernel\ContainerBuilder;
 use Pinoox\Component\Store\Config\ConfigInterface;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
+use Pinoox\Portal\Url;
 use Pinoox\Component\Store\Cookie;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Portal\Env;
@@ -132,6 +133,13 @@ if (!function_exists('_env')) {
 if (!function_exists('redirect')) {
     function redirect(string $url, int $status = 302): RedirectResponse
     {
+        if ($url !== ''
+            && !str_starts_with($url, 'http://')
+            && !str_starts_with($url, 'https://')
+            && !str_starts_with($url, '//')) {
+            $url = Url::link($url);
+        }
+
         return new RedirectResponse($url, $status);
     }
 }

@@ -28,4 +28,9 @@ final class TransportContext
 
         return self::$hostStack[array_key_last(self::$hostStack)];
     }
+
+    public static function inMeeting(): bool
+    {
+        return self::$hostStack !== [];
+    }
 }

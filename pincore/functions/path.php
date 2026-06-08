@@ -112,6 +112,24 @@ if (!function_exists('path')) {
     }
 }
 
+if (!function_exists('database_path')) {
+    /**
+     * Absolute path to the project database directory or a file inside it.
+     *
+     * Laravel-compatible helper for sqlite paths in database.config.php.
+     */
+    function database_path(string $path = ''): string
+    {
+        $base = path('~storage/app/database');
+
+        if ($path === '') {
+            return $base;
+        }
+
+        return $base . '/' . ltrim(str_replace('\\', '/', $path), '/');
+    }
+}
+
 if (!function_exists('app_urls')) {
     function app_urls(string $package): array
     {

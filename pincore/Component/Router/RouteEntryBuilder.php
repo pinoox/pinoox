@@ -147,6 +147,13 @@ class RouteEntryBuilder
         return $this;
     }
 
+    public function fixWebServer(bool $fix = true): self
+    {
+        $this->data['fix_web_server'] = $fix;
+
+        return $this;
+    }
+
     public function register(): void
     {
         if ($this->registered) {

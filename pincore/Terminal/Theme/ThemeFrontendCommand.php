@@ -139,7 +139,7 @@ HELP
         $io->section('Starting frontend dev server: ' . $frontend->themePath());
         $io->note([
             'Set VITE_DEV=true in .env or create theme/dist/hot with the Vite URL.',
-            'Proxy API calls from vite.config.js to your Pinoox URL (see docs/pinoox-templates.md).',
+            'Proxy API calls from vite.config.js to your Pinoox URL (see docs/pinoox-frontend.md).',
         ]);
 
         return $frontend->dev($install) === 0 ? Command::SUCCESS : Command::FAILURE;

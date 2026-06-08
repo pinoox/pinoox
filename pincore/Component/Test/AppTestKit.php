@@ -5,6 +5,7 @@ namespace Pinoox\Component\Test;
 use Closure;
 use Pinoox\Component\AppEvent\AppBootstrap;
 use Pinoox\Component\AppEvent\AppRouteRegistry;
+use Pinoox\Component\Package\AppEnv\AppEnvBridge;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Router\Action\ActionRegistry;
 use Pinoox\Component\Http\Response;
@@ -126,6 +127,7 @@ class AppTestKit
             file_put_contents($target, $content);
         }
 
+        AppEnvBridge::reset();
         AppEngine::__rebuild();
 
         return $dir;
@@ -136,6 +138,7 @@ class AppTestKit
         self::deleteDirectory(self::path($package));
         self::deleteDirectory(SystemConfig::resolvePath('~pinker/apps/' . $package));
         self::deleteDirectory(SystemConfig::resolvePath('~pinker/state/apps/' . $package));
+        AppEnvBridge::reset();
         AppEngine::__rebuild();
     }
 
@@ -189,8 +192,11 @@ class AppTestKit
         }
 
         self::cleanFixtureTree(self::projectRoot() . '/tests/Fixtures');
+        self::cleanFixtureTree(self::projectRoot() . '/tests/Fixtures/sandbox');
         @unlink(self::projectRoot() . '/tests/Fixtures/schedule-marker.txt');
         @unlink(self::projectRoot() . '/tests/Fixtures/app_registry.config.php');
+
+        self::cleanupWebServerFixCaches($pinkerApps);
 
         ActionRegistry::reset();
         AppRouteRegistry::reset();
@@ -227,6 +233,22 @@ class AppTestKit
                 self::deleteDirectory($target);
             } else {
                 @unlink($target);
+            }
+        }
+    }
+
+    private static function cleanupWebServerFixCaches(string $pinkerAppsRoot): void
+    {
+        $patterns = [
+            $pinkerAppsRoot . '/com_test_*/cache/web_server_fix.php',
+            $pinkerAppsRoot . '/com_boot_*/cache/web_server_fix.php',
+        ];
+
+        foreach ($patterns as $pattern) {
+            foreach (glob($pattern) ?: [] as $file) {
+                if (is_file($file)) {
+                    @unlink($file);
+                }
             }
         }
     }

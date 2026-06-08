@@ -64,36 +64,8 @@ $request = $pinoox['request'] ?? [];
             </p>
             <?php } ?>
 
-            <?php if (!empty($pinoox['portal']['call'])) { ?>
-            <p class="px-hero-origin">
-                Called from
-                <?php if (!empty($pinoox['portal']['file'])) { ?>
-                <code><?= htmlspecialchars((string) $pinoox['portal']['file'], ENT_QUOTES); ?><?= !empty($pinoox['portal']['line']) ? ':' . (int) $pinoox['portal']['line'] : ''; ?></code>
-                <?php } ?>
-                as
-                <code class="px-hero-origin-call"><?= htmlspecialchars((string) $pinoox['portal']['call'], ENT_QUOTES); ?></code>
-            </p>
-            <?php } ?>
-
             <?= $this->include('views/partials/exception_meta_bar.html.php', ['pinoox' => $pinoox]); ?>
         </section>
-
-        <?php if (!empty($pinoox['portal']['source']['snippet'])) { ?>
-        <section class="px-portal-context">
-            <div class="px-route-context-head">
-                <h2>Portal call</h2>
-            </div>
-            <details class="px-disclosure px-disclosure-route px-disclosure-route-primary" open>
-                <summary>
-                    <span>Your call site</span>
-                    <code class="px-disclosure-file"><?= htmlspecialchars((string) ($pinoox['portal']['source']['relative_file'] ?? ''), ENT_QUOTES); ?>:<?= (int) ($pinoox['portal']['source']['line'] ?? 0); ?></code>
-                </summary>
-                <div class="px-disclosure-body">
-                    <?= $this->include('views/partials/source_snippet.html.php', ['source' => $pinoox['portal']['source']]); ?>
-                </div>
-            </details>
-        </section>
-        <?php } ?>
 
         <?php if (!empty($pinoox['route'])) {
             $routeCtx = $pinoox['route'];

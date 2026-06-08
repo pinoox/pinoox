@@ -27,7 +27,7 @@ class PinxVersion
         }
 
         if ($name === '' && $code === null) {
-            $configFile = rtrim((string) Loader::getBasePath(), '/\\') . '/system/config/pinoox.config.php';
+            $configFile = rtrim((string) Loader::getBasePath(), '/\\') . '/pincore/config/pinoox.config.php';
             if (is_file($configFile)) {
                 $config = include $configFile;
                 if (is_array($config)) {

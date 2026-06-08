@@ -64,7 +64,7 @@ class SeederToolkit
     private function initializeSeederPath(): void
     {
         if ($this->package === 'platform') {
-            $this->seederPath = SystemConfig::path('system_seed');
+            $this->seederPath = SystemConfig::platformPath('seed');
         } else {
             $this->seederFolder = trim(SystemConfig::rawPath('app_seed', 'database/seed'), '/\\');
             $this->seederPath = AppEngine::path($this->package) . '/' . $this->seederFolder;

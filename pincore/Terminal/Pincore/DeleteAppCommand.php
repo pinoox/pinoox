@@ -31,7 +31,7 @@ class DeleteAppCommand extends Terminal
         $this
             ->setHelp(
                 <<<'HELP'
-Permanently removes an app from apps/ and cleans router.config.php entries.
+Permanently removes an app from apps/ and cleans app-router.config.php entries.
 
 Examples:
   php pinoox app:delete com_my_shop
@@ -106,7 +106,7 @@ HELP
      */
     private function handleRoutes(OutputInterface $output, string $packageName, ?string $specificRoute = null): void
     {
-        $sourceRouter = SystemApp::path('config/app/router.config.php');
+        $sourceRouter = SystemApp::path('app-router.config.php');
         $bakedRouter = Pinker::bakedFileFromSource($sourceRouter);
         if (!FileSystem::exists($bakedRouter) && !FileSystem::exists($sourceRouter)) {
             $output->writeln("<comment>Pinker router configuration file not found.</comment>");

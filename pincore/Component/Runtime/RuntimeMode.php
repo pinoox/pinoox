@@ -17,7 +17,8 @@ final class RuntimeMode
 
     public const STAGING = 'staging';
 
-    /** @var array<string, string> */
+    /** Default runtime when APP_ENV is unset (secure-by-default). */
+    public const DEFAULT = self::PRODUCTION;
 
     private const ALIASES = [
         'dev' => self::DEVELOPMENT,
@@ -34,7 +35,7 @@ final class RuntimeMode
     /**
      * Read live global runtime settings (Config when booted, files otherwise).
      *
-     * @return array{mode: string, debug: bool}
+     * @return array{mode: string, debug: bool, exception: bool}
      */
     public static function readGlobal(): array
     {
@@ -43,8 +44,9 @@ final class RuntimeMode
 
             if (is_array($pinoox)) {
                 return [
-                    'mode' => self::normalize((string) ($pinoox['mode'] ?? self::DEVELOPMENT)),
+                    'mode' => self::normalize((string) ($pinoox['mode'] ?? self::DEFAULT)),
                     'debug' => (bool) ($pinoox['debug'] ?? false),
+                    'exception' => (bool) ($pinoox['exception'] ?? true),
                 ];
             }
         } catch (\Throwable) {
@@ -62,15 +64,16 @@ final class RuntimeMode
     }
 
     /**
-     * @return array{mode: string, debug: bool}
+     * @return array{mode: string, debug: bool, exception: bool}
      */
     private static function globalConfigFromFiles(): array
     {
         $pinoox = SystemConfig::get('pinoox');
 
         return [
-            'mode' => self::normalize((string) ($pinoox['mode'] ?? self::DEVELOPMENT)),
+            'mode' => self::normalize((string) ($pinoox['mode'] ?? self::DEFAULT)),
             'debug' => (bool) ($pinoox['debug'] ?? false),
+            'exception' => (bool) ($pinoox['exception'] ?? true),
         ];
     }
 
@@ -79,6 +82,28 @@ final class RuntimeMode
         $mode = strtolower(trim($mode));
 
         return self::ALIASES[$mode] ?? $mode;
+    }
+
+    /**
+     * Project runtime mode from root .env — APP_ENV or MODE (APP_ENV wins when both set).
+     */
+    public static function fromEnv(?string $default = null): string
+    {
+        $default ??= self::DEFAULT;
+
+        $appEnv = SystemConfig::env('APP_ENV');
+
+        if (is_string($appEnv) && $appEnv !== '') {
+            return self::normalize($appEnv);
+        }
+
+        $mode = SystemConfig::env('MODE');
+
+        if (is_string($mode) && $mode !== '') {
+            return self::normalize($mode);
+        }
+
+        return self::normalize($default);
     }
 
     /**
@@ -94,15 +119,22 @@ final class RuntimeMode
         ];
     }
 
+    /**
+     * Default APP_DEBUG when not set in .env: false for production, true for all other modes.
+     */
+    public static function defaultDebugForMode(?string $mode = null): bool
+    {
+        $mode ??= self::fromEnv();
+
+        return self::normalize($mode) !== self::PRODUCTION;
+    }
+
+    /**
+     * Whether Pinoox Exception / boot-time error handler is active (PINOOX_EXCEPTION).
+     */
     public static function bootDebugEnabled(): bool
     {
-        $global = self::readGlobal();
-
-        if ($global['debug']) {
-            return true;
-        }
-
-        return in_array($global['mode'], [self::DEVELOPMENT, self::TEST], true);
+        return self::readGlobal()['exception'];
     }
 
     public function name(?string $package = null): string
@@ -137,17 +169,7 @@ final class RuntimeMode
             return (bool) $runtime['debug'];
         }
 
-        $global = self::readGlobal();
-
-        if ($global['debug']) {
-            return true;
-        }
-
-        return match ($this->name($package)) {
-            self::DEVELOPMENT, self::TEST => true,
-            self::STAGING => false,
-            default => false,
-        };
+        return self::readGlobal()['debug'];
     }
 
     public function is(string $mode, ?string $package = null): bool
@@ -176,27 +198,13 @@ final class RuntimeMode
     }
 
     /**
-     * Database profile key inside database.config.php for the active mode.
+     * Requested database connection name for display (mysql, sqlite, …).
+     *
+     * Does not validate against config — use {@see DatabaseConfig::connectionName()} when connecting.
      */
     public function databaseConnection(?string $package = null): string
     {
-        $mode = $this->name($package);
-        $profiles = SystemConfig::get('database');
-
-        if (!is_array($profiles)) {
-            return self::TEST;
-        }
-
-        if (isset($profiles[$mode]) && is_array($profiles[$mode])) {
-            return $mode;
-        }
-
-        return match ($mode) {
-            self::PRODUCTION => isset($profiles[self::PRODUCTION]) ? self::PRODUCTION : 'development',
-            self::STAGING => isset($profiles[self::STAGING]) ? self::STAGING : 'development',
-            self::TEST => 'test',
-            default => 'development',
-        };
+        return \Pinoox\Component\Database\DatabaseConfig::requestedConnectionName();
     }
 
     /**

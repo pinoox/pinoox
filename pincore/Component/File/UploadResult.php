@@ -2,7 +2,7 @@
 
 namespace Pinoox\Component\File;
 
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 
 readonly class UploadResult
 {

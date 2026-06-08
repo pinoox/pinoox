@@ -14,8 +14,8 @@
 namespace Pinoox\Component\Migration;
 
 use Illuminate\Database\Schema\Builder;
-use Pinoox\System\Model\Table;
-use Pinoox\System\Model\HistoryModel;
+use Pinoox\Model\Table;
+use Pinoox\Model\HistoryModel;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Support\SystemConfig;
@@ -107,7 +107,7 @@ class MigrationToolkit
                 if ($this->package === 'platform' && $this->action === self::ACTION_INIT) {
                     throw new \RuntimeException(
                         'No migration files found in: ' . $this->migrationPath
-                        . '. Check PINOOX_SYSTEM_MIGRATIONS_PATH (expected ~system/database/migrations).',
+                        . '. Check platform migrations path (~pincore/database/migrations).',
                     );
                 }
 
@@ -230,7 +230,7 @@ class MigrationToolkit
     private function initializeMigrationPath(): void
     {
         if ($this->package === 'platform') {
-            $this->migrationPath = SystemConfig::path('system_migrations');
+            $this->migrationPath = SystemConfig::platformPath('migrations');
         } else {
             $this->migrationFolder = trim(SystemConfig::rawPath('app_migrations', 'database/migrations'), '/\\');
             $this->migrationPath = AppEngine::path($this->package) . '/' . $this->migrationFolder;
@@ -332,7 +332,13 @@ class MigrationToolkit
         }
 
         if ($this->action === self::ACTION_RUN && $this->isHistoryTableMigration($filename)) {
-            return $this->isExistsMigrationTable();
+            if (!$this->isExistsMigrationTable()) {
+                return false;
+            }
+
+            $fileName = pathinfo($filename, PATHINFO_FILENAME);
+
+            return MigrationQuery::is_exists($fileName, $this->package);
         }
 
         return false;

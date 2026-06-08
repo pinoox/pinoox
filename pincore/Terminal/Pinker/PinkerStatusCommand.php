@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace Pinoox\Terminal\Pinker;
 
@@ -63,7 +63,7 @@ class PinkerStatusCommand extends Terminal
         }
 
         $io->table(['Package', 'File', 'State', 'Cache', 'Override', 'Source modified'], $rows);
-        $io->note('runtime means the source uses env/getenv and is intentionally not cached.');
+        $io->note('runtime = source uses env(); defined .env keys override pinker/state; unset keys fall back to pinker.');
 
         return Command::SUCCESS;
     }

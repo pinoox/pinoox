@@ -26,6 +26,7 @@ use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Path\Manager\PathManager;
 use Pinoox\Component\Kernel\Loader;
 use Pinoox\Component\Router\Router;
+use Pinoox\Component\Package\AppEnv\AppEnvBridge;
 use Pinoox\Component\Store\Config\Config;
 use Pinoox\Component\Store\Config\Strategy\FileConfigStrategy;
 use Pinoox\Component\Store\Baker\Pinker;
@@ -105,6 +106,15 @@ class AppEngine implements EngineInterface
     public function getDefaultData() : array
     {
         return $this->defaultData;
+    }
+
+    public function __portalRebuild(): void
+    {
+        $this->appConfig = [];
+        $this->appLang = [];
+        $this->router = [];
+        $this->appManager = [];
+        $this->pathManager = [];
     }
 
     public function stable(string|ReferenceInterface $packageName): bool
@@ -212,8 +222,16 @@ class AppEngine implements EngineInterface
                 ->dumping(true);
             $fileStrategy = new FileConfigStrategy($pinker);
             $config = new Config($fileStrategy);
-            $config->merge($this->defaultData);
+
+            $pickup = $pinker->pickup();
+            $resolved = array_replace_recursive(
+                $this->defaultData,
+                is_array($pickup) ? $pickup : [],
+            );
+
+            $config->setData($resolved);
             $config->set('package', $packageName);
+            AppEnvBridge::apply($config, $packageName, $this->path($packageName));
             $this->appConfig[$packageName] = $config;
         }
         return $this->appConfig[$packageName];

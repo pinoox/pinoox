@@ -10,8 +10,11 @@ use Pinoox\Component\Transport\TransportConfig;
  * @method static string|null authSource(?string $hostPackage = null)
  * @method static bool sharesAuthWith(string $guestPackage, string $hostPackage)
  * @method static string|null platformAuthPackage()
+ * @method static array resolved()
+ * @method static list<string> activeScenarios(?array $transport = null)
  *
  * @see TransportConfig
+ * @see \Pinoox\Component\Transport\TransportScenario
  */
 class Transport extends Portal
 {

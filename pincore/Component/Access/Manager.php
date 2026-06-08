@@ -6,9 +6,9 @@ use Closure;
 use Illuminate\Database\QueryException;
 use Pinoox\Component\Validation\AuthorizationException;
 use Pinoox\Portal\Auth;
-use Pinoox\System\Model\PermissionModel;
-use Pinoox\System\Model\RoleModel;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\PermissionModel;
+use Pinoox\Model\RoleModel;
+use Pinoox\Model\UserModel;
 
 class Manager
 {

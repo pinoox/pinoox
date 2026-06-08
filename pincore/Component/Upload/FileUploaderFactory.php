@@ -14,7 +14,7 @@
 namespace Pinoox\Component\Upload;
 
 use Pinoox\Component\File\FileConfig;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 
 class FileUploaderFactory
 {

@@ -5,7 +5,7 @@ namespace Pinoox\Component\File;
 use InvalidArgumentException;
 use Pinoox\Component\Database\Model;
 use Pinoox\Component\Upload\FileUploaderFactory;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;
 

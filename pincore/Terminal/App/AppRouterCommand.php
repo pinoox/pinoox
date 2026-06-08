@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:router',
-    description: 'View or edit URL-to-app mappings in router.config.php',
+    description: 'View or edit URL-to-app mappings in app-router.config.php',
 )]
 
 class AppRouterCommand extends Terminal
@@ -30,8 +30,8 @@ class AppRouterCommand extends Terminal
                 <<<'HELP'
 Maps a URL path to an app package (which app handles /shop, /panel, etc.).
 
-Path routes live in system/config/app/router.config.php.
-Host/domain routes live in system/config/domain.config.php and are checked first.
+Path routes live in pincore/config/app-router.config.php.
+Host/domain routes live in pincore/config/domain.config.php and are checked first.
 
 Examples:
 

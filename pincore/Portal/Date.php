@@ -18,6 +18,7 @@ use Pinoox\Component\Source\Portal;
  * @method static string formatKey(string $key, ?string $calendar = null)
  * @method static string timezone()
  * @method static string calendar()
+ * @method static DateManager usingCalendar(string $calendar)
  * @method static bool isJalali()
  * @method static bool validate(mixed $date, string $format = 'Y-m-d H:i:s')
  * @method static array betweenJDate(mixed $startDate, mixed $endDate, int $stepDays = 1, string $format = 'Y-m-d')
@@ -47,6 +48,11 @@ class Date extends Portal
     public static function __exclude(): array
     {
         return [];
+    }
+
+    public static function usingCalendar(string $calendar): DateManager
+    {
+        return self::___()->usingCalendar($calendar);
     }
 
     public static function __callback(): array

@@ -98,15 +98,50 @@ class RouteNaming
             return '';
         }
 
-        if (str_contains($name, '.')) {
-            return $name;
-        }
-
         $prefix = $package !== null
             ? self::prefixForPackage($package)
             : self::currentPrefix();
 
+        if ($prefix === '') {
+            return $name;
+        }
+
+        $bare = rtrim($prefix, '.');
+
+        if (str_starts_with($name, $prefix) || ($bare !== '' && str_starts_with($name, $bare . '.'))) {
+            return $name;
+        }
+
+        $first = str_contains($name, '.') ? strstr($name, '.', true) : $name;
+        if (is_string($first) && $first !== '' && $first !== $bare && self::isKnownRoutePrefix($first)) {
+            return $name;
+        }
+
         return $prefix . $name;
+    }
+
+    private static function isKnownRoutePrefix(string $slug): bool
+    {
+        static $known = null;
+
+        if ($known === null) {
+            $known = [];
+            try {
+                foreach (AppEngine::all() as $package => $manager) {
+                    if (!$manager->exists()) {
+                        continue;
+                    }
+
+                    $bare = rtrim(self::prefixForPackage($package), '.');
+                    if ($bare !== '') {
+                        $known[$bare] = true;
+                    }
+                }
+            } catch (\Throwable) {
+            }
+        }
+
+        return isset($known[$slug]);
     }
 
     public static function slugFromPackage(string $package): string

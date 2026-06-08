@@ -32,9 +32,9 @@ if (!function_exists('jalali')) {
 }
 
 if (!function_exists('format_date')) {
-    function format_date(mixed $time = null, ?string $format = null, ?string $timezone = null): string
+    function format_date(mixed $time = null, ?string $format = null, ?string $calendar = null): string
     {
-        return Date::format($time, $format, null);
+        return Date::format($time, $format, $calendar);
     }
 }
 

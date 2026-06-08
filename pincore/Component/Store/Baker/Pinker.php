@@ -31,6 +31,8 @@ class Pinker
     private $data = null;
 
     private ?array $info = null;
+    /** @var array<string, mixed> */
+    private array $forcedOverridePaths = [];
     private bool $isOutputData = false;
     private bool $dumping = false;
     private bool $isCamelToUnderscore = false;
@@ -71,6 +73,32 @@ class Pinker
     {
         $this->isCamelToUnderscore = $status;
         return $this;
+    }
+
+    public function info(array $info): self
+    {
+        $this->info = array_merge($this->info ?? [], $info);
+
+        return $this;
+    }
+
+    /**
+     * Always persist these dot-paths in the override file (installer defaults, etc.).
+     *
+     * @param array<string, mixed> $paths
+     */
+    public function forceOverridePaths(array $paths): self
+    {
+        foreach ($paths as $path => $value) {
+            $this->forcedOverridePaths[(string) $path] = $value;
+        }
+
+        return $this;
+    }
+
+    public function isEnvSensitive(): bool
+    {
+        return EnvSensitiveConfig::sourceUsesEnv($this->mainFile);
     }
 
     public function bake(): self
@@ -229,6 +257,7 @@ class Pinker
     {
         $this->fileHandler->remove($this->bakedFile);
         $this->removeOverride();
+        $this->forcedOverridePaths = [];
         $this->data = is_file($this->mainFile) ? $this->fileHandler->retrieve($this->mainFile) : null;
         $this->usesOverlayStorage() ? $this->bakeCache($this->data) : $this->bake();
     }
@@ -236,7 +265,12 @@ class Pinker
     private function getData()
     {
         if ($this->usesOverlayStorage()) {
+            if ($this->isSourceEnvSensitive()) {
+                return $this->resolveEnvSensitiveData();
+            }
+
             $source = $this->sourceDataForRead();
+
             return $this->applyOverride($source);
         }
 
@@ -317,6 +351,10 @@ class Pinker
             'override_exists' => $override !== null,
             'cache_valid' => $this->isCacheValid(),
             'env_sensitive' => $this->isSourceEnvSensitive(),
+            'env_priority' => $this->envPriorityStatus($override),
+            'env_resolution' => $this->envResolutionStatus($override),
+            'runtime_mode' => EnvSensitiveConfig::currentMode(),
+            'stored_profiles' => $this->storedProfilesStatus($override),
             'source_hash' => $info['source_hash'] ?? null,
             'source_mtime' => $info['source_mtime'] ?? null,
             'source_size' => $info['source_size'] ?? null,
@@ -324,6 +362,39 @@ class Pinker
             'override_removes' => is_array($override['remove'] ?? null) ? count($override['remove']) : 0,
             'override_updated_at' => $override['info']['updated_at'] ?? null,
         ];
+    }
+
+    private function envResolutionStatus(?array $override): ?string
+    {
+        if (!$this->isSourceEnvSensitive()) {
+            return null;
+        }
+
+        return (string) ($override['info']['env_resolution']
+            ?? $this->info['env_resolution']
+            ?? EnvSensitiveConfig::resolutionLabel());
+    }
+
+    private function envPriorityStatus(?array $override): ?string
+    {
+        if (!$this->isSourceEnvSensitive()) {
+            return null;
+        }
+
+        return (string) ($override['info']['env_priority']
+            ?? $this->info['env_priority']
+            ?? EnvSensitiveConfig::envPriorityLabel());
+    }
+
+    private function storedProfilesStatus(?array $override): ?string
+    {
+        if (!$this->isSourceEnvSensitive()) {
+            return null;
+        }
+
+        return (string) ($override['info']['stored_profiles']
+            ?? $this->info['stored_profiles']
+            ?? implode(',', EnvSensitiveConfig::storedProfiles()));
     }
 
     private function usesOverlayStorage(): bool
@@ -343,10 +414,6 @@ class Pinker
 
     private function sourceDataForRead()
     {
-        if ($this->isSourceEnvSensitive()) {
-            return $this->sourceData();
-        }
-
         if (!$this->isCacheValid()) {
             $this->removeCache();
             $this->data = $this->sourceData();
@@ -368,6 +435,26 @@ class Pinker
         }
 
         return $data;
+    }
+
+    private function resolveEnvSensitiveData()
+    {
+        $source = $this->sourceData();
+        $override = $this->loadOverride();
+
+        if (EnvSensitiveConfig::shouldResolveFromEnv()) {
+            if ($override !== null && !empty($override['data'])) {
+                return $this->applyOverride($source);
+            }
+
+            return $source;
+        }
+
+        if ($override === null || empty($override['data'])) {
+            return $source;
+        }
+
+        return $this->applyOverride($source);
     }
 
     private function sourceData()
@@ -397,6 +484,10 @@ class Pinker
         $current = $this->generateData();
         $override = $this->makeOverride($source, $current);
 
+        if ($this->forcedOverridePaths !== []) {
+            $override['data'] = array_replace($override['data'], $this->forcedOverridePaths);
+        }
+
         if (empty($override['data']) && empty($override['remove'])) {
             $this->removeOverride();
             return;
@@ -407,12 +498,27 @@ class Pinker
             'schema' => self::OVERRIDE_SCHEMA,
             'data' => $override['data'],
             'remove' => $override['remove'],
-            'info' => [
+            'info' => array_merge([
                 'source' => $this->mainFile,
                 'cache' => $this->bakedFile,
                 'updated_at' => time(),
-            ],
+            ], $this->overrideInfo()),
         ]));
+    }
+
+    /** @return array<string, scalar|null> */
+    private function overrideInfo(): array
+    {
+        if (!$this->isSourceEnvSensitive()) {
+            return [];
+        }
+
+        return array_merge([
+            'env_sensitive' => 'yes',
+            'env_priority' => EnvSensitiveConfig::envPriorityLabel(),
+            'env_resolution' => EnvSensitiveConfig::resolutionLabel(),
+            'stored_profiles' => implode(',', EnvSensitiveConfig::storedProfiles()),
+        ], $this->info ?? []);
     }
 
     private function formatExported(mixed $data): string
@@ -436,11 +542,23 @@ class Pinker
         $data = is_array($source) ? $source : [];
 
         foreach (($override['data'] ?? []) as $path => $value) {
-            $this->setPath($data, (string)$path, $value);
+            $path = (string) $path;
+
+            if (EnvSensitiveConfig::shouldSkipPinkerPath($this->mainFile, $path)) {
+                continue;
+            }
+
+            $this->setPath($data, $path, $value);
         }
 
         foreach (($override['remove'] ?? []) as $path) {
-            $this->removePath($data, (string)$path);
+            $path = (string) $path;
+
+            if (EnvSensitiveConfig::shouldSkipPinkerPath($this->mainFile, $path)) {
+                continue;
+            }
+
+            $this->removePath($data, $path);
         }
 
         return $data;
@@ -593,13 +711,7 @@ class Pinker
 
     private function isSourceEnvSensitive(): bool
     {
-        if (!is_file($this->mainFile)) {
-            return false;
-        }
-
-        $source = (string)file_get_contents($this->mainFile);
-
-        return preg_match('/\\b(?:env|_env|config_env|getenv)\\s*\\(/', $source) === 1;
+        return EnvSensitiveConfig::sourceUsesEnv($this->mainFile);
     }
 
     private function pinkerRoot(): ?string

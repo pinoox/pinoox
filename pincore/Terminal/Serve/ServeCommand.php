@@ -2,8 +2,12 @@
 
 namespace Pinoox\Terminal\Serve;
 
+use Pinoox\Component\Package\Routing\AppRouteMatcher;
 use Pinoox\Component\Server\DevelopmentServer;
+use Pinoox\Component\Server\ServeAppBinding;
 use Pinoox\Component\Terminal;
+use Pinoox\Portal\App\AppEngine;
+use Pinoox\Portal\App\AppRouter;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,17 +33,24 @@ Examples:
   php pinoox serve
   php pinoox serve --port=8080
   php pinoox serve --host=0.0.0.0 --port=9000
+  php pinoox serve --app=com_pinoox_manager
+  php pinoox serve --app=/manager
+  php pinoox serve --app=manager
+  php pinoox serve --app=com_pinoox_manager@/manager
   php pinoox serve --open
 
 Environment (.env):
   SERVER_HOST=127.0.0.1
   SERVER_PORT=8000
+  SERVER_APP=com_pinoox_manager
 
-The server uses system/launcher/server.php as a router (same rules as .htaccess).
+The server uses launcher/server.php as a router (same rules as .htaccess).
+With --app, Pinoox skips app-router matching and always boots the selected app.
 HELP
             )
             ->addOption('host', null, InputOption::VALUE_OPTIONAL, 'Host address (default from SERVER_HOST or 127.0.0.1)')
             ->addOption('port', null, InputOption::VALUE_OPTIONAL, 'Port number (default from SERVER_PORT or 8000)')
+            ->addOption('app', null, InputOption::VALUE_REQUIRED, 'Lock to one app (package, route path, alias, or package@path)')
             ->addOption('tries', null, InputOption::VALUE_OPTIONAL, 'How many ports to try if the default is busy', 10)
             ->addOption('no-reload', null, InputOption::VALUE_NONE, 'Do not restart when .env changes')
             ->addOption('open', 'o', InputOption::VALUE_NONE, 'Open the site in your default browser after start');
@@ -55,6 +66,7 @@ HELP
         $tries = max(1, (int) $input->getOption('tries'));
         $documentRoot = rtrim(str_replace('\\', '/', (string) PINOOX_BASE_PATH), '/');
         $router = DevelopmentServer::defaultRouterScript();
+        $serveApp = $this->resolveServeAppOption($input);
 
         if (!is_file($documentRoot . '/index.php')) {
             $io->error('index.php was not found in the project root: ' . $documentRoot);
@@ -68,6 +80,10 @@ HELP
             return Command::FAILURE;
         }
 
+        if ($serveApp !== null && $this->validateServeApp($serveApp, $io) === null) {
+            return Command::FAILURE;
+        }
+
         $server = new DevelopmentServer(
             host: $host,
             explicitPort: $port,
@@ -76,6 +92,7 @@ HELP
             documentRoot: $documentRoot,
             routerScript: $router,
             output: $output,
+            serveApp: $serveApp,
         );
 
         if ((bool) $input->getOption('open')) {
@@ -93,6 +110,46 @@ HELP
         }
 
         return $server->run();
+    }
+
+    private function resolveServeAppOption(InputInterface $input): ?string
+    {
+        $app = trim((string) ($input->getOption('app') ?: _env('SERVER_APP', '')));
+
+        return $app === '' ? null : $app;
+    }
+
+    /**
+     * @return array{package: string, path: string}|null
+     */
+    private function validateServeApp(string $binding, SymfonyStyle $io): ?array
+    {
+        $routes = AppRouteMatcher::normalizeRoutes(AppRouter::routes());
+        $resolved = ServeAppBinding::resolveBinding($binding, $routes);
+
+        if ($resolved === null) {
+            $io->error('Could not resolve serve app binding: ' . $binding);
+            $io->writeln('<comment>Try a package (com_pinoox_manager), route (/manager), alias (manager), or package@path.</comment>');
+
+            return null;
+        }
+
+        if (!AppEngine::exists($resolved['package'])) {
+            $io->error('App not found: ' . $resolved['package']);
+
+            return null;
+        }
+
+        if (!AppRouter::stable($resolved['package'])) {
+            $io->error('App is disabled: ' . $resolved['package']);
+
+            return null;
+        }
+
+        $mount = $resolved['path'] === '/' ? '/' : $resolved['path'];
+        $io->writeln('<info>Serve app:</info> ' . $resolved['package'] . ' <fg=gray>(mount ' . $mount . ', router bypassed)</>');
+
+        return $resolved;
     }
 
     private function resolveHost(string $host): string
@@ -138,4 +195,3 @@ HELP
         @exec($command);
     }
 }
-

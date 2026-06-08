@@ -8,7 +8,7 @@ use Pinoox\Component\Source\Portal;
 use Pinoox\Component\Upload;
 use Pinoox\Component\Upload\FileUploader as StorageEngine;
 use Pinoox\Component\File\FileStorage;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**

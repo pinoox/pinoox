@@ -16,6 +16,7 @@ namespace Pinoox\Portal\Kernel;
 
 use Pinoox\Component\Kernel\Listener\ActionRoutesManageListener;
 use Pinoox\Component\Kernel\Listener\ExceptionListener;
+use Pinoox\Component\Kernel\Listener\PinooxExceptionRenderListener;
 use Pinoox\Component\Kernel\Listener\QueryRouteCanonicalListener;
 use Pinoox\Component\Kernel\Listener\QueryRouteListener;
 use Pinoox\Component\Kernel\Listener\RequestListener;
@@ -59,6 +60,8 @@ class Listener extends Portal
             ->setArguments(['%charset%']);
 
         self::__bind(ExceptionListener::class, 'exception');
+
+        self::__bind(PinooxExceptionRenderListener::class, 'pinooxExceptionRender');
 
         self::__bind(TransactionalListener::class, 'transactional')
             ->setArguments([DB::__ref()]);

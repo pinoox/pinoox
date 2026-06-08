@@ -2,6 +2,7 @@
 
 namespace Pinoox\Terminal\Pincore;
 
+use Pinoox\Component\Package\AppEnv\AppEnvBridge;
 use Pinoox\Component\Runtime\RuntimeMode;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
@@ -25,7 +26,8 @@ class ModeShowCommand extends Terminal
         $this
             ->setHelp(
                 <<<'HELP'
-Displays global runtime mode from pinoox.config and per-app overrides from app.php → runtime.
+Displays global runtime mode from pinoox.config and per-app overrides from app.php → runtime
+or apps/{package}/.env (THEME, MODE, DEBUG, …).
 
 Examples:
 
@@ -78,6 +80,9 @@ HELP
                 ? (string) $runtime['mode']
                 : '—';
 
+            $envKeys = array_keys(AppEnvBridge::effective($name));
+            $envHint = $envKeys !== [] ? implode(',', $envKeys) : '—';
+
             $rows[] = [
                 $name,
                 $profile['mode'],
@@ -85,6 +90,7 @@ HELP
                 $profile['debug'] ? 'yes' : 'no',
                 $profile['database'],
                 $profile['cache_enabled'] ? 'on' : 'off',
+                $envHint,
             ];
         }
 
@@ -96,7 +102,7 @@ HELP
 
         $table = new Table($output);
         $table
-            ->setHeaders(['Package', 'Mode', 'Override', 'Debug', 'DB profile', 'Cache'])
+            ->setHeaders(['Package', 'Mode', 'Override', 'Debug', 'DB profile', 'Cache', 'App env'])
             ->setRows($rows);
         $table->render();
 

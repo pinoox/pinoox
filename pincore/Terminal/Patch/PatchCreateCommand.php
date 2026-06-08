@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace Pinoox\Terminal\Patch;
 
@@ -74,7 +74,7 @@ class PatchCreateCommand extends Terminal
     private function getPatchPath(): string
     {
         if ($this->package === 'platform') {
-            return SystemConfig::path('system_patches');
+            return SystemConfig::platformPath('patches');
         }
 
         return AppEngine::path($this->package) . '/' . trim(SystemConfig::rawPath('app_patches', 'patches'), '/\\');

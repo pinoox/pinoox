@@ -4,6 +4,7 @@ namespace Pinoox\Component\Template\Theme;
 
 use Pinoox\Component\Kernel\Exception;
 use Pinoox\Component\Package\ManifestConfig;
+use Pinoox\Component\Package\ManifestPinkerLoader;
 use Pinoox\Portal\App\AppEngine as AppEnginePortal;
 use Pinoox\Portal\Lang;
 
@@ -53,20 +54,7 @@ final class ThemeManifest
         }
 
         $folderName ??= basename(rtrim(str_replace('\\', '/', $themePath), '/'));
-        $data = self::readPhp($themePath . '/' . self::FILE);
-
-        if ($data === []) {
-            $data = [
-                'name' => $folderName,
-                'package' => $hostPackage,
-            ];
-        }
-
-        if ($hostPackage !== null && $hostPackage !== '') {
-            $data['package'] ??= $hostPackage;
-        }
-
-        $data['name'] ??= $folderName;
+        $data = self::readConfig($themePath . '/' . self::FILE, $folderName, $hostPackage);
 
         return new self($themePath, $folderName, $data);
     }
@@ -283,15 +271,37 @@ final class ThemeManifest
     /**
      * @return array<string, mixed>
      */
-    private static function readPhp(string $file): array
+    private static function readConfig(string $file, string $folderName, ?string $hostPackage): array
     {
         if (!is_file($file)) {
-            return [];
+            return self::applyFallbacks([], $folderName, $hostPackage);
         }
 
-        $data = include $file;
+        $data = ManifestPinkerLoader::resolve($file, ManifestPinkerLoader::themeDefaults());
 
-        return is_array($data) ? $data : [];
+        return self::applyFallbacks($data, $folderName, $hostPackage);
+    }
+
+    /**
+     * @param array<string, mixed> $data
+     * @return array<string, mixed>
+     */
+    private static function applyFallbacks(array $data, string $folderName, ?string $hostPackage): array
+    {
+        if ($data === []) {
+            $data = [
+                'name' => $folderName,
+                'package' => $hostPackage,
+            ];
+        }
+
+        if ($hostPackage !== null && $hostPackage !== '') {
+            $data['package'] ??= $hostPackage;
+        }
+
+        $data['name'] ??= $folderName;
+
+        return $data;
     }
 
     private static function localized(mixed $value, ?string $locale): string

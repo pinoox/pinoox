@@ -17,7 +17,6 @@ use Pinoox\Component\Kernel\Exception;
 use Pinoox\Portal\Database\DB;
 use Pinoox\Support\SystemConfig;
 use Pinoox\Support\Platform;
-use Pinoox\Support\SystemApp;
 
 class MigrationConfig
 {
@@ -31,11 +30,11 @@ class MigrationConfig
 
     public function load(string $path, string $package): MigrationConfig
     {
-        $this->appPath = Platform::isPackage($package) ? SystemApp::basePath() : $path;
+        $this->appPath = Platform::isPackage($package) ? SystemConfig::corePath() : $path;
         $this->package = $package;
         $this->folders = '\\' . trim(SystemConfig::rawPath('app_migrations', 'database/migrations'), '\\/') . '\\';
         $this->migrationPath = Platform::isPackage($package)
-            ? SystemConfig::path('system_migrations')
+            ? SystemConfig::platformPath('migrations')
             : $this->appPath . $this->folders;
 
         //namespace

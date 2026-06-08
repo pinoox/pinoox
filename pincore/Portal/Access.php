@@ -14,7 +14,7 @@ use Pinoox\Component\Source\Portal;
  * @method static bool cannot(string|array $abilities, mixed $user = null)
  * @method static void authorize(string|array $abilities, mixed $user = null)
  * @method static void define(string $ability, \Closure $callback)
- * @method static list<string> abilitiesFor(\Pinoox\System\Model\UserModel $user)
+ * @method static list<string> abilitiesFor(\Pinoox\Model\UserModel $user)
  * @method static bool assignRole(int $userId, string $roleKey)
  * @method static bool givePermissionToRole(string $roleKey, string $permissionKey)
  * @method static string|null routePermission(?object $route, array $attributes = [])

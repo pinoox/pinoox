@@ -4,7 +4,7 @@ namespace Pinoox\Component\User\Event;
 
 use Pinoox\Component\Event\Event;
 use Pinoox\Support\Event\Dispatchable;
-use Pinoox\System\Model\UserModel;
+use Pinoox\Model\UserModel;
 
 class UserLoggedOut extends Event
 {

@@ -318,6 +318,19 @@ class Request extends RequestSymfony
         return $pathInfo;
     }
 
+    public function resetRoutingContext(): void
+    {
+        unset($this->context);
+    }
+
+    public function setRoutingPathInfo(string $pathInfo): void
+    {
+        $pathInfo = $pathInfo !== '' ? $pathInfo : '/';
+        $this->pathInfo = $pathInfo;
+        $this->server->set('PATH_INFO', $pathInfo);
+        $this->resetRoutingContext();
+    }
+
     private function derivedInstallBasePath(): string
     {
         $scriptName = str_replace('\\', '/', (string)$this->server->get('SCRIPT_NAME', ''));

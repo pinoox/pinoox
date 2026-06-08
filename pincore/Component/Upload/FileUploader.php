@@ -17,7 +17,7 @@ use Illuminate\Filesystem\FilesystemAdapter;
 use Pinoox\Component\File\FileConfig;
 use Pinoox\Component\File\FileStorage;
 use Pinoox\Component\Helpers\Str;
-use Pinoox\System\Model\FileModel;
+use Pinoox\Model\FileModel;
 use Pinoox\Portal\Image;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\FileBag;

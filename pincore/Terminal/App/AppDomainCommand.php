@@ -27,9 +27,9 @@ class AppDomainCommand extends Terminal
         $this
             ->setHelp(
                 <<<'HELP'
-Shows host and wildcard subdomain mappings from system/config/domain.config.php.
+Shows host and wildcard subdomain mappings from pincore/config/domain.config.php.
 
-Domain routing is evaluated before path routes in router.config.php.
+Domain routing is evaluated before path routes in app-router.config.php.
 
 Examples:
 
@@ -137,7 +137,7 @@ HELP
             $resolution = Domain::___()->resolve($normalized);
 
             if ($resolution['mode'] === 'default') {
-                $output->writeln('<info>Default domain</info> — uses path routes from router.config.php');
+                $output->writeln('<info>Default domain</info> — uses path routes from app-router.config.php');
 
                 if (is_string($resolution['canonical_default']) && $resolution['canonical_default'] !== '') {
                     $output->writeln('Canonical default host: <fg=yellow>' . $resolution['canonical_default'] . '</>');
