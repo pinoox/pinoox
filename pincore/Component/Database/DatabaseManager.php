@@ -206,15 +206,18 @@ class DatabaseManager extends Capsule
 
         $config = AppEngine::config($package);
         $database = $config->get('database');
-        $explicitPrefix = $this->explicitTablePrefix($database, $config->get('table'));
-        $connections = $this->normalizePackageConnections($database);
+        $table = $config->get('table');
+        $explicitPrefix = $this->explicitTablePrefix($database, $table);
 
-        if (empty($connections) && $explicitPrefix !== null) {
-            $coreConfig = $this->coreConnectionConfig($explicitPrefix);
+        if ($this->isPrefixOnlyConfig($database, $table)) {
+            $connections = [];
+            $cloned = $this->cloneCoreConnectionWithPrefix((string) $explicitPrefix);
 
-            if ($coreConfig !== null) {
-                $connections = ['default' => $coreConfig];
+            if ($cloned !== null) {
+                $connections = ['default' => $cloned];
             }
+        } else {
+            $connections = $this->normalizePackageConnections($database, $table);
         }
 
         if (empty($connections)) {
@@ -235,42 +238,29 @@ class DatabaseManager extends Capsule
         return true;
     }
 
-    private function normalizePackageConnections(mixed $database): array
+    private function normalizePackageConnections(mixed $database, ?array $table = null): array
     {
         if (empty($database) || !is_array($database)) {
-            return [];
+            $database = [];
         }
 
-        if (isset($database['connections']) && is_array($database['connections'])) {
-            $connections = $database['connections'];
-            return $this->filterValidConnections($connections);
-        }
-
-        if (isset($database['driver'])) {
-            return ['default' => $database];
-        }
-
-        return $this->filterValidConnections($database);
+        return AppDatabaseResolver::resolve(
+            $database === [] ? null : $database,
+            is_array($table) ? $table : null,
+        );
     }
 
     private function defaultPackageConnectionName(array $database): string
     {
-        $default = $database['default'] ?? 'default';
-
-        return is_string($default) && $default !== '' ? $default : 'default';
+        return AppDatabaseResolver::defaultConnectionName($database);
     }
 
     private function explicitTablePrefix(mixed $database, mixed $table): ?string
     {
-        if (is_array($database) && array_key_exists('table_prefix', $database) && $database['table_prefix'] !== null) {
-            return (string)$database['table_prefix'];
-        }
-
-        if (is_array($table) && array_key_exists('prefix', $table) && $table['prefix'] !== null) {
-            return (string)$table['prefix'];
-        }
-
-        return null;
+        return AppDatabaseResolver::tablePrefix(
+            is_array($database) ? $database : null,
+            is_array($table) ? $table : null,
+        ) ?? AppDatabaseResolver::connectionPrefix(is_array($database) ? $database : null);
     }
 
     private function connectionPrefix(string $connection): string
@@ -293,7 +283,7 @@ class DatabaseManager extends Capsule
         return is_string($connection) ? $this->connectionPrefix($connection) : '';
     }
 
-    private function coreConnectionConfig(string $prefix): ?array
+    private function cloneCoreConnectionWithPrefix(string $prefix): ?array
     {
         try {
             $config = $this->getConnection(self::CORE_CONNECTION)->getConfig();
@@ -305,11 +295,26 @@ class DatabaseManager extends Capsule
         }
     }
 
-    private function filterValidConnections(array $connections): array
+    /**
+     * @param array<string, mixed>|null $database
+     * @param array<string, mixed>|null $table
+     */
+    private function isPrefixOnlyConfig(?array $database, ?array $table): bool
     {
-        return array_filter($connections, static function ($config) {
-            return is_array($config) && !empty($config['driver']);
-        });
+        if ($this->explicitTablePrefix($database, $table) === null) {
+            return false;
+        }
+
+        if (!is_array($database) || $database === []) {
+            return true;
+        }
+
+        $keys = array_keys(array_filter(
+            $database,
+            static fn ($value) => $value !== null && $value !== '',
+        ));
+
+        return array_diff($keys, ['prefix', 'table_prefix', 'use', 'connection']) === [];
     }
 
     private function buildPackageConnectionName(string $package, string $name): string
