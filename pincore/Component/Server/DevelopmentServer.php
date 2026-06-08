@@ -20,6 +20,7 @@ class DevelopmentServer
         'PINOOX_CORE_PATH',
         'PINOOX_BASE_PATH',
         'PINOOX_CLI_PACKAGE',
+        'PINOOX_SERVE_APP',
     ];
 
     private int $portOffset = 0;
@@ -34,6 +35,7 @@ class DevelopmentServer
         private readonly string $documentRoot,
         private readonly string $routerScript,
         private readonly OutputInterface $output,
+        private readonly ?string $serveApp = null,
     ) {
     }
 
@@ -114,7 +116,7 @@ class DevelopmentServer
             return $custom;
         }
 
-        return rtrim(str_replace('\\', '/', (string) PINOOX_BASE_PATH), '/') . '/system/launcher/server.php';
+        return rtrim(str_replace('\\', '/', (string) PINOOX_BASE_PATH), '/') . '/launcher/server.php';
     }
 
     public static function phpBinary(): string
@@ -171,6 +173,10 @@ class DevelopmentServer
 
         $env['PINOOX_SERVER_LOG'] = '1';
 
+        if ($this->serveApp !== null && $this->serveApp !== '') {
+            $env[ServeAppBinding::ENV] = $this->serveApp;
+        }
+
         return $env;
     }
 
@@ -200,6 +206,11 @@ class DevelopmentServer
                     $this->bannerShown = true;
                     $this->output->writeln('');
                     $this->output->writeln('<info>Pinoox development server running:</info> <comment>' . $this->url() . '</comment>');
+
+                    if ($this->serveApp !== null && $this->serveApp !== '') {
+                        $this->output->writeln('<info>Locked app:</info> <comment>' . $this->serveApp . '</comment> <fg=gray>(app router bypassed)</>');
+                    }
+
                     $this->output->writeln('<comment>Press Ctrl+C to stop</comment>');
                     $this->output->writeln('');
                 }
