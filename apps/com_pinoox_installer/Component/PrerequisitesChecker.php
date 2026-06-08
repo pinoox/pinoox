@@ -25,7 +25,7 @@ class PrerequisitesChecker
         if (function_exists('pinoox_min_php_version')) {
             return;
         }
-        require_once dirname(__DIR__, 3) . '/system/launcher/requirements.php';
+        require_once dirname(__DIR__, 3) . '/launcher/requirements.php';
     }
 
     private function minPhpVersion(): string
@@ -46,7 +46,7 @@ class PrerequisitesChecker
             'free_space' => $this->checkFreeSpace(),
             'php' => $this->checkPhp(),
             'mod_rewrite' => $this->checkUrlRewrite(),
-            'mysql' => $this->checkMysql(),
+            'database' => $this->checkDatabase(),
         ];
         return [
             'items' => $items,
@@ -60,7 +60,7 @@ class PrerequisitesChecker
             'free_space' => $this->checkFreeSpace(),
             'php' => $this->checkPhp(),
             'mod_rewrite' => $this->checkUrlRewrite(),
-            'mysql' => $this->checkMysql(),
+            'database', 'mysql' => $this->checkDatabase(),
             default => $this->unknown(),
         };
     }
@@ -444,15 +444,46 @@ class PrerequisitesChecker
         return false;
     }
 
+    private function checkDatabase(): array
+    {
+        $connections = [];
+        $available = [];
+
+        foreach (InstallerDatabase::INSTALLABLE_CONNECTIONS as $name) {
+            $status = InstallerDatabase::extensionStatus($name);
+            $pass = $status['available'];
+
+            $connections[$name] = [
+                'state' => $pass ? 'pass' : 'fail',
+                'extension' => $status['extension'],
+                'status' => $pass,
+            ];
+
+            if ($pass) {
+                $available[] = $name;
+            }
+        }
+
+        $labels = array_map(
+            static fn (string $name): string => InstallerDatabase::CONNECTION_LABELS[$name] ?? $name,
+            $available,
+        );
+
+        $current = $labels !== [] ? implode(', ', $labels) : 'none';
+
+        return array_merge(
+            $this->result($available !== [] ? 'pass' : 'fail', $current, $current),
+            [
+                'available' => $available,
+                'connections' => $connections,
+            ],
+        );
+    }
+
+    /** @deprecated Use {@see checkDatabase()} */
     private function checkMysql(): array
     {
-        if (extension_loaded('pdo_mysql')) {
-            return $this->result('pass', 'PDO MySQL', 'PDO MySQL');
-        }
-        if (extension_loaded('mysqli')) {
-            return $this->result('pass', 'MySQLi', 'MySQLi');
-        }
-        return $this->result('fail', null, 'none');
+        return $this->checkDatabase();
     }
 
     private function writablePath(): string

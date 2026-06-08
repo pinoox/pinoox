@@ -8,9 +8,7 @@
  */
 
 return [
-    'path_aliases' => [
-        '/pinoox.js' => '/dist/pinoox.js',
-    ],
+    'path_aliases' => [],
     'prefix_rules' => [
         [
             'prefix' => '/api/v1',

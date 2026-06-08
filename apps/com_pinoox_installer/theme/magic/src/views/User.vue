@@ -1,8 +1,9 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div id="page">
+    <div class="install-step">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="page">
                     <header class="page-header">
                         <h1 class="title">{{ LANG.user.info_admin }}</h1>
                         <p class="description">{{ LANG.user.info_admin_description }}</p>
@@ -12,7 +13,7 @@
                             <Icon name="times"/>
                             <span>{{ err }}</span>
                         </div>
-                        <div class="form" data-simplebar data-simplebar-auto-hide="false">
+                        <div class="form form--scroll">
                             <div @keypress.enter="next()">
                                 <div class="install-field">
                                     <label for="user-fname">{{ LANG.user.name }}</label>
@@ -89,16 +90,17 @@
                             {{ LANG.install.setup }}
                         </button>
                     </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <InstallProgressModal
-        v-model:open="progressOpen"
-        :done="installDone"
-        @complete="onInstallComplete"
-    />
+        <InstallProgressModal
+            v-model:open="progressOpen"
+            :done="installDone"
+            @complete="onInstallComplete"
+        />
+    </div>
 </template>
 
 <script setup>
@@ -112,6 +114,7 @@ import Icon from '@/components/icons/Icon.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
 import InstallProgressModal from '@/components/InstallProgressModal.vue'
 import {useInstaller} from '@/composables/useInstaller.js'
+import {getUrl} from '@/boot.js'
 
 defineProps({
     steps: {
@@ -165,10 +168,14 @@ function onInstallComplete() {
     progressOpen.value = false
     isLoading.value = false
     installDone.value = false
-    redirect(PINOOX.URL.SITE, 0)
+    redirect(getUrl().SITE, 0)
 }
 
 function prev() {
+    progressOpen.value = false
+    isLoading.value = false
+    installDone.value = false
+    store.isLoading = false
     router.replace({name: 'db'})
 }
 </script>

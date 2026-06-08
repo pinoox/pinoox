@@ -1,5 +1,6 @@
 import axios from 'axios'
 import axiosMethodOverride from 'axios-method-override'
+import { getUrl } from '@/boot.js'
 import {normalizeApiError} from '@/utils/apiEnvelope.js'
 import {
     QUERY_ROUTE_PARAM,
@@ -9,7 +10,7 @@ import {
 } from '../resolveInstallerApi.js'
 
 const baseUrl = import.meta.env.MODE === 'production'
-    ? (typeof PINOOX !== 'undefined' ? PINOOX.URL.API : '')
+    ? getUrl().API
     : import.meta.env.VITE_API_PATH
 
 const actions = {

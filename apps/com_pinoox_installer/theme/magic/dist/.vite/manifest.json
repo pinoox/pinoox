@@ -724,12 +724,12 @@
     "src": "src/assets/images/pin-icon.png"
   },
   "src/main.js": {
-    "file": "assets/main-P7M6b6SA.js",
+    "file": "assets/main-BxVMxUZ_.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "css": [
-      "assets/main-Bs3dliL2.css"
+      "assets/main-BIog5lPc.css"
     ],
     "assets": [
       "assets/pin-icon-DOmClQak.png",
