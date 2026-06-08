@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="{{ bootstrap.locale|default(app().lang) }}" dir="{{ bootstrap.direction|default(lang('welcome.direction')) }}">
+<head>
+    {% include 'partials/head.twig' %}
+    {% include 'partials/scripts.twig' %}
+</head>
+<body class="{{ bootstrap.direction|default(lang('welcome.direction')) }}">
+<noscript>
+    <main style="max-width:720px;margin:2rem auto;padding:0 1rem;font-family:system-ui,sans-serif;">
+        <h1>{{ lang('welcome.welcome_to_pinoox') }}</h1>
+        <p>{{ lang('welcome.seo_description') }}</p>
+        <p>{{ lang('welcome.manager_message') }}</p>
+    </main>
+</noscript>
+<div id="app"></div>
+</body>
+</html>

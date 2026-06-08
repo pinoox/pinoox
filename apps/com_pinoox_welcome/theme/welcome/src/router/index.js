@@ -1,17 +1,18 @@
-import {createRouter, createWebHistory} from 'vue-router'
-import PageHome from '../views/pages/page-home.vue'
+import { createRouter, createWebHistory } from 'vue-router';
+import PageHome from '../views/pages/page-home.vue';
+import { getUrl } from '../boot.js';
 
-const url = import.meta.env.MODE === 'production' ? PINOOX.URL.BASE : import.meta.env.BASE_URL;
+const base = import.meta.env.MODE === 'production' ? getUrl().BASE : import.meta.env.BASE_URL;
 
 const router = createRouter({
-    history: createWebHistory(url),
+    history: createWebHistory(base),
     routes: [
         {
             path: '/',
             name: 'page-home',
-            component: PageHome
+            component: PageHome,
         },
-    ]
-})
+    ],
+});
 
-export default router
+export default router;
