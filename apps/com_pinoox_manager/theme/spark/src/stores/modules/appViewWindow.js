@@ -16,7 +16,9 @@ function defaultRect(index = 0) {
 export const useAppViewWindowStore = defineStore('appViewWindow', {
     state: () => ({
         sessions: {},
+        panelOrder: [],
         minimized: null,
+        selectedPackage: null,
         topZ: 10050,
     }),
     getters: {
@@ -32,6 +34,16 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
         },
         hasFloating(state) {
             return Object.values(state.sessions).some((session) => session.mode === 'floating');
+        },
+        minimizedPackages(state) {
+            return Object.entries(state.sessions)
+                .filter(([, session]) => session.mode === 'minimized')
+                .map(([packageName]) => packageName);
+        },
+        minimizedPackages(state) {
+            return Object.entries(state.sessions)
+                .filter(([, session]) => session.mode === 'minimized')
+                .map(([packageName]) => packageName);
         },
         openPackages(state) {
             const packages = [];
@@ -69,7 +81,23 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
                 return active;
             }
 
-            return state.minimized?.package_name ?? null;
+            const minimized = Object.entries(state.sessions)
+                .filter(([, session]) => session.mode === 'minimized')
+                .map(([packageName]) => packageName);
+
+            if (minimized.length === 0) {
+                return null;
+            }
+
+            if (state.selectedPackage && minimized.includes(state.selectedPackage)) {
+                return state.selectedPackage;
+            }
+
+            if (state.minimized?.package_name && minimized.includes(state.minimized.package_name)) {
+                return state.minimized.package_name;
+            }
+
+            return minimized[minimized.length - 1];
         },
         isPackageOpen(state) {
             return (packageName) => {
@@ -91,6 +119,11 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
         },
     },
     actions: {
+        registerPanel(packageName) {
+            if (!this.panelOrder.includes(packageName)) {
+                this.panelOrder.push(packageName);
+            }
+        },
         ensureSession(packageName) {
             if (!this.sessions[packageName]) {
                 const index = Object.keys(this.sessions).length;
@@ -103,13 +136,33 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
                 this.topZ += 1;
             }
         },
+        selectPackage(packageName) {
+            this.selectedPackage = packageName;
+        },
         focus(packageName) {
             if (!this.sessions[packageName]) {
                 return;
             }
 
+            this.selectedPackage = packageName;
             this.topZ += 1;
             this.sessions[packageName].zIndex = this.topZ;
+        },
+        focusFloating(packageName) {
+            this.ensureSession(packageName);
+
+            const session = this.sessions[packageName];
+
+            if (session.mode === 'minimized') {
+                this.minimized = null;
+            }
+
+            if (session.mode === 'fullscreen' || session.mode === 'minimized' || session.mode === 'hidden') {
+                session.mode = 'floating';
+            }
+
+            this.focus(packageName);
+            this.registerPanel(packageName);
         },
         updateRect(packageName, rect) {
             if (!this.sessions[packageName]) {
@@ -130,12 +183,14 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
             this.sessions[packageName].mode = 'fullscreen';
             this.focus(packageName);
             this.minimized = null;
+            this.registerPanel(packageName);
         },
         enterFloating(packageName) {
             this.ensureSession(packageName);
             this.sessions[packageName].mode = 'floating';
             this.focus(packageName);
             this.minimized = null;
+            this.registerPanel(packageName);
         },
         hideSession(packageName) {
             if (this.sessions[packageName]) {
@@ -147,25 +202,59 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
                 delete this.sessions[packageName];
             }
 
+            this.panelOrder = this.panelOrder.filter((pkg) => pkg !== packageName);
+
             if (this.minimized?.package_name === packageName) {
                 this.minimized = null;
+            }
+
+            if (this.selectedPackage === packageName) {
+                this.selectedPackage = null;
             }
         },
         minimize(snapshot) {
             this.ensureSession(snapshot.package_name);
+
+            const session = this.sessions[snapshot.package_name];
+            const restoreMode = snapshot.restoreMode === 'fullscreen' || session.mode === 'fullscreen'
+                ? 'fullscreen'
+                : 'floating';
+
             this.minimized = {
                 package_name: snapshot.package_name,
                 icon: snapshot.icon ?? '',
                 appName: snapshot.appName ?? snapshot.package_name,
+                restoreMode,
             };
-            this.sessions[snapshot.package_name].mode = 'minimized';
+            session.mode = 'minimized';
+            this.selectedPackage = snapshot.package_name;
+        },
+        restoreSession(packageName) {
+            let restoreMode = 'floating';
+
+            if (this.minimized?.package_name === packageName) {
+                restoreMode = this.minimized.restoreMode === 'fullscreen' ? 'fullscreen' : 'floating';
+                this.minimized = null;
+            }
+
+            this.ensureSession(packageName);
+
+            if (restoreMode === 'fullscreen') {
+                this.openFullscreen(packageName);
+            } else {
+                this.focusFloating(packageName);
+            }
+
+            return restoreMode;
         },
         restore() {
             this.minimized = null;
         },
         dismissAll() {
             this.sessions = {};
+            this.panelOrder = [];
             this.minimized = null;
+            this.selectedPackage = null;
         },
         demoteFullscreenIfNeeded(routeName) {
             if (routeName === 'app-view') {

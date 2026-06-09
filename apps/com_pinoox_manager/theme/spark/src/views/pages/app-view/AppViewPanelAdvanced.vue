@@ -17,6 +17,7 @@
           'is-interacting': interacting,
           'is-dragging': isDragging,
           'is-resizing': isResizing,
+          'is-compact': isCompactFloating,
         }"
         :style="isFloating ? floatingStyle : undefined"
         @mousedown="onPanelFocus"
@@ -38,76 +39,34 @@
           <span>{{ app.name }}</span>
         </div>
 
-        <div class="appView__browse" dir="ltr">
-          <div class="appView__nav">
-            <button
-                type="button"
-                class="appView__toolBtn"
-                :disabled="!canGoBack || loading"
-                title="صفحه قبل"
-                @click="frameGoBack"
-            >
-              <Icon :is="saxIcon.arrowLeft" class="appView__toolIcon"/>
-            </button>
-
-            <button
-                type="button"
-                class="appView__toolBtn"
-                :disabled="!canGoForward || loading"
-                title="صفحه بعد"
-                @click="frameGoForward"
-            >
-              <Icon :is="saxIcon.arrowRight" class="appView__toolIcon"/>
-            </button>
-
-            <button
-                type="button"
-                class="appView__toolBtn"
-                :disabled="loading"
-                title="بازآوری صفحه"
-                @click="reload"
-            >
-              <Icon :is="saxIcon.refresh" class="appView__toolIcon" :class="{ 'is-spinning': loading }"/>
-            </button>
-          </div>
-
-          <div class="appView__addressWrap">
-            <input
-                ref="addressRef"
-                v-model="addressInput"
-                type="text"
-                class="appView__address"
-                dir="ltr"
-                spellcheck="false"
-                autocomplete="off"
-                placeholder="/"
-                @focus="addressFocused = true"
-                @blur="onAddressBlur"
-                @keydown.enter.prevent="submitAddress"
-            >
-            <button
-                type="button"
-                class="appView__addressInfo"
-                title="اطلاعات صفحه"
-                @click="openPageInfo"
-            >
-              <Icon :is="saxIcon.guide" class="appView__addressInfoIcon"/>
-            </button>
-          </div>
-        </div>
+        <AppViewBrowseBar
+            v-model:address-input="addressInput"
+            :loading="loading"
+            :can-go-back="canGoBack"
+            :can-go-forward="canGoForward"
+            :show-nav="true"
+            :show-address="showAddressBar && !isCompactFloating"
+            @go-back="frameGoBack"
+            @go-forward="frameGoForward"
+            @reload="reload"
+            @submit-address="submitAddress"
+            @open-page-info="openPageInfo"
+            @address-focus="onAddressFocus"
+            @address-blur="onAddressBlur"
+        />
       </header>
 
-      <div class="appView__frame">
-        <div
-            class="appView__progress"
-            :class="{ 'is-active': loading, 'is-complete': progress >= 100 }"
-            aria-hidden="true"
-        >
-          <div class="appView__progressTrack">
-            <div class="appView__progressBar" :style="{ width: `${progress}%` }"/>
-          </div>
+      <div
+          class="appView__progress"
+          :class="{ 'is-active': loading, 'is-complete': progress >= 100 }"
+          aria-hidden="true"
+      >
+        <div class="appView__progressTrack">
+          <div class="appView__progressBar" :style="{ width: `${progress}%` }"/>
         </div>
+      </div>
 
+      <div class="appView__frame">
         <iframe
             ref="frameRef"
             class="appView__iframe"
@@ -115,6 +74,24 @@
             @load="handleFrameLoad"
         ></iframe>
       </div>
+
+      <footer
+          v-if="isCompactFloating && isFloating && showAddressBar"
+          class="appView__dock"
+      >
+        <AppViewBrowseBar
+            v-model:address-input="addressInput"
+            :loading="loading"
+            :can-go-back="canGoBack"
+            :can-go-forward="canGoForward"
+            :show-nav="false"
+            :show-address="showAddressBar"
+            @submit-address="submitAddress"
+            @open-page-info="openPageInfo"
+            @address-focus="onAddressFocus"
+            @address-blur="onAddressBlur"
+        />
+      </footer>
 
       <div
           v-if="isFloating"
@@ -130,8 +107,6 @@
 import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {openModal} from '@kolirt/vue-modal';
-import {saxIcon} from '@/const/icons.js';
-import Icon from '@/views/components/widgets/Icon.vue';
 import {useAppStore} from '@/stores/modules/app.js';
 import {useAppViewWindowStore} from '@/stores/modules/appViewWindow.js';
 import {buildSecretViewEmbedUrl} from '@/views/composables/useSecretView.js';
@@ -145,7 +120,10 @@ import {
   resolveAppRouteFromHref,
 } from '@/views/composables/appViewRoute.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
+import AppViewBrowseBar from '@/views/pages/app-view/AppViewBrowseBar.vue';
 import ModalAppViewInfo from '@/views/pages/app-view/modal-app-view-info.vue';
+
+const COMPACT_WIDTH = 640;
 
 const props = defineProps({
   package_name: {
@@ -172,15 +150,17 @@ const appViewWindow = useAppViewWindowStore();
 
 const frameRef = ref(null);
 const shellRef = ref(null);
-const addressRef = ref(null);
 const addressInput = ref('/');
 const addressFocused = ref(false);
 const pendingAddressRoute = ref(null);
+const shellWidth = ref(0);
 const embedUrl = buildSecretViewEmbedUrl(props.package_name);
 let embedAssigned = false;
+let shellObserver = null;
 
 const isFloating = computed(() => props.overlay);
 const isFullscreen = computed(() => props.fullscreen);
+
 const isFrameVisible = computed(() => {
   const session = appViewWindow.sessions[props.package_name];
 
@@ -190,6 +170,10 @@ const isFrameVisible = computed(() => {
 
   return session.mode === 'floating' || session.mode === 'fullscreen';
 });
+
+const isCompactFloating = computed(() =>
+    isFloating.value && shellWidth.value > 0 && shellWidth.value < COMPACT_WIDTH
+);
 
 const sessionRect = computed(() => appViewWindow.sessions[props.package_name]?.rect ?? null);
 
@@ -232,6 +216,8 @@ const {
 const app = computed(() =>
     appStore.appList?.find((item) => item.package_name === props.package_name) ?? null
 );
+
+const showAddressBar = computed(() => app.value?.app_view?.address_bar !== false);
 
 const displayRoute = computed(() =>
     resolveAppRouteFromHref(frameHref.value, props.package_name) ?? '/'
@@ -326,7 +312,10 @@ function navigateToRoute(routeValue) {
 function submitAddress() {
   navigateToRoute(addressInput.value);
   addressFocused.value = false;
-  addressRef.value?.blur();
+}
+
+function onAddressFocus() {
+  addressFocused.value = true;
 }
 
 function onAddressBlur() {
@@ -424,6 +413,10 @@ function onFrameMessage(event) {
   closePreview();
 }
 
+function updateShellWidth() {
+  shellWidth.value = shellRef.value?.offsetWidth ?? 0;
+}
+
 function attachFrame(frame) {
   if (!frame) {
     return;
@@ -450,10 +443,19 @@ onMounted(async () => {
   if (!appStore.appList?.length) {
     await appStore.getApps();
   }
+
+  updateShellWidth();
+
+  if (shellRef.value && typeof ResizeObserver !== 'undefined') {
+    shellObserver = new ResizeObserver(updateShellWidth);
+    shellObserver.observe(shellRef.value);
+  }
 });
 
 onUnmounted(() => {
   window.removeEventListener('message', onFrameMessage);
+  shellObserver?.disconnect();
+  shellObserver = null;
   destroy();
 });
 </script>

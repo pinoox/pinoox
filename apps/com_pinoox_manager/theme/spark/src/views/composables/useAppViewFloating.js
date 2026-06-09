@@ -22,15 +22,16 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
     const interacting = ref(false);
     const isDragging = ref(false);
     const isResizing = ref(false);
+    const overrideRect = ref(null);
     let dragState = null;
     let resizeState = null;
     let frameId = null;
     let pendingMove = null;
 
     const shellStyle = computed(() => {
-        const value = unref(rectSource);
+        const value = overrideRect.value ?? readRect(rectSource);
 
-        if (!value || interacting.value) {
+        if (!value) {
             return {};
         }
 
@@ -43,47 +44,6 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
             bottom: 'auto',
         };
     });
-
-    function getShell() {
-        return shellRef?.value ?? null;
-    }
-
-    function applyShellRect(rect, {translateX = 0, translateY = 0} = {}) {
-        const shell = getShell();
-
-        if (!shell || !rect) {
-            return;
-        }
-
-        shell.style.top = `${rect.y}px`;
-        shell.style.left = `${rect.x}px`;
-        shell.style.width = `${rect.w}px`;
-        shell.style.height = `${rect.h}px`;
-        shell.style.right = 'auto';
-        shell.style.bottom = 'auto';
-
-        if (translateX || translateY) {
-            shell.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
-        } else {
-            shell.style.transform = '';
-        }
-    }
-
-    function clearShellInlineStyles() {
-        const shell = getShell();
-
-        if (!shell) {
-            return;
-        }
-
-        shell.style.transform = '';
-        shell.style.top = '';
-        shell.style.left = '';
-        shell.style.width = '';
-        shell.style.height = '';
-        shell.style.right = '';
-        shell.style.bottom = '';
-    }
 
     function setInteracting(active) {
         interacting.value = active;
@@ -137,7 +97,7 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
 
         isDragging.value = true;
         setInteracting(true);
-        applyShellRect(baseRect);
+        overrideRect.value = {...baseRect};
 
         dragState = {
             startX: event.clientX,
@@ -161,30 +121,28 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
 
             const dx = event.clientX - dragState.startX;
             const dy = event.clientY - dragState.startY;
+            const maxX = window.innerWidth - dragState.baseRect.w - MARGIN;
+            const maxY = window.innerHeight - dragState.baseRect.h - MARGIN;
 
-            applyShellRect(dragState.baseRect, {translateX: dx, translateY: dy});
+            overrideRect.value = {
+                ...dragState.baseRect,
+                x: clamp(dragState.baseRect.x + dx, MARGIN, Math.max(MARGIN, maxX)),
+                y: clamp(dragState.baseRect.y + dy, MARGIN, Math.max(MARGIN, maxY)),
+            };
         });
     }
 
-    function onDragEnd(event) {
+    function onDragEnd() {
         if (!dragState) {
             return;
         }
 
-        const dx = event.clientX - dragState.startX;
-        const dy = event.clientY - dragState.startY;
-        const maxX = window.innerWidth - dragState.baseRect.w - MARGIN;
-        const maxY = window.innerHeight - dragState.baseRect.h - MARGIN;
-        const nextRect = {
-            ...dragState.baseRect,
-            x: clamp(dragState.baseRect.x + dx, MARGIN, Math.max(MARGIN, maxX)),
-            y: clamp(dragState.baseRect.y + dy, MARGIN, Math.max(MARGIN, maxY)),
-        };
+        const nextRect = overrideRect.value ?? dragState.baseRect;
 
         dragState = null;
         cancelScheduledFrame();
         isDragging.value = false;
-        applyShellRect(nextRect);
+        overrideRect.value = null;
         onRectCommit?.(nextRect);
         setInteracting(false);
         document.removeEventListener('mousemove', onDragMove);
@@ -203,7 +161,7 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
 
         isResizing.value = true;
         setInteracting(true);
-        applyShellRect(baseRect);
+        overrideRect.value = {...baseRect};
 
         resizeState = {
             startX: event.clientX,
@@ -232,11 +190,11 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
             const maxW = window.innerWidth - resizeState.baseRect.x - MARGIN;
             const maxH = window.innerHeight - resizeState.baseRect.y - MARGIN;
 
-            applyShellRect({
+            overrideRect.value = {
                 ...resizeState.baseRect,
                 w: clamp(resizeState.originW + dx, MIN_WIDTH, maxW),
                 h: clamp(resizeState.originH + dy, MIN_HEIGHT, maxH),
-            });
+            };
         });
     }
 
@@ -245,21 +203,12 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
             return;
         }
 
-        const shell = getShell();
-        let nextRect = resizeState.baseRect;
-
-        if (shell) {
-            nextRect = {
-                ...resizeState.baseRect,
-                w: parseFloat(shell.style.width) || resizeState.baseRect.w,
-                h: parseFloat(shell.style.height) || resizeState.baseRect.h,
-            };
-        }
+        const nextRect = overrideRect.value ?? resizeState.baseRect;
 
         resizeState = null;
         cancelScheduledFrame();
         isResizing.value = false;
-        applyShellRect(nextRect);
+        overrideRect.value = null;
         onRectCommit?.(nextRect);
         setInteracting(false);
         document.removeEventListener('mousemove', onResizeMove);
@@ -276,10 +225,10 @@ export function useAppViewFloating(shellRef, rectSource, {onRectCommit, onIntera
         resizeState = null;
         isDragging.value = false;
         isResizing.value = false;
+        overrideRect.value = null;
 
         if (interacting.value) {
             setInteracting(false);
-            clearShellInlineStyles();
         }
     }
 

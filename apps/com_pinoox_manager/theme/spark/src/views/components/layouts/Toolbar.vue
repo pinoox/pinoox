@@ -33,7 +33,7 @@ const updateTime = () => {
 
 const navigate = () => {
   if (route.path === "/") {
-    router.push("/control/appearance");
+    router.push("/control/settings/appearance");
   } else {
     router.push({ name: "desktop" });
   }

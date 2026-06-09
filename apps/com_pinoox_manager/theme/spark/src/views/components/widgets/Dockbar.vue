@@ -113,6 +113,7 @@
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
                     'item--open': isAppOpen(item.id),
+                    'item--minimized': isAppMinimized(item.id),
                     'item--active': isAppActive(item.id),
                   }"
                   :style="jiggleStyle(item.id)"
@@ -156,7 +157,9 @@ import { useRouter } from 'vue-router';
 import { useBackground } from '@/views/composables/useBackground.js';
 import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js';
 import { systemDockApps, useDockApps } from '@/views/composables/useDockApps.js';
+import { useAppStore } from '@/stores/modules/app.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
+import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 
 const props = defineProps({
   size: { type: Number, default: 52 },
@@ -184,42 +187,70 @@ const TOOLTIP_HIDE_DELAY = 100;
 const TOOLTIP_GAP = 14;
 
 const router = useRouter();
+const appStore = useAppStore();
 const appViewWindow = useAppViewWindowStore();
+const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
 
 const dockAppsWithMinimized = computed(() => {
   const list = [...props.apps];
-  const minimized = appViewWindow.minimized;
 
-  if (!minimized?.package_name) {
+  if (!isAdvanced.value) {
     return list;
   }
 
-  if (list.some((item) => item.id === minimized.package_name)) {
-    return list;
-  }
+  for (const packageName of appViewWindow.minimizedPackages) {
+    if (list.some((item) => item.id === packageName)) {
+      continue;
+    }
 
-  list.push({
-    id: minimized.package_name,
-    name: minimized.appName ?? minimized.package_name,
-    image: minimized.icon,
-    route: {name: 'app-view', params: {package_name: minimized.package_name}},
-    isMinimizedOnly: true,
-  });
+    const app = appStore.appList?.find((entry) => entry.package_name === packageName);
+    const snapshot = appViewWindow.minimized?.package_name === packageName
+        ? appViewWindow.minimized
+        : null;
+
+    list.push({
+      id: packageName,
+      name: snapshot?.appName ?? app?.name ?? packageName,
+      image: snapshot?.icon ?? app?.icon,
+      route: {name: 'app-view', params: {package_name: packageName}},
+    });
+  }
 
   return list;
 });
 
-function isMinimizedOpen(packageName) {
-  return appViewWindow.minimized?.package_name === packageName;
+function isAppMinimized(packageName) {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return appViewWindow.sessions[packageName]?.mode === 'minimized';
 }
 
 function isAppOpen(packageName) {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
   return appViewWindow.isPackageOpen(packageName);
 }
 
 function isAppActive(packageName) {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  const session = appViewWindow.sessions[packageName];
+
+  if (
+      !session
+      || (session.mode !== 'floating' && session.mode !== 'fullscreen')
+  ) {
+    return false;
+  }
+
   return appViewWindow.activePackage === packageName;
 }
 
@@ -320,14 +351,79 @@ function open(item) {
   router.push(item.route);
 }
 
+function resolveAppSnapshot(item) {
+  const app = appStore.appList?.find((entry) => entry.package_name === item.id);
+
+  return {
+    package_name: item.id,
+    appName: item.name ?? app?.name ?? item.id,
+    icon: item.image ?? app?.icon ?? '',
+  };
+}
+
+function minimizeOpenApp(item, session) {
+  appViewWindow.minimize({
+    ...resolveAppSnapshot(item),
+    restoreMode: session.mode === 'fullscreen' ? 'fullscreen' : 'floating',
+  });
+
+  if (router.currentRoute.value.name === 'app-view') {
+    router.replace({name: 'desktop'});
+  }
+}
+
+function activateOpenApp(item) {
+  const session = appViewWindow.sessions[item.id];
+
+  if (!session) {
+    open(item);
+    return;
+  }
+
+  if (session.mode === 'minimized') {
+    const restoreMode = appViewWindow.restoreSession(item.id);
+
+    if (restoreMode === 'fullscreen') {
+      router.push({name: 'app-view', params: {package_name: item.id}});
+    } else if (router.currentRoute.value.name === 'app-view') {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  if (
+      (session.mode === 'floating' || session.mode === 'fullscreen')
+      && isAppActive(item.id)
+  ) {
+    minimizeOpenApp(item, session);
+    return;
+  }
+
+  if (session.mode === 'floating') {
+    appViewWindow.focus(item.id);
+
+    if (router.currentRoute.value.name === 'app-view') {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  if (session.mode === 'fullscreen') {
+    open(item);
+    return;
+  }
+
+  open(item);
+}
+
 function onItemClick(item) {
   if (editOpen.value)
     return;
 
-  if (isMinimizedOpen(item.id)) {
-    appViewWindow.restore();
-    appViewWindow.openFullscreen(item.id);
-    router.push({name: 'app-view', params: {package_name: item.id}});
+  if (isAdvanced.value && isAppOpen(item.id)) {
+    activateOpenApp(item);
     return;
   }
 

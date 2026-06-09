@@ -70,9 +70,17 @@ class OptionController extends Api
         ];
     }
 
+    private function normalizeAppViewMode(mixed $mode): string
+    {
+        $mode = is_string($mode) ? strtolower($mode) : '';
+
+        return in_array($mode, ['simple', 'advanced'], true) ? $mode : 'simple';
+    }
+
     public function getOptions()
     {
         $options = Config::name('options')->get() ?? [];
+        $options['app_view_mode'] = $this->normalizeAppViewMode($options['app_view_mode'] ?? null);
         $options['lang'] = app()->lang();
         $options['wallpapers'] = WallpaperHelper::all();
         $options['defaultBackground'] = WallpaperHelper::defaultId();
@@ -97,14 +105,14 @@ class OptionController extends Api
 
     public function wallpaper(string $name): Response
     {
-        $file = WallpaperHelper::filePath($name);
-        if (!$file)
+        $content = WallpaperHelper::contents($name);
+        if ($content === null)
             return response('Not found', 404);
         return response(
-            file_get_contents($file),
+            $content,
             200,
             [
-                'Content-Type' => WallpaperHelper::mimeType($file),
+                'Content-Type' => WallpaperHelper::mimeType($name),
                 'Cache-Control' => 'public, max-age=86400',
             ]
         );
@@ -165,6 +173,22 @@ class OptionController extends Api
         $total_lang = LangHelper::all();
         $direction = $total_lang['manager']['direction'];
         return ['lang' => $total_lang, 'direction' => $direction];
+    }
+
+    public function changeAppViewMode(string $mode)
+    {
+        $mode = $this->normalizeAppViewMode($mode);
+        $current = $this->normalizeAppViewMode(Config::name('options')->get('app_view_mode'));
+
+        if ($current === $mode) {
+            return $this->message(null, false);
+        }
+
+        Config::name('options')
+            ->set('app_view_mode', $mode)
+            ->save();
+
+        return $this->message(null, $mode);
     }
 }
 

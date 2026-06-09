@@ -317,6 +317,112 @@
       }
     }
 
+    &--minimized.item--open:not(.item--active) {
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -0.14rem;
+        border-radius: 24%;
+        background: rgba(255, 255, 255, 0.07);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow:
+          0 2px 10px rgba(0, 0, 0, 0.14),
+          0 1px 0 rgba(255, 255, 255, 0.22) inset;
+        backdrop-filter: blur(8px) saturate(1.15);
+        -webkit-backdrop-filter: blur(8px) saturate(1.15);
+        pointer-events: none;
+      }
+
+      &::after {
+        width: 0.3rem;
+        height: 0.3rem;
+        background: rgba(255, 255, 255, 0.52);
+        box-shadow:
+          0 0 0 1px rgba(255, 255, 255, 0.28),
+          0 0 6px rgba(255, 255, 255, 0.18);
+      }
+
+      .item-image {
+        opacity: 0.82;
+        filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.16));
+      }
+    }
+
+    &--minimized.item--active {
+      .item-image {
+        opacity: 1;
+      }
+    }
+
+    &--active {
+      z-index: 1;
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: -0.34rem;
+        border-radius: 28%;
+        background: linear-gradient(
+          145deg,
+          rgba(255, 255, 255, 0.42) 0%,
+          rgba(255, 255, 255, 0.12) 42%,
+          rgba(255, 255, 255, 0.06) 100%
+        );
+        backdrop-filter: blur(14px) saturate(1.65);
+        -webkit-backdrop-filter: blur(14px) saturate(1.65);
+        border: 1px solid rgba(255, 255, 255, 0.52);
+        box-shadow:
+          0 0 0 1px rgba(169, 73, 46, 0.22),
+          0 8px 22px rgba(169, 73, 46, 0.22),
+          0 1px 0 rgba(255, 255, 255, 0.55) inset,
+          0 -1px 0 rgba(0, 0, 0, 0.06) inset;
+        pointer-events: none;
+        animation: dock-crystal-glow 2.8s ease-in-out infinite;
+      }
+
+      &::after {
+        width: 72%;
+        height: 0.22rem;
+        bottom: -0.48rem;
+        border-radius: 999px;
+        background: linear-gradient(
+          90deg,
+          rgba(22, 120, 143, 0.95) 0%,
+          rgba(169, 73, 46, 0.98) 48%,
+          rgba(255, 139, 7, 0.95) 100%
+        );
+        box-shadow:
+          0 0 10px rgba(169, 73, 46, 0.55),
+          0 0 18px rgba(22, 120, 143, 0.28);
+        animation: dock-active-line 2.8s ease-in-out infinite;
+      }
+
+      .item-image {
+        filter:
+          drop-shadow(0 4px 12px rgba(169, 73, 46, 0.32))
+          drop-shadow(0 0 1px rgba(255, 255, 255, 0.35));
+      }
+    }
+
+    &--open {
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -0.18rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0.34rem;
+        height: 0.34rem;
+        border-radius: 50%;
+        background: rgba(169, 73, 46, 0.88);
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.45),
+          0 0 8px rgba(169, 73, 46, 0.45);
+        pointer-events: none;
+        transition: width 0.28s ease, height 0.28s ease, border-radius 0.28s ease, bottom 0.28s ease;
+      }
+    }
+
     &--active {
       z-index: 1;
 
@@ -517,7 +623,53 @@
   }
 }
 
+@keyframes dock-crystal-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 1px rgba(169, 73, 46, 0.22),
+      0 8px 22px rgba(169, 73, 46, 0.22),
+      0 1px 0 rgba(255, 255, 255, 0.55) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.06) inset;
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 1px rgba(169, 73, 46, 0.38),
+      0 10px 28px rgba(169, 73, 46, 0.32),
+      0 1px 0 rgba(255, 255, 255, 0.62) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.06) inset;
+  }
+}
+
+@keyframes dock-active-line {
+  0%,
+  100% {
+    opacity: 0.92;
+    transform: translateX(-50%) scaleX(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1.06);
+  }
+}
+
 .dockbar--tone-light {
+  .item--minimized.item--open:not(.item--active) {
+    &::before {
+      background: rgba(255, 255, 255, 0.14);
+      border-color: rgba(255, 255, 255, 0.34);
+    }
+
+    &::after {
+      background: rgba(60, 60, 60, 0.42);
+      box-shadow:
+        0 0 0 1px rgba(255, 255, 255, 0.5),
+        0 0 6px rgba(0, 0, 0, 0.08);
+    }
+  }
+
   .item--active {
     &::before {
       background: linear-gradient(
@@ -556,6 +708,13 @@
 }
 
 .dockbar--tone-dark {
+  .item--minimized.item--open:not(.item--active) {
+    &::before {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+  }
+
   .item--active {
     &::before {
       border-color: rgba(255, 255, 255, 0.38);

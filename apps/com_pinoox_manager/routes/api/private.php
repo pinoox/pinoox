@@ -128,6 +128,13 @@ return [
     ],
     [
         'method' => 'GET',
+        'uri' => '/options/changeAppViewMode/{mode}',
+        'action' => [OptionController::class, 'changeAppViewMode'],
+        'name' => 'options.changeAppViewMode.mode',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'GET',
         'uri' => '/changeLang/{lang}',
         'action' => [OptionController::class, 'changeLang'],
         'name' => 'changeLang.lang',

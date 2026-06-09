@@ -1,21 +1,17 @@
-<script setup>
-import {onMounted, watch} from 'vue';
-import {useAppViewWindowStore} from '@/stores/modules/appViewWindow.js';
+<template>
+  <AppViewSimple v-if="isSimple" :package_name="package_name"/>
+</template>
 
-const props = defineProps({
+<script setup>
+import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
+import AppViewSimple from '@/views/pages/app-view/AppViewSimple.vue';
+
+defineProps({
   package_name: {
     type: String,
     required: true,
   },
 });
 
-const appViewWindow = useAppViewWindowStore();
-
-function activate() {
-  appViewWindow.openFullscreen(props.package_name);
-}
-
-onMounted(activate);
-
-watch(() => props.package_name, activate);
+const {isSimple} = useAppViewMode();
 </script>

@@ -1,4 +1,4 @@
-import {computed, onUnmounted, ref} from 'vue';
+import {computed, onUnmounted, ref, unref, watch} from 'vue';
 import {
     appendManagerToken,
     isAppRootRoute,
@@ -8,11 +8,12 @@ import {
 
 const PROGRESS_TICK_MS = 180;
 const PROGRESS_CAP = 92;
-const SETTLE_MS = 420;
 const FINISH_HIDE_MS = 320;
-const HREF_POLL_MS = 240;
+const HREF_POLL_MS = 120;
+const READY_CHECK_MS = 150;
+const READY_MAX_WAIT_MS = 45000;
 
-export function useAppViewFrameLoading(packageName = '') {
+export function useAppViewFrameLoading(packageName = '', isActiveSource = null) {
     const loading = ref(true);
     const progress = ref(0);
     const frameHref = ref('');
@@ -22,20 +23,30 @@ export function useAppViewFrameLoading(packageName = '') {
     const historyIndex = ref(-1);
 
     let progressTimer = null;
-    let settleTimer = null;
     let finishTimer = null;
     let pollTimer = null;
+    let readyCheckTimer = null;
+    let navigationStartHref = '';
     let lastHref = '';
     let pendingMethod = 'GET';
     let frameRef = null;
     let frameInteracting = false;
+    let navigationBound = false;
 
     function setFrameInteracting(active) {
         frameInteracting = active;
     }
 
+    function isActive() {
+        if (isActiveSource === null) {
+            return true;
+        }
+
+        return !!unref(isActiveSource);
+    }
+
     function canStartLoading() {
-        return !frameInteracting;
+        return isActive() && !frameInteracting;
     }
 
     const canGoBack = computed(() => {
@@ -62,10 +73,10 @@ export function useAppViewFrameLoading(packageName = '') {
         }
     }
 
-    function clearSettleTimer() {
-        if (settleTimer !== null) {
-            clearTimeout(settleTimer);
-            settleTimer = null;
+    function clearReadyCheck() {
+        if (readyCheckTimer !== null) {
+            clearInterval(readyCheckTimer);
+            readyCheckTimer = null;
         }
     }
 
@@ -106,7 +117,7 @@ export function useAppViewFrameLoading(packageName = '') {
 
     function finishLoading() {
         clearProgressTimer();
-        clearSettleTimer();
+        clearReadyCheck();
         progress.value = 100;
 
         clearFinishTimer();
@@ -117,12 +128,46 @@ export function useAppViewFrameLoading(packageName = '') {
         }, FINISH_HIDE_MS);
     }
 
-    function scheduleSettledFinish() {
-        clearSettleTimer();
-        settleTimer = setTimeout(() => {
-            settleTimer = null;
-            finishLoading();
-        }, SETTLE_MS);
+    function readFrameReadyState(frame) {
+        try {
+            return frame?.contentDocument?.readyState ?? '';
+        } catch {
+            return '';
+        }
+    }
+
+    function scheduleReadyCheck(frame) {
+        clearReadyCheck();
+
+        if (!frame || !loading.value) {
+            return;
+        }
+
+        const startedAt = Date.now();
+        navigationStartHref = readFrameHref(frame);
+
+        readyCheckTimer = setInterval(() => {
+            if (!loading.value) {
+                clearReadyCheck();
+                return;
+            }
+
+            const href = readFrameHref(frame);
+            const readyState = readFrameReadyState(frame);
+            const hrefChanged = href && href !== navigationStartHref;
+            const isComplete = readyState === 'complete';
+
+            if (isComplete && (hrefChanged || Date.now() - startedAt > READY_CHECK_MS)) {
+                clearReadyCheck();
+                finishLoading();
+                return;
+            }
+
+            if (Date.now() - startedAt >= READY_MAX_WAIT_MS) {
+                clearReadyCheck();
+                finishLoading();
+            }
+        }, READY_CHECK_MS);
     }
 
     function readFrameHref(frame) {
@@ -185,6 +230,13 @@ export function useAppViewFrameLoading(packageName = '') {
             return;
         }
 
+        if (!isActive()) {
+            lastHref = href;
+            syncFrameHref(href);
+
+            return;
+        }
+
         syncFrameHref(href);
 
         if (!canStartLoading()) {
@@ -193,11 +245,11 @@ export function useAppViewFrameLoading(packageName = '') {
         }
 
         startLoading();
-        scheduleSettledFinish();
+        scheduleReadyCheck(frame);
     }
 
     function bindFrameNavigation(frame) {
-        if (!frame) {
+        if (!frame || navigationBound) {
             return;
         }
 
@@ -243,6 +295,8 @@ export function useAppViewFrameLoading(packageName = '') {
                 pendingMethod = 'POST';
                 startLoading();
             }, true);
+
+            navigationBound = true;
         } catch {
             // Same-origin access may fail for some documents.
         }
@@ -252,7 +306,7 @@ export function useAppViewFrameLoading(packageName = '') {
         clearPollTimer();
         frameRef = frame;
 
-        if (!frame) {
+        if (!frame || !isActive()) {
             return;
         }
 
@@ -263,6 +317,10 @@ export function useAppViewFrameLoading(packageName = '') {
         }
 
         pollTimer = setInterval(() => {
+            if (!isActive()) {
+                return;
+            }
+
             const nextHref = readFrameHref(frame);
 
             if (nextHref) {
@@ -284,7 +342,7 @@ export function useAppViewFrameLoading(packageName = '') {
             return;
         }
 
-        finishLoading();
+        scheduleReadyCheck(frame);
     }
 
     function navigateFrameToUrl(cleanUrl) {
@@ -329,24 +387,38 @@ export function useAppViewFrameLoading(packageName = '') {
         }
     }
 
-    function resetHistory() {
-        historyStack.value = [];
-        historyIndex.value = -1;
-        lastHref = '';
-        frameHref.value = '';
-        navigationMethod.value = 'GET';
-        pendingMethod = 'GET';
-    }
-
     function destroy() {
         clearProgressTimer();
-        clearSettleTimer();
+        clearReadyCheck();
         clearFinishTimer();
         clearPollTimer();
         frameRef = null;
+        navigationBound = false;
     }
 
-    startLoading();
+    watch(
+        () => (isActiveSource === null ? true : unref(isActiveSource)),
+        (active, wasActive) => {
+            if (active) {
+                if (frameRef) {
+                    startHrefPolling(frameRef);
+                }
+
+                return;
+            }
+
+            if (wasActive) {
+                clearPollTimer();
+                clearProgressTimer();
+                clearReadyCheck();
+                clearFinishTimer();
+                loading.value = false;
+                progress.value = 0;
+            }
+        },
+    );
+
+    loading.value = isActive();
 
     onUnmounted(destroy);
 

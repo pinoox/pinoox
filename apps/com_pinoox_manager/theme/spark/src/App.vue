@@ -24,7 +24,7 @@
 
         <Dockbar v-if="showDock" :apps="dockApps"/>
 
-        <AppViewSessions/>
+        <AppViewAdvanced v-if="isAdvancedAppView"/>
 
     </div>
 
@@ -68,7 +68,8 @@ import {useRouteStore} from "@/stores/modules/route.js";
 import {useOptionsStore} from "@/stores/modules/options.js";
 import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
-import AppViewSessions from "@/views/pages/app-view/AppViewSessions.vue";
+import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
+import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 
 
 
@@ -84,6 +85,7 @@ const routeStore = useRouteStore();
 
 const optionsStore = useOptionsStore();
 const { dockApps } = useDockApps();
+const {isAdvanced: isAdvancedAppView} = useAppViewMode();
 const isBooting = ref(false);
 
 
