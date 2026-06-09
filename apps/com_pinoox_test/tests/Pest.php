@@ -1,9 +1,0 @@
-<?php
-
-require dirname(__DIR__, 3) . '/tests/bootstrap.php';
-
-uses(Tests\AppTestCase::class)->in('Feature', 'Unit');
-
-beforeEach(function () {
-    appPackage('com_pinoox_test');
-});
