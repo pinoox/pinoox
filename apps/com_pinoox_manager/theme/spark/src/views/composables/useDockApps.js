@@ -4,7 +4,7 @@ import { useOptionsStore } from '@/stores/modules/options.js';
 import { saxIcon } from '@/const/icons.js';
 
 export const systemDockApps = [
-    { id: 'control', name: 'کنترل', route: '/control/settings/appearance', icon: saxIcon.control, image: null },
+    { id: 'control', name: 'کنترل', route: '/control/apps', icon: saxIcon.control, image: null },
     { id: 'market', name: 'مارکت', route: '/market', icon: saxIcon.market, image: null },
 ];
 

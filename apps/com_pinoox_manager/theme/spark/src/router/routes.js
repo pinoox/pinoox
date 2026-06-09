@@ -47,7 +47,7 @@ export const routes = [
         children: [
             {
                 path: '',
-                redirect: { name: 'settings-appearance' },
+                redirect: { name: 'apps' },
             },
             {
                 path: 'appearance',
