@@ -3,6 +3,7 @@
 namespace Pinoox\Component\File;
 
 use Pinoox\Component\Transport\TransportConfig;
+use Pinoox\Component\Transport\TransportScenario;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Storage;
 

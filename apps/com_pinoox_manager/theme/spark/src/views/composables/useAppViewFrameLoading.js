@@ -387,6 +387,15 @@ export function useAppViewFrameLoading(packageName = '', isActiveSource = null) 
         }
     }
 
+    function resetHistory() {
+        historyStack.value = [];
+        historyIndex.value = -1;
+        lastHref = '';
+        frameHref.value = '';
+        navigationMethod.value = 'GET';
+        pendingMethod = 'GET';
+    }
+
     function destroy() {
         clearProgressTimer();
         clearReadyCheck();
