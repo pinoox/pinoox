@@ -14,4 +14,4 @@ return new class extends SeederBase
     {
         // Your seeding logic here
     }
-}; 
+};

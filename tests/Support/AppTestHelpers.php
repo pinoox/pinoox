@@ -18,6 +18,34 @@ function appPackage(?string $package = null): string
     return AppTestKit::package();
 }
 
+/**
+ * Package under test (set by apps/{package}/tests/bootstrap.php or php pinoox test {package}).
+ */
+function appUnderTest(): string
+{
+    return AppTestKit::package();
+}
+
+function inMyApp(Closure $callback, string $path = '/'): mixed
+{
+    return inApp(appUnderTest(), $callback, $path);
+}
+
+function myAppGet(string $uri, array $query = [], array $headers = []): Pinoox\Component\Test\TestResponse
+{
+    return appGet(appUnderTest(), $uri, $query, $headers);
+}
+
+function myAppPost(string $uri, array $data = [], array $headers = []): Pinoox\Component\Test\TestResponse
+{
+    return appPost(appUnderTest(), $uri, $data, $headers);
+}
+
+function myAppPostJson(string $uri, array $json = [], array $headers = []): Pinoox\Component\Test\TestResponse
+{
+    return appPostJson(appUnderTest(), $uri, $json, $headers);
+}
+
 function inApp(string $package, Closure $callback, string $path = '/'): mixed
 {
     return AppTestKit::inApp($package, $callback, $path);

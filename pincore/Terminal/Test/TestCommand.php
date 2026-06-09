@@ -129,7 +129,8 @@ HELP)
                     ['Target' => $suite !== '' ? "testsuite:{$suite} + app tests" : implode(', ', $testPaths)],
                 );
 
-                $command = $this->buildPestCommand($testPaths, $input, $suite);
+                $this->primeAppTestPackage('platform');
+                $command = $this->buildPestCommand($testPaths, $input, $suite, 'all');
                 passthru($command, $exitCode);
 
                 return $exitCode === 0 ? Command::SUCCESS : Command::FAILURE;
@@ -139,6 +140,12 @@ HELP)
 
             if ($suite === '' && !is_dir($testPath)) {
                 $io->warning("No tests found for package '{$package}' at {$testPath}.");
+                $io->section('Suggestions');
+                $io->listing([
+                    "Scaffold tests: php pinoox test:create AppBootTest {$package} --feature",
+                    'Or create a new app with tests: php pinoox app:create ' . $package,
+                    "Expected folder: apps/{$package}/tests/ (with bootstrap.php; package from app.php)",
+                ]);
 
                 return Command::SUCCESS;
             }
@@ -149,8 +156,13 @@ HELP)
                 ['Target' => $suite !== '' ? "testsuite:{$suite}" : $testPath],
             );
 
-            $command = $this->buildPestCommand([$testPath], $input, $suite);
+            $this->primeAppTestPackage($package);
+            $command = $this->buildPestCommand([$testPath], $input, $suite, $package);
             passthru($command, $exitCode);
+
+            if ($exitCode !== 0) {
+                $this->printAppTestHints($io, $package, $testPath);
+            }
 
             return $exitCode === 0 ? Command::SUCCESS : Command::FAILURE;
         } catch (\Exception $e) {
@@ -184,7 +196,7 @@ HELP)
     /**
      * @param list<string> $testPaths
      */
-    private function buildPestCommand(array $testPaths, InputInterface $input, string $suite): string
+    private function buildPestCommand(array $testPaths, InputInterface $input, string $suite, ?string $package = null): string
     {
         $parts = [
             escapeshellarg(PHP_BINARY),
@@ -192,6 +204,13 @@ HELP)
             '--configuration=' . escapeshellarg(path('~/phpunit.xml')),
             '--colors=always',
         ];
+
+        if ($package !== null && $package !== 'platform' && $package !== 'all') {
+            $bootstrap = $this->testPath($package) . '/bootstrap.php';
+            if (is_file($bootstrap)) {
+                $parts[] = '--bootstrap=' . escapeshellarg($bootstrap);
+            }
+        }
 
         $platformRoot = $this->testPath('platform');
 
@@ -226,5 +245,35 @@ HELP)
         $command = implode(' ', $parts);
 
         return $command;
+    }
+
+    private function primeAppTestPackage(string $package): void
+    {
+        if ($package === 'platform' || $package === 'all') {
+            putenv('PINOOX_TEST_PACKAGE');
+            unset($_ENV['PINOOX_TEST_PACKAGE'], $_SERVER['PINOOX_TEST_PACKAGE']);
+
+            return;
+        }
+
+        putenv('PINOOX_TEST_PACKAGE=' . $package);
+        $_ENV['PINOOX_TEST_PACKAGE'] = $package;
+        $_SERVER['PINOOX_TEST_PACKAGE'] = $package;
+    }
+
+    private function printAppTestHints(SymfonyStyle $io, string $package, string $testPath): void
+    {
+        if ($package === 'platform' || $package === 'all') {
+            return;
+        }
+
+        $readme = $testPath . '/README.md';
+        $io->section('App test hints');
+        $io->listing([
+            'Use helpers: appUnderTest(), inMyApp(), myAppGet() — see tests/README.md in the app',
+            "Re-run: php pinoox test {$package}",
+            "Add tests: php pinoox test:create MyFeatureTest {$package} --feature",
+            is_file($readme) ? "Docs: {$readme}" : "Add apps/{$package}/tests/README.md (scaffold via app:create)",
+        ]);
     }
 }

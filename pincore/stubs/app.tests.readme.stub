@@ -1,0 +1,55 @@
+# Tests — {{package}}
+
+Quick commands for this app:
+
+```bash
+# Run all app tests
+php pinoox test {{package}}
+
+# Run one file or filter
+php pinoox test {{package}} --filter=AppBoot
+php pinoox test {{package}} --feature
+
+# Add a new test
+php pinoox test:create ProductTest {{package}} --feature
+```
+
+## Helpers (package comes from app.php automatically)
+
+| Helper | Example |
+|--------|---------|
+| `appUnderTest()` | Current package (`{{package}}`) |
+| `inMyApp(fn () => …)` | Run code inside the app context |
+| `myAppGet('/')` | HTTP GET against this app |
+| `myAppPost('/api/x', $data)` | HTTP POST |
+| `appPath(appUnderTest(), 'Controller')` | Filesystem path inside the app |
+
+## Example feature test
+
+```php
+<?php
+
+it('returns the home page', function () {
+    $response = myAppGet('/');
+
+    expect($response->status())->toBe(200);
+});
+```
+
+## Files
+
+| File | Role |
+|------|------|
+| `../app.php` | Package name (`'package'` key) — required |
+| `bootstrap.php` | Loads platform tests + reads package from app.php |
+| `Pest.php` | Pest hooks (`AppTestCase`) |
+| `Feature/` | HTTP / integration tests |
+| `Unit/` | Pure unit tests (no HTTP) |
+
+## Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `App package not set` | Run `php pinoox test {{package}}` (not raw pest without `--bootstrap`) |
+| `app.php must define package` | Add `'package' => '{{package}}'` to app.php |
+| Need an isolated fake app | Use `fakeApp('com_test_shop', ['app.php' => …])` (platform helper) |

@@ -52,6 +52,15 @@ class TestCreateCommand extends Terminal
         $package = $this->resolvePackage($input, $output, $io);
         $subFolder = $input->getOption('unit') ? 'Unit' : 'Feature';
 
+        if ($package !== 'platform' && $package !== 'all') {
+            $appDir = \Pinoox\Portal\App\AppEngine::path($package);
+            $bootstrapFile = $appDir . '/tests/bootstrap.php';
+            if (!is_file($bootstrapFile)) {
+                TestFile::scaffoldAppTests($package, $appDir);
+                $io->note("Created app test kit (bootstrap.php, README.md) for {$package}.");
+            }
+        }
+
         $exportPath = $this->testPath($package, $subFolder) . '/' . $testName . '.php';
 
         if (file_exists($exportPath) && !$input->getOption('force')) {

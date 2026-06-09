@@ -9,4 +9,4 @@ if (!function_exists('assets')) {
         $assetsPath = File::name($path);
         return $path;
     }
-} 
+}

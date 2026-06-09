@@ -24,3 +24,8 @@ $_ENV['DB_CONNECTION'] = 'sqlite';
 $_SERVER['DB_CONNECTION'] = 'sqlite';
 
 Pinoox\Component\Test\AppTestKit::boot();
+
+$testPackage = getenv('PINOOX_TEST_PACKAGE') ?: ($_ENV['PINOOX_TEST_PACKAGE'] ?? $_SERVER['PINOOX_TEST_PACKAGE'] ?? '');
+if (is_string($testPackage) && $testPackage !== '') {
+    Pinoox\Component\Test\AppTestKit::setPackage($testPackage);
+}

@@ -1,11 +1,9 @@
 <?php
 
 it('{{test_title}}', function () {
-    // Arrange
-    $package = appPackage();
+    // Tip: appUnderTest(), inMyApp(), myAppGet(), myAppPost() — see tests/README.md
 
-    // Act
-
-    // Assert
-    expect($package)->toBe('{{package}}');
+    inMyApp(function () {
+        expect(appUnderTest())->toBe('{{package}}');
+    });
 });

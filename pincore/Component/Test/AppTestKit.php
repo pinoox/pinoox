@@ -50,6 +50,31 @@ class AppTestKit
         self::$activePackage = $package;
     }
 
+    public static function packageFromAppDir(string $appDir, string $appFile = 'app.php'): string
+    {
+        $appDir = rtrim(str_replace('\\', '/', $appDir), '/');
+        $appFile = ltrim(str_replace('\\', '/', $appFile), '/');
+        $path = $appDir . '/' . $appFile;
+
+        if (!is_file($path)) {
+            throw new \RuntimeException(
+                "app.php was not found at {$path}. Every Pinoox app must define 'package' in app.php.",
+            );
+        }
+
+        $config = require $path;
+        if (!is_array($config)) {
+            throw new \RuntimeException("{$appFile} in {$appDir} must return an array.");
+        }
+
+        $package = $config['package'] ?? null;
+        if (!is_string($package) || $package === '') {
+            throw new \RuntimeException("{$appFile} in {$appDir} must define a non-empty 'package' key.");
+        }
+
+        return $package;
+    }
+
     public static function package(?string $package = null): string
     {
         if ($package !== null) {
@@ -66,12 +91,55 @@ class AppTestKit
             return $detected;
         }
 
-        throw new \RuntimeException('App package not set. Pass $package or call appPackage() / AppTestKit::setPackage().');
+        throw new \RuntimeException(self::packageNotSetMessage());
+    }
+
+    public static function packageNotSetMessage(): string
+    {
+        $lines = [
+            'App package not set.',
+            '',
+            'Quick fixes:',
+        ];
+
+        $detected = self::detectPackageFromPath();
+        if ($detected !== null) {
+            $lines[] = "  • Run: php pinoox test {$detected}";
+            $lines[] = "  • Ensure apps/{$detected}/app.php and tests/bootstrap.php exist";
+        } else {
+            $lines[] = '  • Run: php pinoox test com_my_shop';
+        }
+
+        $lines[] = "  • At the top of a test: appPackage('com_my_shop');";
+        $lines[] = '  • In tests: inMyApp(fn () => …) or appUnderTest() after bootstrap loads';
+        $lines[] = '  • Scaffold app tests: php pinoox app:create (includes tests/) or php pinoox test:create MyTest com_my_shop';
+        $lines[] = '';
+        $lines[] = 'See apps/{package}/tests/README.md for examples.';
+
+        return implode("\n", $lines);
     }
 
     public static function detectPackageFromPath(?string $file = null): ?string
     {
-        $file ??= debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0]['file'] ?? '';
+        if ($file !== null && $file !== '') {
+            return self::packageFromFilePath($file);
+        }
+
+        foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $frame) {
+            $detected = self::packageFromFilePath($frame['file'] ?? '');
+            if ($detected !== null) {
+                return $detected;
+            }
+        }
+
+        return null;
+    }
+
+    private static function packageFromFilePath(string $file): ?string
+    {
+        if ($file === '') {
+            return null;
+        }
 
         if (preg_match('#/apps/([^/]+)/tests/#', str_replace('\\', '/', $file), $matches)) {
             return $matches[1];

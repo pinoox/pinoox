@@ -42,10 +42,16 @@ class TestFile extends PhpFile
             '{{package_segment}}' => $package,
         ];
 
-        File::generate(
-            $testsDir . '/Pest.php',
-            self::renderStub('app.tests.pest.stub', $replacements),
-        );
+        foreach ([
+            'app.tests.bootstrap.stub' => 'bootstrap.php',
+            'app.tests.pest.stub' => 'Pest.php',
+            'app.tests.readme.stub' => 'README.md',
+        ] as $stub => $target) {
+            File::generate(
+                $testsDir . '/' . $target,
+                self::renderStub($stub, $replacements),
+            );
+        }
 
         File::generate(
             $featureDir . '/AppBootTest.php',
