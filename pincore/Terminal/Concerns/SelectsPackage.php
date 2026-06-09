@@ -108,6 +108,13 @@ trait SelectsPackage
             $this->packageRows($packages, $includeTestColumn),
         );
 
+        $selectionHint = trim((string) ($config['selectionHint'] ?? ''));
+        if ($selectionHint !== '') {
+            $io->newLine();
+            $io->writeln('  ' . $selectionHint);
+            $io->newLine();
+        }
+
         $prompt = sprintf('Select package [%s]: ', $default);
         $question = new Question($prompt, $default);
         $question->setAutocompleterValues(array_keys($packages));
