@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'model:create',
     description: 'Create a new Eloquent model class in an app',
+    aliases: ['make:model'],
 )]
 
 class ModelCreateCommand extends Terminal

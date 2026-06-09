@@ -14,7 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'log:clear',
-    description: 'Clear the Pinoox log file'
+    description: 'Clear the Pinoox log file',
+    aliases: ['log:flush'],
 )]
 
 class LogClearCommand extends Terminal

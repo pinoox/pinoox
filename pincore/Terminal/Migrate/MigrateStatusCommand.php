@@ -26,6 +26,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'migrate:status',
     description: 'Show migration status for an app or platform',
+    aliases: ['mg:status'],
 )]
 
 class MigrateStatusCommand extends Terminal

@@ -14,7 +14,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'log:view',
-    description: 'View or open the Pinoox log file'
+    description: 'View or open the Pinoox log file',
+    aliases: ['log'],
 )]
 
 class LogViewCommand extends Terminal

@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'seeder:run',
     description: 'Run database seeders for an app',
+    aliases: ['seed'],
 )]
 
 class SeederCommand extends Terminal

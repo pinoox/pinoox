@@ -30,6 +30,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'migrate:rollback',
     description: 'Rollback the last batch of migrations',
+    aliases: ['mg:rollback', 'mg:back'],
 )]
 
 class MigrateRollbackCommand extends Terminal

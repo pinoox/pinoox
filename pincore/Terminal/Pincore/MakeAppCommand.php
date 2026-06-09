@@ -18,6 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(
     name: 'app:create',
     description: 'Scaffold a new app under apps/ with routes, theme, and boot files',
+    aliases: ['make:app'],
 )]
 
 class MakeAppCommand extends Terminal

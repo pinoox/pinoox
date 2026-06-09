@@ -15,6 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'controller:create',
     description: 'Create a new controller class in an app',
+    aliases: ['make:controller'],
 )]
 
 class ControllerCreateCommand extends Terminal

@@ -13,6 +13,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'pinker:rebuild',
     description: 'Bake app.php and config files into the Pinker cache folder',
+    aliases: ['bake'],
 )]
 
 class PinkerRebuildCommand extends Terminal

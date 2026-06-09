@@ -27,6 +27,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'test',
     description: 'Run Pest/PHPUnit tests for an app or platform',
+    aliases: ['pest'],
 )]
 
 class TestCommand extends Terminal

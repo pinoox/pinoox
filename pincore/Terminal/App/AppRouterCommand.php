@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:router',
+    aliases: ['router'],
     description: 'View or edit URL-to-app mappings in app-router.config.php',
 )]
 

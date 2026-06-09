@@ -15,6 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'cache:build',
     description: 'Build runtime cache for routes, API, Twig, and other app stores',
+    aliases: ['cb'],
 )]
 
 class CacheBuildCommand extends Terminal

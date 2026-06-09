@@ -17,6 +17,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'patch:run',
     description: 'Run pending data patches for an app',
+    aliases: ['patch'],
 )]
 
 class PatchRunCommand extends Terminal

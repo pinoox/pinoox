@@ -19,6 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'pinx:build',
     description: 'Build a .pinx install package from an app or theme',
+    aliases: ['pinx:b'],
 )]
 
 class PinxBuildCommand extends Terminal

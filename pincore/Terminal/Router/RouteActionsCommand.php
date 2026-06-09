@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'route:actions',
     description: 'List, validate, and inspect named router actions (@index, @api, …)',
+    aliases: ['routes'],
 )]
 
 class RouteActionsCommand extends Terminal

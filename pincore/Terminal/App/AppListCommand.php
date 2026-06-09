@@ -16,6 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 #[AsCommand(
     name: 'app:list',
     description: 'List installed apps with routes, domain hosts, and status',
+    aliases: ['apps'],
 )]
 
 class AppListCommand extends Terminal

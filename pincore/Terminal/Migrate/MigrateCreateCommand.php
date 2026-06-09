@@ -17,6 +17,7 @@ use Symfony\Component\Finder\Finder;
 #[AsCommand(
     name: 'migrate:create',
     description: 'Create a new database migration file',
+    aliases: ['mg:create', 'mg:make'],
 )]
 
 class MigrateCreateCommand extends Terminal

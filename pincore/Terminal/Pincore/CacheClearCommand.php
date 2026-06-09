@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'cache:clear',
     description: 'Clear app runtime cache (routes, API, Twig, GraphQL, Pinker)',
+    aliases: ['cc'],
 )]
 
 class CacheClearCommand extends Terminal

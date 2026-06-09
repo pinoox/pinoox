@@ -30,6 +30,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'migrate',
     description: 'Run pending database migrations for an app or platform',
+    aliases: ['mg'],
 )]
 
 class MigrateCommand extends Terminal

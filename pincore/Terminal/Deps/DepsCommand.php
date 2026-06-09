@@ -20,6 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'deps',
     description: 'Install, update, and inspect Composer and npm dependencies across the project',
+    aliases: ['dep'],
 )]
 
 class DepsCommand extends Terminal

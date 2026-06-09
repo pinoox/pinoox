@@ -20,6 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'pinx:install',
     description: 'Install or update a .pinx/.pin package',
+    aliases: ['pinx:i'],
 )]
 
 class PinxInstallCommand extends Terminal

@@ -16,6 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(
     name: 'portal:create',
     description: 'Create a Portal facade class for an app or platform',
+    aliases: ['make:portal'],
 )]
 
 class CreatePortalCommand extends Terminal
