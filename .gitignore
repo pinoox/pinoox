@@ -2,12 +2,19 @@
 # Pinoox — runtime, secrets, generated artifacts
 # =============================================================================
 
+# Pincore (Core files for dev) (keep directory markers)
+/pincore/
+
 # Baker cache & build output (~pinker)
 /pinker/
 
 # Writable storage (logs, cache, sessions, app files)
 /storage/*
 !/storage/.gitkeep
+!/storage/.htaccess
+!/storage/web.config
+!/storage/nginx.conf
+!/storage/Caddyfile
 !/storage/**/.gitkeep
 
 # User & package directories at project root
@@ -21,11 +28,6 @@
 
 # Local MAMP / PHP error dumps inside apps
 **/MAMP_php_error_log*
-
-# Generated test fixtures (keep directory markers)
-/tests/Fixtures/**/*
-!/tests/Fixtures/**/.gitkeep
-
 
 # =============================================================================
 # Project — PHP & Composer
@@ -77,3 +79,7 @@ Homestead.yaml
 .DS_Store
 Thumbs.db
 *.log
+
+# Generated test fixtures (keep directory markers)
+tests/Fixtures/**/*
+!tests/Fixtures/**/.gitkeep

@@ -24,7 +24,7 @@ function pinoox_public_core_path(): string
         return ltrim(substr($corePath, strlen($basePath)), '/');
     }
 
-    return 'pincore';
+    return 'vendor/pinoox/pincore';
 }
 
 function pinoox_composer_terminal_command(): string

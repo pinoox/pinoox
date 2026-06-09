@@ -2238,6 +2238,12 @@ body.ltr {
     display: block;
     font-size: 0.7em;
 
+    &__value {
+      direction: ltr;
+      unicode-bidi: isolate;
+      display: inline-block;
+    }
+
     b {
       letter-spacing: 1px;
     }

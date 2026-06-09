@@ -1,9 +1,0 @@
-<?php
-
-it('{{test_title}}', function () {
-    // Tip: appUnderTest(), inMyApp(), myAppGet(), myAppPost() — see tests/README.md
-
-    inMyApp(function () {
-        expect(appUnderTest())->toBe('{{package}}');
-    });
-});

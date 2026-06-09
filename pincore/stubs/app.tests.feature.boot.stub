@@ -1,7 +1,0 @@
-<?php
-
-it('boots the app package', function () {
-    inMyApp(function () {
-        expect(\Pinoox\Portal\App\App::package())->toBe(appUnderTest());
-    });
-});

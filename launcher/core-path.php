@@ -14,13 +14,17 @@ function pinoox_resolve_configured_core_path(string $basePath): string
         $configuredPath = trim((string)file_get_contents($configFile));
     }
 
-    $configuredPath = !empty($configuredPath) ? pinoox_normalize_path($configuredPath) : 'pincore';
+    if (!empty($configuredPath)) {
+        $configuredPath = pinoox_normalize_path($configuredPath);
 
-    if (!preg_match('/^[A-Za-z]:\//', $configuredPath) && !str_starts_with($configuredPath, '/')) {
-        $configuredPath = pinoox_normalize_path($basePath . '/' . $configuredPath);
+        if (!preg_match('/^[A-Za-z]:\//', $configuredPath) && !str_starts_with($configuredPath, '/')) {
+            $configuredPath = pinoox_normalize_path($basePath . '/' . $configuredPath);
+        }
+
+        return $configuredPath;
     }
 
-    return $configuredPath;
+    return pinoox_normalize_path($basePath . '/vendor/pinoox/pincore');
 }
 
 defined('PINOOX_BASE_PATH') || define('PINOOX_BASE_PATH', pinoox_normalize_path(dirname(__DIR__)));

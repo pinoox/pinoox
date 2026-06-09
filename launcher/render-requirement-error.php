@@ -52,9 +52,9 @@ function pinoox_requirement_messages(string $locale): array
 function pinoox_requirement_lang_switcher_styles(): string
 {
     return '.page-wrap{display:flex;flex-direction:column;align-items:center;gap:.65rem;width:min(100%,58rem)}'
-        . '.lang-bar{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.45rem .65rem;border-radius:.75rem;background:rgba(0,0,0,.14);border:1px solid rgba(255,255,255,.08)}'
-        . '.lang-bar label{font-size:.74rem;color:rgba(255,255,255,.72);white-space:nowrap}'
-        . '.lang-select{min-width:8.5rem;padding:.45rem .65rem;border-radius:.55rem;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.1);color:#fff;font:inherit;font-size:.78rem;cursor:pointer}'
+        . '.lang-bar{display:flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.45rem .65rem;border-radius:.75rem;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.06)}'
+        . '.lang-bar label{font-size:.74rem;color:rgba(255,255,255,.68);white-space:nowrap}'
+        . '.lang-select{min-width:8.5rem;padding:.45rem .65rem;border-radius:.55rem;border:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.22);color:#fff;font:inherit;font-size:.78rem;cursor:pointer}'
         . '.lang-select option{color:#111;background:#fff}';
 }
 
@@ -83,22 +83,12 @@ function pinoox_render_requirement_lang_switcher(string $locale, string $label):
 
 function pinoox_requirement_logo_url(): string
 {
-    $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
-    $base = rtrim($scriptDir, '/');
-
-    $systemPath = function_exists('pinoox_public_system_path') ? pinoox_public_system_path() : 'system';
-
-    return $base . '/' . $systemPath . '/resource/images/logo.png';
+    return pinoox_requirement_asset_url('images/logo.png');
 }
 
 function pinoox_requirement_kalameh_css_url(): string
 {
-    $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
-    $base = rtrim($scriptDir, '/');
-
-    $systemPath = function_exists('pinoox_public_system_path') ? pinoox_public_system_path() : 'system';
-
-    return $base . '/' . $systemPath . '/resource/views/no-route/css/fonts-kalameh.css';
+    return pinoox_requirement_asset_url('css/fonts-kalameh.css');
 }
 
 function pinoox_requirement_font_link(string $locale): void
@@ -119,6 +109,225 @@ function pinoox_requirement_font_styles(string $locale): string
 
     return 'html[lang="fa"] body,html[lang="fa"] .lang-bar,html[lang="fa"] .card{font-family:Kalameh,Tahoma,Segoe UI,sans-serif}'
         . 'html[lang="fa"] code,html[lang="fa"] .command code,html[lang="fa"] .output,html[lang="fa"] .console-body{font-family:Consolas,Monaco,monospace}';
+}
+
+function pinoox_requirement_cli_enable_vt(): void
+{
+    if (PHP_SAPI !== 'cli' || DIRECTORY_SEPARATOR !== '\\' || !function_exists('sapi_windows_vt100_support')) {
+        return;
+    }
+
+    @sapi_windows_vt100_support(STDERR, true);
+}
+
+function pinoox_requirement_cli_use_color(): bool
+{
+    if (PHP_SAPI !== 'cli') {
+        return false;
+    }
+
+    if (getenv('NO_COLOR') !== false && getenv('NO_COLOR') !== '') {
+        return false;
+    }
+
+    if (DIRECTORY_SEPARATOR === '\\') {
+        return getenv('ANSICON') !== false
+            || getenv('ConEmuANSI') === 'ON'
+            || (function_exists('sapi_windows_vt100_support') && @sapi_windows_vt100_support(STDERR));
+    }
+
+    return function_exists('posix_isatty') ? @posix_isatty(STDERR) : true;
+}
+
+function pinoox_requirement_cli_c(string $text, ?string $code = null): string
+{
+    if ($code === null || !pinoox_requirement_cli_use_color()) {
+        return $text;
+    }
+
+    return "\033[" . $code . 'm' . $text . "\033[0m";
+}
+
+function pinoox_requirement_cli_write(string $line = ''): void
+{
+    fwrite(STDERR, $line . PHP_EOL);
+}
+
+function pinoox_requirement_cli_pad_line(string $line, int $inner): string
+{
+    $line = trim($line);
+    $length = mb_strlen($line, 'UTF-8');
+
+    if ($length > $inner) {
+        $line = mb_substr($line, 0, max(1, $inner - 1), 'UTF-8') . '…';
+        $length = mb_strlen($line, 'UTF-8');
+    }
+
+    return $line . str_repeat(' ', max(0, $inner - $length));
+}
+
+function pinoox_requirement_cli_block(string $title, string $body, string $accent = '36'): void
+{
+    $blank = '  ';
+    $inner = 50;
+    $bar = str_repeat('─', $inner);
+
+    pinoox_requirement_cli_write('');
+    pinoox_requirement_cli_write($blank . pinoox_requirement_cli_c('╭' . $bar . '╮', $accent));
+    pinoox_requirement_cli_write($blank . pinoox_requirement_cli_c('│', $accent) . pinoox_requirement_cli_c(pinoox_requirement_cli_pad_line($title, $inner), '1;97') . pinoox_requirement_cli_c('│', $accent));
+    pinoox_requirement_cli_write($blank . pinoox_requirement_cli_c('├' . $bar . '┤', $accent));
+
+    foreach (preg_split('/\R/u', trim($body)) ?: [] as $line) {
+        pinoox_requirement_cli_write($blank . pinoox_requirement_cli_c('│', $accent) . pinoox_requirement_cli_pad_line($line, $inner) . pinoox_requirement_cli_c('│', $accent));
+    }
+
+    pinoox_requirement_cli_write($blank . pinoox_requirement_cli_c('╰' . $bar . '╯', $accent));
+}
+
+function pinoox_requirement_cli_fact(string $label, string $value, string $valueColor = '97'): void
+{
+    pinoox_requirement_cli_write('');
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c($label, '2;36'));
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c($value, $valueColor));
+}
+
+function pinoox_requirement_cli_command(string $label, string $command): void
+{
+    pinoox_requirement_cli_write('');
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c($label, '1;33'));
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('▸ ', '32') . pinoox_requirement_cli_c($command, '1;92'));
+}
+
+function pinoox_requirement_cli_hints(string $title, array $hints): void
+{
+    if ($hints === []) {
+        return;
+    }
+
+    pinoox_requirement_cli_write('');
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c($title, '1;33'));
+
+    foreach ($hints as $hint) {
+        pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('•', '33') . ' ' . $hint);
+    }
+}
+
+function pinoox_render_vendor_missing_cli(array $copy, array $ui, string $projectPath, string $terminalCommand): void
+{
+    pinoox_requirement_cli_enable_vt();
+
+    $badge = (string) ($ui['badge'] ?? $copy['badge'] ?? 'Setup');
+    $heading = $copy['vendor_heading'] ?? '';
+    $message = $copy['vendor_message'] ?? '';
+
+    pinoox_requirement_cli_write('');
+    pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('◆ Pinoox', '1;96') . ' ' . pinoox_requirement_cli_c('·', '2') . ' ' . pinoox_requirement_cli_c($badge, '33'));
+    pinoox_requirement_cli_block($heading, $message);
+
+    pinoox_requirement_cli_fact(
+        $copy['project_path_label'] ?: 'Project directory',
+        $projectPath
+    );
+    pinoox_requirement_cli_fact(
+        $copy['expected_file_label'] ?: 'Expected file',
+        'vendor/autoload.php',
+        '93'
+    );
+    pinoox_requirement_cli_fact(
+        $copy['current_label'] ?: 'PHP',
+        PHP_VERSION,
+        '93'
+    );
+
+    pinoox_requirement_cli_command(
+        (string) ($ui['terminal_title'] ?? 'Terminal command'),
+        $terminalCommand
+    );
+
+    $composer = pinoox_detect_composer();
+    pinoox_requirement_cli_write('');
+
+    if (!$composer['shell_available']) {
+        pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('⚠ ', '33') . ($ui['shell_disabled'] ?? 'Shell is disabled.'));
+    } elseif ($composer['installed']) {
+        $found = str_replace('{source}', (string) $composer['source'], (string) ($ui['composer_found'] ?? 'Composer found'));
+        pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('✓ ', '32') . pinoox_requirement_cli_c($found, '92'));
+        if (!empty($composer['version'])) {
+            pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c((string) $composer['version'], '2'));
+        }
+    } else {
+        pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('✗ ', '31') . ($ui['composer_missing'] ?? 'Composer is not installed.'));
+        pinoox_requirement_cli_write('  ' . pinoox_requirement_cli_c('https://getcomposer.org/download/', '94'));
+    }
+
+    pinoox_requirement_cli_hints(
+        $copy['hint_title'] ?: 'How to fix',
+        $copy['vendor_hints'] ?? []
+    );
+    pinoox_requirement_cli_write('');
+}
+
+function pinoox_requirement_vendor_page_styles(string $dir, string $textAlign): string
+{
+    $hintAlign = $dir === 'rtl' ? 'right' : 'left';
+
+    return '*,*::before,*::after{box-sizing:border-box}'
+        . 'body{margin:0;min-height:100vh;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:1.25rem;font-family:Tahoma,Segoe UI,sans-serif;background:#02090c;color:#fff;position:relative}'
+        . 'body::before,body::after{content:"";position:fixed;border-radius:50%;filter:blur(72px);opacity:.42;pointer-events:none;z-index:0}'
+        . 'body::before{width:28rem;height:28rem;top:-8rem;left:-6rem;background:radial-gradient(circle,#1f8a7a 0,transparent 70%)}'
+        . 'body::after{width:24rem;height:24rem;right:-5rem;bottom:-7rem;background:radial-gradient(circle,#0d4d6f 0,transparent 72%)}'
+        . '.page-wrap{position:relative;z-index:1;display:flex;flex-direction:column;align-items:stretch;gap:.65rem;width:min(100%,56rem);max-height:calc(100vh - 2.5rem)}'
+        . '.card{width:100%;max-height:100%;display:flex;flex-direction:column;gap:1rem;padding:1.35rem 1.4rem;border-radius:1.25rem;background:linear-gradient(165deg,rgba(8,18,22,.94),rgba(4,10,14,.88));border:1px solid rgba(255,255,255,.08);box-shadow:0 28px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(18px);overflow:hidden;animation:card-in .45s ease}'
+        . '@keyframes card-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}'
+        . '.hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:.55rem;padding-bottom:.15rem;border-bottom:1px solid rgba(255,255,255,.06)}'
+        . '.hero-logo{width:4rem;height:4rem;border-radius:1.1rem;box-shadow:0 10px 28px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.08)}'
+        . '.badge{display:inline-block;padding:.18rem .7rem;border-radius:999px;font-size:.68rem;font-weight:700;letter-spacing:.02em;background:rgba(255,180,120,.12);border:1px solid rgba(255,180,120,.24);color:#ffd8b0}'
+        . 'h1{margin:0;font-size:1.22rem;line-height:1.4}.lead{margin:0;max-width:36rem;font-size:.84rem;line-height:1.65;color:rgba(255,255,255,.76)}'
+        . '.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.6rem}'
+        . '.stat{padding:.65rem .75rem;border-radius:.8rem;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.05);min-width:0;transition:border-color .2s ease,transform .2s ease}'
+        . '.stat:hover{border-color:rgba(255,210,122,.18);transform:translateY(-1px)}'
+        . '.stat strong{display:block;margin-bottom:.2rem;font-size:.67rem;text-transform:uppercase;letter-spacing:.04em;color:rgba(255,255,255,.52)}'
+        . '.stat span{display:block;font-size:.78rem;line-height:1.45;word-break:break-all;color:rgba(255,255,255,.92)}'
+        . '.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;min-height:0}'
+        . '.panel{display:flex;flex-direction:column;gap:.5rem;padding:.85rem;border-radius:.95rem;background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.06);text-align:' . $textAlign . ';min-height:0}'
+        . '.panel.panel-highlight{border-color:rgba(255,210,122,.32);box-shadow:0 0 0 1px rgba(255,210,122,.12),0 12px 28px rgba(0,0,0,.18);background:linear-gradient(160deg,rgba(255,210,122,.07),rgba(0,0,0,.22))}'
+        . '.panel-head{display:flex;align-items:center;gap:.45rem}'
+        . '.panel-icon{flex:0 0 auto;width:1.65rem;height:1.65rem;display:inline-flex;align-items:center;justify-content:center;border-radius:.55rem;font-size:.82rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08)}'
+        . '.section-title{margin:0;font-size:.84rem;font-weight:700;color:#ffe9a8}'
+        . '.panel p{margin:0;font-size:.76rem;line-height:1.55;color:rgba(255,255,255,.72)}'
+        . '.command{display:flex;flex-direction:column;gap:.5rem;margin-top:auto}'
+        . '.command code{display:block;width:100%;padding:.7rem .8rem;border-radius:.65rem;background:rgba(0,0,0,.46);border:1px solid rgba(120,220,160,.12);font:500 .75rem/1.6 Consolas,Monaco,monospace;color:#d8ffe6;white-space:pre-wrap;word-break:break-all;overflow:visible}'
+        . '.btn{display:inline-flex;align-items:center;justify-content:center;gap:.35rem;padding:.62rem .9rem;border:none;border-radius:.6rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .15s ease,box-shadow .15s ease,opacity .15s ease}'
+        . '.btn:disabled{opacity:.5;cursor:not-allowed}.btn:not(:disabled):hover{transform:translateY(-1px)}'
+        . '.btn-copy{align-self:flex-start;background:rgba(255,255,255,.06);color:#fff;border:1px solid rgba(255,255,255,.1)}'
+        . '.btn-copy:not(:disabled):hover{box-shadow:0 8px 18px rgba(0,0,0,.22)}'
+        . '.btn-install{width:100%;background:linear-gradient(135deg,#ffd27a 0,#ffb347 55%,#ff9f43 100%);color:#142026;box-shadow:0 10px 24px rgba(255,179,71,.22)}'
+        . '.btn-install:not(:disabled):hover{box-shadow:0 14px 28px rgba(255,179,71,.32)}'
+        . '.btn-install:not(:disabled){animation:install-pulse 2.4s ease-in-out infinite}'
+        . '@keyframes install-pulse{0%,100%{box-shadow:0 10px 24px rgba(255,179,71,.22)}50%{box-shadow:0 12px 30px rgba(255,179,71,.36)}}'
+        . '.btn-link{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:.55rem .75rem;border-radius:.6rem;background:rgba(0,0,0,.24);color:#fff;text-decoration:none;font-size:.76rem;border:1px solid rgba(255,255,255,.08)}'
+        . '.status{padding:.6rem .7rem;border-radius:.6rem;font-size:.74rem;line-height:1.45}'
+        . '.status.info{background:rgba(0,0,0,.24);color:rgba(255,255,255,.78);border:1px solid rgba(255,255,255,.05)}'
+        . '.status.success{background:rgba(120,220,160,.12);color:#d7ffe7;border:1px solid rgba(120,220,160,.22)}'
+        . '.status.warn{background:rgba(255,210,122,.1);color:#ffe9a8;border:1px solid rgba(255,210,122,.2)}'
+        . '.status.error{background:rgba(255,120,120,.1);color:#ffd0d0;border:1px solid rgba(255,120,120,.2)}'
+        . '.auto-actions{display:flex;flex-direction:column;gap:.5rem;margin-top:auto}'
+        . '.steps{margin:0;padding:0;list-style:none;display:grid;gap:.45rem;text-align:' . $hintAlign . '}'
+        . '.steps li{display:flex;align-items:flex-start;gap:.55rem;padding:.55rem .65rem;border-radius:.7rem;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.04);font-size:.76rem;line-height:1.55;color:rgba(255,255,255,.78)}'
+        . '.step-num{flex:0 0 auto;width:1.35rem;height:1.35rem;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;font-size:.68rem;font-weight:700;color:#142026;background:linear-gradient(135deg,#ffd27a,#ffb347)}'
+        . '.steps-title{margin:0 0 .35rem;font-size:.82rem;font-weight:700;color:#ffe9a8}'
+        . '.console{display:none;flex-direction:column;border-radius:.85rem;overflow:hidden;border:1px solid rgba(255,255,255,.08);background:#050809;min-height:0;flex-shrink:0}'
+        . '.console.is-open{display:flex;min-height:12rem}'
+        . '.console-top{display:flex;align-items:center;gap:.55rem;padding:.5rem .7rem;background:rgba(0,0,0,.32);border-bottom:1px solid rgba(255,255,255,.06)}'
+        . '.console-dots{display:flex;gap:.28rem}.console-dots span{width:.55rem;height:.55rem;border-radius:50%;background:rgba(255,120,120,.75)}.console-dots span:nth-child(2){background:rgba(255,210,122,.75)}.console-dots span:nth-child(3){background:rgba(120,220,160,.75)}'
+        . '.console-title{flex:1;font-size:.74rem;font-weight:700;color:rgba(255,255,255,.88)}'
+        . '.console-badge{font-size:.68rem;padding:.12rem .45rem;border-radius:999px;background:rgba(255,210,122,.16);color:#ffe9a8;border:1px solid rgba(255,210,122,.22)}'
+        . '.console-badge.success{background:rgba(120,220,160,.16);color:#d7ffe7;border-color:rgba(120,220,160,.22)}'
+        . '.console-badge.error{background:rgba(255,120,120,.16);color:#ffd0d0;border-color:rgba(255,120,120,.22)}'
+        . '.console-body{flex:1;min-height:12rem;max-height:18rem;overflow-y:auto;overflow-x:hidden;padding:.75rem .8rem;font:.72rem/1.55 Consolas,Monaco,monospace;color:#d9ffe0;white-space:pre-wrap;word-break:break-word;text-align:left;direction:ltr;scroll-behavior:smooth}'
+        . '.console-line{display:block}.console-line.prompt{color:#8dffb0}.console-line.info{color:#ffe9a8}.console-line.error{color:#ffb4b4}.console-line.output{color:#d9ffe0}'
+        . 'body.console-open{height:auto;overflow:auto}body.console-open .page-wrap,.page-wrap.console-open{max-height:none}'
+        . '@media (max-width:760px){body{height:auto;overflow:auto;padding:.85rem}.page-wrap{max-height:none}.stats,.grid{grid-template-columns:1fr}.console.is-open{min-height:10rem}.console-body{min-height:10rem;max-height:14rem}}';
 }
 
 function pinoox_render_requirement_page(array $copy, array $facts, array $hints, int $status = 503): void
@@ -156,14 +365,14 @@ function pinoox_render_requirement_page(array $copy, array $facts, array $hints,
     echo '<title>' . $title . '</title>';
     pinoox_requirement_font_link($copy['lang']);
     echo '<style>';
-    echo 'body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;font-family:Tahoma,Segoe UI,sans-serif;background:linear-gradient(135deg,#1f7a8c,#022b3a);color:#fff;}';
+    echo 'body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem 1.25rem;font-family:Tahoma,Segoe UI,sans-serif;background:linear-gradient(135deg,#124550,#011018);color:#fff;}';
     echo pinoox_requirement_font_styles($copy['lang']);
     echo pinoox_requirement_lang_switcher_styles();
-    echo '.card{width:100%;max-width:34rem;padding:1.75rem 1.65rem;border-radius:1.15rem;background:rgba(255,255,255,.11);border:1px solid rgba(255,255,255,.16);box-shadow:0 22px 48px rgba(0,0,0,.22);backdrop-filter:blur(14px);}';
+    echo '.card{width:100%;max-width:34rem;padding:1.75rem 1.65rem;border-radius:1.15rem;background:rgba(0,0,0,.28);border:1px solid rgba(255,255,255,.08);box-shadow:0 22px 48px rgba(0,0,0,.38);backdrop-filter:blur(14px);}';
     echo '.brand{text-align:center;margin-bottom:.85rem;} .brand img{width:3.5rem;height:3.5rem;border-radius:1rem;}';
-    echo '.badge{display:inline-block;margin-bottom:.65rem;padding:.2rem .65rem;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(255,120,120,.2);border:1px solid rgba(255,120,120,.32);color:#ffd0d0;}';
-    echo 'h1{margin:0 0 .65rem;font-size:1.28rem;} p{margin:0 0 1rem;line-height:1.65;color:rgba(255,255,255,.88);}';
-    echo '.facts{margin:0 0 1rem;padding:0;list-style:none;} .facts li{padding:.75rem .85rem;border-radius:.75rem;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.08);} .facts li+li{margin-top:.55rem;}';
+    echo '.badge{display:inline-block;margin-bottom:.65rem;padding:.2rem .65rem;border-radius:999px;font-size:.72rem;font-weight:700;background:rgba(255,120,120,.16);border:1px solid rgba(255,120,120,.24);color:#ffc4c4;}';
+    echo 'h1{margin:0 0 .65rem;font-size:1.28rem;} p{margin:0 0 1rem;line-height:1.65;color:rgba(255,255,255,.82);}';
+    echo '.facts{margin:0 0 1rem;padding:0;list-style:none;} .facts li{padding:.75rem .85rem;border-radius:.75rem;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.06);} .facts li+li{margin-top:.55rem;}';
     echo '.facts strong{display:block;font-size:.76rem;color:rgba(255,255,255,.68);margin-bottom:.2rem;} .facts span{font-size:.92rem;}';
     echo '.hints{margin:0;padding:0;list-style:none;text-align:' . ($copy['dir'] === 'rtl' ? 'right' : 'left') . ';} .hints li{position:relative;padding-' . ($copy['dir'] === 'rtl' ? 'right' : 'left') . ':1rem;margin-bottom:.55rem;line-height:1.6;color:rgba(255,255,255,.82);font-size:.86rem;}';
     echo '.hints li::before{content:"•";position:absolute;' . ($copy['dir'] === 'rtl' ? 'right' : 'left') . ':0;color:#ffd27a;}';
@@ -214,29 +423,7 @@ function pinoox_render_vendor_missing_error(): void
     $actionUrl = pinoox_composer_action_url();
 
     if (PHP_SAPI === 'cli') {
-        fwrite(STDERR, $copy['vendor_heading'] . PHP_EOL);
-        fwrite(STDERR, $copy['vendor_message'] . PHP_EOL);
-        fwrite(STDERR, ($copy['project_path_label'] ?: 'Project directory') . ': ' . $projectPath . PHP_EOL);
-        fwrite(STDERR, ($copy['expected_file_label'] ?: 'Expected file') . ': vendor/autoload.php' . PHP_EOL);
-        fwrite(STDERR, $copy['current_label'] . ': ' . PHP_VERSION . PHP_EOL);
-        fwrite(STDERR, PHP_EOL . ($ui['terminal_title'] ?? 'Terminal command') . ':' . PHP_EOL);
-        fwrite(STDERR, $terminalCommand . PHP_EOL . PHP_EOL);
-
-        $composer = pinoox_detect_composer();
-
-        if (!$composer['shell_available']) {
-            fwrite(STDERR, ($ui['shell_disabled'] ?? 'Shell is disabled.') . PHP_EOL);
-        } elseif ($composer['installed']) {
-            fwrite(STDERR, str_replace('{source}', (string) $composer['source'], (string) ($ui['composer_found'] ?? 'Composer found')) . PHP_EOL);
-            fwrite(STDERR, ($composer['version'] ?? '') . PHP_EOL);
-        } else {
-            fwrite(STDERR, ($ui['composer_missing'] ?? 'Composer is not installed.') . PHP_EOL);
-            fwrite(STDERR, 'https://getcomposer.org/download/' . PHP_EOL);
-        }
-
-        foreach ($copy['vendor_hints'] as $hint) {
-            fwrite(STDERR, '- ' . $hint . PHP_EOL);
-        }
+        pinoox_render_vendor_missing_cli($copy, $ui, $projectPath, $terminalCommand);
 
         return;
     }
@@ -302,57 +489,14 @@ function pinoox_render_vendor_missing_error(): void
     echo '<title>' . $title . '</title>';
     pinoox_requirement_font_link($copy['lang']);
     echo '<style>';
-    echo '*,*::before,*::after{box-sizing:border-box}';
-    echo 'body{margin:0;min-height:100vh;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:1rem;font-family:Tahoma,Segoe UI,sans-serif;background:radial-gradient(circle at top,#2a9d8f 0,#1f7a8c 28%,#022b3a 100%);color:#fff}';
+    echo pinoox_requirement_vendor_page_styles($dir, $textAlign);
     echo pinoox_requirement_font_styles($copy['lang']);
-    echo '.page-wrap{display:flex;flex-direction:column;align-items:stretch;gap:.55rem;width:min(100%,58rem);max-height:calc(100vh - 2rem)}';
     echo pinoox_requirement_lang_switcher_styles();
-    echo '.card{width:100%;max-height:100%;display:flex;flex-direction:column;gap:.85rem;padding:1.15rem 1.25rem;border-radius:1.1rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.14);box-shadow:0 18px 40px rgba(0,0,0,.24);backdrop-filter:blur(16px);overflow:hidden}';
-    echo '.hero{display:flex;align-items:center;gap:.85rem;text-align:' . $textAlign . '}';
-    echo '.hero-logo{flex:0 0 auto;width:3rem;height:3rem;border-radius:.85rem}';
-    echo '.hero-body{min-width:0;flex:1}';
-    echo '.badge{display:inline-block;margin-bottom:.35rem;padding:.15rem .55rem;border-radius:999px;font-size:.68rem;font-weight:700;background:rgba(255,120,120,.18);border:1px solid rgba(255,120,120,.28);color:#ffd0d0}';
-    echo 'h1{margin:0 0 .25rem;font-size:1.08rem;line-height:1.35}.lead{margin:0;font-size:.82rem;line-height:1.55;color:rgba(255,255,255,.82)}';
-    echo '.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.55rem}';
-    echo '.stat{padding:.55rem .65rem;border-radius:.7rem;background:rgba(0,0,0,.18);border:1px solid rgba(255,255,255,.07);min-width:0}';
-    echo '.stat strong{display:block;margin-bottom:.15rem;font-size:.68rem;color:rgba(255,255,255,.62)}';
-    echo '.stat span{display:block;font-size:.78rem;line-height:1.45;word-break:break-all}';
-    echo '.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.65rem;min-height:0;flex:1}';
-    echo '.panel{display:flex;flex-direction:column;gap:.45rem;padding:.75rem;border-radius:.8rem;background:rgba(0,0,0,.16);border:1px solid rgba(255,255,255,.08);text-align:' . $textAlign . ';min-height:0}';
-    echo '.panel.panel-highlight{border-color:rgba(255,210,122,.45);box-shadow:0 0 0 1px rgba(255,210,122,.22);background:rgba(255,210,122,.06)}';
-    echo '.section-title{margin:0;font-size:.82rem;font-weight:700;color:#ffe9a8}';
-    echo '.panel p{margin:0;font-size:.76rem;line-height:1.5;color:rgba(255,255,255,.78)}';
-    echo '.command{display:flex;flex-direction:column;gap:.45rem;margin-top:auto}';
-    echo '.command code{display:block;width:100%;padding:.6rem .7rem;border-radius:.55rem;background:rgba(0,0,0,.32);border:1px solid rgba(255,255,255,.08);font:500 .74rem/1.55 Consolas,Monaco,monospace;color:#f4f4f4;white-space:pre-wrap;word-break:break-all;overflow:visible}';
-    echo '.btn{display:inline-flex;align-items:center;justify-content:center;gap:.3rem;padding:.58rem .85rem;border:none;border-radius:.55rem;font:inherit;font-size:.78rem;font-weight:700;cursor:pointer;white-space:nowrap;transition:transform .15s ease,opacity .15s ease}';
-    echo '.btn:disabled{opacity:.55;cursor:not-allowed}.btn:not(:disabled):hover{transform:translateY(-1px)}';
-    echo '.btn-copy{align-self:flex-start;background:rgba(255,255,255,.12);color:#fff;border:1px solid rgba(255,255,255,.16)}';
-    echo '.btn-install{width:100%;background:linear-gradient(135deg,#ffd27a,#ffb347);color:#1b2a2f}';
-    echo '.btn-link{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:.52rem .75rem;border-radius:.55rem;background:rgba(255,255,255,.1);color:#fff;text-decoration:none;font-size:.76rem;border:1px solid rgba(255,255,255,.1)}';
-    echo '.status{padding:.55rem .65rem;border-radius:.55rem;font-size:.74rem;line-height:1.45}';
-    echo '.status.info{background:rgba(255,255,255,.07);color:rgba(255,255,255,.86)}';
-    echo '.status.success{background:rgba(120,220,160,.14);color:#d7ffe7;border:1px solid rgba(120,220,160,.22)}';
-    echo '.status.warn{background:rgba(255,210,122,.12);color:#ffe9a8;border:1px solid rgba(255,210,122,.22)}';
-    echo '.status.error{background:rgba(255,120,120,.12);color:#ffd0d0;border:1px solid rgba(255,120,120,.22)}';
-    echo '.output{padding:.55rem .65rem;border-radius:.55rem;background:rgba(0,0,0,.32);font:.72rem/1.45 Consolas,Monaco,monospace;white-space:pre-wrap;word-break:break-word;max-height:4.5rem;overflow:auto;display:none}';
-    echo '.auto-actions{display:flex;flex-direction:column;gap:.45rem;margin-top:auto}';
-    echo '.console{display:none;flex-direction:column;border-radius:.75rem;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#0b0f12;min-height:0;flex-shrink:0}';
-    echo '.console.is-open{display:flex;min-height:12rem}';
-    echo '.console-top{display:flex;align-items:center;gap:.55rem;padding:.45rem .65rem;background:rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.08)}';
-    echo '.console-dots{display:flex;gap:.28rem}.console-dots span{width:.55rem;height:.55rem;border-radius:50%;background:rgba(255,120,120,.75)}.console-dots span:nth-child(2){background:rgba(255,210,122,.75)}.console-dots span:nth-child(3){background:rgba(120,220,160,.75)}';
-    echo '.console-title{flex:1;font-size:.74rem;font-weight:700;color:rgba(255,255,255,.88)}';
-    echo '.console-badge{font-size:.68rem;padding:.12rem .45rem;border-radius:999px;background:rgba(255,210,122,.16);color:#ffe9a8;border:1px solid rgba(255,210,122,.22)}';
-    echo '.console-badge.success{background:rgba(120,220,160,.16);color:#d7ffe7;border-color:rgba(120,220,160,.22)}';
-    echo '.console-badge.error{background:rgba(255,120,120,.16);color:#ffd0d0;border-color:rgba(255,120,120,.22)}';
-    echo '.console-body{flex:1;min-height:12rem;max-height:18rem;overflow-y:auto;overflow-x:hidden;padding:.7rem .75rem;font:.72rem/1.55 Consolas,Monaco,monospace;color:#d9ffe0;white-space:pre-wrap;word-break:break-word;text-align:left;direction:ltr;scroll-behavior:smooth}';
-    echo '.console-line{display:block}.console-line.prompt{color:#8dffb0}.console-line.info{color:#ffe9a8}.console-line.error{color:#ffb4b4}.console-line.output{color:#d9ffe0}';
-    echo 'body.console-open{height:auto;overflow:auto}body.console-open .page-wrap,.page-wrap.console-open{max-height:none}';
-    echo '@media (max-width:760px){body{height:auto;overflow:auto;padding:.75rem}.page-wrap{max-height:none}.stats,.grid{grid-template-columns:1fr}.console.is-open{min-height:10rem}.console-body{min-height:10rem;max-height:14rem}}';
     echo '</style></head><body><div class="page-wrap"><div class="card" role="alert">';
     echo '<header class="hero">';
     echo '<img class="hero-logo" src="' . $logo . '" alt="Pinoox">';
-    echo '<div class="hero-body"><span class="badge">' . $badge . '</span>';
-    echo '<h1>' . $heading . '</h1><p class="lead">' . $message . '</p></div></header>';
+    echo '<span class="badge">' . $badge . '</span>';
+    echo '<h1>' . $heading . '</h1><p class="lead">' . $message . '</p></header>';
 
     echo '<div class="stats">';
 
@@ -363,18 +507,32 @@ function pinoox_render_vendor_missing_error(): void
 
     echo '</div><div class="grid">';
 
-    echo '<section class="panel" id="manual-panel"><h2 class="section-title">' . htmlspecialchars((string) ($ui['terminal_title'] ?? ''), ENT_QUOTES, 'UTF-8') . '</h2>';
+    echo '<section class="panel" id="manual-panel">';
+    echo '<div class="panel-head"><span class="panel-icon" aria-hidden="true">⌘</span>';
+    echo '<h2 class="section-title">' . htmlspecialchars((string) ($ui['terminal_title'] ?? ''), ENT_QUOTES, 'UTF-8') . '</h2></div>';
     echo '<p>' . htmlspecialchars((string) ($ui['terminal_hint'] ?? ''), ENT_QUOTES, 'UTF-8') . '</p>';
     echo '<div class="command"><code id="terminal-command">' . htmlspecialchars($terminalCommand, ENT_QUOTES, 'UTF-8') . '</code>';
     echo '<button type="button" class="btn btn-copy" id="copy-command">' . htmlspecialchars((string) ($ui['copy_command'] ?? 'Copy'), ENT_QUOTES, 'UTF-8') . '</button></div></section>';
 
-    echo '<section class="panel"><h2 class="section-title">' . htmlspecialchars((string) ($ui['auto_title'] ?? ''), ENT_QUOTES, 'UTF-8') . '</h2>';
+    echo '<section class="panel">';
+    echo '<div class="panel-head"><span class="panel-icon" aria-hidden="true">⚡</span>';
+    echo '<h2 class="section-title">' . htmlspecialchars((string) ($ui['auto_title'] ?? ''), ENT_QUOTES, 'UTF-8') . '</h2></div>';
     echo '<p>' . htmlspecialchars((string) ($ui['auto_hint'] ?? ''), ENT_QUOTES, 'UTF-8') . '</p>';
     echo '<div class="auto-actions">';
     echo '<div id="composer-status" class="status info">' . htmlspecialchars((string) ($ui['composer_checking'] ?? ''), ENT_QUOTES, 'UTF-8') . '</div>';
     echo '<div id="auto-fallback" class="status warn" style="display:none"></div>';
     echo '<button type="button" class="btn btn-install" id="install-button" disabled>' . htmlspecialchars((string) ($ui['install_button'] ?? 'Install'), ENT_QUOTES, 'UTF-8') . '</button>';
     echo '</div></section></div>';
+
+    if (!empty($copy['vendor_hints'])) {
+        echo '<section><h2 class="steps-title">' . htmlspecialchars($copy['hint_title'] ?? '', ENT_QUOTES, 'UTF-8') . '</h2><ol class="steps">';
+
+        foreach ($copy['vendor_hints'] as $index => $hint) {
+            echo '<li><span class="step-num">' . ($index + 1) . '</span><span>' . htmlspecialchars($hint, ENT_QUOTES, 'UTF-8') . '</span></li>';
+        }
+
+        echo '</ol></section>';
+    }
 
     echo '<section id="install-console" class="console" aria-live="polite">';
     echo '<div class="console-top"><div class="console-dots"><span></span><span></span><span></span></div>';

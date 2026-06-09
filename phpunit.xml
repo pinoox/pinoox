@@ -1,44 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         bootstrap="tests/bootstrap.php"
+         bootstrap="vendor/pinoox/pincore/tests/bootstrap.php"
          colors="true">
     <testsuites>
         <testsuite name="Pinoox">
-            <directory>tests/Feature</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature</directory>
         </testsuite>
         <testsuite name="Server">
-            <directory>tests/Feature/Server</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Server</directory>
         </testsuite>
         <testsuite name="Routing">
-            <directory>tests/Feature/Routing</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Routing</directory>
         </testsuite>
         <testsuite name="Http">
-            <directory>tests/Feature/Http</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Http</directory>
         </testsuite>
         <testsuite name="App">
-            <directory>tests/Feature/App</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/App</directory>
         </testsuite>
         <testsuite name="Portal">
-            <directory>tests/Feature/Portal</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Portal</directory>
         </testsuite>
         <testsuite name="Installer">
-            <directory>tests/Feature/Installer</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Installer</directory>
         </testsuite>
         <testsuite name="Theme">
-            <directory>tests/Feature/Theme</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Theme</directory>
         </testsuite>
         <testsuite name="Config">
-            <directory>tests/Feature/Config</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Config</directory>
         </testsuite>
         <testsuite name="Database">
-            <directory>tests/Feature/Database</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Database</directory>
         </testsuite>
         <testsuite name="Integration">
-            <directory>tests/Feature/Integration</directory>
+            <directory>vendor/pinoox/pincore/tests/Feature/Integration</directory>
         </testsuite>
         <testsuite name="Unit">
-            <directory>tests/Unit</directory>
+            <directory>vendor/pinoox/pincore/tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

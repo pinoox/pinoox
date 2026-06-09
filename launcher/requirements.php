@@ -32,7 +32,7 @@ function pinoox_core_path(): string
         return rtrim(str_replace('\\', '/', PINOOX_CORE_PATH), '/');
     }
 
-    return pinoox_base_path() . '/pincore';
+    return pinoox_base_path() . '/vendor/pinoox/pincore';
 }
 
 function pinoox_system_path(): string
@@ -49,7 +49,7 @@ function pinoox_system_path(): string
         return $configured;
     }
 
-    return pinoox_base_path() . '/pincore/config';
+    return pinoox_core_path() . '/config';
 }
 
 function pinoox_public_system_path(): string
@@ -80,24 +80,27 @@ function pinoox_composer_requirements(): array
         return $cache;
     }
 
-    $defaults = [
-        'php' => '8.1.0',
-        'extensions' => [],
-    ];
+    $defaults = pinoox_requirement_defaults();
 
-    $file = pinoox_base_path() . '/composer.json';
+    $require = [];
 
-    if (!is_file($file)) {
-        return $cache = $defaults;
+    foreach (pinoox_composer_json_files() as $file) {
+        if (!is_file($file)) {
+            continue;
+        }
+
+        $json = json_decode((string) file_get_contents($file), true);
+
+        if (!is_array($json)) {
+            continue;
+        }
+
+        $require = array_merge($require, is_array($json['require'] ?? null) ? $json['require'] : []);
     }
 
-    $json = json_decode((string) file_get_contents($file), true);
-
-    if (!is_array($json)) {
+    if ($require === []) {
         return $cache = $defaults;
     }
-
-    $require = is_array($json['require'] ?? null) ? $json['require'] : [];
     $php = pinoox_normalize_php_constraint((string) ($require['php'] ?? '8.1.0'));
 
     $extensions = [];
@@ -178,6 +181,62 @@ function pinoox_vendor_installed(): bool
     return is_file(pinoox_vendor_autoload_path());
 }
 
+function pinoox_launcher_path(): string
+{
+    return rtrim(str_replace('\\', '/', __DIR__), '/');
+}
+
+/**
+ * @return list<string>
+ */
+function pinoox_composer_json_files(): array
+{
+    $base = pinoox_base_path();
+    $core = rtrim(pinoox_core_path(), '/');
+
+    return array_values(array_unique([
+        $base . '/composer.json',
+        $core . '/composer.json',
+        $base . '/vendor/pinoox/pincore/composer.json',
+    ]));
+}
+
+function pinoox_requirement_defaults(): array
+{
+    static $defaults = null;
+
+    if (is_array($defaults)) {
+        return $defaults;
+    }
+
+    $file = pinoox_launcher_path() . '/requirements.defaults.php';
+    $loaded = is_file($file) ? require $file : [];
+
+    if (!is_array($loaded)) {
+        $loaded = [];
+    }
+
+    return $defaults = [
+        'php' => (string) ($loaded['php'] ?? '8.1.0'),
+        'extensions' => is_array($loaded['extensions'] ?? null) ? $loaded['extensions'] : [],
+    ];
+}
+
+function pinoox_requirement_web_base(): string
+{
+    $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
+
+    return rtrim($scriptDir, '/');
+}
+
+function pinoox_requirement_asset_url(string $relative): string
+{
+    $relative = ltrim(str_replace('\\', '/', $relative), '/');
+    $base = pinoox_requirement_web_base();
+
+    return ($base === '' ? '' : $base) . '/launcher/assets/' . $relative;
+}
+
 function pinoox_requirement_locales(): array
 {
     static $cache = null;
@@ -187,23 +246,18 @@ function pinoox_requirement_locales(): array
     }
 
     $locales = [];
-    $patterns = [
-        pinoox_system_path() . '/lang/*/requirements.lang.php',
-        pinoox_core_path() . '/lang/*/requirements.lang.php',
-    ];
+    $pattern = pinoox_launcher_path() . '/lang/*/requirements.lang.php';
 
-    foreach ($patterns as $pattern) {
-        foreach (glob($pattern) ?: [] as $file) {
-            $code = basename(dirname($file));
+    foreach (glob($pattern) ?: [] as $file) {
+        $code = basename(dirname($file));
 
-            if (!preg_match('/^[a-z]{2}$/', $code) || isset($locales[$code])) {
-                continue;
-            }
-
-            $data = require $file;
-            $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
-            $locales[$code] = (string) ($meta['name'] ?? strtoupper($code));
+        if (!preg_match('/^[a-z]{2}$/', $code) || isset($locales[$code])) {
+            continue;
         }
+
+        $data = require $file;
+        $meta = is_array($data['meta'] ?? null) ? $data['meta'] : [];
+        $locales[$code] = (string) ($meta['name'] ?? strtoupper($code));
     }
 
     if ($locales === []) {
@@ -277,11 +331,7 @@ function pinoox_requirement_lang_path(string $locale): string
 {
     $locale = pinoox_requirement_normalize_locale($locale);
 
-    $systemFile = pinoox_system_path() . '/lang/' . $locale . '/requirements.lang.php';
-
-    return is_file($systemFile)
-        ? $systemFile
-        : pinoox_core_path() . '/lang/' . $locale . '/requirements.lang.php';
+    return pinoox_launcher_path() . '/lang/' . $locale . '/requirements.lang.php';
 }
 
 function pinoox_load_requirement_lang(string $locale): array
