@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -39,7 +40,7 @@ class MarketController extends Api
 
     public function deleteDownload(Request $request)
     {
-        $package_name = $request->json->get('package_name');
+        $package_name = $request->payload('package_name');
 
         if (empty($package_name))
             return $this->message(t('manager.error_happened'), false);
@@ -59,7 +60,7 @@ class MarketController extends Api
         $pinVer = config('~pinoox');
         return [
             'token' => $auth['token'] ?? null,
-            'remote_url' => Url::site(),
+            'remote_url' => Url::origin(),
             'user_agent' => ($_SERVER['HTTP_USER_AGENT'] ?? 'Pinoox') . ';Pinoox/' . ($pinVer['version_name'] ?? '') . ' Manager',
         ];
     }
@@ -90,7 +91,7 @@ class MarketController extends Api
         if (AppEngine::exists($package_name))
             return $this->message(t('manager.currently_installed'), false);
 
-        $auth = $request->json->get('auth', []);
+        $auth = $request->payload('auth', []);
         $params = $this->getAuthParams($auth);
 
         $response = Http::post('https://www.pinoox.com/api/manager/v1/market/downloadRequest/' . $package_name, [
@@ -134,7 +135,7 @@ class MarketController extends Api
 
     public function downloadRequestTemplate(Request $request, $uid)
     {
-        $data = $request->json->all();
+        $data = $request->payloadMany('*');
         $params = $this->getAuthParams($data['auth'] ?? []);
 
         if (empty($data['package_name']) || !Wizard::isInstalled($data['package_name']))
@@ -159,3 +160,4 @@ class MarketController extends Api
         return $this->message(t('manager.download_completed'));
     }
 }
+

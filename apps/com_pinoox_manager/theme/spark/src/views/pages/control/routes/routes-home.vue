@@ -2,7 +2,7 @@
   <Page title="مسیریابی" class="pageRoutes">
     <template #toolbar>
       <Menu @click="openModalAddEditRoute()" :icon="saxIcon.add" label="افزودن"/>
-      <Menu @click="openModal(ModalGuide, { props: { message: guideMessage } })" :icon="saxIcon.guide" label="راهنما"/>
+      <Menu @click="openGuideModal" :icon="saxIcon.guide" label="راهنما"/>
     </template>
 
     <div v-if="routeStore.routeList.length" class="overflow-x-auto">
@@ -55,6 +55,7 @@
 
 <script setup>
 import {ref} from 'vue';
+import { getUrl } from '@/boot.js';
 import {saxIcon} from '@/const/icons.js';
 import {openModal} from '@kolirt/vue-modal';
 import ModalGuide from '@views/components/commons/ModalGuide.vue';
@@ -66,7 +67,7 @@ import {useAppStore} from "@/stores/modules/app.js";
 const routeStore = useRouteStore();
 const appStore = useAppStore();
 
-const currentSite = PINOOX.URL.SITE;
+const currentSite = getUrl().SITE;
 
 const guideMessage = ref(
     `<p>در <strong>پینوکس</strong> می‌توانید مسیرهایی را تعریف کنید تا هر مسیر، اپلیکیشن خاصی را نمایش دهد.</p>` +
@@ -78,6 +79,10 @@ const guideMessage = ref(
     `</ul>` +
     `<p>با این روش، کاربران به‌صورت خودکار به اپلیکیشن‌های مرتبط هدایت می‌شوند.</p>`
 );
+
+function openGuideModal() {
+  void openModal(ModalGuide, {props: {message: guideMessage.value}}).catch(() => {});
+}
 
 function openModalAddEditRoute(route = null) {
   if (route?.path === '/') {

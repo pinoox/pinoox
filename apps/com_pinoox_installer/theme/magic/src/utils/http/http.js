@@ -1,9 +1,16 @@
 import axios from 'axios'
 import axiosMethodOverride from 'axios-method-override'
-import {resolveInstallerApiUrl, resolvePingApiUrl, shouldUseQueryRoute} from '../resolveInstallerApi.js'
+import { getUrl } from '@/boot.js'
+import {normalizeApiError} from '@/utils/apiEnvelope.js'
+import {
+    QUERY_ROUTE_PARAM,
+    resolveInstallerApiUrl,
+    resolvePingApiUrl,
+    shouldUseQueryRoute,
+} from '../resolveInstallerApi.js'
 
 const baseUrl = import.meta.env.MODE === 'production'
-    ? (typeof PINOOX !== 'undefined' ? PINOOX.URL.API : '')
+    ? getUrl().API
     : import.meta.env.VITE_API_PATH
 
 const actions = {
@@ -41,7 +48,7 @@ const trackLoading = (config, delta) => {
 }
 
 function applyQueryRoute(config) {
-    if (!config.url || String(config.url).includes('?route=')) {
+    if (!config.url || String(config.url).includes(`?${QUERY_ROUTE_PARAM}=`)) {
         return
     }
 
@@ -101,10 +108,12 @@ http.interceptors.response.use((response) => {
         trackLoading(error.config, -1)
     }
 
-    callActions('error_response', error)
-    callActions('error', error)
+    const normalized = normalizeApiError(error)
 
-    return Promise.reject(error)
+    callActions('error_response', normalized)
+    callActions('error', normalized)
+
+    return Promise.reject(normalized)
 })
 
 export default http

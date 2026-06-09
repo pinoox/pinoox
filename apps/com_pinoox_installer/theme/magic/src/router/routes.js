@@ -9,13 +9,18 @@ import User from '@/views/User.vue'
 export const routes = [
     {
         path: '/',
-        name: 'lang',
-        component: Lang,
-    },
-    {
-        path: '/?error',
         name: 'bootstrap',
         component: BootstrapError,
+        beforeEnter: (to) => {
+            if (!Object.prototype.hasOwnProperty.call(to.query, 'error')) {
+                return {name: 'lang', replace: true}
+            }
+        },
+    },
+    {
+        path: '/',
+        name: 'lang',
+        component: Lang,
     },
     {
         path: '/setup',

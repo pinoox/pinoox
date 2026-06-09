@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -32,7 +33,7 @@ class AccountController extends Api
         $token_key = config('connect.token_key');
         $response = Http::post('https://www.pinoox.com/api/manager/v1/account/getData', [
             'json' => [
-                'remote_url' => Url::site(),
+                'remote_url' => Url::origin(),
                 'token_key' => $token_key,
             ],
         ]);
@@ -48,7 +49,7 @@ class AccountController extends Api
     {
         $response = Http::post('https://www.pinoox.com/api/manager/v1/account/getToken', [
             'json' => [
-                'remote_url' => Url::site(),
+                'remote_url' => Url::origin(),
             ],
         ]);
 
@@ -79,3 +80,4 @@ class AccountController extends Api
         return $this->message('logout');
     }
 }
+

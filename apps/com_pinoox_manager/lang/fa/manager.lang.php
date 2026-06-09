@@ -78,6 +78,10 @@ return [
     'update_successfully' => 'با موفقیت بروزرسانی شد',
     'update_app' => 'بروزرسانی اپلیکیشن',
     'preview' => 'پیش نمایش',
+    'app_view_open_error' => 'خطا در باز کردن اپ',
+    'app_view_login_required' => 'برای مشاهده این اپلیکیشن ابتدا وارد پنل مدیریت شوید.',
+    'app_view_not_available' => 'این اپلیکیشن قابل نمایش نیست.',
+    'app_view_go_login' => 'ورود به منیجر',
     'download' => 'دانلود',
     're_download' => 'دانلود مجدد',
     'create_pinoox_account' => 'ایجاد حساب کاربری پینوکس',
@@ -131,4 +135,4 @@ return [
     'newer_version_installed' => 'یک نسخه جدیدتر بر روی سیستم شما نصب می باشد',
     'version_already_installed' => 'این نسخه قبلا روی سیستم شما نصب می باشد',
 ];
-    
+

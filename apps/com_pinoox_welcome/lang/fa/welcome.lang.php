@@ -2,6 +2,8 @@
 
 return [
     'direction' => 'rtl',
+    'seo_title' => 'به پینوکس خوش آمدید',
+    'seo_description' => 'پینوکس یک پلتفرم HMVC متن‌باز PHP برای ساخت اپلیکیشن‌های ماژولار، پنل مدیریت و API است.',
     'pinoox' => 'پینوکس',
     'welcome_to_pinoox' => 'به پینوکس خوش آمدید',
     'website' => 'پینوکس',

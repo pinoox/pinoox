@@ -1,11 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+         bootstrap="vendor/pinoox/pincore/tests/bootstrap.php"
          colors="true">
     <testsuites>
-        <testsuite name="Manager Test Suite">
-            <directory>./apps/com_pinoox_manager/tests</directory>
+        <testsuite name="Pinoox">
+            <directory>vendor/pinoox/pincore/tests/Feature</directory>
+        </testsuite>
+        <testsuite name="Server">
+            <directory>vendor/pinoox/pincore/tests/Feature/Server</directory>
+        </testsuite>
+        <testsuite name="Routing">
+            <directory>vendor/pinoox/pincore/tests/Feature/Routing</directory>
+        </testsuite>
+        <testsuite name="Http">
+            <directory>vendor/pinoox/pincore/tests/Feature/Http</directory>
+        </testsuite>
+        <testsuite name="App">
+            <directory>vendor/pinoox/pincore/tests/Feature/App</directory>
+        </testsuite>
+        <testsuite name="Portal">
+            <directory>vendor/pinoox/pincore/tests/Feature/Portal</directory>
+        </testsuite>
+        <testsuite name="Installer">
+            <directory>vendor/pinoox/pincore/tests/Feature/Installer</directory>
+        </testsuite>
+        <testsuite name="Theme">
+            <directory>vendor/pinoox/pincore/tests/Feature/Theme</directory>
+        </testsuite>
+        <testsuite name="Config">
+            <directory>vendor/pinoox/pincore/tests/Feature/Config</directory>
+        </testsuite>
+        <testsuite name="Database">
+            <directory>vendor/pinoox/pincore/tests/Feature/Database</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>vendor/pinoox/pincore/tests/Feature/Integration</directory>
+        </testsuite>
+        <testsuite name="Unit">
+            <directory>vendor/pinoox/pincore/tests/Unit</directory>
         </testsuite>
     </testsuites>
 </phpunit>

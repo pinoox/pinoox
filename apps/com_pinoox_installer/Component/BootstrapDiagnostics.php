@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -51,13 +52,15 @@ class BootstrapDiagnostics
 
     private function isRewriteOk(array $rewrite): bool
     {
-        $state = $rewrite['state'] ?? 'unknown';
-
-        if ($state === 'pass') {
+        if (($rewrite['state'] ?? '') === 'pass') {
             return true;
         }
 
-        if ($state === 'fail') {
+        if ($this->isModRewriteEnabled($rewrite)) {
+            return true;
+        }
+
+        if (($rewrite['state'] ?? '') === 'fail') {
             return false;
         }
 
@@ -66,6 +69,24 @@ class BootstrapDiagnostics
         }
 
         return (bool) ($rewrite['routing_active'] ?? false);
+    }
+
+    private function isModRewriteEnabled(array $rewrite): bool
+    {
+        $detail = (string) ($rewrite['detail'] ?? '');
+        $current = (string) ($rewrite['current'] ?? '');
+
+        if ($detail === 'Apache mod_rewrite' || str_contains($current, 'Apache mod_rewrite')) {
+            return true;
+        }
+
+        if (($rewrite['server_type'] ?? '') !== 'apache' || !function_exists('apache_get_modules')) {
+            return false;
+        }
+
+        $modules = @apache_get_modules();
+
+        return is_array($modules) && in_array('mod_rewrite', $modules, true);
     }
 
     private function mapRewriteStep(array $rewrite): array
@@ -77,7 +98,7 @@ class BootstrapDiagnostics
             'detail' => $rewrite['current'] ?? $rewrite['detail'] ?? null,
             'server' => $rewrite['server'] ?? null,
             'routing_active' => (bool) ($rewrite['routing_active'] ?? false),
-            'mod_rewrite' => ($rewrite['state'] ?? '') === 'pass',
+            'mod_rewrite' => $ok,
         ];
     }
 
@@ -124,7 +145,7 @@ class BootstrapDiagnostics
 
     private function mapPinooxTemplateStep(): array
     {
-        $path = $this->pinooxTwigPath();
+        $path = $this->themeIndexPath();
         $exists = is_file($path);
         $readable = $exists && is_readable($path);
         $valid = false;
@@ -132,8 +153,7 @@ class BootstrapDiagnostics
         if ($readable) {
             $content = @file_get_contents($path);
             $valid = is_string($content)
-                && str_contains($content, 'PINOOX')
-                && str_contains($content, 'URL');
+                && str_contains($content, 'pinoox_bootstrap');
         }
 
         return [
@@ -144,17 +164,17 @@ class BootstrapDiagnostics
         ];
     }
 
-    private function pinooxTwigPath(): string
+    private function themeIndexPath(): string
     {
         if (function_exists('path')) {
             $theme = @path('theme');
 
             if (is_string($theme) && $theme !== '') {
-                return rtrim($theme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'pinoox.twig';
+                return rtrim($theme, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'index.twig';
             }
         }
 
-        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . 'magic' . DIRECTORY_SEPARATOR . 'pinoox.twig';
+        return dirname(__DIR__) . DIRECTORY_SEPARATOR . 'theme' . DIRECTORY_SEPARATOR . 'magic' . DIRECTORY_SEPARATOR . 'index.twig';
     }
 
     private function blocked(string $step, string $reason): array
@@ -166,3 +186,4 @@ class BootstrapDiagnostics
         ];
     }
 }
+

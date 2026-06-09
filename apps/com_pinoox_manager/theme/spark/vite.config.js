@@ -15,7 +15,7 @@ export default defineConfig(({command, mode}) => {
         build: {
             manifest: true,
             rollupOptions: {
-                input: ['src/main.js'],
+                input: ['src/main.js', 'src/assets/styles/app-view-error.scss'],
                 output: {
                     manualChunks(id) {
                         if (id.includes('vendor')) return 'plugins';
@@ -52,8 +52,7 @@ export default defineConfig(({command, mode}) => {
         },
         server: {
             proxy: {
-                '/api': env.VITE_SERVER_URL,
-                '/dist/pinoox.js': env.VITE_SERVER_URL,
+              '/api': env.VITE_SERVER_URL,
             },
         },
     }

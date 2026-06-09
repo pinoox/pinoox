@@ -1,8 +1,9 @@
 <template>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12">
-                <div id="page">
+    <div class="install-step">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="page">
                     <header class="page-header">
                         <h1 class="title">{{ LANG.user.info_admin }}</h1>
                         <p class="description">{{ LANG.user.info_admin_description }}</p>
@@ -12,7 +13,7 @@
                             <Icon name="times"/>
                             <span>{{ err }}</span>
                         </div>
-                        <div class="form" data-simplebar data-simplebar-auto-hide="false">
+                        <div class="form form--scroll">
                             <div @keypress.enter="next()">
                                 <div class="install-field">
                                     <label for="user-fname">{{ LANG.user.name }}</label>
@@ -64,15 +65,13 @@
                                 </div>
                                 <div class="install-field">
                                     <label for="user-password">{{ LANG.user.password }}</label>
-                                    <input
+                                    <PasswordInput
                                         id="user-password"
                                         v-model="user.password"
-                                        type="password"
                                         name="password"
-                                        class="pin-input form-control ltr"
                                         placeholder="password"
                                         autocomplete="new-password"
-                                    >
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -83,20 +82,24 @@
                             {{ LANG.install.back }}
                         </button>
                         <button
-                            v-if="!isLoading"
                             type="button"
                             class="btn btn-light pin-btn"
+                            :disabled="isLoading"
                             @click="next()"
                         >
                             {{ LANG.install.setup }}
                         </button>
-                        <span v-else class="btn btn-light pin-btn pin-loading" aria-busy="true">
-                            <Icon name="spinner" spin/>
-                        </span>
+                    </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <InstallProgressModal
+            v-model:open="progressOpen"
+            :done="installDone"
+            @complete="onInstallComplete"
+        />
     </div>
 </template>
 
@@ -105,9 +108,13 @@ import {computed, onMounted, ref} from 'vue'
 import {useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {installAPI} from '@api/install.js'
+import {readApiErrorMessage} from '@/utils/apiEnvelope.js'
 import {useInstallStore} from '@/stores/install.js'
 import Icon from '@/components/icons/Icon.vue'
+import PasswordInput from '@/components/PasswordInput.vue'
+import InstallProgressModal from '@/components/InstallProgressModal.vue'
 import {useInstaller} from '@/composables/useInstaller.js'
+import {getUrl} from '@/boot.js'
 
 defineProps({
     steps: {
@@ -124,6 +131,8 @@ const {LANG, db, user} = storeToRefs(store)
 const {redirect} = useInstaller()
 
 const isLoading = ref(false)
+const progressOpen = ref(false)
+const installDone = ref(false)
 const err = ref(null)
 
 const isErr = computed(() => err.value !== null && !!err.value)
@@ -133,28 +142,40 @@ onMounted(() => {
 })
 
 function next() {
+    if (isLoading.value) {
+        return
+    }
+
     isLoading.value = true
+    installDone.value = false
+    progressOpen.value = true
     err.value = null
+
     installAPI.setup({
         db: db.value,
         user: user.value,
-    }).then((data) => {
-        const isInstall = !data || typeof data !== 'object' || data.status
-        if (isInstall) {
-            setTimeout(() => {
-                isLoading.value = false
-                redirect(PINOOX.URL.SITE, 0)
-            }, 3000)
-        } else {
-            isLoading.value = false
-            err.value = data.result
-        }
-    }).catch(() => {
+    }).then(() => {
+        installDone.value = true
+    }).catch((error) => {
+        progressOpen.value = false
         isLoading.value = false
+        installDone.value = false
+        err.value = readApiErrorMessage(error, LANG.value?.install?.err_insert_tables)
     })
 }
 
+function onInstallComplete() {
+    progressOpen.value = false
+    isLoading.value = false
+    installDone.value = false
+    redirect(getUrl().SITE, 0)
+}
+
 function prev() {
+    progressOpen.value = false
+    isLoading.value = false
+    installDone.value = false
+    store.isLoading = false
     router.replace({name: 'db'})
 }
 </script>

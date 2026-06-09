@@ -1,23 +1,13 @@
 <?php
-/**
- *      ****  *  *     *  ****  ****  *    *
- *      *  *  *  * *   *  *  *  *  *   *  *
- *      ****  *  *  *  *  *  *  *  *    *
- *      *     *  *   * *  *  *  *  *   *  *
- *      *     *  *    **  ****  ****  *    *
- * @author   Pinoox
- * @license  https://opensource.org/licenses/MIT MIT License
- */
 
 namespace App\com_pinoox_comingsoon\Controller;
 
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\Controller;
-use Pinoox\Component\User;
+use Pinoox\Portal\Auth;
 
 class MainController extends Controller
 {
-
     public function main()
     {
         return render('home', [
@@ -27,16 +17,19 @@ class MainController extends Controller
 
     public function panel()
     {
-        if (!User::isLoggedIn())
+        if (Auth::guest()) {
             redirect('/');
+        }
 
         return render('panel');
     }
 
     public function save(Request $request)
     {
-        $form = $request->request('title,description,twitter,instagram,linkedin,telegram', null);
+        $form = $request->payloadMany('title,description,twitter,instagram,linkedin,telegram');
         config('app')->setData($form)->save();
+
         return url();
     }
 }
+

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -16,7 +17,7 @@ use Closure;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Flow\Flow;
 use Pinoox\Component\Router\Route;
-use Pinoox\Component\User;
+use Pinoox\Portal\Auth;
 
 abstract class AuthFlow extends Flow
 {
@@ -24,7 +25,7 @@ abstract class AuthFlow extends Flow
     final protected function handle(Request $request, Closure $next)
     {
         $route = $request->attributes->get('_router');
-        if ($this->validate($request, $route) && $this->checkExcludeRequestUri($request, $route) && $this->checkIncludeRequestUri($request, $route) && !User::isLoggedIn()) {
+        if ($this->validate($request, $route) && $this->checkExcludeRequestUri($request, $route) && $this->checkIncludeRequestUri($request, $route) && Auth::guest()) {
 
             $exit = $this->exit(
                 $request,

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -14,7 +15,9 @@ namespace App\com_pinoox_installer\Component;
 
 class HtaccessManager
 {
+
     private const MARKER_BEGIN = '# BEGIN pinoox';
+
     private const MARKER_END = '# END pinoox';
 
     public function defaultContent(): string
@@ -139,3 +142,4 @@ HTACCESS;
         return is_dir($directory) && is_writable($directory);
     }
 }
+

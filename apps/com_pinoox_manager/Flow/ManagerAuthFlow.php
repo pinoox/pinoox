@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -12,19 +13,20 @@
 
 namespace App\com_pinoox_manager\Flow;
 
+use Pinoox\Component\Http\Api\ApiResponse;
 use Pinoox\Component\Router\Route;
 use Pinoox\Component\Http\Request;
-use Pinoox\Component\User;
+use Pinoox\Portal\Auth;
 
 class ManagerAuthFlow extends AuthFlow
 {
     protected function before(Request $request): void
     {
-       // User::setUserSessionKey('manager_pinoox');
+        Auth::boot();
     }
 
     protected function exit(Request $request, Route $route)
     {
-        return response()->json(['error' => 'Access denied!'], 401);
+        return ApiResponse::error('ACCESS_DENIED', 'Access denied!', status: 401, translate: false);
     }
 }

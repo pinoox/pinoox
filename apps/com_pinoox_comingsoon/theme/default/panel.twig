@@ -13,7 +13,7 @@
 
 <div class="panel">
 
-    <h2><?php lang('default.setting_page'); ?></h2>
+    <h2>{{ t('default.setting_page') }}</h2>
     <form class="form" method="post" action="{{ url('panel') }}" enctype="application/json">
         <label>{{ t('default.title') }}</label>
         <input name="title" type="text" placeholder="{{ t('default.title') }}" value="{{ config('app.title') }}">

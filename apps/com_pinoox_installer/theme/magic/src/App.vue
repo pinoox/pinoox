@@ -10,13 +10,13 @@
                 <li :class="stepClass(3)"><span>{{ LANG?.user?.info_admin }}</span></li>
             </ul>
         </div>
-        <router-view v-slot="{ Component }">
-            <transition
-                mode="out-in"
-                enter-active-class="animate__animated animate__fadeIn animate__faster"
-                leave-active-class="animate__animated animate__fadeOut animate__faster"
-            >
-                <component :is="Component" v-model:steps="steps" />
+        <router-view v-slot="{ Component, route: activeRoute }">
+            <transition name="route-fade" mode="out-in">
+                <component
+                    :is="Component"
+                    :key="activeRoute.fullPath"
+                    v-model:steps="steps"
+                />
             </transition>
         </router-view>
 
