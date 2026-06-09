@@ -14,9 +14,6 @@ RewriteEngine On
 # Skip index.php direct access rule
 RewriteRule ^index\.php$ - [L]
 
-# Dynamic routes — always front-controller (even when a stale static file exists)
-RewriteRule ^(.*/)?dist/pinoox\.js$ index.php [L,QSA]
-
 # Route all requests to index.php if file or directory doesn't exist
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
