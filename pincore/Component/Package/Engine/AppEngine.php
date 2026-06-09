@@ -219,7 +219,8 @@ class AppEngine implements EngineInterface
             $bakedFile = $pinkerPath . '/apps/' . $packageName . '/' . $this->appFile;
             $pinker = new Pinker($mainFile, $bakedFile);
             $pinker
-                ->dumping(true);
+                ->dumping(true)
+                ->runtimeDefaults($this->defaultData);
             $fileStrategy = new FileConfigStrategy($pinker);
             $config = new Config($fileStrategy);
 

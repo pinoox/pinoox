@@ -74,6 +74,69 @@ it('keeps env sensitive source files out of the cache', function () {
     expect(is_file($pinker->getBakedFile()))->toBeFalse();
 });
 
+it('does not persist runtime defaults absent from source on bake', function () {
+    $basePath = pinkerTestPath(testProjectRoot());
+    $package = 'com_test_pinker';
+    $appDir = $basePath . '/apps/' . $package;
+
+    if (!is_dir($appDir)) {
+        mkdir($appDir, 0777, true);
+    }
+
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'name' => 'Test'];\n");
+
+    $defaults = [
+        'enable' => true,
+        'lang' => 'en',
+        'router' => ['routes' => ['routes/web.php']],
+    ];
+
+    $pinker = Pinker::folder($appDir, 'app.php')
+        ->dumping(true)
+        ->runtimeDefaults($defaults);
+
+    $pickup = $pinker->pickup();
+    $merged = array_replace_recursive($defaults, is_array($pickup) ? $pickup : []);
+
+    $pinker->data($merged)->bake();
+
+    expect(is_file($pinker->getOverrideFile()))->toBeFalse();
+});
+
+it('persists only user changes when saving merged runtime defaults', function () {
+    $basePath = pinkerTestPath(testProjectRoot());
+    $package = 'com_test_pinker';
+    $appDir = $basePath . '/apps/' . $package;
+
+    if (!is_dir($appDir)) {
+        mkdir($appDir, 0777, true);
+    }
+
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'name' => 'Test'];\n");
+
+    $defaults = [
+        'enable' => true,
+        'lang' => 'en',
+    ];
+
+    $pinker = Pinker::folder($appDir, 'app.php')
+        ->dumping(true)
+        ->runtimeDefaults($defaults);
+
+    $pickup = $pinker->pickup();
+    $merged = array_replace_recursive($defaults, is_array($pickup) ? $pickup : []);
+    $merged['enable'] = false;
+    $merged['lang'] = 'fa';
+
+    $pinker->data($merged)->bake();
+
+    $override = include $pinker->getOverrideFile();
+
+    expect($override['data'])
+        ->toMatchArray(['enable' => false, 'lang' => 'fa'])
+        ->and($override['data'])->not->toHaveKey('router');
+});
+
 it('stores runtime config changes as state overrides', function () {
     $basePath = pinkerTestPath(testProjectRoot());
     $package = 'com_test_pinker';

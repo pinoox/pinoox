@@ -33,6 +33,8 @@ class Pinker
     private ?array $info = null;
     /** @var array<string, mixed> */
     private array $forcedOverridePaths = [];
+    /** @var array<string, mixed> */
+    private array $runtimeDefaults = [];
     private bool $isOutputData = false;
     private bool $dumping = false;
     private bool $isCamelToUnderscore = false;
@@ -92,6 +94,18 @@ class Pinker
         foreach ($paths as $path => $value) {
             $this->forcedOverridePaths[(string) $path] = $value;
         }
+
+        return $this;
+    }
+
+    /**
+     * Runtime-only defaults merged on read but not persisted to pinker on bake.
+     *
+     * @param array<string, mixed> $defaults
+     */
+    public function runtimeDefaults(array $defaults): self
+    {
+        $this->runtimeDefaults = $defaults;
 
         return $this;
     }
@@ -482,6 +496,15 @@ class Pinker
 
         $source = $this->sourceData();
         $current = $this->generateData();
+
+        if ($this->runtimeDefaults !== [] && is_array($current)) {
+            $current = $this->withoutRuntimeDefaults(
+                is_array($source) ? $source : [],
+                $current,
+                $this->runtimeDefaults,
+            );
+        }
+
         $override = $this->makeOverride($source, $current);
 
         if ($this->forcedOverridePaths !== []) {
@@ -669,6 +692,79 @@ class Pinker
     private function isAssoc(array $array): bool
     {
         return array_keys($array) !== range(0, count($array) - 1);
+    }
+
+    /**
+     * @param array<string, mixed> $source
+     * @param array<string, mixed> $current
+     * @param array<string, mixed> $defaults
+     * @return array<string, mixed>
+     */
+    private function withoutRuntimeDefaults(array $source, array $current, array $defaults): array
+    {
+        $result = $current;
+
+        foreach ($defaults as $key => $defaultValue) {
+            if (!array_key_exists($key, $result)) {
+                continue;
+            }
+
+            if (!array_key_exists($key, $source)) {
+                if ($this->valuesEqual($result[$key], $defaultValue)) {
+                    unset($result[$key]);
+                }
+
+                continue;
+            }
+
+            if (
+                is_array($defaultValue)
+                && is_array($source[$key])
+                && is_array($result[$key])
+                && $this->isAssoc($defaultValue)
+                && $this->isAssoc($source[$key])
+                && $this->isAssoc($result[$key])
+            ) {
+                $result[$key] = $this->withoutRuntimeDefaults($source[$key], $result[$key], $defaultValue);
+            }
+        }
+
+        return $result;
+    }
+
+    private function valuesEqual(mixed $left, mixed $right): bool
+    {
+        if ($left === $right) {
+            return true;
+        }
+
+        if (!is_array($left) || !is_array($right)) {
+            return false;
+        }
+
+        return $this->normalizeArray($left) == $this->normalizeArray($right);
+    }
+
+    private function normalizeArray(array $array): array
+    {
+        if (!$this->isAssoc($array)) {
+            $normalized = [];
+
+            foreach ($array as $item) {
+                $normalized[] = is_array($item) ? $this->normalizeArray($item) : $item;
+            }
+
+            return $normalized;
+        }
+
+        ksort($array);
+        $normalized = [];
+
+        foreach ($array as $key => $value) {
+            $normalized[$key] = is_array($value) ? $this->normalizeArray($value) : $value;
+        }
+
+        return $normalized;
     }
 
     private function isCacheValid(): bool
