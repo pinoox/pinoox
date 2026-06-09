@@ -2,6 +2,7 @@
 
 namespace Pinoox\Terminal\Theme;
 
+use Pinoox\Component\Server\DevelopmentServer;
 use Pinoox\Component\Template\Frontend\ThemeFrontend;
 use Pinoox\Component\Terminal;
 use Pinoox\Portal\App\AppEngine;
@@ -15,6 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'theme:frontend',
@@ -26,6 +28,9 @@ class ThemeFrontendCommand extends Terminal
 {
     use SelectsPackage;
     use SelectsTheme;
+
+    /** @var list<string> */
+    private const ACTIONS = ['info', 'install', 'build', 'dev', 'run', 'scaffold'];
 
     protected function configure(): void
     {
@@ -44,19 +49,23 @@ Actions:
 
 Examples:
   php pinoox fe info
-  php pinoox fe dev spark
-  php pinoox fe build com_my_shop
-  php pinoox fe dev com_my_shop --theme=admin
-  php pinoox fe dev --theme=spark
-  php pinoox fe run com_my_shop --script=preview
-  php pinoox fe install com_my_shop --install
-  php pinoox fe scaffold com_my_shop --stack=vue
+  php pinoox fe spark dev
+  php pinoox fe spark build
+  php pinoox fe com_my_shop build
+  php pinoox fe com_my_shop dev --theme=admin
+  php pinoox fe spark run --script=preview
+  php pinoox fe spark install --install
+  php pinoox fe com_my_shop scaffold --stack=vue
 
-The second argument accepts an app package (com_my_shop) or a theme folder name (spark).
+The first argument is an app package (com_my_shop) or theme folder (spark), then the action.
+Legacy order (action first) still works: php pinoox fe dev spark
+
 If the theme name exists in one app only, the package is resolved automatically.
 If it exists in multiple apps, pick the package from a list.
 
-Package and theme can also be omitted — pick from a list interactively.
+Target and action can be omitted — pick from a list interactively (defaults to info).
+
+dev also starts php pinoox serve for the resolved app (use --no-serve to skip).
 
 build, dev, and run skip npm install by default (faster workflow).
 Use --install to install dependencies alongside the command when needed.
@@ -69,13 +78,17 @@ Development (.env):
 When Vite dev is running, write the dev-server URL to theme/dist/hot for automatic HMR tags.
 HELP
             )
-            ->addArgument('action', InputArgument::REQUIRED, 'Action: info, install, build, dev, run, scaffold')
-            ->addArgument('package', InputArgument::OPTIONAL, 'App package (com_my_shop) or theme folder name (spark). Leave empty to pick interactively.')
+            ->addArgument('target', InputArgument::OPTIONAL, 'App package (com_my_shop) or theme folder (spark). Leave empty to pick interactively.')
+            ->addArgument('action', InputArgument::OPTIONAL, 'Action: info, install, build, dev, run, scaffold')
             ->addOption('stack', null, InputOption::VALUE_REQUIRED, 'Frontend stack for scaffold: vue, react, twig')
             ->addOption('theme', null, InputOption::VALUE_REQUIRED, 'Theme folder name (defaults to app.php theme or interactive pick)')
             ->addOption('script', null, InputOption::VALUE_REQUIRED, 'npm script name for the run action')
             ->addOption('install', null, InputOption::VALUE_NONE, 'Run npm install alongside the command (or force reinstall with the install action)')
-            ->addOption('no-install', null, InputOption::VALUE_NONE, 'Skip npm install (default for build/dev/run)');
+            ->addOption('no-install', null, InputOption::VALUE_NONE, 'Skip npm install (default for build/dev/run)')
+            ->addOption('no-serve', null, InputOption::VALUE_NONE, 'Do not start php pinoox serve alongside dev')
+            ->addOption('serve-app', null, InputOption::VALUE_REQUIRED, 'App binding for the dev server (defaults to the resolved package)')
+            ->addOption('serve-host', null, InputOption::VALUE_REQUIRED, 'Host for php pinoox serve (default from SERVER_HOST or 127.0.0.1)')
+            ->addOption('serve-port', null, InputOption::VALUE_REQUIRED, 'Port for php pinoox serve (default from SERVER_PORT or 8000)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -83,24 +96,31 @@ HELP
         parent::execute($input, $output);
 
         $io = new SymfonyStyle($input, $output);
-        $action = strtolower(trim((string) $input->getArgument('action')));
-
-        if (!in_array($action, ['info', 'install', 'build', 'dev', 'run', 'scaffold'], true)) {
-            $io->error('Unknown action "' . $action . '". Use info, install, build, dev, run, or scaffold.');
-
-            return Command::FAILURE;
-        }
 
         try {
-            $target = $this->resolveTarget($input, $output, $io, $action);
+            [$target, $action] = $this->parseArguments($input);
         } catch (\Throwable $e) {
             $io->error($e->getMessage());
 
             return Command::FAILURE;
         }
 
-        $package = $target['package'];
-        $themeName = $target['theme'];
+        if (!in_array($action, self::ACTIONS, true)) {
+            $io->error('Unknown action "' . $action . '". Use info, install, build, dev, run, or scaffold.');
+
+            return Command::FAILURE;
+        }
+
+        try {
+            $resolved = $this->resolveTarget($input, $output, $io, $action, $target);
+        } catch (\Throwable $e) {
+            $io->error($e->getMessage());
+
+            return Command::FAILURE;
+        }
+
+        $package = $resolved['package'];
+        $themeName = $resolved['theme'];
 
         $frontend = ThemeFrontend::forPackageAndTheme($package, $themeName);
         $frontend->setOutputWriter(static fn (string $buffer) => $output->write($buffer));
@@ -112,7 +132,7 @@ HELP
                 'info' => $this->runInfo($io, $frontend),
                 'install' => $this->runInstall($io, $frontend, $installMode),
                 'build' => $this->runBuild($io, $frontend, $installMode),
-                'dev' => $this->runDev($io, $frontend, $installMode),
+                'dev' => $this->runDev($io, $frontend, $installMode, $package, $input, $output),
                 'run' => $this->runScript($input, $output, $io, $frontend, $installMode),
                 'scaffold' => $this->runScaffold($io, $frontend, (string) $input->getOption('stack')),
             };
@@ -124,6 +144,47 @@ HELP
     }
 
     /**
+     * @return array{0: string, 1: string} [target, action]
+     */
+    private function parseArguments(InputInterface $input): array
+    {
+        $arg1 = trim((string) $input->getArgument('target'));
+        $arg2 = trim((string) $input->getArgument('action'));
+        $first = strtolower($arg1);
+        $second = strtolower($arg2);
+
+        if ($arg1 === '' && $arg2 === '') {
+            return ['', 'info'];
+        }
+
+        if ($arg1 !== '' && $arg2 === '') {
+            if (in_array($first, self::ACTIONS, true)) {
+                return ['', $first];
+            }
+
+            throw new \RuntimeException(
+                'Action is required. Example: php pinoox fe ' . $arg1 . ' dev',
+            );
+        }
+
+        if (in_array($first, self::ACTIONS, true) && !in_array($second, self::ACTIONS, true)) {
+            return [$arg2, $first];
+        }
+
+        if (in_array($second, self::ACTIONS, true)) {
+            return [$arg1, $second];
+        }
+
+        if (in_array($first, self::ACTIONS, true)) {
+            return ['', $first];
+        }
+
+        throw new \RuntimeException(
+            'Could not parse arguments. Use: php pinoox fe spark dev (or php pinoox fe dev spark).',
+        );
+    }
+
+    /**
      * @return array{package: string, theme: string}
      */
     private function resolveTarget(
@@ -131,8 +192,11 @@ HELP
         OutputInterface $output,
         SymfonyStyle $io,
         string $action,
+        string $targetInput = '',
     ): array {
-        $positional = $this->readPackageInput($input, 'package', ['package', 'app']);
+        $positional = $targetInput !== ''
+            ? $this->normalizePackageInput($targetInput)
+            : $this->readPackageInput($input, 'target', ['package', 'app']);
         $themeOption = $this->readThemeInput($input);
 
         if ($positional !== '' && AppEngine::exists($positional)) {
@@ -191,6 +255,7 @@ HELP
             'sectionTitle' => sprintf("Apps with theme '%s'", $themeName),
             'emptyMessage' => sprintf("Theme '%s' was not found in any app.", $themeName),
             'invalidMessage' => "Package '%s' does not contain theme '$themeName'.",
+            'argument' => 'target',
         ]);
 
         return ['package' => $package, 'theme' => $themeName];
@@ -328,17 +393,104 @@ HELP
         return $code === 0 ? Command::SUCCESS : Command::FAILURE;
     }
 
-    private function runDev(SymfonyStyle $io, ThemeFrontend $frontend, string $installMode): int
-    {
+    private function runDev(
+        SymfonyStyle $io,
+        ThemeFrontend $frontend,
+        string $installMode,
+        string $package,
+        InputInterface $input,
+        OutputInterface $output,
+    ): int {
         $io->section('Starting frontend dev server: ' . $frontend->themePath());
         $this->noteInstallPlan($io, $frontend, $installMode);
+
+        $serveProcess = null;
+
+        if (!(bool) $input->getOption('no-serve')) {
+            try {
+                $serveProcess = $this->startServeProcess($package, $input, $output, $io);
+            } catch (\Throwable $e) {
+                $io->error('Could not start Pinoox server: ' . $e->getMessage());
+
+                return Command::FAILURE;
+            }
+        }
+
         $io->note([
             'Live output streams below. Press Ctrl+C to stop.',
             'Set VITE_DEV=true in .env or create theme/dist/hot with the Vite URL.',
             'Proxy API calls from vite.config.js to your Pinoox URL (see docs/pinoox-frontend.md).',
         ]);
 
-        return $frontend->dev($installMode) === 0 ? Command::SUCCESS : Command::FAILURE;
+        try {
+            return $frontend->dev($installMode) === 0 ? Command::SUCCESS : Command::FAILURE;
+        } finally {
+            $this->stopServeProcess($serveProcess, $io);
+        }
+    }
+
+    private function startServeProcess(
+        string $package,
+        InputInterface $input,
+        OutputInterface $output,
+        SymfonyStyle $io,
+    ): Process {
+        $basePath = rtrim(str_replace('\\', '/', (string) PINOOX_BASE_PATH), '/');
+        $cli = $basePath . '/pinoox';
+        $serveApp = trim((string) ($input->getOption('serve-app') ?: $package));
+
+        $command = [
+            DevelopmentServer::phpBinary(),
+            $cli,
+            'serve',
+            '--app=' . $serveApp,
+            '--no-reload',
+        ];
+
+        $serveHost = $input->getOption('serve-host');
+        if (is_string($serveHost) && trim($serveHost) !== '') {
+            $command[] = '--host=' . trim($serveHost);
+        }
+
+        $servePort = $input->getOption('serve-port');
+        if ($servePort !== null && $servePort !== '') {
+            $command[] = '--port=' . (int) $servePort;
+        }
+
+        $process = new Process($command, $basePath, null, null, null);
+        $process->setTimeout(null);
+
+        $io->writeln('<info>Starting Pinoox server</info> <fg=gray>(php pinoox serve --app=' . $serveApp . ')</>');
+
+        $process->start(function (string $type, string $buffer) use ($output): void {
+            foreach (preg_split("/\r\n|\n|\r/", $buffer) ?: [] as $line) {
+                $line = trim($line);
+                if ($line === '') {
+                    continue;
+                }
+
+                $output->writeln('  <fg=cyan>[serve]</> ' . $line);
+            }
+        });
+
+        usleep(750_000);
+
+        if (!$process->isRunning()) {
+            throw new \RuntimeException(trim($process->getErrorOutput() ?: $process->getOutput()) ?: 'Unknown error');
+        }
+
+        return $process;
+    }
+
+    private function stopServeProcess(?Process $process, SymfonyStyle $io): void
+    {
+        if ($process === null || !$process->isRunning()) {
+            return;
+        }
+
+        $io->writeln('');
+        $io->writeln('<comment>Stopping Pinoox server…</comment>');
+        $process->stop(5, defined('SIGINT') ? SIGINT : null);
     }
 
     private function runScript(
@@ -414,8 +566,8 @@ HELP
 
         if (in_array($stack, ['vue', 'react', 'vite'], true)) {
             $theme = basename($frontend->themePath());
-            $io->writeln('Next: php pinoox fe install ' . $theme);
-            $io->writeln('Then: php pinoox fe dev ' . $theme);
+            $io->writeln('Next: php pinoox fe ' . $theme . ' install');
+            $io->writeln('Then: php pinoox fe ' . $theme . ' dev');
         }
 
         return Command::SUCCESS;
