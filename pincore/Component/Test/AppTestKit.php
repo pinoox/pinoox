@@ -9,6 +9,7 @@ use Pinoox\Component\Package\AppEnv\AppEnvBridge;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Router\Action\ActionRegistry;
 use Pinoox\Component\Http\Response;
+use Pinoox\PinDoc\Api\AppApiServiceProvider;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppProvider;
@@ -201,10 +202,12 @@ class AppTestKit
         ActionRegistry::reset();
         AppRouteRegistry::reset();
         AppBootstrap::resetState();
+        AppApiServiceProvider::resetState();
 
         if ($rebuild) {
             try {
                 AppEngine::__rebuild();
+                \Pinoox\Portal\Router::__rebuild();
             } catch (\Throwable) {
                 // Registry may be mid-test; filesystem cleanup still succeeded.
             }
@@ -366,10 +369,14 @@ class AppTestKit
         );
 
         foreach ($items as $item) {
-            $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
+            if ($item->isDir()) {
+                @rmdir($item->getPathname());
+            } else {
+                @unlink($item->getPathname());
+            }
         }
 
-        rmdir($dir);
+        @rmdir($dir);
     }
 }
 

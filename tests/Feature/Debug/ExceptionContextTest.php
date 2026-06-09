@@ -19,11 +19,17 @@ class ExceptionContextTest extends TestCase
 
     public function test_app_version_reads_from_installer_app_file(): void
     {
+        $appFile = dirname(__DIR__, 3) . '/apps/com_pinoox_installer/app.php';
+        $this->assertFileExists($appFile);
+
+        $config = include $appFile;
+        $this->assertIsArray($config);
+
         $version = ExceptionContext::appVersion('com_pinoox_installer');
 
-        $this->assertSame('2.0', $version['name']);
-        $this->assertSame(7, $version['code']);
-        $this->assertSame('2.0 #7', $version['label']);
+        $this->assertSame((string) ($config['version-name'] ?? ''), $version['name']);
+        $this->assertSame((int) ($config['version-code'] ?? 0), $version['code']);
+        $this->assertSame($version['name'] . ' #' . $version['code'], $version['label']);
     }
 }
 

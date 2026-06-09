@@ -23,9 +23,9 @@ return [
     ],
     'router' => [
         'routes' => [
-            'routes/web.php',
-            'routes/api.php',
             'routes/actions.php',
+            'routes/api.php',
+            'routes/web.php',
         ],
     ],
     'pinx' => [

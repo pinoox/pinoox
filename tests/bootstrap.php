@@ -9,6 +9,7 @@ require_once PINOOX_CORE_PATH . 'functions/base.php';
 require_once __DIR__ . '/Support/AppTestHelpers.php';
 require_once __DIR__ . '/Support/ApiSystemHelpers.php';
 require_once __DIR__ . '/Support/InstallerTestHelpers.php';
+require_once __DIR__ . '/Support/DatabaseTestHelpers.php';
 
 require_once __DIR__ . '/Support/TestSandbox.php';
 

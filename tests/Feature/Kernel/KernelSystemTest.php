@@ -20,6 +20,7 @@ it('exposes a deterministic boot pipeline', function () {
     expect($stages)->toBe([
         'composer',
         'loader',
+        'boot.global',
         'app.boot',
         'container',
         'events',

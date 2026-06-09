@@ -137,6 +137,67 @@ it('persists only user changes when saving merged runtime defaults', function ()
         ->and($override['data'])->not->toHaveKey('router');
 });
 
+it('prefers source values for shared keys when source is newer than state', function () {
+    $basePath = pinkerTestPath(testProjectRoot());
+    $package = 'com_test_pinker';
+    $appDir = $basePath . '/apps/' . $package;
+
+    if (!is_dir($appDir)) {
+        mkdir($appDir, 0777, true);
+    }
+
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'lang' => 'en'];\n");
+
+    $pinker = Pinker::folder($appDir, 'app.php')
+        ->dumping(true)
+        ->runtimeDefaults(['lang' => 'en']);
+
+    $pickup = $pinker->pickup();
+    $merged = array_replace_recursive(['lang' => 'en'], is_array($pickup) ? $pickup : []);
+    $merged['lang'] = 'fa';
+    $merged['open'] = 'runtime';
+
+    $pinker->data($merged)->bake();
+
+    sleep(1);
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'lang' => 'ar'];\n");
+
+    expect($pinker->pickup())
+        ->toMatchArray(['lang' => 'ar', 'open' => 'runtime']);
+
+    $override = include $pinker->getOverrideFile();
+
+    expect($override['data'])
+        ->toHaveKey('open')
+        ->not->toHaveKey('lang');
+});
+
+it('keeps state overrides for shared keys when state is newer than source', function () {
+    $basePath = pinkerTestPath(testProjectRoot());
+    $package = 'com_test_pinker';
+    $appDir = $basePath . '/apps/' . $package;
+
+    if (!is_dir($appDir)) {
+        mkdir($appDir, 0777, true);
+    }
+
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'lang' => 'en'];\n");
+
+    $pinker = Pinker::folder($appDir, 'app.php')
+        ->dumping(true)
+        ->runtimeDefaults(['lang' => 'en']);
+
+    $pickup = $pinker->pickup();
+    $merged = array_replace_recursive(['lang' => 'en'], is_array($pickup) ? $pickup : []);
+    $merged['lang'] = 'fa';
+
+    $pinker->data($merged)->bake();
+
+    file_put_contents($appDir . '/app.php', "<?php\n\nreturn ['package' => '{$package}', 'lang' => 'ar'];\n");
+
+    expect($pinker->pickup()['lang'])->toBe('fa');
+});
+
 it('stores runtime config changes as state overrides', function () {
     $basePath = pinkerTestPath(testProjectRoot());
     $package = 'com_test_pinker';

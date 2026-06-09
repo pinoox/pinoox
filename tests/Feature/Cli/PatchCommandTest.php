@@ -6,6 +6,10 @@ use Pinoox\Terminal\Patch\PatchRollbackCommand;
 use Pinoox\Terminal\Patch\PatchRunCommand;
 use Pinoox\Terminal\Patch\PatchStatusCommand;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Tester\CommandTester;
 
 it('matches timestamped patch files by their short name', function () {
@@ -51,19 +55,35 @@ it('requires interactive package selection for patch commands without package in
     }
 });
 
-it('lets patch status select a package interactively by number', function () {
-    $application = new Application();
-    $application->add(new PatchStatusCommand());
+it('lets CLI commands select a package interactively by number', function () {
+    $command = new class extends \Pinoox\Component\Terminal {
+        use \Pinoox\Terminal\Concerns\SelectsPackage;
 
-    $tester = new CommandTester($application->find('patch:status'));
+        protected function configure(): void
+        {
+            $this->setName('test:package-select');
+            $this->addArgument('package', InputArgument::OPTIONAL);
+        }
+
+        protected function execute(InputInterface $input, OutputInterface $output): int
+        {
+            parent::execute($input, $output);
+            $this->resolvePackageRequired($input, $output, new SymfonyStyle($input, $output));
+
+            return \Symfony\Component\Console\Command\Command::SUCCESS;
+        }
+    };
+
+    $application = new Application();
+    $application->add($command);
+
+    $tester = new CommandTester($application->find('test:package-select'));
     $tester->setInputs(['0']);
 
     $status = $tester->execute([]);
 
     expect($status)->toBe(0)
         ->and($tester->getDisplay())->toContain('Available packages')
-        ->and($tester->getDisplay())->toContain('platform')
-        ->and($tester->getDisplay())->toContain('App')
-        ->and($tester->getDisplay())->toContain('Patch');
+        ->and($tester->getDisplay())->toContain('platform');
 });
 

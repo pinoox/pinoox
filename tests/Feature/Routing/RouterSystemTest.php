@@ -204,8 +204,7 @@ it('builds actions from the active collection without runtime warnings', functio
 
     $built = $router->buildAction(fn () => 'pong');
 
-    expect($built)->toBeArray()
-        ->and($built)->toHaveCount(2);
+    expect($built)->toBeInstanceOf(Closure::class);
 });
 
 function routerSystemRouter(string $package = 'com_test_router', ?string $basePath = null): RouterComponent

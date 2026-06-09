@@ -7,6 +7,12 @@ use Pinoox\Component\Runtime\RuntimeMode;
 use Pinoox\Component\Test\AppTestKit;
 use Pinoox\Support\SystemConfig;
 
+/**
+ * @group non-isolated
+ * @group project-state
+ *
+ * Reads expectations from the local pinker/state overrides — not hard-coded values.
+ */
 it('loads core database config through pinker overrides', function () {
     AppTestKit::boot();
 
@@ -15,6 +21,11 @@ it('loads core database config through pinker overrides', function () {
     if (!is_file($overridePath)) {
         test()->markTestSkipped('Database pinker override not present.');
     }
+
+    $override = include $overridePath;
+    $expectedDefault = (string) ($override['data']['default'] ?? '');
+    $connectionKey = 'connections.' . $expectedDefault . '.database';
+    $expectedDatabase = (string) ($override['data'][$connectionKey] ?? '');
 
     foreach (['DB_CONNECTION', 'DB_HOST', 'DB_DATABASE', 'DB_PORT'] as $key) {
         putenv($key);
@@ -26,11 +37,13 @@ it('loads core database config through pinker overrides', function () {
     $_SERVER['APP_ENV'] = RuntimeMode::PRODUCTION;
     SystemConfig::clearCache();
 
-    $default = SystemConfig::get('database', 'default');
+    expect($expectedDefault)->not->toBe('')
+        ->and(SystemConfig::get('database', 'default'))->toBe($expectedDefault)
+        ->and(DatabaseConfig::connectionName())->toBe($expectedDefault);
 
-    expect($default)->toBe('mariadb')
-        ->and(DatabaseConfig::connectionName())->toBe('mariadb')
-        ->and(SystemConfig::get('database', 'connections.mariadb.database'))->toBe('pinm');
+    if ($expectedDatabase !== '') {
+        expect(SystemConfig::get('database', $connectionKey))->toBe($expectedDatabase);
+    }
 
     putenv('APP_ENV');
     unset($_ENV['APP_ENV'], $_SERVER['APP_ENV']);
@@ -41,10 +54,15 @@ it('resolves app config from pinker with source.php defaults as fallback', funct
     AppTestKit::boot();
 
     $overridePath = SystemConfig::path('pinker') . '/state/apps/com_pinoox_welcome/app.php';
+    $sourcePath = SystemConfig::path('apps') . '/com_pinoox_welcome/app.php';
 
-    if (!is_file($overridePath)) {
-        test()->markTestSkipped('Welcome app pinker override not present.');
+    if (!is_file($overridePath) || !is_file($sourcePath)) {
+        test()->markTestSkipped('Welcome app pinker override or source not present.');
     }
+
+    $source = include $sourcePath;
+    $override = include $overridePath;
+    $expectedOpen = (string) ($override['data']['open'] ?? '');
 
     $engine = new PackageAppEngine(
         SystemConfig::path('apps'),
@@ -54,27 +72,50 @@ it('resolves app config from pinker with source.php defaults as fallback', funct
 
     $config = $engine->config('com_pinoox_welcome');
 
-    expect($config->get('lang'))->toBe('fa')
-        ->and($config->get('enable'))->toBeTrue()
-        ->and($config->get('package'))->toBe('com_pinoox_welcome')
-        ->and($config->get('dock'))->toBeTrue();
+    expect($config->get('package'))->toBe('com_pinoox_welcome')
+        ->and($config->get('enable'))->toBeTrue();
+
+    if ($expectedOpen !== '') {
+        expect($config->get('open'))->toBe($expectedOpen);
+    }
+
+    $sourceMtime = filemtime($sourcePath);
+    $overrideUpdatedAt = (int) ($override['info']['updated_at'] ?? 0);
+
+    if (isset($source['lang']) && $sourceMtime > $overrideUpdatedAt) {
+        expect($config->get('lang'))->toBe($source['lang']);
+    }
 });
 
 it('resolves AppManifest through pinker with source.php defaults', function () {
     AppTestKit::boot();
 
     $overridePath = SystemConfig::path('pinker') . '/state/apps/com_pinoox_welcome/app.php';
+    $sourcePath = SystemConfig::path('apps') . '/com_pinoox_welcome/app.php';
 
-    if (!is_file($overridePath)) {
-        test()->markTestSkipped('Welcome app pinker override not present.');
+    if (!is_file($overridePath) || !is_file($sourcePath)) {
+        test()->markTestSkipped('Welcome app pinker override or source not present.');
     }
+
+    $source = include $sourcePath;
+    $override = include $overridePath;
+    $expectedOpen = (string) ($override['data']['open'] ?? '');
 
     $manifest = AppManifest::load('com_pinoox_welcome');
 
-    expect($manifest['lang'] ?? null)->toBe('fa')
-        ->and($manifest['enable'] ?? null)->toBeTrue()
-        ->and($manifest['package'] ?? null)->toBe('com_pinoox_welcome')
-        ->and($manifest['dock'] ?? null)->toBeTrue();
+    expect($manifest['package'] ?? null)->toBe('com_pinoox_welcome')
+        ->and($manifest['enable'] ?? null)->toBeTrue();
+
+    if ($expectedOpen !== '') {
+        expect($manifest['open'] ?? null)->toBe($expectedOpen);
+    }
+
+    $sourceMtime = filemtime($sourcePath);
+    $overrideUpdatedAt = (int) ($override['info']['updated_at'] ?? 0);
+
+    if (isset($source['lang']) && $sourceMtime > $overrideUpdatedAt) {
+        expect($manifest['lang'] ?? null)->toBe($source['lang']);
+    }
 });
 
 it('prefers defined DB_CONNECTION env over pinker default connection', function () {

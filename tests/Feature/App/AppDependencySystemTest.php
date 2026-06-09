@@ -189,10 +189,14 @@ function appDepDeleteDirectory(string $dir): void
     );
 
     foreach ($items as $item) {
-        $item->isDir() ? rmdir($item->getPathname()) : unlink($item->getPathname());
+        if ($item->isDir()) {
+            @rmdir($item->getPathname());
+        } else {
+            @unlink($item->getPathname());
+        }
     }
 
-    rmdir($dir);
+    @rmdir($dir);
 }
 
 function appDepAppDir(string $package): string

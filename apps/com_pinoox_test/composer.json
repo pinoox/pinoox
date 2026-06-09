@@ -1,0 +1,15 @@
+{
+    "name": "pinoox/com_pinoox_test",
+    "description": "okay",
+    "type": "pinoox-app",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "yoosef"
+        }
+    ],
+    "require": {},
+    "config": {
+        "sort-packages": true
+    }
+}

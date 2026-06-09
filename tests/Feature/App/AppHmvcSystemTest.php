@@ -5,6 +5,8 @@ use Pinoox\Component\Package\Engine\EngineInterface;
 use Pinoox\Component\Package\Reference\ReferenceInterface;
 use Pinoox\Component\Router\Router;
 use Pinoox\Component\Store\Config\Config;
+use Pinoox\Component\Store\Config\Data\DataManager;
+use Pinoox\Component\Store\Config\Strategy\ConfigStrategyInterface;
 use Pinoox\Component\Translator\Translator;
 
 it('checks stable status from the target package config, not the active app', function () {
@@ -19,7 +21,7 @@ it('checks stable status from the target package config, not the active app', fu
 });
 
 it('delegates engine methods through DelegatingEngine', function () {
-    $inner = new AppHmvcTestEngine(['com_demo' => true], '/apps/com_demo');
+    $inner = new AppHmvcTestEngine(['com_demo' => true], '/apps');
     $engine = new DelegatingEngine([$inner]);
 
     expect($engine->stable('com_demo'))->toBeTrue()
@@ -41,9 +43,9 @@ class AppHmvcTestEngine implements EngineInterface
     {
         $package = is_string($packageName) ? $packageName : $packageName->getPackageName();
 
-        return new Config([
+        return new Config(new AppHmvcArrayConfigStrategy([
             'enable' => $this->enabled[$package] ?? false,
-        ]);
+        ]));
     }
 
     public function lang(string|ReferenceInterface $packageName): Translator
@@ -85,6 +87,66 @@ class AppHmvcTestEngine implements EngineInterface
         $base = rtrim($this->basePath, '/') . '/' . $package;
 
         return $path === '' ? $base : $base . '/' . trim($path, '/');
+    }
+}
+
+class AppHmvcArrayConfigStrategy implements ConfigStrategyInterface
+{
+    private DataManager $data;
+
+    /** @param array<string, mixed> $config */
+    public function __construct(array $config)
+    {
+        $this->data = new DataManager($config);
+    }
+
+    public function save(): void
+    {
+    }
+
+    public function set(string $key, mixed $value): void
+    {
+        $this->data->set($key, $value);
+    }
+
+    public function add(string $key, mixed $value): void
+    {
+        $this->data->add($key, $value);
+    }
+
+    public function get(?string $key = null, $default = null): mixed
+    {
+        return $this->data->get($key, $default);
+    }
+
+    public function all(): mixed
+    {
+        return $this->data->all();
+    }
+
+    public function getInfo(?string $key = null): array|string|null
+    {
+        return null;
+    }
+
+    public function remove(string $key): void
+    {
+        $this->data->remove($key);
+    }
+
+    public function reset(): void
+    {
+        $this->data = new DataManager([]);
+    }
+
+    public function merge(array $array): void
+    {
+        $this->data->merge($array);
+    }
+
+    public function name(): string
+    {
+        return 'array';
     }
 }
 

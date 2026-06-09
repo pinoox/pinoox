@@ -41,7 +41,8 @@ it('builds structured login results', function () {
 
 it('exposes auth session transport through the user portal', function () {
     expect(method_exists(\Pinoox\Component\User\AuthSession::class, 'isLoggedIn'))->toBeTrue()
-        ->and(method_exists(User::class, 'get'))->toBeTrue();
+        ->and(method_exists(\Pinoox\Component\User\Manager::class, 'get'))->toBeTrue()
+        ->and(class_exists(User::class))->toBeTrue();
 });
 
 it('maps helper functions to auth portal', function () {

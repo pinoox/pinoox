@@ -135,8 +135,14 @@ it('respects explicit APP_DEBUG=false in development', function () {
     }
     file_put_contents($dir . '/.env', "APP_ENV=development\nAPP_DEBUG=false\n");
 
+    foreach (['APP_ENV', 'APP_DEBUG', 'PINOOX_EXCEPTION', 'MODE'] as $key) {
+        putenv($key);
+        unset($_ENV[$key], $_SERVER[$key]);
+    }
+
     EnvBootstrap::reset();
     EnvBootstrap::load($dir);
+    SystemConfig::clearCache();
 
     expect(SystemConfig::env('APP_ENV'))->toBe('development')
         ->and(SystemConfig::env('APP_DEBUG'))->toBeFalse();

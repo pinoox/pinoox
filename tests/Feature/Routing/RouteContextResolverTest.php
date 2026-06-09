@@ -23,10 +23,11 @@ class RouteContextResolverTest extends TestCase
 
         RouteSourceRegistry::rememberAction(
             'home',
-            fn () => null,
+            '@home',
             [
                 ['file' => $actionsFile, 'line' => 2, 'function' => 'action'],
             ],
+            $actionsFile,
         );
 
         $routesFile = sys_get_temp_dir() . '/pinoox_test_routes_' . uniqid('', true) . '.php';
@@ -74,10 +75,11 @@ class RouteContextResolverTest extends TestCase
 
         RouteSourceRegistry::rememberRoute(
             'demo.fallback',
-            fn () => null,
+            '{closure}',
             [
                 ['file' => $routesFile, 'line' => 2, 'function' => 'register'],
             ],
+            $routesFile,
         );
 
         $collection = new Collection(name: '');

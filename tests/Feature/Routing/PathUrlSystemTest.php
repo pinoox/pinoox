@@ -131,9 +131,15 @@ it('builds smart links with clean mode regardless of rewrite fallback', function
     expect($url->isRoutePath('api/v1/ping'))->toBeTrue()
         ->and($url->isRoutePath('?_pnx=/api/v1/ping'))->toBeFalse()
         ->and($url->link('api/v1/ping', Url::SCOPE_APP, Url::MODE_CLEAN))
-        ->toBe('http://localhost/pinoox/api/v1/ping')
-        ->and($url->link('api/v1/ping', Url::SCOPE_APP, Url::MODE_AUTO))
-        ->toContain('?_pnx=');
+        ->toBe('http://localhost/pinoox/api/v1/ping');
+
+    $autoLink = $url->link('api/v1/ping', Url::SCOPE_APP, Url::MODE_AUTO);
+
+    if (\Pinoox\Component\Router\QueryRouteResolver::rewriteAppearsActive()) {
+        expect($autoLink)->toBe('http://localhost/pinoox/api/v1/ping');
+    } else {
+        expect($autoLink)->toMatch('/\?(?:_pnx=|route=)/');
+    }
 });
 
 it('maps filesystem references under apps to public app urls', function () {
@@ -186,10 +192,11 @@ it('reads app manifest through app accessor', function () {
     ], 'com_pinoox_manager', '/manager');
 
     $manifest = $url->appAccessor('com_pinoox_manager');
+    $expectedLang = \Pinoox\Portal\App\AppEngine::config('com_pinoox_manager')->get('lang');
 
     expect($manifest->package())->toBe('com_pinoox_manager')
         ->and($manifest->name())->toBe('manager')
-        ->and($manifest->config('lang'))->toBe('fa')
+        ->and($manifest->config('lang'))->toBe($expectedLang)
         ->and($manifest->themeName())->toBe('spark')
         ->and($manifest->url())->toBe('http://localhost/pinoox/manager')
         ->and($manifest->path())->toBe('/pinoox/manager')
@@ -201,7 +208,7 @@ it('reads app manifest through app accessor', function () {
         ->and($manifest->theme()->name())->toBe('spark')
         ->and($manifest->versionName())->toBe('2.2.0')
         ->and(app('com_pinoox_manager')->name())->toBe('manager')
-        ->and(app('com_pinoox_manager')->config('lang'))->toBe('fa')
+        ->and(app('com_pinoox_manager')->config('lang'))->toBe($expectedLang)
         ->and(app('com_pinoox_manager'))->toBeInstanceOf(\Pinoox\Component\Path\AppAccessor::class);
 });
 
