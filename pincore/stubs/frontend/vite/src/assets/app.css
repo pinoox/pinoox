@@ -1,0 +1,15 @@
+body {
+    font-family: system-ui, sans-serif;
+    margin: 0;
+    padding: 2rem;
+    background: #f5f5f5;
+}
+
+#app {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
