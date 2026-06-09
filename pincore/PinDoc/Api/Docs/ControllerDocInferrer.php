@@ -2,6 +2,7 @@
 
 namespace Pinoox\PinDoc\Api\Docs;
 
+use Pinoox\Component\Http\Api\PayloadResource;
 use Pinoox\PinDoc\Api\ApiResource;
 use Pinoox\PinDoc\Api\Docs\Support\ArrayLiteralParser;
 use Pinoox\PinDoc\Api\Docs\Support\ComponentReturnInferrer;
@@ -157,7 +158,7 @@ class ControllerDocInferrer
             if ($inferred !== null) {
                 $route['body'] = $inferred['schema'];
                 $route['body_example'] = $inferred['example'];
-                $route['body_description'] = $route['body_description'] ?: $inferred['description'];
+                $route['body_description'] = ($route['body_description'] ?? '') ?: $inferred['description'];
 
                 return $route;
             }
@@ -208,6 +209,16 @@ class ControllerDocInferrer
                     $context,
                 )['example'];
                 $route['body_description'] = ($route['body_description'] ?? '') ?: 'Request payload';
+            }
+
+            if (empty($route['body'])) {
+                $requestKeys = $this->inferStaticReaderKeys($source, $class);
+
+                if ($requestKeys !== []) {
+                    $route['body'] = array_fill_keys($requestKeys, 'string');
+                    $route['body_example'] = ExampleValueFactory::databaseExample();
+                    $route['body_description'] = ($route['body_description'] ?? '') ?: 'Request payload';
+                }
             }
         }
 
@@ -331,6 +342,12 @@ class ControllerDocInferrer
             'controller' => $class->getName(),
         ];
 
+        $resourcePayload = $this->inferResourceCallPayload($source, $class, $context);
+
+        if ($resourcePayload !== null) {
+            return $resourcePayload;
+        }
+
         $componentPayload = $this->componentInferrer->inferFromSource($source, $class);
 
         if ($componentPayload !== null) {
@@ -398,6 +415,121 @@ class ControllerDocInferrer
                 return $this->isManagerApiController($class)
                     ? ['message' => 'OK', 'result' => []]
                     : ['success' => true, 'data' => [], 'message' => 'OK', 'meta' => []];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    private function inferApiResourcePayload(string $resourceClass, ReflectionClass $controller, array $context): ?array
+    {
+        $resourceClass = $this->resolveClassName($resourceClass, $controller);
+
+        if ($resourceClass === null || !is_subclass_of($resourceClass, \Pinoox\Component\Http\Api\ApiResource::class)) {
+            return null;
+        }
+
+        try {
+            $instance = new $resourceClass([]);
+            $payload = $instance->toArray();
+
+            return is_array($payload)
+                ? ExampleValueFactory::hydrate($payload, '', $context)
+                : null;
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+
+    /**
+     * @param array<string, mixed> $context
+     */
+    private function inferResourceCallPayload(string $source, ReflectionClass $controller, array $context): ?array
+    {
+        if (preg_match('/return\s+\$this->resource\s*\(\s*new\s+([\w\\\\]+)\s*\(/s', $source, $matches, PREG_OFFSET_CAPTURE) !== 1) {
+            return null;
+        }
+
+        $resourceClass = $this->resolveClassName($matches[1][0], $controller);
+
+        if ($resourceClass === null) {
+            return null;
+        }
+
+        $openParen = $matches[0][1] + strlen($matches[0][0]) - 1;
+        $args = $this->extractBalancedParentheses($source, $openParen);
+
+        if ($resourceClass === PayloadResource::class || is_subclass_of($resourceClass, PayloadResource::class)) {
+            $inner = trim($args);
+
+            if ($inner !== '' && preg_match('/^\(new\s+\w+\s*\(\s*\)\s*\)->\s*\w+\s*\(/', $inner) === 1) {
+                $componentPayload = $this->componentInferrer->inferFromSource('return ' . $inner . ';', $controller);
+
+                if (is_array($componentPayload)) {
+                    return ExampleValueFactory::hydrate($componentPayload, '', $context);
+                }
+            }
+        }
+
+        return $this->inferApiResourcePayload($matches[1][0], $controller, $context);
+    }
+
+    private function extractBalancedParentheses(string $source, int $openIndex): string
+    {
+        if ($source[$openIndex] !== '(') {
+            return '';
+        }
+
+        $depth = 0;
+        $length = strlen($source);
+
+        for ($i = $openIndex; $i < $length; $i++) {
+            $char = $source[$i];
+
+            if ($char === '(') {
+                $depth++;
+                continue;
+            }
+
+            if ($char === ')') {
+                $depth--;
+
+                if ($depth === 0) {
+                    return substr($source, $openIndex + 1, $i - $openIndex - 1);
+                }
+            }
+        }
+
+        return '';
+    }
+
+    private function resolveClassName(string $shortName, ReflectionClass $controller): ?string
+    {
+        $candidates = [];
+
+        if (class_exists($shortName)) {
+            $candidates[] = $shortName;
+        }
+
+        $source = MethodSourceReader::classSource($controller);
+
+        if (preg_match('/use\s+([^;\s]+\\\\' . preg_quote($shortName, '/') . ')\s*;/', $source, $matches) === 1) {
+            $candidates[] = trim($matches[1]);
+        }
+
+        $namespace = $controller->getNamespaceName();
+
+        if ($namespace !== '') {
+            $candidates[] = $namespace . '\\' . $shortName;
+            $candidates[] = preg_replace('/\\\\Controller(?:\\\\.*)?$/', '\\Resource\\' . $shortName, $namespace) ?? '';
+        }
+
+        foreach (array_filter(array_unique($candidates)) as $candidate) {
+            if (class_exists($candidate)) {
+                return $candidate;
             }
         }
 
@@ -507,6 +639,29 @@ class ControllerDocInferrer
         }
 
         return $keys;
+    }
+
+    private function inferStaticReaderKeys(string $source, ReflectionClass $class): array
+    {
+        if (preg_match('/(\w+)::readFromRequest\s*\(/', $source, $matches) !== 1) {
+            return [];
+        }
+
+        $className = $this->resolveClassName($matches[1], $class);
+
+        if ($className === null || !class_exists($className) || !method_exists($className, 'readFromRequest')) {
+            return [];
+        }
+
+        $readerSource = MethodSourceReader::methodBody(new ReflectionMethod($className, 'readFromRequest'));
+
+        if (preg_match('/\$keys\s*=\s*\[(.*?)\]/s', $readerSource, $keyMatches) === 1) {
+            preg_match_all('/[\'"]([^\'"]+)[\'"]/', $keyMatches[1], $keys);
+
+            return array_values(array_unique($keys[1] ?? []));
+        }
+
+        return [];
     }
 
     private function wrapResponseExample(mixed $payload, ReflectionClass $class, string $source = ''): mixed

@@ -10,6 +10,11 @@ class AppApiServiceProvider
 
     private static array $registered = [];
 
+    public static function resetState(): void
+    {
+        self::$registered = [];
+    }
+
     public static function register(): array
     {
         $package = App::package();

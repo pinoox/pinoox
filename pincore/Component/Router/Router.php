@@ -59,6 +59,18 @@ class Router
      */
     public array $actionMeta = [];
 
+    /**
+     * Reset router state when the portal container is rebuilt (tests / app switch).
+     */
+    public function __portalRebuild(): void
+    {
+        $this->actions = [];
+        $this->actionMeta = [];
+        $this->collections = [];
+        $this->current = -1;
+        $this->appMountPath = '/';
+    }
+
     private App $app;
     private UrlGeneratorInterface $urlGenerator;
 

@@ -38,10 +38,11 @@ class TraceFrameClassifier
             $root = rtrim(self::normalizePath($projectRoot), '/');
 
             return str_starts_with($file, $root.'/config/')
-                || str_starts_with($file, $root.'/system/');
+                || str_starts_with($file, $root.'/system/')
+                || str_starts_with($file, $root.'/launcher/');
         }
 
-        return (str_contains($file, '/config/') || str_contains($file, '/system/'))
+        return (str_contains($file, '/config/') || str_contains($file, '/system/') || str_contains($file, '/launcher/'))
             && !str_contains($file, '/vendor/')
             && !str_contains($file, '/apps/');
     }

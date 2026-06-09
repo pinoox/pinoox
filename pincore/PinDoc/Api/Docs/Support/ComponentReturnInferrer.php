@@ -22,7 +22,7 @@ class ComponentReturnInferrer
             $suffix = $this->resolveVariableAssignment($source, $controller, $matches[2], 'result')
                 ?? $this->inferCheckCall($source, $controller);
 
-            if ($suffix !== null) {
+            if ($suffix !== null && is_array($suffix)) {
                 return array_merge($prefix, ExampleValueFactory::hydrate($suffix, '', $this->context($controller)));
             }
         }

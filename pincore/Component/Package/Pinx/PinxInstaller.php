@@ -277,7 +277,11 @@ class PinxInstaller
             return $this->engine->path($manifest->targetApp(), 'theme/' . $manifest->themeName());
         }
 
-        return $this->engine->path($manifest->package());
+        if ($this->engine->exists($manifest->package())) {
+            return $this->engine->path($manifest->package());
+        }
+
+        return rtrim(str_replace('\\', '/', $this->engine->packageLoader->path($manifest->package())), '/');
     }
 
     private function extractPackage(PinxManifest $manifest, $zip, string $destination): void

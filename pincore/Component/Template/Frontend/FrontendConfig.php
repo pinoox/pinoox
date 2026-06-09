@@ -57,10 +57,12 @@ class FrontendConfig
         ], $overrides);
 
         try {
-            $appFrontend = App::get('frontend');
-            if (is_array($appFrontend)) {
-                $appFrontend = self::filterNullValues($appFrontend);
-                $config = array_replace_recursive($config, $appFrontend);
+            if (self::themePathBelongsToActiveApp($themePath)) {
+                $appFrontend = App::get('frontend');
+                if (is_array($appFrontend)) {
+                    $appFrontend = self::filterNullValues($appFrontend);
+                    $config = array_replace_recursive($config, $appFrontend);
+                }
             }
         } catch (\Throwable) {
         }
@@ -130,6 +132,18 @@ class FrontendConfig
         }
 
         return 'twig';
+    }
+
+    private static function themePathBelongsToActiveApp(string $themePath): bool
+    {
+        try {
+            $appThemeRoot = rtrim(str_replace('\\', '/', App::path('theme')), '/');
+            $themePath = rtrim(str_replace('\\', '/', $themePath), '/');
+
+            return $appThemeRoot !== '' && str_starts_with($themePath, $appThemeRoot);
+        } catch (\Throwable) {
+            return false;
+        }
     }
 
     public static function defaultEntry(string $stack): string

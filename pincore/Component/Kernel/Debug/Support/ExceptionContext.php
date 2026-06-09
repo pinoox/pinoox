@@ -135,8 +135,22 @@ class ExceptionContext
     {
         $name = '';
         $code = null;
+        $targetPackage = $package ?? self::activePackage();
 
-        if (class_exists(\Pinoox\Portal\App\App::class)) {
+        if ($targetPackage !== '') {
+            $appFile = self::projectRoot() . '/apps/' . $targetPackage . '/app.php';
+            if (is_file($appFile)) {
+                $config = include $appFile;
+                if (is_array($config)) {
+                    $name = trim((string) ($config['version-name'] ?? ''));
+                    if (isset($config['version-code']) && $config['version-code'] !== '') {
+                        $code = (int) $config['version-code'];
+                    }
+                }
+            }
+        }
+
+        if ($name === '' && $code === null && $package === null && class_exists(\Pinoox\Portal\App\App::class)) {
             try {
                 $name = trim((string) \Pinoox\Portal\App\App::get('version-name', ''));
                 $rawCode = \Pinoox\Portal\App\App::get('version-code', null);
@@ -144,22 +158,6 @@ class ExceptionContext
                     $code = (int) $rawCode;
                 }
             } catch (\Throwable) {
-            }
-        }
-
-        if ($name === '' && $code === null) {
-            $package ??= self::activePackage();
-            if ($package !== '') {
-                $appFile = self::projectRoot() . '/apps/' . $package . '/app.php';
-                if (is_file($appFile)) {
-                    $config = include $appFile;
-                    if (is_array($config)) {
-                        $name = trim((string) ($config['version-name'] ?? ''));
-                        if (isset($config['version-code']) && $config['version-code'] !== '') {
-                            $code = (int) $config['version-code'];
-                        }
-                    }
-                }
             }
         }
 

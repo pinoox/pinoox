@@ -16,6 +16,15 @@ use Pinoox\Component\Source\Portal;
  */
 class UseApp extends Portal
 {
+    public static function __register(): void
+    {
+    }
+
+    public static function __name(): string
+    {
+        return 'use_app';
+    }
+
     public static function use(string $package): AppPackageContext
     {
         return AppResource::use($package);

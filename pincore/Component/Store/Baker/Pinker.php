@@ -562,12 +562,21 @@ class Pinker
             return $source;
         }
 
-        $data = is_array($source) ? $source : [];
+        $sourceArray = is_array($source) ? $source : [];
+        $data = $sourceArray;
+        $sourceIsNewer = $this->isSourceNewerThanOverride($override);
+        $pruneData = [];
+        $pruneRemove = [];
 
         foreach (($override['data'] ?? []) as $path => $value) {
             $path = (string) $path;
 
             if (EnvSensitiveConfig::shouldSkipPinkerPath($this->mainFile, $path)) {
+                continue;
+            }
+
+            if ($sourceIsNewer && $this->pathExists($sourceArray, $path)) {
+                $pruneData[] = $path;
                 continue;
             }
 
@@ -581,10 +590,86 @@ class Pinker
                 continue;
             }
 
+            if ($sourceIsNewer && $this->pathExists($sourceArray, $path)) {
+                $pruneRemove[] = $path;
+                continue;
+            }
+
             $this->removePath($data, $path);
         }
 
+        if ($sourceIsNewer && ($pruneData !== [] || $pruneRemove !== [])) {
+            $this->pruneOverridePaths($pruneData, $pruneRemove);
+        }
+
         return $data;
+    }
+
+    private function isSourceNewerThanOverride(array $override): bool
+    {
+        if (!is_file($this->mainFile)) {
+            return false;
+        }
+
+        $overrideUpdatedAt = (int) ($override['info']['updated_at'] ?? 0);
+
+        if ($overrideUpdatedAt === 0) {
+            return false;
+        }
+
+        return filemtime($this->mainFile) > $overrideUpdatedAt;
+    }
+
+    private function pathExists(array $data, string $path): bool
+    {
+        $keys = explode('.', $path);
+        $target = $data;
+
+        foreach ($keys as $key) {
+            if (!is_array($target) || !array_key_exists($key, $target)) {
+                return false;
+            }
+
+            $target = $target[$key];
+        }
+
+        return true;
+    }
+
+    private function pruneOverridePaths(array $dataPaths, array $removePaths): void
+    {
+        $override = $this->loadOverride();
+
+        if ($override === null) {
+            return;
+        }
+
+        foreach ($dataPaths as $path) {
+            unset($override['data'][$path]);
+        }
+
+        if ($removePaths !== []) {
+            $override['remove'] = array_values(array_diff($override['remove'] ?? [], $removePaths));
+        }
+
+        if (empty($override['data']) && empty($override['remove'])) {
+            $this->removeOverride();
+            return;
+        }
+
+        $overrideFile = $this->getOverrideFile();
+
+        if ($overrideFile === null) {
+            return;
+        }
+
+        $this->fileHandler->store($overrideFile, $this->formatExported([
+            '__pinker_override__' => true,
+            'schema' => self::OVERRIDE_SCHEMA,
+            'data' => $override['data'] ?? [],
+            'remove' => $override['remove'] ?? [],
+            'info' => $override['info'] ?? [],
+        ]));
     }
 
     private function loadOverride(): ?array

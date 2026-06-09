@@ -16,6 +16,15 @@ use Pinoox\Component\Template\Theme\ThemeContext as ThemeContextManager;
  */
 class ThemeContext extends Portal
 {
+    public static function __register(): void
+    {
+    }
+
+    public static function __name(): string
+    {
+        return 'theme.context';
+    }
+
     public static function active(?string $package = null): ?string
     {
         return ThemeContextManager::active($package);

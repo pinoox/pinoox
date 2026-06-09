@@ -119,7 +119,13 @@ final class EnvBootstrap
                 continue;
             }
 
-            if (preg_match($pattern, (string) file_get_contents($file)) === 1) {
+            $contents = @file_get_contents($file);
+
+            if (!is_string($contents) || $contents === '') {
+                continue;
+            }
+
+            if (preg_match($pattern, $contents) === 1) {
                 return true;
             }
         }
