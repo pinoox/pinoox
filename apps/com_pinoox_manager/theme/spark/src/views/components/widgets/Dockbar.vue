@@ -103,7 +103,7 @@
             <dock-separator v-if="apps.length > 0 || (editOpen && unpinnedApps.length)"></dock-separator>
 
             <dock-item
-                v-for="item in apps"
+                v-for="item in dockAppsWithMinimized"
                 :key="item.id"
             >
               <div
@@ -112,6 +112,8 @@
                     'item--jiggle': editOpen,
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
+                    'item--open': isAppOpen(item.id),
+                    'item--active': isAppActive(item.id),
                   }"
                   :style="jiggleStyle(item.id)"
                   @click="onItemClick(item)"
@@ -154,6 +156,7 @@ import { useRouter } from 'vue-router';
 import { useBackground } from '@/views/composables/useBackground.js';
 import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js';
 import { systemDockApps, useDockApps } from '@/views/composables/useDockApps.js';
+import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 
 const props = defineProps({
   size: { type: Number, default: 52 },
@@ -181,8 +184,44 @@ const TOOLTIP_HIDE_DELAY = 100;
 const TOOLTIP_GAP = 14;
 
 const router = useRouter();
+const appViewWindow = useAppViewWindowStore();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
+
+const dockAppsWithMinimized = computed(() => {
+  const list = [...props.apps];
+  const minimized = appViewWindow.minimized;
+
+  if (!minimized?.package_name) {
+    return list;
+  }
+
+  if (list.some((item) => item.id === minimized.package_name)) {
+    return list;
+  }
+
+  list.push({
+    id: minimized.package_name,
+    name: minimized.appName ?? minimized.package_name,
+    image: minimized.icon,
+    route: {name: 'app-view', params: {package_name: minimized.package_name}},
+    isMinimizedOnly: true,
+  });
+
+  return list;
+});
+
+function isMinimizedOpen(packageName) {
+  return appViewWindow.minimized?.package_name === packageName;
+}
+
+function isAppOpen(packageName) {
+  return appViewWindow.isPackageOpen(packageName);
+}
+
+function isAppActive(packageName) {
+  return appViewWindow.activePackage === packageName;
+}
 
 const isShow = ref(false);
 const size = ref(props.size);
@@ -284,6 +323,13 @@ function open(item) {
 function onItemClick(item) {
   if (editOpen.value)
     return;
+
+  if (isMinimizedOpen(item.id)) {
+    appViewWindow.restore();
+    appViewWindow.openFullscreen(item.id);
+    router.push({name: 'app-view', params: {package_name: item.id}});
+    return;
+  }
 
   open(item);
 }

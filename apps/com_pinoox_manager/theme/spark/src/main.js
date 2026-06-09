@@ -1,4 +1,3 @@
-import './bootstrap.dev.js';
 import { createApp } from "vue";
 import 'dockbar';
 import App from "./App.vue";
@@ -20,7 +19,9 @@ app.use(router);
 app.use(Notifications);
 app.use(createModal({
     groups: {
-        default: {},
+        default: {
+            disableCloseOnInteractOutside: true,
+        },
     },
 }))
 

@@ -9,10 +9,6 @@ import tailwindcss from '@tailwindcss/vite'
 
 export default defineConfig(({command, mode}) => {
     const env = loadEnv(mode, process.cwd(), '')
-    const serverUrl = env.VITE_SERVER_URL || 'http://127.0.0.1:8000'
-    const projectPath = (env.VITE_PROJECT_PATH || '').replace(/\/$/, '')
-    const appPath = (env.VITE_APP_PATH || '/manager').replace(/\/$/, '')
-    const apiProxyPrefix = `${projectPath}${appPath}/api`.replace(/\/+/g, '/')
 
     return {
         base: './',
@@ -56,10 +52,7 @@ export default defineConfig(({command, mode}) => {
         },
         server: {
             proxy: {
-                [apiProxyPrefix]: {
-                    target: serverUrl,
-                    changeOrigin: true,
-                },
+              '/api': env.VITE_SERVER_URL,
             },
         },
     }

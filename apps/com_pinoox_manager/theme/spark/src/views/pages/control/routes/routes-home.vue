@@ -2,7 +2,7 @@
   <Page title="مسیریابی" class="pageRoutes">
     <template #toolbar>
       <Menu @click="openModalAddEditRoute()" :icon="saxIcon.add" label="افزودن"/>
-      <Menu @click="openModal(ModalGuide, { props: { message: guideMessage } })" :icon="saxIcon.guide" label="راهنما"/>
+      <Menu @click="openGuideModal" :icon="saxIcon.guide" label="راهنما"/>
     </template>
 
     <div v-if="routeStore.routeList.length" class="overflow-x-auto">
@@ -79,6 +79,10 @@ const guideMessage = ref(
     `</ul>` +
     `<p>با این روش، کاربران به‌صورت خودکار به اپلیکیشن‌های مرتبط هدایت می‌شوند.</p>`
 );
+
+function openGuideModal() {
+  void openModal(ModalGuide, {props: {message: guideMessage.value}}).catch(() => {});
+}
 
 function openModalAddEditRoute(route = null) {
   if (route?.path === '/') {
