@@ -24,15 +24,21 @@
 
         <Dockbar v-if="showDock" :apps="dockApps"/>
 
+        <AppViewAdvanced v-if="isAdvancedAppView"/>
+
     </div>
 
 
 
-    <ModalTarget group="default">
+    <Teleport to="body">
 
-        <ModalOverlay class="vue-modal-overlay"/>
+        <ModalTarget group="default">
 
-    </ModalTarget>
+            <ModalOverlay class="vue-modal-overlay"/>
+
+        </ModalTarget>
+
+    </Teleport>
 
 </template>
 
@@ -62,6 +68,8 @@ import {useRouteStore} from "@/stores/modules/route.js";
 import {useOptionsStore} from "@/stores/modules/options.js";
 import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
+import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
+import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 
 
 
@@ -77,6 +85,7 @@ const routeStore = useRouteStore();
 
 const optionsStore = useOptionsStore();
 const { dockApps } = useDockApps();
+const {isAdvanced: isAdvancedAppView} = useAppViewMode();
 const isBooting = ref(false);
 
 

@@ -1,10 +1,33 @@
-# Pinoox
-pinker
-.env
+# =============================================================================
+# Pinoox — runtime, secrets, generated artifacts
+# =============================================================================
 
-# IntelliJ IDEA
-.idea
-.vscode
+# Pincore (Core files for dev) (keep directory markers)
+/pincore/
+
+# Baker cache & build output (~pinker)
+/pinker/
+
+# Writable storage (logs, cache, sessions, app files)
+/storage/*
+!/storage/.gitkeep
+!/storage/.htaccess
+!/storage/web.config
+!/storage/nginx.conf
+!/storage/Caddyfile
+!/storage/**/.gitkeep
+
+# User & package directories at project root
+/uploads/
+/downloads/
+
+# Environment & local credentials
+.env
+.env.*
+!.env.example
+
+# Local MAMP / PHP error dumps inside apps
+**/MAMP_php_error_log*
 
 # Cursor editor (local rules; see global gitignore)
 .cursor/
@@ -12,16 +35,58 @@ pinker
 # Node Js
 node_modules
 package-lock.json
+=======
+# =============================================================================
+# Project — PHP & Composer
+# =============================================================================
 
-# Composer
-vendor
+/vendor/
 /composer.lock
-
-# PHPUnit
 .phpunit.result.cache
+.phpunit.cache
+/auth.json
+_ide_helper.php
 
-# MacOS
+
+# =============================================================================
+# Project — Node.js & frontend tooling
+# =============================================================================
+
+node_modules/
+package-lock.json
+
+
+# =============================================================================
+# Project — IDEs & editors
+# =============================================================================
+
+.idea/
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# Cursor (keep shared agent rules)
+.cursor/
+.editorconfig
+.zed/
+.nova/
+.phpactor.json
+.codex/
+Homestead.json
+Homestead.yaml
+
+
+# =============================================================================
+# Project — OS & misc
+# =============================================================================
+
 .DS_Store
+Thumbs.db
+*.log
 
-# Settings and Configs - only ignore config in settings
-setting/config/**
+# Generated test fixtures (keep directory markers)
+tests/Fixtures/**/*
+!tests/Fixtures/**/.gitkeep

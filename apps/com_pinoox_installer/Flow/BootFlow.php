@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,11 +11,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_installer\Flow;
 
 use App\com_pinoox_installer\Component\LangHelper;
-use Pinoox\Component\Helpers\Str;
+use App\com_pinoox_installer\Component\PlatformVersion;
+use Pinoox\Component\Helpers\PinooxScriptHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Flow\Flow;
 use Pinoox\Portal\App\App;
@@ -31,8 +32,15 @@ class BootFlow extends Flow
     {
         $lang = App::get('lang');
 
-        View::set('_lang', Str::encodeJson(LangHelper::forFrontend(), true));
-        View::set('_direction', LangHelper::direction());
+        $direction = LangHelper::direction();
+
+        View::set('_direction', $direction);
         View::set('currentLang', $lang);
+        View::set('bootstrap', PinooxScriptHelper::bootstrap([
+            'locale' => $lang,
+            'direction' => $direction,
+            'version' => PlatformVersion::label(),
+            'lang' => LangHelper::forFrontend(),
+        ]));
     }
 }

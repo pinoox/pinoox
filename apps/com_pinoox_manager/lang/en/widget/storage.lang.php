@@ -1,7 +1,10 @@
 <?php
 
 return [
-    'units' =>[
+    'title' => 'Storage space',
+    'description' => 'Show server disk or project folder usage',
+    'empty_payload' => 'No data submitted',
+    'units' => [
         'B' => '{0} byte',
         'KB' => '{0} KB',
         'MB' => '{0} MB',

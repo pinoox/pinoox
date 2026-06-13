@@ -11,9 +11,7 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Component;
-
 
 use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Portal\App\AppEngine;
@@ -30,6 +28,7 @@ use Pinoox\Portal\Zip;
 class Wizard
 {
     private static $isApp = false;
+
     private static $message = null;
 
     public static function installApp($pinFile)
@@ -53,11 +52,11 @@ class Wizard
         $info = !empty($info) ? $info : [];
         $defaultData = AppEngine::getDefaultData();
         $info = array_merge($defaultData, $info);
-        $icon = Url::path('resources/default.png');
+        $icon = Url::asset('resources/default.png');
         if (!empty($info['icon'])) {
             $iconFile = $info['icon_path'];
             if (is_file($iconFile))
-                $icon = Url::path($info['icon_path']);
+                $icon = Url::asset($info['icon_path']);
         }
 
         return [
@@ -274,10 +273,9 @@ class Wizard
         $size = File::size($pinFile);
         $name = File::name($pinFile);
 
-
         $meta = TemplateWizard::open($pinFile)->getInfo();
 
-        $cover = Url::path('resources/theme.jpg');
+        $cover = Url::asset('resources/theme.jpg');
 
         if (empty($meta['title'])) {
             $title = null;

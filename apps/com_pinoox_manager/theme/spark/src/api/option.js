@@ -10,4 +10,5 @@ export const optionAPI = {
     changeLockTime: (minutes) => http.get(`${BASE_URL}/changeLockTime/${minutes}`, {alert: false}),
     changeLang: (lang) => http.get(`/changeLang/${lang}`, {alert: false}),
     toggleDockPin: (packageName) => http.get(`${BASE_URL}/toggleDockPin/${packageName}`, {alert: false}),
+    changeAppViewMode: (mode) => http.get(`${BASE_URL}/changeAppViewMode/${mode}`, {alert: false}),
 };

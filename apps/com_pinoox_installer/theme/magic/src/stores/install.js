@@ -1,25 +1,34 @@
 import {defineStore} from 'pinia'
+import {getBoot, hasBoot} from '@/boot.js'
 import {applyDirection} from '@/utils/direction.js'
 import {syncBootstrapQueryRoute} from '@/utils/resolveInstallerApi.js'
 
-const bootstrap = typeof PINOOX !== 'undefined' ? PINOOX : null
+const boot = getBoot()
 
-syncBootstrapQueryRoute(bootstrap === null)
+syncBootstrapQueryRoute(!hasBoot())
 
 export const useInstallStore = defineStore('install', {
     state: () => ({
-        LANG: bootstrap?.LANG ?? {},
-        OPTIONS: bootstrap?.OPTIONS ?? {lang: 'en', direction: 'ltr', version: ''},
-        bootstrapError: bootstrap === null,
+        LANG: boot.lang ?? {},
+        OPTIONS: {
+            lang: boot.locale ?? 'en',
+            direction: boot.direction ?? 'ltr',
+            version: boot.version ?? '',
+        },
+        bootstrapError: !hasBoot(),
         preflightPing: null,
         preflightLoading: true,
         isLoading: false,
+        availableDbConnections: [],
         db: {
+            connection: 'mysql',
             host: 'localhost',
             database: 'pinoox',
             username: 'root',
             password: '',
-            prefix: '',
+            prefix: 'pinx_',
+            port: '3306',
+            timezone: '+03:30',
         },
         user: {
             fname: '',
@@ -52,13 +61,17 @@ export const useInstallStore = defineStore('install', {
 
         setPreflightPing(ping) {
             this.preflightPing = ping
-            this.bootstrapError = !ping?.ok || typeof PINOOX === 'undefined'
+            this.bootstrapError = !ping?.ok || !hasBoot()
             syncBootstrapQueryRoute(this.bootstrapError)
         },
 
         refreshBootstrapError() {
-            this.bootstrapError = !this.preflightPing?.ok || typeof PINOOX === 'undefined'
+            this.bootstrapError = !this.preflightPing?.ok || !hasBoot()
             syncBootstrapQueryRoute(this.bootstrapError)
+        },
+
+        setAvailableDbConnections(connections) {
+            this.availableDbConnections = Array.isArray(connections) ? connections : []
         },
     },
 })

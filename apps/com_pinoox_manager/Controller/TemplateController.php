@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -14,6 +15,7 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\File;
+use Pinoox\Component\Template\Theme\ThemeManifest;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Lang;
 use Pinoox\Portal\Url;
@@ -32,25 +34,26 @@ class TemplateController extends Api
         $templates = [];
         $current = AppEngine::config($packageName)->get('theme');
 
-        foreach ($folders as $folder) {
-            $metaJson = $folder . 'meta.json';
-            if (!file_exists($metaJson))
+        foreach (ThemeManifest::discover($packageName) as $folderName => $manifest) {
+            if (!ThemeManifest::hasManifest($manifest->path())) {
                 continue;
+            }
+            $meta = $manifest->toArray();
+            $coverDefault = Url::asset('resources/theme.jpg');
 
-            $meta = json_decode(file_get_contents($metaJson), true);
-            $coverDefault = Url::path('resources/theme.jpg');
-            $folderName = basename($folder);
+            if ($manifest->cover() !== '') {
+                $meta['cover'] = Url::check(
+                    Url::reference('~apps/' . $packageName . '/theme/' . $folderName . '/' . $manifest->cover()),
+                    $coverDefault,
+                );
+            } else {
+                $meta['cover'] = $coverDefault;
+            }
 
-            if (!empty($meta['cover']))
-                $meta['cover'] = Url::check(Url::file('~apps/' . $packageName . '/theme/' . $folderName . '/' . $meta['cover']), $coverDefault);
-
-            if (empty($meta['title'][Lang::locale()]))
-                $meta['template_name'] = reset($meta['title']) ?: $folderName;
-            else
-                $meta['template_name'] = $meta['title'][Lang::locale()];
-
-            $meta['folder'] = File::name($folder);
-            $meta['activate'] = $current === $meta['folder'];
+            $meta['template_name'] = $manifest->title(Lang::locale());
+            $meta['folder'] = $folderName;
+            $meta['activate'] = $current === $folderName;
+            $meta['extends'] = $manifest->extends();
             $templates[] = $meta;
         }
 
@@ -109,3 +112,4 @@ class TemplateController extends Api
         return $this->message(t('manager.done_successfully'));
     }
 }
+

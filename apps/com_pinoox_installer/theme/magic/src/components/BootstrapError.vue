@@ -87,7 +87,9 @@ import Icon from '@/components/icons/Icon.vue'
 import HtaccessModal from '@/components/HtaccessModal.vue'
 import logoUrl from '@/assets/images/logo/logo-64.png'
 import {
+    isBootstrapReady,
     pingInstallerApi,
+    resolveSiteEntryUrl,
     runBootstrapCheckPinooxJs,
     runBootstrapChecksSteps12,
     shouldCheckStep3,
@@ -99,7 +101,9 @@ const store = useInstallStore()
 const htaccessOpen = ref(false)
 const checking = ref(false)
 const refreshCountdown = ref(null)
-const REFRESH_DELAY_SECONDS = 5
+const refreshReason = ref(null)
+const REFRESH_DELAY_HTACCESS_SECONDS = 5
+const REFRESH_DELAY_READY_SECONDS = 3
 let refreshTimer = null
 
 const results = reactive({
@@ -120,13 +124,15 @@ const copy = computed(() => {
             retry: 'بررسی مجدد',
             checking: 'در حال بررسی…',
             footnote: 'پس از رفع مشکل، دوباره بررسی کنید یا صفحه را بارگذاری مجدد نمایید.',
-            refreshNotice: (seconds) =>
+            refreshNoticeHtaccess: (seconds) =>
                 `فایل .htaccess ایجاد شد. برای اعمال تغییرات، صفحه تا ${seconds} ثانیه دیگر بارگذاری مجدد می‌شود.`,
+            refreshNoticeReady: (seconds) =>
+                `همه بررسی‌ها موفق بود. تا ${seconds} ثانیه دیگر برای شروع نصب بارگذاری مجدد می‌شود.`,
             refreshNow: 'بارگذاری الان',
             steps: {
                 rewrite: 'URL Rewrite (mod_rewrite در Apache)',
                 htaccess: 'فایل .htaccess در ریشه سایت',
-                pinoox_js: 'فایل pinoox.twig و مسیر dist/pinoox.js',
+                pinoox_js: 'اسکریپت inline bootstrap (__PINOOX__) در قالب',
             },
             status: {
                 checking: 'در حال بررسی',
@@ -140,11 +146,11 @@ const copy = computed(() => {
                 missing: 'فایل .htaccess وجود ندارد',
                 empty: 'فایل .htaccess خالی است',
                 no_pinoox_block: 'بلوک pinoox در .htaccess یافت نشد',
-                not_found: 'dist/pinoox.js در دسترس نیست (404)',
-                invalid: 'محتوای pinoox.js نامعتبر است',
-                twig_missing: 'فایل pinoox.twig یافت نشد',
-                twig_invalid: 'فایل pinoox.twig نامعتبر است',
-                api_unreachable: 'API از طریق ?route= در دسترس نیست',
+                not_found: '__PINOOX__ در صفحه تعریف نشده (pinoox_bootstrap)',
+                invalid: 'محتوای inline bootstrap نامعتبر است',
+                twig_missing: 'partials/scripts.twig یا index.twig یافت نشد',
+                twig_invalid: 'قالب bootstrap نامعتبر است',
+                api_unreachable: 'API از طریق ?_pnx= در دسترس نیست',
                 requires_rewrite: 'ابتدا URL Rewrite را فعال کنید',
                 requires_htaccess: 'ابتدا .htaccess را اصلاح کنید',
                 pending: 'پس از تأیید rewrite و .htaccess بررسی می‌شود',
@@ -162,13 +168,15 @@ const copy = computed(() => {
         retry: 'Check again',
         checking: 'Checking…',
         footnote: 'After fixing the issue, run the check again or reload this page.',
-        refreshNotice: (seconds) =>
+        refreshNoticeHtaccess: (seconds) =>
             `.htaccess was created. The page will reload in ${seconds} seconds to apply the changes.`,
+        refreshNoticeReady: (seconds) =>
+            `All checks passed. Reloading in ${seconds} seconds to start installation.`,
         refreshNow: 'Reload now',
         steps: {
             rewrite: 'URL Rewrite (Apache mod_rewrite)',
             htaccess: '.htaccess file in the site root',
-            pinoox_js: 'pinoox.twig template and dist/pinoox.js route',
+            pinoox_js: 'Inline bootstrap script (__PINOOX__) in the theme layout',
         },
         status: {
             checking: 'Checking',
@@ -182,11 +190,11 @@ const copy = computed(() => {
             missing: '.htaccess file is missing',
             empty: '.htaccess file is empty',
             no_pinoox_block: 'Pinoox block not found in .htaccess',
-            not_found: 'dist/pinoox.js is not reachable (404)',
-            invalid: 'pinoox.js content is invalid',
-            twig_missing: 'pinoox.twig was not found',
-            twig_invalid: 'pinoox.twig is invalid',
-            api_unreachable: 'API is not reachable via ?route=',
+            not_found: '__PINOOX__ is not defined on the page (pinoox_bootstrap)',
+            invalid: 'Inline bootstrap content is invalid',
+            twig_missing: 'partials/scripts.twig or index.twig was not found',
+            twig_invalid: 'Bootstrap template is invalid',
+            api_unreachable: 'API is not reachable via ?_pnx=',
             requires_rewrite: 'Enable URL Rewrite first',
             requires_htaccess: 'Fix .htaccess first',
             pending: 'Checked after rewrite and .htaccess are verified',
@@ -201,7 +209,11 @@ const refreshNoticeText = computed(() => {
         return ''
     }
 
-    return copy.value.refreshNotice(refreshCountdown.value)
+    if (refreshReason.value === 'ready') {
+        return copy.value.refreshNoticeReady(refreshCountdown.value)
+    }
+
+    return copy.value.refreshNoticeHtaccess(refreshCountdown.value)
 })
 
 function detailText(step, data) {
@@ -213,7 +225,9 @@ function detailText(step, data) {
 
     if (data.state === 'pass') {
         if (step === 'rewrite' && data.detail) {
-            return details[data.detail] ?? data.detail
+            const detailKey = String(data.detail).replace(/ /g, '_')
+
+            return details[detailKey] ?? details[data.detail] ?? data.detail
         }
 
         return details.ok
@@ -262,6 +276,9 @@ const steps = computed(() => {
 })
 
 async function runChecks() {
+    clearRefreshTimer()
+    refreshCountdown.value = null
+    refreshReason.value = null
     checking.value = true
 
     results.rewrite = {state: 'checking'}
@@ -284,6 +301,10 @@ async function runChecks() {
     }
 
     checking.value = false
+
+    if (isBootstrapReady(ping, results)) {
+        scheduleRefresh('ready')
+    }
 }
 
 function clearRefreshTimer() {
@@ -295,13 +316,24 @@ function clearRefreshTimer() {
 
 function reloadNow() {
     clearRefreshTimer()
+
+    if (refreshReason.value === 'ready') {
+        window.location.href = resolveSiteEntryUrl()
+        return
+    }
+
     window.location.reload()
 }
 
-function onHtaccessCreated() {
-    htaccessOpen.value = false
-    clearRefreshTimer()
-    refreshCountdown.value = REFRESH_DELAY_SECONDS
+function scheduleRefresh(reason) {
+    if (refreshCountdown.value !== null) {
+        return
+    }
+
+    refreshReason.value = reason
+    refreshCountdown.value = reason === 'ready'
+        ? REFRESH_DELAY_READY_SECONDS
+        : REFRESH_DELAY_HTACCESS_SECONDS
 
     refreshTimer = setInterval(() => {
         if (refreshCountdown.value <= 1) {
@@ -311,6 +343,14 @@ function onHtaccessCreated() {
 
         refreshCountdown.value -= 1
     }, 1000)
+}
+
+function onHtaccessCreated() {
+    htaccessOpen.value = false
+    clearRefreshTimer()
+    refreshReason.value = null
+    refreshCountdown.value = null
+    scheduleRefresh('htaccess')
 }
 
 onMounted(runChecks)

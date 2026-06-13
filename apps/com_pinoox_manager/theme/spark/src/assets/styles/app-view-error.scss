@@ -1,0 +1,199 @@
+@use 'base/fonts';
+@use 'base/variable';
+
+html.appViewError-page {
+    height: 100%;
+    max-height: 100dvh;
+    overflow: hidden;
+    box-sizing: border-box;
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        height: 100%;
+        max-height: 100dvh;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background: #16161e;
+    }
+}
+
+.appViewError {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    max-height: 100dvh;
+    padding: clamp(0.75rem, 3vw, 1.5rem);
+    overflow: hidden;
+    background:
+        radial-gradient(ellipse 80% 60% at 50% -10%, rgba(122, 162, 247, 0.18), transparent 55%),
+        radial-gradient(ellipse 55% 45% at 100% 100%, rgba(247, 118, 142, 0.12), transparent 50%),
+        linear-gradient(180deg, #1a1b26 0%, #16161e 100%);
+    color: #e2e8f0;
+    font-family: Kalameh, #{variable.$font}, Tahoma, 'Segoe UI', sans-serif;
+}
+
+body.ltr .appViewError {
+    font-family: Montserrat, 'Segoe UI', Tahoma, sans-serif;
+}
+
+.appViewError__glow {
+    position: absolute;
+    inset: auto;
+    top: 50%;
+    left: 50%;
+    width: min(28rem, 90vw);
+    height: min(28rem, 90vw);
+    transform: translate(-50%, -52%);
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(122, 162, 247, 0.14) 0%, transparent 68%);
+    pointer-events: none;
+}
+
+.appViewError__card {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: min(100%, 26rem);
+    max-height: calc(100dvh - 1.5rem);
+    padding: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 1.75rem);
+    text-align: center;
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+        0 1.25rem 2.5rem rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.appViewError__badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(3rem, 10vw, 3.75rem);
+    height: clamp(3rem, 10vw, 3.75rem);
+    margin-bottom: clamp(0.75rem, 2.5vw, 1.125rem);
+    border-radius: 50%;
+    background: rgba(247, 118, 142, 0.14);
+    color: #f7768e;
+    box-shadow: 0 0 0 1px rgba(247, 118, 142, 0.22);
+
+    svg {
+        width: 55%;
+        height: 55%;
+    }
+}
+
+.appViewError__title {
+    margin: 0 0 0.625rem;
+    font-size: clamp(0.95rem, 2.8vw, 1.125rem);
+    font-weight: 700;
+    line-height: 1.55;
+    color: #fafafa;
+}
+
+.appViewError__hint {
+    margin: 0;
+    font-size: clamp(0.8125rem, 2.4vw, 0.9375rem);
+    line-height: 1.65;
+    color: #a9b1d6;
+}
+
+.appViewError__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    justify-content: center;
+    width: 100%;
+    margin-top: clamp(1rem, 3vw, 1.375rem);
+}
+
+.appViewError__actionsStandalone {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.625rem;
+    justify-content: center;
+    width: 100%;
+}
+
+.appViewError__close {
+    display: none;
+}
+
+.is-embedded .appViewError__actionsStandalone {
+    display: none;
+}
+
+.is-embedded .appViewError__close {
+    display: inline-flex;
+}
+
+.is-standalone .appViewError__close {
+    display: none;
+}
+
+.appViewError__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.625rem 1.25rem;
+    border-radius: 0.625rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    border: none;
+    cursor: pointer;
+    font: inherit;
+}
+
+.appViewError__btn:active {
+    transform: scale(0.98);
+}
+
+.appViewError__btn--primary {
+    background: rgba(122, 162, 247, 0.95);
+    color: #1a1b26;
+}
+
+.appViewError__btn--primary:hover {
+    background: #89b4fa;
+}
+
+.appViewError__btn--muted {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(255, 255, 255, 0.07);
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.appViewError__btn--muted:hover {
+    background: rgba(255, 255, 255, 0.13);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+@media (max-width: 22rem) {
+    .appViewError__actionsStandalone,
+    .appViewError__actions {
+        flex-direction: column;
+    }
+
+    .appViewError__btn {
+        width: 100%;
+    }
+}

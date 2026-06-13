@@ -48,14 +48,6 @@ const menuItems = ref([
     },
   },
   {
-    href: '/control/appearance',
-    title: 'ظاهری',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.appearance },
-    },
-  },
-  {
     href: '/control/widgets',
     title: 'ویجت‌ها',
     icon: {
@@ -86,6 +78,23 @@ const menuItems = ref([
       element: Icon,
       attributes: { is: icons.routes },
     },
+  },
+  {
+    title: 'تنظیمات',
+    icon: {
+      element: Icon,
+      attributes: { is: icons.setting },
+    },
+    child: [
+      {
+        href: '/control/settings/appearance',
+        title: 'ظاهر و زمینه',
+      },
+      {
+        href: '/control/settings/application',
+        title: 'تنظیمات اپلیکیشن',
+      },
+    ],
   },
   {
     href: '/control/profile',

@@ -19,7 +19,9 @@ app.use(router);
 app.use(Notifications);
 app.use(createModal({
     groups: {
-        default: {},
+        default: {
+            disableCloseOnInteractOutside: true,
+        },
     },
 }))
 

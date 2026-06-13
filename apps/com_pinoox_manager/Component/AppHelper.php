@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -23,14 +24,30 @@ use Pinoox\Component\Package\AppManager;
 
 class AppHelper
 {
+    public static function appViewSettings($appConfig): array
+    {
+        $appView = $appConfig->get('app-view');
+
+        if (!is_array($appView)) {
+            $appView = [];
+        }
+
+        return [
+            'address_bar' => array_key_exists('address-bar', $appView)
+                ? (bool) $appView['address-bar']
+                : true,
+        ];
+    }
+
     public static function getAll(null|bool $sysApp = null,bool $isCheckHidden = false,bool $isCheckRouter = false)
     {
-        $icon_default = Url::path('resources/default.png');
+        $icon_default = Url::asset('resources/default.png');
         $apps = AppEngine::all();
         $result = [];
         /**
          * @var AppManager $app
          */
+
         foreach ($apps as $app) {
             if (!$app->exists())
                 continue;
@@ -58,7 +75,7 @@ class AppHelper
                 }
             }
 
-            $icon = Url::path(Path::get($appConfig->get('icon'), $app->package()));
+            $icon = Url::reference($appConfig->get('icon'), $app->package());
             $result[$app->package()] = [
                 'package_name' => $app->package(),
                 'hidden' => $isHidden,
@@ -73,7 +90,8 @@ class AppHelper
                 'sys_app' => $appConfig->get('sys-app'),
                 'icon' => Url::check($icon, $icon_default),
                 'routes' => AppRouter::getByPackage($app->package()),
-                'build' => $appConfig->get('build')
+                'build' => $appConfig->get('build'),
+                'app_view' => self::appViewSettings($appConfig),
             ];
         }
 
@@ -82,7 +100,7 @@ class AppHelper
 
     public static function getOne($packageName)
     {
-        $icon_default = Url::path('resources/default.png');
+        $icon_default = Url::asset('resources/default.png');
         $result = null;
         if (AppEngine::exists($packageName)) {
             $app = AppEngine::config($packageName);
@@ -99,11 +117,13 @@ class AppHelper
                 'version' => $app->get('version-name'),
                 'version_code' => $app->get('version-code'),
                 'developer' => $app->get('developer'),
-                'icon' => Url::check(Url::path($app->get('icon'), $packageName), $icon_default),
-                'build' => $app->get('build')
+                'icon' => Url::check(Url::asset($app->get('icon'), $packageName), $icon_default),
+                'build' => $app->get('build'),
+                'app_view' => self::appViewSettings($app),
             ];
         }
 
         return $result;
     }
 }
+

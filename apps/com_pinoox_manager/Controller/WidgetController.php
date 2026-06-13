@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -10,13 +11,10 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
-
 namespace App\com_pinoox_manager\Controller;
-
 
 use App\com_pinoox_manager\Component\StorageHelper;
 use App\com_pinoox_manager\Component\WidgetHelper;
-use Morilog\Jalali\Jalalian;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\Date;
 
@@ -24,14 +22,14 @@ class WidgetController extends Api
 {
     public function clock()
     {
-        $timezone = 'Asia/Tehran';
-        $isFa = app('lang') === 'fa';
+        $timezone = Date::timezone();
+        $isFa = Date::isJalali() || app()->lang() === 'fa';
 
         if ($isFa) {
-            $now = Jalalian::now(new \DateTimeZone($timezone));
+            $now = Date::jalali('now', $timezone);
             $date = $now->format('%A %d %B %Y');
             $moment = $now->format('H:i');
-            $timestamp = $now->toCarbon()->getTimestamp();
+            $timestamp = $now->timestamp();
         } else {
             $now = Date::now($timezone);
             $date = $now->format('l d F Y');
@@ -68,16 +66,16 @@ class WidgetController extends Api
 
     public function browseStorage(Request $request)
     {
-        $path = $request->query->get('path');
+        $path = $request->queryOne('path');
 
         return StorageHelper::browse(is_string($path) ? $path : null);
     }
 
     public function saveStorageSettings(Request $request)
     {
-        $mode = (string) $request->getPayload()->get('mode', 'auto');
-        $path = (string) $request->getPayload()->get('path', '');
-        $limitGb = (float) $request->getPayload()->get('limit_gb', 0);
+        $mode = (string) $request->payload('mode', 'auto');
+        $path = (string) $request->payload('path', '');
+        $limitGb = (float) $request->payload('limit_gb', 0);
 
         if (in_array($mode, ['directory', 'database', 'manual'], true))
             @set_time_limit(120);
@@ -85,7 +83,9 @@ class WidgetController extends Api
         $result = StorageHelper::saveSettings($mode, $path, $limitGb);
 
         if (empty($result['saved']))
-            return self::error($result['message'] ?? 'ذخیره تنظیمات انجام نشد');
+            return self::error($result['message'] ?? 'ذخیره تنظی�
+ات انجا�
+ نشد');
 
         return $result;
     }
@@ -103,16 +103,21 @@ class WidgetController extends Api
 
     public function saveWidgets(Request $request)
     {
-        $widgets = $request->get('widgets', []);
+        $widgets = $request->payload('widgets', []);
 
         if (!is_array($widgets))
-            return self::error('فرمت داده نامعتبر است');
+            return self::error('فر�
+ت داده نا�
+عتبر است');
 
         $result = WidgetHelper::save($widgets);
 
         if (empty($result['saved']))
-            return self::error($result['message'] ?? 'ذخیره تنظیمات انجام نشد');
+            return self::error($result['message'] ?? 'ذخیره تنظی�
+ات انجا�
+ نشد');
 
         return $result;
     }
 }
+

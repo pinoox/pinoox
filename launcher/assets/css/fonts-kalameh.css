@@ -1,0 +1,35 @@
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Regular.woff2') format('woff2'),
+        url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Regular.woff') format('woff');
+}
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Medium.woff2') format('woff2'),
+        url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Medium.woff') format('woff');
+}
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-SemiBold.woff2') format('woff2'),
+        url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-SemiBold.woff') format('woff');
+}
+
+@font-face {
+    font-family: Kalameh;
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('../fonts/kalameh/Woff2/KalamehWeb(FaNum)-Bold.woff2') format('woff2'),
+        url('../fonts/kalameh/Woff/KalamehWeb(FaNum)-Bold.woff') format('woff');
+}

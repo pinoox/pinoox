@@ -1,0 +1,9 @@
+# Pinoox storage — deny direct web access (Caddy)
+#
+# Caddy does not load this file from the storage folder automatically.
+# Add a block like this to your Caddyfile (adjust the path if needed).
+
+@storage path /storage/*
+handle @storage {
+    respond "Forbidden" 403
+}

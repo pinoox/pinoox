@@ -1,3 +1,6 @@
+import {getUrl, hasBoot} from '@/boot.js'
+import {isApiEnvelope, readApiErrorMessage} from '@/utils/apiEnvelope.js'
+
 function hint(text, tool = null) {
     if (!text) {
         return null
@@ -8,14 +11,14 @@ function hint(text, tool = null) {
 
 function apiBaseUrl() {
     if (import.meta.env.MODE === 'production') {
-        return typeof PINOOX !== 'undefined' ? PINOOX.URL?.API : ''
+        return hasBoot() ? getUrl().API : ''
     }
 
     return import.meta.env.VITE_API_PATH ?? ''
 }
 
 export function isPinooxLoaded() {
-    return typeof PINOOX !== 'undefined' && PINOOX?.URL?.API
+    return hasBoot() && Boolean(getUrl().API)
 }
 
 export function diagnoseBootstrapError(LANG) {
@@ -82,10 +85,15 @@ export function diagnoseApiError(error, LANG) {
         }
     }
 
+    const body = error.response.data
+    const apiMessage = isApiEnvelope(body)
+        ? readApiErrorMessage(error, install.err_connection_description ?? 'The server returned an unexpected response.')
+        : null
+
     return {
         type: 'http',
         title: install.err_connection_title ?? 'Cannot connect to installer',
-        message: install.err_connection_description ?? 'The server returned an unexpected response.',
+        message: apiMessage || (install.err_connection_description ?? 'The server returned an unexpected response.'),
         hints,
         apiUrl,
         status: error.response.status,

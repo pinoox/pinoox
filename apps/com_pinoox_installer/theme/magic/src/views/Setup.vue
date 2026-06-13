@@ -18,7 +18,7 @@
                         >
                             <img class="icon" src="@/assets/images/logo/logo-256.png" alt="Pinoox">
                             <span class="app-name">{{ LANG.install.install_pinoox }}</span>
-                            <span class="app-version">{{ LANG.install.version }} <b>{{ OPTIONS.version }}</b></span>
+                            <span class="app-version">{{ LANG.install.version }} <b class="app-version__value" dir="ltr">{{ OPTIONS.version }}</b></span>
                         </span>
                     </router-link>
                 </div>

@@ -1,6 +1,8 @@
 import axios from "axios";
+import { getUrl } from '@/boot.js';
+import {readApiErrorMessage} from "@utils/apiEnvelope.js";
 
-const baseUrl = import.meta.env.MODE === 'production' ? PINOOX.URL.API : import.meta.env.VITE_API_PATH;
+const baseUrl = getUrl().API || import.meta.env.VITE_API_PATH;
 
 function getTokenAuth() {
     let token = localStorage.manager_pinoox;
@@ -73,8 +75,8 @@ http.interceptors.response.use((response) => {
 
     if (!error.config.error)
         return Promise.reject(error);
-    else
-        return Promise.reject(error.response.data.error);
+
+    return Promise.reject(readApiErrorMessage(error));
 });
 
 http.token = getTokenAuth();

@@ -66,7 +66,7 @@ function continueInstall() {
     store.refreshBootstrapError()
 
     if (shouldShowBootstrapError(store.preflightPing)) {
-        router.push({name: 'bootstrap'})
+        router.push({name: 'bootstrap', query: {error: ''}})
         return
     }
 

@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -13,8 +14,8 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\NotificationHelper;
-use Pinoox\Component\Date;
 use Pinoox\Component\Http\Request;
+use Pinoox\Portal\Date;
 
 class NotificationController extends Api
 {
@@ -22,7 +23,7 @@ class NotificationController extends Api
     {
         $result = NotificationHelper::getAll();
         $result = array_map(function ($ntf) {
-            $ntf['insert_jDate'] = Date::j('d F Y', $ntf['insert_date']);
+            $ntf['insert_jDate'] = Date::jalali($ntf['insert_date'])->format('d F Y');
             return $ntf;
         }, $result);
 
@@ -31,7 +32,7 @@ class NotificationController extends Api
 
     public function hide(Request $request)
     {
-        $ntf_id = $request->json->get('ntf_id');
+        $ntf_id = $request->payload('ntf_id');
         $status = $ntf_id && NotificationHelper::updateStatus($ntf_id, NotificationHelper::hide);
 
         return $status ? $this->message(null) : $this->message(null, false);
@@ -39,7 +40,7 @@ class NotificationController extends Api
 
     public function seen(Request $request)
     {
-        $notifications = $request->json->get('notifications', []);
+        $notifications = $request->payload('notifications', []);
 
         if (is_array($notifications)) {
             foreach ($notifications as $notification) {
@@ -52,3 +53,4 @@ class NotificationController extends Api
         return $this->message(null);
     }
 }
+

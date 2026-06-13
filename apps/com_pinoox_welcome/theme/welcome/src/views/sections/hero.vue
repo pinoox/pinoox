@@ -9,7 +9,7 @@
                 <h2 class="title">{{ $t('title') }}</h2>
                 <h2 class="gradient-text gradientAnim">{{ $t('welcome') }}</h2>
 
-                <a class="btn btn-primary" :href="_url.MANAGER">{{ $t('goToManager') }}</a>
+                <a class="btn btn-primary" :href="url.MANAGER">{{ $t('goToManager') }}</a>
 
                 <p class="text">{{ $t('managerDescription') }}</p>
 
@@ -21,3 +21,9 @@
         </div>
     </section>
 </template>
+
+<script setup>
+import { getUrl } from '@/boot.js';
+
+const url = getUrl();
+</script>

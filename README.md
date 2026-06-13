@@ -1,19 +1,24 @@
 [![Pinoox banner](./.github/banner.jpg)](https://pinoox.com)
 
-# Pinoox Web Development Platform
+# Pinoox
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+**Build web apps in PHP — one project, many apps, zero clutter.**
 
+Pinoox is an HMVC platform for PHP 8.1+. You install it once, then add **apps** under `apps/` — each app is a small MVC module with its own routes, database, and theme. Perfect when you want structure without carrying a heavy framework everywhere.
 
-Welcome to Pinoox, an advanced web development platform that takes the power of the Hierarchical Model-View-Controller (HMVC) architectural pattern to the next level. With our innovative "App" architecture, which is built upon HMVC, we've simplified, enhanced, and made the process of utilizing HMVC remarkably straightforward, enjoyable, and efficient.
+**[Read the documentation →](https://github.com/pinoox/docs)**
 
-## Getting Started
+---
 
-To get started with Pinoox, follow these steps:
+## Why Pinoox?
 
-1. Clone the Pinoox repository from GitHub: `git clone https://github.com/pinoox/pinoox.git`
-
-2. Install the required PHP dependencies using Composer: `composer install`
+| You get | What it means for you |
+|--------|------------------------|
+| **App-first HMVC** | Split work into `com_your_shop`, `com_your_blog`, etc. — not one giant codebase |
+| **Twig + optional SPA** | Server-rendered pages for SEO, or Vue / React / Vite panels when you need rich UI |
+| **Built-in CLI** | `php pinoox app:create`, migrations, routes, frontend build — from the project root |
+| **JSON API out of the box** | REST-style endpoints with a consistent response shape |
+| **Composer core** | Framework lives in `vendor/pinoox/pincore` — your code stays in `apps/` |
 
 ### Docker (optional)
 
@@ -26,35 +31,52 @@ docker compose run --rm pinoox composer install
 docker compose up -d
 ```
 
-
-## Key Features
-
-Pinoox offers a wide range of features to empower developers and streamline web development:
-
-- **Modular Development**: Create and manage individual apps within your project for better organization and maintainability.
-
-- **Easy Integration**: Seamlessly connect 'apps' together to build comprehensive web applications.
-
-- **Built-in MVC Architecture**: Enjoy the benefits of the Model-View-Controller architecture in every app.
-
-- **Simplified Maintenance**: Divide and conquer complex projects, making maintenance tasks more straightforward and efficient.
-
- 
-## Architecture
-
-Pinoox's architecture is built around the 'app' pattern, which is an enhanced version of the HMVC design. The app pattern allows you to divide your web application into modular components, each following the MVC architecture. This approach promotes code reusability, scalability, and maintainability.
-
-For a deeper understanding of Pinoox's architecture and how 'app' works, refer to our website.
-
-## Contributing
-
-We welcome contributions from the community. If you're interested in improving Pinoox or have ideas to share, please read our [Contribution Guidelines](https://github.com/yourusername/pinoox/blob/main/CONTRIBUTING.md) to get started.
-
-
-## License
-
-Pinoox is open-source software released under the [MIT License](https://github.com/pinoox/pinoox/blob/main/LICENSE). You are free to use, modify, and distribute Pinoox for both personal and commercial purposes.
+=======
+Use it for company sites, contact forms, internal tools, admin panels, small APIs, and multi-section portals — all in one installation.
 
 ---
 
-Join us in revolutionizing web development with Pinoox! If you have any questions or need assistance, please don't hesitate to reach out to our friendly community of developers. Happy coding!
+## Quick start
+
+```bash
+git clone https://github.com/pinoox/pinoox.git
+cd pinoox
+composer install
+```
+
+Point your web server at the project root (or use your usual MAMP / Apache / nginx setup), then open the site in the browser. The installer app guides first-time setup.
+
+**Next steps (documentation):**
+
+- [Installation](https://github.com/pinoox/docs/blob/master/en/start/installing-pinoox.md)
+- [Your first app](https://github.com/pinoox/docs/blob/master/en/start/your-first-app.md)
+- [Practical walkthroughs](https://github.com/pinoox/docs/blob/master/README.md#practical-walkthroughs) — API, blog, gallery, Vue, React, and more
+- [Example source code](https://github.com/pinoox/docs/tree/master/source) — copy-ready apps you can drop into `apps/`
+
+Docs are available in **English** and **فارسی**: [pinoox/docs](https://github.com/pinoox/docs).
+
+---
+
+## How it fits together
+
+```
+your-project/
+├── apps/              ← your apps (MVC modules)
+├── vendor/pinoox/pincore/   ← framework (Composer)
+├── pinoox               ← CLI
+└── index.php            ← web entry
+```
+
+Each app has Controllers, Models, routes, migrations, and a theme. The platform picks the active app from the URL — you focus on the feature, not wiring.
+
+---
+
+## Contributing
+
+Ideas, fixes, and docs improvements are welcome. See [Contributing](https://github.com/pinoox/docs/blob/master/en/introduction/contributions.md) in the documentation repo.
+
+---
+
+## License
+
+Pinoox is open-source software released under the [MIT License](LICENSE).

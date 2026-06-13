@@ -1,3 +1,3 @@
 <?php
-
 // Theme custom functions
+

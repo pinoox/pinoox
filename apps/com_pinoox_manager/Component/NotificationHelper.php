@@ -1,4 +1,5 @@
 <?php
+
 /**
  *      ****  *  *     *  ****  ****  *    *
  *      *  *  *  * *   *  *  *  *  *   *  *
@@ -117,3 +118,4 @@ class NotificationHelper
         return array_values($items);
     }
 }
+

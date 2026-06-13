@@ -24,6 +24,8 @@ export const useOptionsStore = defineStore('options', {
 
         dockPins: null,
 
+        appViewMode: 'simple',
+
         widgets: {},
 
         isLoaded: false,
@@ -63,6 +65,8 @@ export const useOptionsStore = defineStore('options', {
             this.lang = data.lang || 'fa';
 
             this.dockPins = Array.isArray(data.dock_pins) ? data.dock_pins : null;
+
+            this.appViewMode = data.app_view_mode === 'advanced' ? 'advanced' : 'simple';
 
             this.widgets = (data.widgets && typeof data.widgets === 'object') ? data.widgets : {};
 
@@ -140,6 +144,31 @@ export const useOptionsStore = defineStore('options', {
 
                 this.lock_time = Number(saved);
 
+        },
+
+        async changeAppViewMode(mode) {
+            const nextMode = mode === 'advanced' ? 'advanced' : 'simple';
+            const previous = this.appViewMode;
+            this.appViewMode = nextMode;
+
+            try {
+                const response = await optionAPI.changeAppViewMode(nextMode);
+                const saved = unwrapResponse(response);
+
+                if (saved === false) {
+                    this.appViewMode = previous;
+                    return saved;
+                }
+
+                if (typeof saved === 'string') {
+                    this.appViewMode = saved === 'advanced' ? 'advanced' : 'simple';
+                }
+
+                return saved;
+            } catch (error) {
+                this.appViewMode = previous;
+                throw error;
+            }
         },
 
         async changeLang(lang) {
@@ -231,6 +260,8 @@ export const useOptionsStore = defineStore('options', {
             this.lang = 'fa';
 
             this.dockPins = null;
+
+            this.appViewMode = 'simple';
 
             this.widgets = {};
 
