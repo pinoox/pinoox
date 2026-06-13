@@ -75,7 +75,10 @@ class AppHelper
                 }
             }
 
-            $icon = Url::reference($appConfig->get('icon'), $app->package());
+            $iconRef = $appConfig->get('icon');
+            $icon = is_string($iconRef) && $iconRef !== ''
+                ? Url::reference($iconRef, $app->package())
+                : $icon_default;
             $result[$app->package()] = [
                 'package_name' => $app->package(),
                 'hidden' => $isHidden,

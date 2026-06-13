@@ -4,7 +4,7 @@
 
 # Pincore (Core files for dev) (keep directory markers)
 /pincore/
-
+.pincore
 # Baker cache & build output (~pinker)
 /pinker/
 

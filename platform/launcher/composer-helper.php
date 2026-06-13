@@ -43,7 +43,7 @@ function pinoox_composer_action_url(): string
     $scriptDir = str_replace('\\', '/', dirname((string) ($_SERVER['SCRIPT_NAME'] ?? '')));
     $base = rtrim($scriptDir, '/');
 
-    return $base . '/launcher/composer-action.php';
+    return $base . '/composer-action.php';
 }
 
 function pinoox_shell_functions_available(): bool

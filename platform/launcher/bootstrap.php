@@ -37,7 +37,8 @@ require_once PINOOX_CORE_PATH . 'functions/base.php';
 $loader = require PINOOX_BASE_PATH . '/vendor/autoload.php';
 
 if ($loader instanceof Composer\Autoload\ClassLoader) {
-    $loader->addPsr4('Pinoox\\', PINOOX_CORE_PATH, true);
+    require_once __DIR__ . '/core-autoload.php';
+    pinoox_register_core_autoload($loader, PINOOX_BASE_PATH, PINOOX_CORE_PATH);
 }
 
 \Pinoox\Component\Helpers\EnvBootstrap::load(PINOOX_BASE_PATH);

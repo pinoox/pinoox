@@ -23,7 +23,7 @@ function pinoox_base_path(): string
         return rtrim(str_replace('\\', '/', PINOOX_BASE_PATH), '/');
     }
 
-    return dirname(__DIR__);
+    return dirname(__DIR__, 2);
 }
 
 function pinoox_core_path(): string
@@ -234,7 +234,7 @@ function pinoox_requirement_asset_url(string $relative): string
     $relative = ltrim(str_replace('\\', '/', $relative), '/');
     $base = pinoox_requirement_web_base();
 
-    return ($base === '' ? '' : $base) . '/launcher/assets/' . $relative;
+    return ($base === '' ? '' : $base) . '/assets/' . $relative;
 }
 
 function pinoox_requirement_locales(): array
