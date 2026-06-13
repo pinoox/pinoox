@@ -29,6 +29,13 @@
 # Local MAMP / PHP error dumps inside apps
 **/MAMP_php_error_log*
 
+# Cursor editor (local rules; see global gitignore)
+.cursor/
+
+# Node Js
+node_modules
+package-lock.json
+=======
 # =============================================================================
 # Project — PHP & Composer
 # =============================================================================

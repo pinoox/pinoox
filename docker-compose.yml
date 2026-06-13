@@ -1,0 +1,66 @@
+# Pinoox framework.
+# The pinoox image provides PHP, Apache, Node, and Composer only.
+
+name: pinoox
+
+services:
+  pinoox:
+    image: pinoox:dev
+    build:
+      context: .
+      dockerfile: docker/pinoox/Dockerfile
+      args:
+        NODE_VERSION: ${NODE_VERSION:-22.12.0}
+    container_name: pinoox-app
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      # Framework core
+      - ./pincore:/var/www/html/pincore
+      - ./index.php:/var/www/html/index.php
+      - ./bootstrap.php:/var/www/html/bootstrap.php
+      - ./pinoox:/var/www/html/pinoox
+      - ./composer.json:/var/www/html/composer.json
+      - ./.htaccess:/var/www/html/.htaccess
+      # Runtime data (market / user apps, config, uploads)
+      - pinoox_vendor:/var/www/html/vendor
+      - pinoox_pinker:/var/www/html/pinker
+      - pinoox_apps:/var/www/html/apps
+      - pinoox_uploads:/var/www/html/uploads
+      - pinoox_downloads:/var/www/html/downloads
+      # System apps (bind after pinoox_apps so these paths take precedence)
+      - ./apps/com_pinoox_installer:/var/www/html/apps/com_pinoox_installer
+      - ./apps/com_pinoox_manager:/var/www/html/apps/com_pinoox_manager
+      - ./apps/com_pinoox_welcome:/var/www/html/apps/com_pinoox_welcome
+    depends_on:
+      mysql:
+        condition: service_healthy
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8.0
+    container_name: pinoox-mysql
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-pinoox}
+      MYSQL_USER: ${MYSQL_USER:-pinoox}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-pinoox}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    volumes:
+      - pinoox_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    restart: unless-stopped
+
+volumes:
+  pinoox_mysql_data:
+  pinoox_vendor:
+  pinoox_pinker:
+  pinoox_apps:
+  pinoox_uploads:
+  pinoox_downloads:

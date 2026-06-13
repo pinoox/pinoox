@@ -20,6 +20,18 @@ Pinoox is an HMVC platform for PHP 8.1+. You install it once, then add **apps** 
 | **JSON API out of the box** | REST-style endpoints with a consistent response shape |
 | **Composer core** | Framework lives in `vendor/pinoox/pincore` — your code stays in `apps/` |
 
+### Docker (optional)
+
+Docker packages **Pinoox core and framework infrastructure** (PHP, Apache, MySQL, Node, Composer) plus the three system apps (installer, manager, welcome). Third-party and market-installed apps are not part of the image. See [docker/README.md](docker/README.md).
+
+```bash
+cp .env.example .env
+docker compose build
+docker compose run --rm pinoox composer install
+docker compose up -d
+```
+
+=======
 Use it for company sites, contact forms, internal tools, admin panels, small APIs, and multi-section portals — all in one installation.
 
 ---
