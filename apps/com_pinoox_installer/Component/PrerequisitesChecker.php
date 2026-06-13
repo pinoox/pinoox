@@ -25,7 +25,7 @@ class PrerequisitesChecker
         if (function_exists('pinoox_min_php_version')) {
             return;
         }
-        require_once dirname(__DIR__, 3) . '/launcher/requirements.php';
+        require_once dirname(__DIR__, 3) . '/platform/launcher/requirements.php';
     }
 
     private function minPhpVersion(): string

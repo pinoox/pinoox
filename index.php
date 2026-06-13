@@ -4,4 +4,4 @@
  * This file doesn't do anything but load essential files.
  */
 #boot pinoox
-include_once __DIR__ . '/launcher/bootstrap.php';
+include_once __DIR__ . '/platform/launcher/bootstrap.php';

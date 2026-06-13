@@ -7,7 +7,7 @@
     "pinoox"
   ],
   "type": "project",
-  "version": "3.1-beta",
+  "version": "3.1.2-beta",
   "homepage": "http://www.pinoox.com/",
   "license": "MIT",
   "authors": [
@@ -36,7 +36,7 @@
     "nunomaduro/collision": "^v6.4.0"
   },
   "scripts": {
-    "check-platform": "@php launcher/check.php",
+    "check-platform": "@php platform/launcher/check.php",
     "test": "@php pinoox test platform",
     "test:core": "@php pinoox test platform",
     "test:apps": "@php pinoox test all"
