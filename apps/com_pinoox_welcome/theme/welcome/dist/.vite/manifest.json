@@ -1,6 +1,6 @@
 {
-  "_prism-iABZeSC6.js": {
-    "file": "assets/prism-iABZeSC6.js",
+  "_prism-oPNcCyvR.js": {
+    "file": "assets/prism-oPNcCyvR.js",
     "name": "prism",
     "isDynamicEntry": true,
     "imports": [
@@ -8,7 +8,7 @@
     ]
   },
   "node_modules/highlight.js/es/index.js": {
-    "file": "assets/index-CNap2Cjf.js",
+    "file": "assets/index-ZCkAriQj.js",
     "name": "index",
     "src": "node_modules/highlight.js/es/index.js",
     "isDynamicEntry": true,
@@ -149,16 +149,16 @@
     "src": "src/assets/media/mock.png"
   },
   "src/main.js": {
-    "file": "assets/main-Bx8FDkMH.js",
+    "file": "assets/main-iD5IsOu6.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/highlight.js/es/index.js",
-      "_prism-iABZeSC6.js"
+      "_prism-oPNcCyvR.js"
     ],
     "css": [
-      "assets/main-Dm0f8XbU.css"
+      "assets/main-hq8EebgZ.css"
     ],
     "assets": [
       "assets/logo-CIhD-NN5.png",

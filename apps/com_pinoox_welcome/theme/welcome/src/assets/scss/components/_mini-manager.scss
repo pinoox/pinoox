@@ -4,78 +4,113 @@
   direction: ltr;
   text-align: left;
   unicode-bidi: isolate;
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  min-height: 320px;
+  min-height: 300px;
   border-radius: calc(var(--radius-xl) - 3px);
   overflow: hidden;
-  background: #0f1a2e;
-
-  &__screen {
-    display: flex;
-    flex-direction: column;
-    min-height: 320px;
-    height: 100%;
-  }
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.42) 0%, rgba(0, 0, 0, 0.55) 100%),
+    url("@/assets/media/hero.jpg") center/cover no-repeat;
 
   &__toolbar {
     display: flex;
     align-items: center;
-    gap: 0.65rem;
-    padding: 0.65rem 0.85rem;
-    background: rgba(8, 14, 28, 0.82);
+    gap: 0.75rem;
+    min-height: 2rem;
+    padding: 0.45rem 0.75rem;
+    background: rgba(19, 13, 11, 0.55);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.78rem;
-    color: rgba(255, 255, 255, 0.88);
+    font-size: 0.75rem;
+    color: rgba(250, 250, 250, 0.9);
   }
 
   &__brand {
-    display: inline-flex;
-    align-items: center;
     font-weight: 600;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
   }
 
-  &__status {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    margin-inline-start: auto;
-    color: rgba(255, 255, 255, 0.62);
-    font-size: 0.72rem;
-  }
-
-  &__status-dot {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #22c55e;
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.65);
-    animation: mini-manager-pulse 2s ease-in-out infinite;
-  }
-
-  &__clock {
-    font-variant-numeric: tabular-nums;
-    font-weight: 500;
-    color: rgba(255, 255, 255, 0.9);
-  }
-
-  &__url-bar {
+  &__breadcrumb {
     display: flex;
     align-items: center;
-    gap: 0.4rem;
-    padding: 0.45rem 0.85rem;
-    background: rgba(0, 0, 0, 0.35);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.78);
+    gap: 0.35rem;
+    min-width: 0;
+    margin-inline-start: auto;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  &__url-lock {
-    display: inline-flex;
-    width: 14px;
-    height: 14px;
-    color: rgba(255, 255, 255, 0.55);
+  &__breadcrumb-host {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.68rem;
+    white-space: nowrap;
+  }
+
+  &__breadcrumb-path {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #8ec8ff;
+    white-space: nowrap;
+  }
+
+  &__workspace {
+    flex: 1;
+    display: flex;
+    min-height: 200px;
+    padding: 0.65rem 0.65rem 3.5rem;
+    gap: 0.55rem;
+  }
+
+  &__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    width: 2.35rem;
     flex-shrink: 0;
+    padding: 0.35rem 0.25rem;
+    border-radius: 0.65rem;
+    background: rgba(0, 0, 0, 0.22);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  &__nav-item {
+    width: 1.85rem;
+    height: 1.85rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: rgba(188, 188, 188, 0.85);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+
+    &.is-active {
+      background: rgba(0, 138, 243, 0.28);
+      color: #fff;
+      box-shadow: inset 2px 0 0 var(--color-primary);
+    }
+  }
+
+  &__nav-icon {
+    width: 1rem;
+    height: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     svg {
       width: 100%;
@@ -84,106 +119,139 @@
     }
   }
 
-  &__url-host {
-    color: rgba(255, 255, 255, 0.55);
-    font-weight: 400;
-  }
-
-  &__url-path {
-    padding: 0.15rem 0.45rem;
-    border-radius: 0.35rem;
-    background: rgba(0, 138, 243, 0.22);
-    border: 1px solid rgba(0, 138, 243, 0.35);
-    color: #7ec8ff;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-weight: 600;
-  }
-
-  &__desktop {
+  &__main {
     flex: 1;
-    padding: 0.85rem;
-    position: relative;
-    background:
-      linear-gradient(180deg, rgba(8, 14, 28, 0.72) 0%, rgba(8, 14, 28, 0.55) 100%),
-      url("@/assets/media/hero.jpg") center/cover no-repeat;
-  }
-
-  &__window {
-    height: 100%;
-    min-height: 210px;
-    border-radius: 0.85rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
+    min-width: 0;
+    border-radius: 0.65rem;
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     overflow: hidden;
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
   }
 
-  &__window-bar {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.45rem 0.65rem;
-    background: rgba(255, 255, 255, 0.06);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  }
-
-  &__window-dots {
-    display: inline-flex;
-    gap: 0.25rem;
-    flex-shrink: 0;
-
-    i {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      display: block;
-      background: rgba(255, 255, 255, 0.28);
-
-      &:nth-child(1) { background: #ff5f57; }
-      &:nth-child(2) { background: #febc2e; }
-      &:nth-child(3) { background: #28c840; }
-    }
-  }
-
-  &__window-title {
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.75);
-  }
-
-  &__window-path {
-    margin-inline-start: auto;
-    font-size: 0.65rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    color: rgba(126, 200, 255, 0.85);
-    padding: 0.1rem 0.4rem;
-    border-radius: 0.3rem;
-    background: rgba(0, 138, 243, 0.15);
-  }
-
-  &__window-body {
-    padding: 0.75rem;
-    min-height: 170px;
+  &__panel {
+    height: 100%;
+    min-height: 185px;
+    padding: 0.65rem;
   }
 
   &__dashboard {
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    height: 100%;
+  }
+
+  &__hero-card {
+    position: relative;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    padding: 0.85rem;
+    border-radius: 0.6rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    overflow: hidden;
+  }
+
+  &__hero-glow {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 138, 243, 0.35) 0%, transparent 70%);
+    filter: blur(18px);
+    pointer-events: none;
+    animation: mini-manager-glow 4s ease-in-out infinite;
+  }
+
+  &__route-flow {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  &__route-node {
+    padding: 0.25rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.62rem;
+    color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &--path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-weight: 600;
+      color: #8ec8ff;
+      border-color: rgba(0, 138, 243, 0.35);
+      background: rgba(0, 138, 243, 0.15);
+    }
+  }
+
+  &__route-line {
+    width: 1.5rem;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.15), rgba(0, 138, 243, 0.65));
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-block-start: -2px;
+      inset-inline-end: -1px;
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--color-primary);
+      box-shadow: 0 0 8px rgba(0, 138, 243, 0.65);
+      animation: mini-manager-pulse 2s ease-in-out infinite;
+    }
+  }
+
+  &__hero-app {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 0.72rem;
+    font-weight: 500;
+
+    .market-app-icon {
+      width: 2.25rem;
+      height: 2.25rem;
+      color: var(--color-primary);
+      filter: drop-shadow(0 4px 12px rgba(0, 138, 243, 0.35));
+    }
+  }
+
+  &__stats {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
   }
 
   &__stat {
-    padding: 0.55rem 0.45rem;
-    border-radius: 0.65rem;
-    background: rgba(255, 255, 255, 0.07);
+    padding: 0.5rem 0.55rem;
+    border-radius: 0.55rem;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
     text-align: center;
-    animation: mini-manager-rise 0.6s ease both;
+    animation: mini-manager-rise 0.5s ease both;
   }
 
   &__stat-value {
     display: block;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: #fff;
     line-height: 1.2;
@@ -191,121 +259,79 @@
 
   &__stat-label {
     display: block;
-    margin-top: 0.15rem;
-    font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.58);
+    margin-top: 0.1rem;
+    font-size: 0.58rem;
+    color: rgba(255, 255, 255, 0.5);
   }
 
-  &__chart {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: flex-end;
-    gap: 0.35rem;
-    height: 56px;
-    margin-top: 0.15rem;
-    padding: 0.45rem 0.55rem;
-    border-radius: 0.65rem;
-    background: rgba(0, 0, 0, 0.18);
-  }
-
-  &__chart-bar {
-    flex: 1;
-    height: var(--bar-h);
-    border-radius: 0.35rem 0.35rem 0.1rem 0.1rem;
-    background: linear-gradient(180deg, #008AF3 0%, rgba(0, 138, 243, 0.35) 100%);
-    transform-origin: bottom;
-    animation: mini-manager-bar 1.2s ease both;
-  }
-
-  &__routes {
-    grid-column: 1 / -1;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin-top: 0.15rem;
-    padding: 0.45rem;
-    border-radius: 0.65rem;
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  &__route-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.28rem 0.5rem;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.62rem;
-    color: rgba(255, 255, 255, 0.75);
-    animation: mini-manager-rise 0.5s ease both;
-    transition: border-color 0.25s ease, background 0.25s ease;
-
-    code {
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      color: color-mix(in srgb, var(--chip-color) 80%, #fff);
-      font-weight: 600;
-      background: none;
-      padding: 0;
-    }
-
-    &.is-active {
-      background: color-mix(in srgb, var(--chip-color) 16%, rgba(255, 255, 255, 0.08));
-      border-color: color-mix(in srgb, var(--chip-color) 40%, transparent);
-    }
-  }
-
-  &__apps {
+  &__launcher {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.55rem;
+    gap: 0.5rem;
+    height: 100%;
+    align-content: center;
   }
 
-  &__app-tile {
+  &__launcher-tile {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.2rem;
-    padding: 0.6rem 0.4rem 0.5rem;
+    gap: 0.25rem;
+    padding: 0.65rem 0.4rem;
     border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    color: rgba(255, 255, 255, 0.88);
     transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-    animation: mini-manager-rise 0.55s ease both;
-
-    .market-app-icon {
-      width: 26px;
-      height: 26px;
-      color: var(--tile-color);
-    }
+    animation: mini-manager-rise 0.45s ease both;
 
     &.is-active {
-      transform: translateY(-3px) scale(1.03);
-      background: color-mix(in srgb, var(--tile-color) 18%, rgba(255, 255, 255, 0.08));
-      box-shadow: 0 8px 20px color-mix(in srgb, var(--tile-color) 25%, transparent);
+      transform: scale(1.04);
+      background: color-mix(in srgb, var(--tile-color) 14%, rgba(255, 255, 255, 0.06));
+      border-color: color-mix(in srgb, var(--tile-color) 35%, transparent);
+      box-shadow: 0 8px 20px color-mix(in srgb, var(--tile-color) 22%, transparent);
     }
   }
 
-  &__app-name {
-    font-size: 0.68rem;
+  &__launcher-icon {
+    width: 2.1rem;
+    height: 2.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 22%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+    .market-app-icon {
+      width: 1.35rem;
+      height: 1.35rem;
+      color: var(--tile-color);
+    }
   }
 
-  &__app-path {
+  &__launcher-name {
+    font-size: 0.65rem;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  &__launcher-path {
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-    font-size: 0.58rem;
+    font-size: 0.55rem;
     font-weight: 600;
-    color: color-mix(in srgb, var(--tile-color) 70%, #fff);
+    color: color-mix(in srgb, var(--tile-color) 65%, #fff);
     background: none;
     padding: 0;
-    opacity: 0.85;
+    opacity: 0.8;
   }
 
   &__settings {
     display: flex;
     flex-direction: column;
-    gap: 0.45rem;
+    gap: 0.4rem;
+    justify-content: center;
+    height: 100%;
   }
 
   &__setting-row {
@@ -314,19 +340,19 @@
     justify-content: space-between;
     gap: 0.75rem;
     padding: 0.55rem 0.65rem;
-    border-radius: 0.65rem;
-    background: rgba(255, 255, 255, 0.06);
+    border-radius: 0.55rem;
+    background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     color: rgba(255, 255, 255, 0.82);
-    animation: mini-manager-rise 0.5s ease both;
+    animation: mini-manager-rise 0.45s ease both;
   }
 
   &__toggle {
-    width: 34px;
-    height: 18px;
+    width: 32px;
+    height: 17px;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.16);
     position: relative;
     flex-shrink: 0;
     transition: background 0.25s ease;
@@ -336,87 +362,68 @@
       position: absolute;
       top: 2px;
       left: 2px;
-      width: 14px;
-      height: 14px;
+      width: 13px;
+      height: 13px;
       border-radius: 50%;
       background: #fff;
       transition: transform 0.25s ease;
     }
 
     &.is-on {
-      background: rgba(0, 138, 243, 0.65);
+      background: rgba(0, 138, 243, 0.6);
 
       &::after {
-        transform: translateX(16px);
+        transform: translateX(15px);
       }
     }
   }
 
   &__dock {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-end: 0.55rem;
     display: flex;
-    align-items: flex-end;
     justify-content: center;
-    gap: 0.55rem;
-    padding: 0.55rem 0.85rem 0.75rem;
-    background: rgba(0, 0, 0, 0.22);
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    pointer-events: none;
   }
 
-  &__dock-item {
-    position: relative;
-    width: 42px;
-    height: 42px;
+  &__dock-shell {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.45rem;
+    padding: 0.45rem 0.65rem;
+    border-radius: 1.35rem;
+    background: rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(20px) saturate(1.4);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    box-shadow:
+      0 8px 28px rgba(0, 0, 0, 0.28),
+      0 1px 0 rgba(255, 255, 255, 0.35) inset;
+  }
+
+  &__dock-app {
+    width: 2rem;
+    height: 2rem;
     border: 0;
-    border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.1);
-    color: rgba(255, 255, 255, 0.88);
-    cursor: pointer;
+    border-radius: 22%;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.18);
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
+    color: var(--tile-color);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    pointer-events: none;
 
-    &:hover {
-      transform: translateY(-4px) scale(1.05);
-      background: rgba(255, 255, 255, 0.16);
+    .market-app-icon {
+      width: 1.15rem;
+      height: 1.15rem;
     }
 
     &.is-active {
-      transform: translateY(-8px) scale(1.08);
-      background: rgba(0, 138, 243, 0.35);
-      box-shadow: 0 10px 24px rgba(0, 138, 243, 0.28);
+      transform: translateY(-6px) scale(1.08);
+      box-shadow: 0 6px 16px color-mix(in srgb, var(--tile-color) 30%, transparent);
     }
-  }
-
-  &__dock-icon {
-    width: 22px;
-    height: 22px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-    }
-  }
-
-  &__dock-indicator {
-    position: absolute;
-    bottom: -6px;
-    left: 50%;
-    width: 5px;
-    height: 5px;
-    margin-left: -2.5px;
-    border-radius: 50%;
-    background: transparent;
-    transition: background 0.25s ease;
-  }
-
-  &__dock-item.is-active &__dock-indicator {
-    background: #fff;
-    box-shadow: 0 0 8px rgba(255, 255, 255, 0.65);
   }
 }
 
@@ -424,7 +431,7 @@
 .mini-manager-fade-leave-active,
 .mini-manager-url-enter-active,
 .mini-manager-url-leave-active {
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .mini-manager-fade-enter-from,
@@ -432,18 +439,23 @@
 .mini-manager-url-enter-from,
 .mini-manager-url-leave-to {
   opacity: 0;
-  transform: translateY(8px) scale(0.98);
+  transform: translateY(6px);
 }
 
 @keyframes mini-manager-pulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.45; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes mini-manager-glow {
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.15); opacity: 1; }
 }
 
 @keyframes mini-manager-rise {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
@@ -451,37 +463,26 @@
   }
 }
 
-@keyframes mini-manager-bar {
-  from {
-    transform: scaleY(0.2);
-    opacity: 0.4;
-  }
-  to {
-    transform: scaleY(1);
-    opacity: 1;
-  }
-}
-
 @media (max-width: 480px) {
   .mini-manager {
-    min-height: 280px;
+    min-height: 270px;
 
-    &__window-body {
-      min-height: 150px;
+    &__panel {
+      min-height: 165px;
     }
 
-    &__chart {
-      height: 48px;
+    &__dock-app {
+      width: 1.75rem;
+      height: 1.75rem;
     }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .mini-manager__status-dot,
+  .mini-manager__hero-glow,
+  .mini-manager__route-line::after,
   .mini-manager__stat,
-  .mini-manager__chart-bar,
-  .mini-manager__route-chip,
-  .mini-manager__app-tile,
+  .mini-manager__launcher-tile,
   .mini-manager__setting-row {
     animation: none;
   }
