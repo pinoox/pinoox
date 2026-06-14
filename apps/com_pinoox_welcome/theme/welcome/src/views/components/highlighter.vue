@@ -1,13 +1,15 @@
 <template>
-  <CodeBlock
-    class="codeBlock"
-    :code="code"
-    label="panda"
-    dir="ltr"
-    theme="base16-onedark"
-    highlightjs
-    lang="php"
-  />
+  <div class="code-ltr" dir="ltr">
+    <CodeBlock
+      class="codeBlock"
+      :code="code"
+      label="app.php"
+      dir="ltr"
+      theme="base16-onedark"
+      highlightjs
+      lang="php"
+    />
+  </div>
 </template>
 
 <script setup>

@@ -1,6 +1,6 @@
 {
-  "_prism-5g3I57OU.js": {
-    "file": "assets/prism-5g3I57OU.js",
+  "_prism-iABZeSC6.js": {
+    "file": "assets/prism-iABZeSC6.js",
     "name": "prism",
     "isDynamicEntry": true,
     "imports": [
@@ -8,7 +8,7 @@
     ]
   },
   "node_modules/highlight.js/es/index.js": {
-    "file": "assets/index-CXjRgmE3.js",
+    "file": "assets/index-CNap2Cjf.js",
     "name": "index",
     "src": "node_modules/highlight.js/es/index.js",
     "isDynamicEntry": true,
@@ -136,58 +136,32 @@
     "file": "assets/Mj_Tunisia-BzJ9bdNn.woff2",
     "src": "src/assets/fonts/tunisia/Mj_Tunisia.woff2"
   },
-  "src/assets/media/circle-green.png": {
-    "file": "assets/circle-green-Do7wo3gl.png",
-    "src": "src/assets/media/circle-green.png"
+  "src/assets/media/hero.jpg": {
+    "file": "assets/hero-BV0OP4SE.jpg",
+    "src": "src/assets/media/hero.jpg"
   },
-  "src/assets/media/circle-orange.png": {
-    "file": "assets/circle-orange-DF2voEZu.png",
-    "src": "src/assets/media/circle-orange.png"
-  },
-  "src/assets/media/circle-pinoox.png": {
-    "file": "assets/circle-pinoox-DP-lGe34.png",
-    "src": "src/assets/media/circle-pinoox.png"
-  },
-  "src/assets/media/circle-purple.png": {
-    "file": "assets/circle-purple-BB5UvyKr.png",
-    "src": "src/assets/media/circle-purple.png"
-  },
-  "src/assets/media/circle-red.png": {
-    "file": "assets/circle-red-CmQQFz6U.png",
-    "src": "src/assets/media/circle-red.png"
-  },
-  "src/assets/media/hero.png": {
-    "file": "assets/hero-HMMRIOuq.png",
-    "src": "src/assets/media/hero.png"
+  "src/assets/media/logo.png": {
+    "file": "assets/logo-CIhD-NN5.png",
+    "src": "src/assets/media/logo.png"
   },
   "src/assets/media/mock.png": {
     "file": "assets/mock-C_qvhJpk.png",
     "src": "src/assets/media/mock.png"
   },
-  "src/assets/media/pinoox.png": {
-    "file": "assets/pinoox-DoJPCAO_.png",
-    "src": "src/assets/media/pinoox.png"
-  },
   "src/main.js": {
-    "file": "assets/main-7VIIGpno.js",
+    "file": "assets/main-Bx8FDkMH.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "dynamicImports": [
       "node_modules/highlight.js/es/index.js",
-      "_prism-5g3I57OU.js"
+      "_prism-iABZeSC6.js"
     ],
     "css": [
-      "assets/main-BasLm66y.css"
+      "assets/main-Dm0f8XbU.css"
     ],
     "assets": [
-      "assets/pinoox-DoJPCAO_.png",
-      "assets/hero-HMMRIOuq.png",
-      "assets/circle-red-CmQQFz6U.png",
-      "assets/circle-purple-BB5UvyKr.png",
-      "assets/circle-orange-DF2voEZu.png",
-      "assets/circle-green-Do7wo3gl.png",
-      "assets/circle-pinoox-DP-lGe34.png",
+      "assets/logo-CIhD-NN5.png",
       "assets/mock-C_qvhJpk.png",
       "assets/KalamehWeb(FaNum)-Black-DwrjH9d4.eot",
       "assets/KalamehWeb(FaNum)-Black-CPG5XgJ2.woff2",
@@ -218,7 +192,8 @@
       "assets/KalamehWeb(FaNum)-Thin-3qPNR-Nz.woff",
       "assets/Mj_Tunisia-CNp0euuR.eot",
       "assets/Mj_Tunisia-BzJ9bdNn.woff2",
-      "assets/Mj_Tunisia-CBUtNtFw.woff"
+      "assets/Mj_Tunisia-CBUtNtFw.woff",
+      "assets/hero-BV0OP4SE.jpg"
     ]
   }
 }

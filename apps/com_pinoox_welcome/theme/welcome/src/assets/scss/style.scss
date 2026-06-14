@@ -18,6 +18,10 @@
 @import "components/buttons";
 @import "components/solar";
 @import "components/highlighter";
+@import "components/market-showcase";
+@import "components/mini-manager";
+@import "components/developer-phone-mock";
+@import "components/audience";
 
 //------------------------------------
 // 5. Sections
@@ -31,4 +35,5 @@
 //------------------------------------
 //7. Layouts
 @import 'layouts/main';
+@import 'layouts/header';
 @import 'layouts/footer';

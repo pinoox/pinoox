@@ -1,0 +1,77 @@
+.site-header {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: 20;
+  padding-block: 1rem;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  &__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1rem;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+  &__logo-wrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+
+    img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+    }
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+
+    a {
+      color: rgba(255, 255, 255, 0.78);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 400;
+      white-space: nowrap;
+
+      &:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+
+@media (max-width: 640px) {
+  .site-header__nav {
+    gap: 0.65rem;
+
+    a {
+      font-size: 0.82rem;
+    }
+  }
+
+  .site-header__name {
+    display: none;
+  }
+}

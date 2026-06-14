@@ -2,15 +2,44 @@
 //--This File Contains All Variables
 //---------------------------------------------
 
-// Font family
-$font: 'kalameh', Montserrat;
-$fontBrand: 'tunisia', Montserrat;
+$font: 'Kalameh', 'Montserrat', system-ui, sans-serif;
+$fontBrand: 'tunisia', 'Montserrat', system-ui, sans-serif;
 
-//colors
 $primary-color: #008AF3;
 $text-color: #F2F2F2;
 $text-gray-color: #AFAFAF;
 $text-dark-color: #444444;
 
-$red : #F54086;
-$orange : #FF9C32;
+$red: #F54086;
+$orange: #FF9C32;
+
+$radius-sm: 0.75rem;
+$radius-md: 1.25rem;
+$radius-lg: 2rem;
+$radius-xl: 3rem;
+
+$shadow-soft: 0 8px 32px rgba(15, 23, 42, 0.08);
+$shadow-glow: 0 -5px 50px 3px rgba(255, 255, 255, 0.08);
+
+:root {
+  --color-primary: #{$primary-color};
+  --color-accent: #{$red};
+  --color-accent-alt: #{$orange};
+  --color-text: #{$text-color};
+  --color-text-muted: #{$text-gray-color};
+  --color-text-dark: #{$text-dark-color};
+  --color-surface: #ffffff;
+  --color-surface-muted: #e8edf5;
+  --color-hero-bg: #000a11;
+  --color-developer-bg-start: #241c34;
+  --color-developer-bg-end: #282b4e;
+  --radius-sm: #{$radius-sm};
+  --radius-md: #{$radius-md};
+  --radius-lg: #{$radius-lg};
+  --radius-xl: #{$radius-xl};
+  --shadow-soft: #{$shadow-soft};
+  --shadow-glow: #{$shadow-glow};
+  --space-section: clamp(4rem, 10vw, 8rem);
+  --font-body: #{$font};
+  --font-brand: #{$fontBrand};
+}
