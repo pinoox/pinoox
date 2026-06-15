@@ -33,7 +33,7 @@
             'opacity-40': app.package_name !== params.packageName && params.packageName
           }"
                 >
-                    <AppIcon v-bind="controlPanelIconProps(app)" size="lg"/>
+                    <AppIcon v-bind="appIconProps(app)" size="lg"/>
                     <span class="text-sm text-gray-400">{{ app.name }}</span>
                 </div>
             </div>
@@ -53,7 +53,7 @@ import {ref, computed, watch} from 'vue';
 import {closeModal} from '@kolirt/vue-modal';
 import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
-import {controlPanelIconProps} from "@utils/helpers/appIconProps.js";
+import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {routerAPI} from "@api/router.js";
 
 const props = defineProps({

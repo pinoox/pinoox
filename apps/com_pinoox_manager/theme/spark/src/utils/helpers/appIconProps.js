@@ -8,8 +8,7 @@ export function appIconProps(app, overrides = {}) {
     return overrides;
   }
 
-  const forceLucide = overrides.forceLucide === true;
-  const isCustom = !forceLucide && app.icon_source === 'custom';
+  const isCustom = app.icon_source === 'custom';
   const iconStyle = app.icon_style ?? 'crystal';
   const colors = Array.isArray(app.icon_colors) && app.icon_colors.length
       ? app.icon_colors
@@ -19,15 +18,37 @@ export function appIconProps(app, overrides = {}) {
     src: isCustom ? (app.icon ?? '') : '',
     lucide: app.icon_lucide ?? '',
     colors,
-    iconStyle: forceLucide ? 'crystal' : iconStyle,
-    iconSource: forceLucide ? 'lucide' : (app.icon_source ?? ''),
+    iconStyle,
+    iconSource: app.icon_source ?? '',
     alt: app.name ?? '',
-    forceLucide,
     ...overrides,
   };
 }
 
-/** Control panel: always Lucide, no custom PNG tiles. */
+/** @deprecated use appIconProps — kept for existing imports */
 export function controlPanelIconProps(app, overrides = {}) {
-  return appIconProps(app, { forceLucide: true, ...overrides });
+  return appIconProps(app, overrides);
+}
+
+export function appIconPropsForPackage(appStore, packageName, fallback = {}) {
+  const app = appStore.fetchAppByPackage(packageName);
+
+  if (app) {
+    return appIconProps(app);
+  }
+
+  const image = fallback.image ?? fallback.icon ?? '';
+
+  if (!image && !fallback.lucide) {
+    return null;
+  }
+
+  return {
+    src: image,
+    lucide: fallback.lucide ?? '',
+    colors: fallback.colors ?? [],
+    iconStyle: fallback.iconStyle ?? 'crystal',
+    iconSource: fallback.iconSource ?? (image ? 'custom' : 'lucide'),
+    alt: fallback.name ?? packageName,
+  };
 }

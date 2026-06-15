@@ -15,7 +15,7 @@
             @click="openApp(app)"
         >
           <div class="appIcon-wrap">
-            <AppIcon v-bind="controlPanelIconProps(app)" size="md"/>
+            <AppIcon v-bind="appIconProps(app)" size="md"/>
           </div>
           <span class="text-sm text-gray-100">{{ app.name }}</span>
         </div>
@@ -36,7 +36,7 @@ import {useRouter} from "vue-router";
 import {saxIcon} from "@/const/icons.js";
 import {openModal} from "@kolirt/vue-modal";
 import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
-import {controlPanelIconProps} from "@utils/helpers/appIconProps.js";
+import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
 
 const router = useRouter();

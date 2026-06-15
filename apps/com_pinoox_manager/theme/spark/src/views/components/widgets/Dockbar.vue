@@ -186,13 +186,8 @@
                   @mousemove="onItemMove(item, $event)"
               >
                 <AppIcon
-                    v-if="item.image || item.lucide"
-                    :src="item.image || ''"
-                    :lucide="item.lucide"
-                    :colors="item.colors"
-                    :icon-style="item.iconStyle"
-                    :icon-source="item.iconSource"
-                    :alt="item.name"
+                    v-if="dockItemIconProps(item)"
+                    v-bind="dockItemIconProps(item)"
                     size="dock"
                     variant="dock"
                     class="item-image"
@@ -235,7 +230,7 @@ import { systemDockApps, useDockApps, resolveAppRoute } from '@/views/composable
 import { useAppStore } from '@/stores/modules/app.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
-import { appIconProps } from '@utils/helpers/appIconProps.js';
+import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
 import { saxIcon } from '@/const/icons.js';
 
 const props = defineProps({
@@ -287,10 +282,19 @@ const dockAppsWithMinimized = computed(() => {
         ? appViewWindow.minimized
         : null;
 
+    if (app) {
+      list.push({
+        id: packageName,
+        name: app.name,
+        route: {name: 'app-view', params: {package_name: packageName}},
+      });
+      continue;
+    }
+
     list.push({
       id: packageName,
-      name: snapshot?.appName ?? app?.name ?? packageName,
-      image: snapshot?.icon ?? app?.icon,
+      name: snapshot?.appName ?? packageName,
+      image: snapshot?.icon ?? null,
       route: {name: 'app-view', params: {package_name: packageName}},
     });
   }
@@ -480,13 +484,17 @@ function openControlPanel() {
   router.push('/control/apps');
 }
 
+function dockItemIconProps(item) {
+  return appIconPropsForPackage(appStore, item.id, item);
+}
+
 function resolveAppSnapshot(item) {
   const app = appStore.appList?.find((entry) => entry.package_name === item.id);
 
   return {
     package_name: item.id,
-    appName: item.name ?? app?.name ?? item.id,
-    icon: item.image ?? app?.icon ?? '',
+    appName: app?.name ?? item.name ?? item.id,
+    icon: app?.icon_source === 'custom' ? (app?.icon ?? '') : '',
   };
 }
 
