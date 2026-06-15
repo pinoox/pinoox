@@ -14,8 +14,8 @@
             class="flex flex-col items-center justify-center space-y-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
             @click="openApp(app)"
         >
-          <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg">
-            <img :src="app.icon" :alt="app.name" class="w-16 h-16 md:w-20 md:h-20">
+          <div class="appIcon-wrap">
+            <AppIcon v-bind="appIconProps(app)" size="md"/>
           </div>
           <span class="text-sm text-gray-100">{{ app.name }}</span>
         </div>
@@ -36,6 +36,7 @@ import {useRouter} from "vue-router";
 import {saxIcon} from "@/const/icons.js";
 import {openModal} from "@kolirt/vue-modal";
 import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
+import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
 
 const router = useRouter();

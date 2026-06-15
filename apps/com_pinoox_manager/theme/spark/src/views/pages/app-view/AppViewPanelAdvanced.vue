@@ -35,7 +35,7 @@
         />
 
         <div v-if="app" class="appView__title">
-          <img v-if="app.icon" :src="app.icon" :alt="app.name" class="appView__icon">
+          <AppIcon v-if="app.icon_lucide || app.icon" v-bind="appIconProps(app)" size="sm"/>
           <span>{{ app.name }}</span>
         </div>
 
@@ -108,6 +108,7 @@ import {computed, onMounted, onUnmounted, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {openModal} from '@kolirt/vue-modal';
 import {useAppStore} from '@/stores/modules/app.js';
+import {appIconProps} from '@utils/helpers/appIconProps.js';
 import {useAppViewWindowStore} from '@/stores/modules/appViewWindow.js';
 import {buildSecretViewEmbedUrl} from '@/views/composables/useSecretView.js';
 import {isAppViewCloseMessage} from '@/views/composables/useAppViewBridge.js';

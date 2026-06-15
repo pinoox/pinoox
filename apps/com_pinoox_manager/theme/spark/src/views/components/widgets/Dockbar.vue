@@ -8,6 +8,14 @@
     <Teleport to="body">
       <transition name="dock-fade">
         <div
+            v-if="appsPanelOpen && !editOpen"
+            class="dockbar__backdrop dockbar__backdrop--start"
+            @click="closeAppsPanel"
+        />
+      </transition>
+
+      <transition name="dock-fade">
+        <div
             v-if="editOpen"
             class="dockbar__backdrop"
             @click="closeEdit"
@@ -16,7 +24,7 @@
 
       <transition name="dock-tooltip">
         <div
-            v-if="tooltip && !editOpen"
+            v-if="tooltip && !editOpen && !appsPanelOpen"
             ref="tooltipEl"
             class="dockbar__tooltip"
             :style="tooltipStyle"
@@ -30,6 +38,50 @@
 
     <transition name="slide-up" appear>
       <div class="dockbar__inner">
+        <transition name="start-menu">
+          <div
+              v-if="appsPanelOpen && !editOpen"
+              class="dockbar__start-menu"
+              role="dialog"
+              aria-label="اپلیکیشن‌ها"
+          >
+            <header class="dockbar__start-head">
+              <div class="dockbar__start-title-wrap">
+                <Icon :is="saxIcon.apps" class="dockbar__start-title-icon" size="sm"/>
+                <h2 class="dockbar__start-title">اپ‌ها</h2>
+              </div>
+              <div class="dockbar__start-search">
+                <Icon :is="saxIcon.search" class="dockbar__start-search-icon" size="xs"/>
+                <input
+                    ref="appsSearchInput"
+                    v-model="appsSearch"
+                    type="search"
+                    placeholder="جستجو در اپ‌ها..."
+                    autocomplete="off"
+                    @keydown.escape.stop="closeAppsPanel"
+                />
+              </div>
+            </header>
+            <div class="dockbar__start-body">
+              <div v-if="filteredApps.length" class="dockbar__start-grid">
+                <button
+                    v-for="app in filteredApps"
+                    :key="app.package_name"
+                    type="button"
+                    class="dockbar__start-tile"
+                    @click="openAppFromPanel(app)"
+                >
+                  <AppIcon v-bind="appIconProps(app)" size="sm" class="dockbar__start-tile-icon"/>
+                  <span class="dockbar__start-tile-name">{{ app.name }}</span>
+                </button>
+              </div>
+              <p v-else class="dockbar__start-empty">
+                اپی یافت نشد
+              </p>
+            </div>
+          </div>
+        </transition>
+
         <transition name="dock-slide">
           <button
               v-if="editOpen"
@@ -55,7 +107,7 @@
                   class="dockbar__tray-item"
                   @click="pinApp(app.package_name)"
               >
-                <img :src="app.icon" :alt="app.name" class="dockbar__tray-icon">
+                <AppIcon v-bind="appIconProps(app)" size="tray" class="dockbar__tray-icon"/>
                 <span class="dockbar__tray-name">{{ app.name }}</span>
               </button>
             </div>
@@ -84,11 +136,12 @@
                 :key="item.id"
             >
               <div
-                  class="item"
+                  class="item item--system"
                   :class="{
                     'item--jiggle': editOpen,
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
+                    'item--launcher-open': item.action === 'launcher' && appsPanelOpen,
                   }"
                   :style="jiggleStyle(item.id)"
                   @click="onItemClick(item)"
@@ -100,18 +153,16 @@
               </div>
             </dock-item>
 
-            <dock-separator v-if="apps.length > 0 || (editOpen && unpinnedApps.length)"></dock-separator>
+            <dock-separator v-if="dockAppsWithMinimized.length > 0"></dock-separator>
 
             <dock-item
                 v-for="item in dockAppsWithMinimized"
                 :key="item.id"
             >
               <div
-                  class="item"
+                  class="item item--app"
                   :class="{
                     'item--jiggle': editOpen,
-                    'item--app': !!item.image,
-                    'item--glyph': !item.image,
                     'item--open': isAppOpen(item.id),
                     'item--minimized': isAppMinimized(item.id),
                     'item--active': isAppActive(item.id),
@@ -121,7 +172,18 @@
                   @mouseenter="onItemHover(item, $event)"
                   @mousemove="onItemMove(item, $event)"
               >
-                <img v-if="item.image" :src="item.image" :alt="item.name" class="item-image"/>
+                <AppIcon
+                    v-if="item.image || item.lucide"
+                    :src="item.image || ''"
+                    :lucide="item.lucide"
+                    :colors="item.colors"
+                    :icon-style="item.iconStyle"
+                    :icon-source="item.iconSource"
+                    :alt="item.name"
+                    size="dock"
+                    variant="dock"
+                    class="item-image"
+                />
                 <Icon v-else-if="item.icon" class="item-icon" :is="item.icon"/>
                 <button
                     v-if="editOpen"
@@ -156,10 +218,12 @@ import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBackground } from '@/views/composables/useBackground.js';
 import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js';
-import { systemDockApps, useDockApps } from '@/views/composables/useDockApps.js';
+import { systemDockApps, useDockApps, resolveAppRoute } from '@/views/composables/useDockApps.js';
 import { useAppStore } from '@/stores/modules/app.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
+import { appIconProps } from '@utils/helpers/appIconProps.js';
+import { saxIcon } from '@/const/icons.js';
 
 const props = defineProps({
   size: { type: Number, default: 52 },
@@ -257,6 +321,9 @@ function isAppActive(packageName) {
 const isShow = ref(false);
 const size = ref(props.size);
 const editOpen = ref(false);
+const appsPanelOpen = ref(false);
+const appsSearch = ref('');
+const appsSearchInput = ref(null);
 const tooltip = ref(null);
 const tooltipEl = ref(null);
 const dockRoot = ref(null);
@@ -264,6 +331,22 @@ const dockRoot = ref(null);
 const { tone, remeasure } = useDockBackdropTone(selectedBackground, dockRoot);
 
 const toneClass = computed(() => `dockbar--tone-${tone.value}`);
+
+const filteredApps = computed(() => {
+  const list = appStore.appList ?? [];
+  const query = appsSearch.value.trim().toLowerCase();
+
+  if (!query) {
+    return list;
+  }
+
+  return list.filter((app) => {
+    const name = String(app.name ?? '').toLowerCase();
+    const packageName = String(app.package_name ?? '').toLowerCase();
+
+    return name.includes(query) || packageName.includes(query);
+  });
+});
 
 let hideTooltipTimer = null;
 let showTooltipTimer = null;
@@ -348,7 +431,35 @@ function jiggleStyle(id) {
 }
 
 function open(item) {
+  if (!item?.route) {
+    return;
+  }
+
   router.push(item.route);
+}
+
+function closeAppsPanel() {
+  appsPanelOpen.value = false;
+  appsSearch.value = '';
+}
+
+function toggleAppsPanel() {
+  appsPanelOpen.value = !appsPanelOpen.value;
+
+  if (appsPanelOpen.value) {
+    appsSearch.value = '';
+    clearTooltipTimers();
+    tooltip.value = null;
+
+    nextTick(() => {
+      appsSearchInput.value?.focus();
+    });
+  }
+}
+
+function openAppFromPanel(app) {
+  closeAppsPanel();
+  router.push(resolveAppRoute(app));
 }
 
 function resolveAppSnapshot(item) {
@@ -422,6 +533,13 @@ function onItemClick(item) {
   if (editOpen.value)
     return;
 
+  if (item.action === 'launcher') {
+    toggleAppsPanel();
+    return;
+  }
+
+  closeAppsPanel();
+
   if (isAdvanced.value && isAppOpen(item.id)) {
     activateOpenApp(item);
     return;
@@ -431,7 +549,7 @@ function onItemClick(item) {
 }
 
 function onItemHover(item, event) {
-  if (editOpen.value)
+  if (editOpen.value || appsPanelOpen.value)
     return;
 
   clearTooltipTimers();
@@ -478,6 +596,7 @@ function onDockLeave(event) {
 }
 
 function enterEdit() {
+  closeAppsPanel();
   editOpen.value = true;
   clearTooltipTimers();
   tooltip.value = null;
@@ -551,8 +670,18 @@ async function unpinApp(packageName) {
 }
 
 function onKeyDown(event) {
-  if (event.key === 'Escape' && editOpen.value)
+  if (event.key !== 'Escape') {
+    return;
+  }
+
+  if (appsPanelOpen.value) {
+    closeAppsPanel();
+    return;
+  }
+
+  if (editOpen.value) {
     closeEdit();
+  }
 }
 
 onBeforeUnmount(() => {

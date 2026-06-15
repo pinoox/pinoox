@@ -6,7 +6,7 @@ return [
     'package' => 'com_pinoox_installer',
     'enable' => true,
     'sys-app' => true,
-    'icon' => 'icon.png',
+    'icon' => '@download',
     'name' => 'installer',
     'description' => 'Pinoox web installer for first-time project setup, database validation, and environment checks.',
     'developer' => 'Pinoox Team',

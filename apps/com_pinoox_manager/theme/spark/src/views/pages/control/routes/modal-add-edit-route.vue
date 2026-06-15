@@ -22,7 +22,7 @@
                     label="جستجو..."
                     placeholder="نام اپلیکیشن را بنویسید"
             />
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-12">
+            <div class="modal-app-picker grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-12">
                 <div
                         v-for="app in filteredApps"
                         :key="app.package_name"
@@ -33,9 +33,7 @@
             'opacity-40': app.package_name !== params.packageName && params.packageName
           }"
                 >
-                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg">
-                        <img :src="app.icon" :alt="app.name" class="w-16 h-16 md:w-20 md:h-20"/>
-                    </div>
+                    <AppIcon v-bind="appIconProps(app)" size="lg"/>
                     <span class="text-sm text-gray-400">{{ app.name }}</span>
                 </div>
             </div>
@@ -55,6 +53,7 @@ import {ref, computed, watch} from 'vue';
 import {closeModal} from '@kolirt/vue-modal';
 import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
+import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {routerAPI} from "@api/router.js";
 
 const props = defineProps({

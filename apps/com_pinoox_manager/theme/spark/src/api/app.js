@@ -5,6 +5,7 @@ const BASE_URL = '/app';
 export const appAPI = {
     install: (params) => http.postForm(BASE_URL + '/install', params),
     getAll: () => http.get(BASE_URL + '/getAll', {alert: false}),
+    iconPack: () => http.get(BASE_URL + '/iconPack', {alert: false}),
     get: (filter) => http.get(BASE_URL + '/get' + (filter ? `/${filter}` : ''), {alert: false}),
     getConfig: (packageName) => http.get(`${BASE_URL}/getConfig/${packageName}`, {alert: false}),
     setConfig: (packageName, key, config) => http.post(`${BASE_URL}/setConfig/${packageName}/${key}`, {config}),

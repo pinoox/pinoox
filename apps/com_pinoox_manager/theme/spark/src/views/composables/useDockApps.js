@@ -4,8 +4,9 @@ import { useOptionsStore } from '@/stores/modules/options.js';
 import { saxIcon } from '@/const/icons.js';
 
 export const systemDockApps = [
-    { id: 'control', name: 'کنترل', route: '/control/apps', icon: saxIcon.control, image: null },
+    { id: 'apps', name: 'اپ‌ها', action: 'launcher', route: null, icon: saxIcon.manager, image: null },
     { id: 'market', name: 'مارکت', route: '/market', icon: saxIcon.market, image: null },
+    { id: 'control', name: 'کنترل پنل', route: '/control/apps', icon: saxIcon.control, image: null },
 ];
 
 export function resolveAppRoute(app) {
@@ -24,7 +25,11 @@ function mapAppToDockItem(app) {
     return {
         id: app.package_name,
         name: app.name,
-        image: app.icon,
+        image: app.icon_source === 'custom' ? app.icon : null,
+        lucide: app.icon_lucide,
+        colors: app.icon_colors,
+        iconStyle: app.icon_style ?? 'crystal',
+        iconSource: app.icon_source,
         route: resolveAppRoute(app),
     };
 }

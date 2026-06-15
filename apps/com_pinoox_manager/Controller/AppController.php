@@ -14,6 +14,7 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
+use App\com_pinoox_manager\Component\AppIconPack;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Request;
 use Pinoox\Portal\App\AppEngine;
@@ -114,6 +115,15 @@ class AppController extends Api
     public function getAll(Request $request)
     {
         return AppHelper::getAll();
+    }
+
+    public function iconPack()
+    {
+        return [
+            'provider' => AppIconPack::info(),
+            'defaults' => AppIconPack::systemDefaults(),
+            'usage' => AppIconPack::usage(),
+        ];
     }
 
     public function installPackage($filename)

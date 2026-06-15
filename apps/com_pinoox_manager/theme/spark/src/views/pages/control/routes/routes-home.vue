@@ -22,9 +22,9 @@
         <tbody class=" divide-gray-200">
         <tr v-for="(route,index) in routeStore.routeList" :key="index">
           <td class="px-4 whitespace-nowrap text-sm text-gray-200">
-            <div class="flex items-center hover:scale-110 transition-transform duration-300 cursor-pointer" @click="openModalEditApp(route)">
-              <img :src="app(route.package).icon" :alt="app(route.package).name" class="w-8 h-8 mr-2"/>
-              <span class="pr-4">{{ app(route.package).name }}</span>
+            <div class="flex items-center gap-2 hover:scale-110 transition-transform duration-300 cursor-pointer" @click="openModalEditApp(route)">
+              <AppIcon v-bind="appIconProps(app(route.package))" size="xs"/>
+              <span class="pr-2">{{ app(route.package).name }}</span>
             </div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 ltr">
@@ -63,6 +63,7 @@ import ModalAddEditRoute from '@views/pages/control/routes/modal-add-edit-route.
 import {routerAPI} from "@api/router.js";
 import {useRouteStore} from "@/stores/modules/route.js";
 import {useAppStore} from "@/stores/modules/app.js";
+import {appIconProps} from "@utils/helpers/appIconProps.js";
 
 const routeStore = useRouteStore();
 const appStore = useAppStore();

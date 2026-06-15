@@ -184,6 +184,13 @@ return [
     ],
     [
         'method' => 'GET',
+        'uri' => '/app/iconPack',
+        'action' => [AppController::class, 'iconPack'],
+        'name' => 'app.iconPack',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'GET',
         'uri' => '/app/getAll',
         'action' => [AppController::class, 'getAll'],
         'name' => 'app.getAll',

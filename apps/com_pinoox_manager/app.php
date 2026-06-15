@@ -10,7 +10,7 @@ return [
     'theme' => 'spark',
     'name' => 'manager',
     'description' => 'Manager',
-    'icon' => 'icon.png',
+    'icon' => '@layout-dashboard',
     'version-name' => '2.2.0',
     'version-code' => 4,
     'developer' => 'Pinoox Team',
