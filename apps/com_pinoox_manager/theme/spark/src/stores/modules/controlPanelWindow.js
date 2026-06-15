@@ -3,6 +3,7 @@ import {
     defaultControlPanelRect,
     useControlPanelLayoutStore,
 } from '@/stores/modules/controlPanelLayout.js';
+import {bumpSharedFloatingZIndex} from '@/stores/modules/floatingWindowStack.js';
 
 export const CONTROL_PANEL_ID = 'control';
 
@@ -33,8 +34,8 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
     },
     actions: {
         focus() {
-            this.topZ += 1;
-            this.zIndex = this.topZ;
+            const nextZ = bumpSharedFloatingZIndex();
+            this.zIndex = nextZ;
         },
         updateRect(rect) {
             this.rect = {...rect};

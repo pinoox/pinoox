@@ -69,9 +69,7 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
             this.viewportBound = true;
 
             const update = () => {
-                if (!this.frameWidthSource) {
-                    this.syncFromViewport();
-                }
+                this.syncFromViewport();
             };
 
             update();
@@ -90,7 +88,6 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
         setFrameWidth(width) {
             this.frameWidthSource = true;
             this.frameWidth = Math.max(0, Math.round(width));
-            this.applyBreakpoints(this.frameWidth);
         },
         clearFrameWidth() {
             this.frameWidthSource = false;

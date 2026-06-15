@@ -184,6 +184,15 @@
     }
   }
 
+  .appView__toolbar {
+    gap: 0.55rem;
+    flex-wrap: nowrap;
+  }
+
+  .controlPanelMenuToggle {
+    flex-shrink: 0;
+  }
+
   .appView__title-icon {
     opacity: 0.92;
   }

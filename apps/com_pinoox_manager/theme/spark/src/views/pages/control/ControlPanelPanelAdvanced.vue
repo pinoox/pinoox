@@ -33,7 +33,7 @@
             @toggle-float="toggleFloating"
         />
 
-        <ControlPanelMenuToggle v-if="layout.isCompact"/>
+        <ControlPanelMenuToggle v-if="layout.isCompact || layout.isMobile"/>
 
         <div class="appView__title">
           <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
@@ -132,6 +132,7 @@ function onToolbarMouseDown(event) {
     return;
   }
 
+  controlPanelWindow.focus();
   onDragStart(event);
 }
 

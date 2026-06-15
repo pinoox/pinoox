@@ -1,7 +1,7 @@
 <template>
   <section class="appView appView--simple controlPanelSimple">
     <div class="appView__toolbar">
-      <ControlPanelMenuToggle v-if="layout.isCompact"/>
+      <ControlPanelMenuToggle v-if="layout.isCompact || layout.isMobile"/>
 
       <button
           type="button"

@@ -280,6 +280,7 @@ import { useAuthStore } from '@/stores/modules/auth.js';
 import { useNotificationStore } from '@/stores/modules/notification.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { CONTROL_PANEL_ID, useControlPanelWindowStore } from '@/stores/modules/controlPanelWindow.js';
+import { isControlPanelFloatingTopmost } from '@/stores/modules/floatingWindowStack.js';
 import { useControlPanel, isControlRoute } from '@/views/composables/useControlPanel.js';
 import { refreshNotifications } from '@/views/composables/useSystemNotifications.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
@@ -381,7 +382,15 @@ function isControlPanelActive() {
     return false;
   }
 
-  return controlPanelWindow.isActive;
+  if (!controlPanelWindow.isActive) {
+    return false;
+  }
+
+  if (controlPanelWindow.mode === 'fullscreen') {
+    return !appViewWindow.fullscreenPackage;
+  }
+
+  return isControlPanelFloatingTopmost();
 }
 
 function isAppMinimized(packageName) {
@@ -646,6 +655,14 @@ function activateControlPanel(item) {
   }
 
   if (controlPanelWindow.isActive) {
+    if (
+        controlPanelWindow.mode === 'floating'
+        && !isControlPanelFloatingTopmost()
+    ) {
+      controlPanelWindow.focus();
+      return;
+    }
+
     controlPanelWindow.minimize(
         controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
         path,
