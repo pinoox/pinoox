@@ -20,11 +20,11 @@
         </tr>
         </thead>
         <tbody class=" divide-gray-200">
-        <tr v-for="(route,index) in routeStore.routeList" :key="index">
+        <tr v-for="(route,index) in routeStore.routeList" :key="route.path ?? index">
           <td class="px-4 whitespace-nowrap text-sm text-gray-200">
             <div class="flex items-center gap-2 hover:scale-110 transition-transform duration-300 cursor-pointer" @click="openModalEditApp(route)">
-              <AppIcon v-bind="controlPanelIconProps(app(route.package))" size="xs"/>
-              <span class="pr-2">{{ app(route.package).name }}</span>
+              <AppIcon v-bind="controlPanelIconProps(routeApp(route))" size="xs"/>
+              <span class="pr-2" :class="{'text-gray-400': !routeApp(route)}">{{ routeApp(route)?.name ?? route.package }}</span>
             </div>
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300 ltr">
@@ -114,8 +114,8 @@ function deleteRoute(path) {
 
 }
 
-const app = (packageName) => {
-  return appStore.fetchAppByPackage(packageName);
+function routeApp(route) {
+  return appStore.fetchAppByPackage(route?.package);
 }
 
 </script>

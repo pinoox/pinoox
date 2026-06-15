@@ -1,7 +1,7 @@
 <template>
   <WidgetPreviewShell :loading="loading">
     <template #header>{{ clock.date || '—' }}</template>
-    <div class="widgetPreviewClock__time">{{ clock.moment || '--:--:--' }}</div>
+    <div class="widgetPreviewClock__time">{{ clock.moment || '--:--' }}</div>
   </WidgetPreviewShell>
 </template>
 
