@@ -138,7 +138,15 @@ function closeWindow() {
 }
 
 function minimizeWindow() {
-  controlPanelWindow.minimize(isFloating.value ? 'floating' : 'fullscreen');
+  if (isControlRoute(router.currentRoute.value)) {
+    controlPanelWindow.minimize(
+        isFloating.value ? 'floating' : 'fullscreen',
+        router.currentRoute.value.path,
+    );
+  } else {
+    controlPanelWindow.minimize(isFloating.value ? 'floating' : 'fullscreen');
+  }
+
   router.push({name: 'desktop'});
 }
 

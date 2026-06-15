@@ -51,11 +51,12 @@ watch(
       }
 
       if (isControlRoute(route)) {
+        controlPanelWindow.setLastPath(path);
         syncRouteSession();
         return;
       }
 
-      if (controlPanelWindow.isOpen) {
+      if (controlPanelWindow.isOpen && !controlPanelWindow.isMinimized) {
         controlPanelWindow.close();
       }
     },

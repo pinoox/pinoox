@@ -13,6 +13,7 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
         zIndex: 10050,
         topZ: 10050,
         restoreMode: 'fullscreen',
+        lastPath: '/control/apps',
     }),
     getters: {
         isOpen(state) {
@@ -38,6 +39,13 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
         updateRect(rect) {
             this.rect = {...rect};
         },
+        setLastPath(path) {
+            const normalized = String(path ?? '').trim();
+
+            if (normalized.startsWith('/control')) {
+                this.lastPath = normalized;
+            }
+        },
         syncFloatingRect() {
             const layout = useControlPanelLayoutStore();
 
@@ -47,13 +55,21 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
             this.mode = 'fullscreen';
             this.focus();
         },
-        enterFloating() {
-            this.syncFloatingRect();
+        enterFloating(resetRect = true) {
+            if (resetRect) {
+                this.syncFloatingRect();
+            }
+
             this.mode = 'floating';
             this.focus();
         },
-        minimize(restoreMode = 'fullscreen') {
+        minimize(restoreMode = 'fullscreen', path = null) {
             this.restoreMode = restoreMode === 'floating' ? 'floating' : 'fullscreen';
+
+            if (path) {
+                this.setLastPath(path);
+            }
+
             this.mode = 'minimized';
         },
         restoreSession() {
@@ -62,7 +78,7 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
             if (restoreMode === 'fullscreen') {
                 this.openFullscreen();
             } else {
-                this.enterFloating();
+                this.enterFloating(false);
             }
 
             return restoreMode;
