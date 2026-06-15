@@ -67,6 +67,37 @@
                 />
               </div>
             </header>
+            <section v-if="panelNotifications.length" class="dockbar__start-notices">
+              <div class="dockbar__start-notices-head">
+                <Icon :is="saxIcon.notifyInfo" size="xs"/>
+                <span>اعلان‌ها</span>
+                <span v-if="notificationStore.unreadCount" class="dockbar__start-notices-badge">
+                  {{ notificationStore.unreadCount }}
+                </span>
+              </div>
+              <ul class="dockbar__start-notices-list">
+                <li
+                    v-for="item in panelNotifications"
+                    :key="item.ntf_id"
+                    class="dockbar__start-notice"
+                    :class="{ 'is-unread': item.status === 'send' }"
+                >
+                  <div class="dockbar__start-notice-body">
+                    <strong class="dockbar__start-notice-title">{{ item.title }}</strong>
+                    <p v-if="item.message" class="dockbar__start-notice-text">{{ item.message }}</p>
+                    <span v-if="item.insert_jDate" class="dockbar__start-notice-date">{{ item.insert_jDate }}</span>
+                  </div>
+                  <button
+                      type="button"
+                      class="dockbar__start-notice-dismiss"
+                      aria-label="بستن"
+                      @click="dismissNotification(item.ntf_id)"
+                  >
+                    <Icon :is="saxIcon.notifyClose" size="xs"/>
+                  </button>
+                </li>
+              </ul>
+            </section>
             <div class="dockbar__start-body">
               <div v-if="filteredApps.length" class="dockbar__start-grid">
                 <button
@@ -243,7 +274,9 @@ import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js'
 import { systemDockApps, useDockApps, resolveAppRoute } from '@/views/composables/useDockApps.js';
 import { useAppStore } from '@/stores/modules/app.js';
 import { useAuthStore } from '@/stores/modules/auth.js';
+import { useNotificationStore } from '@/stores/modules/notification.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
+import { refreshNotifications } from '@/views/composables/useSystemNotifications.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
 import { userAvatarSrc, userDisplayName } from '@utils/helpers/userAvatar.js';
@@ -277,6 +310,7 @@ const TOOLTIP_GAP = 14;
 const router = useRouter();
 const appStore = useAppStore();
 const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
 const appViewWindow = useAppViewWindowStore();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
@@ -367,6 +401,12 @@ const { tone, remeasure } = useDockBackdropTone(selectedBackground, dockRoot);
 const toneClass = computed(() => `dockbar--tone-${tone.value}`);
 
 const userLabel = computed(() => userDisplayName(authStore.user));
+
+const panelNotifications = computed(() =>
+    notificationStore.items
+        .filter((item) => item?.status === 'send' || item?.status === 'seen')
+        .slice(0, 5),
+);
 
 const filteredApps = computed(() => {
   const list = appStore.appList ?? [];
@@ -487,6 +527,14 @@ function toggleAppsPanel() {
     clearTooltipTimers();
     tooltip.value = null;
 
+    refreshNotifications().then(() => {
+      const unreadIds = notificationStore.unreadItems.map((item) => item.ntf_id);
+
+      if (unreadIds.length) {
+        notificationStore.markSeen(unreadIds);
+      }
+    });
+
     nextTick(() => {
       appsSearchInput.value?.focus();
     });
@@ -516,6 +564,14 @@ async function logoutFromPanel() {
     await router.replace({ name: 'login' });
   } finally {
     authStore.finishLogout();
+  }
+}
+
+async function dismissNotification(ntfId) {
+  try {
+    await notificationStore.hide(ntfId);
+  } catch {
+    notificationStore.items = notificationStore.items.filter((item) => item.ntf_id !== ntfId);
   }
 }
 

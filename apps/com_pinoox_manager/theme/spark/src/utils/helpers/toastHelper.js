@@ -1,8 +1,8 @@
 import {notify} from '@kyvg/vue3-notification';
 
 const DEFAULT_OPTIONS = {
-    duration: 4200,
-    ignoreDuplicates: true,
+    duration: 5200,
+    ignoreDuplicates: false,
     pauseOnHover: true,
     closeOnClick: false,
 };

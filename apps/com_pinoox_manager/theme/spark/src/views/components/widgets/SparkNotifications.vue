@@ -1,47 +1,47 @@
 <template>
-  <Notifications
-      classes="spark-notification-shell"
-      position="top left"
-      :width="380"
-      :max="5"
-      :duration="4200"
-      :speed="320"
-      :pause-on-hover="true"
-      :ignore-duplicates="true"
-      :close-on-click="false"
-      animation-type="css"
-      animation-name="sparkNotificationIn"
-      class="spark-notifications"
-  >
-    <template #body="{ item, close }">
-      <article
-          class="spark-notification"
-          :class="notificationClass(item.type)"
-          role="alert"
-          aria-live="polite"
-      >
-        <span class="spark-notification__accent" aria-hidden="true"/>
-
-        <span class="spark-notification__icon" aria-hidden="true">
-          <Icon :is="iconFor(item.type)" size="md"/>
-        </span>
-
-        <div class="spark-notification__content">
-          <p v-if="item.title" class="spark-notification__title">{{ item.title }}</p>
-          <p v-if="item.text" class="spark-notification__text">{{ item.text }}</p>
-        </div>
-
-        <button
-            type="button"
-            class="spark-notification__close"
-            aria-label="بستن"
-            @click="close"
+  <Teleport to="body">
+    <Notifications
+        classes="spark-notification-shell"
+        position="top left"
+        :width="380"
+        :max="6"
+        :duration="5200"
+        :speed="320"
+        :pause-on-hover="true"
+        :ignore-duplicates="false"
+        :close-on-click="false"
+        class="spark-notifications"
+    >
+      <template #body="{ item, close }">
+        <article
+            class="spark-notification"
+            :class="notificationClass(item.type)"
+            role="alert"
+            aria-live="polite"
         >
-          <Icon :is="saxIcon.notifyClose" size="xs"/>
-        </button>
-      </article>
-    </template>
-  </Notifications>
+          <span class="spark-notification__accent" aria-hidden="true"/>
+
+          <span class="spark-notification__icon" aria-hidden="true">
+            <Icon :is="iconFor(item.type)" size="md"/>
+          </span>
+
+          <div class="spark-notification__content">
+            <p v-if="item.title" class="spark-notification__title">{{ item.title }}</p>
+            <p v-if="item.text" class="spark-notification__text">{{ item.text }}</p>
+          </div>
+
+          <button
+              type="button"
+              class="spark-notification__close"
+              aria-label="بستن"
+              @click="close"
+          >
+            <Icon :is="saxIcon.notifyClose" size="xs"/>
+          </button>
+        </article>
+      </template>
+    </Notifications>
+  </Teleport>
 </template>
 
 <script setup>

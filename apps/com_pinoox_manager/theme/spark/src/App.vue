@@ -72,6 +72,7 @@ import SparkNotifications from "@/views/components/widgets/SparkNotifications.vu
 import ManagerBootLoading from "@/views/components/layouts/ManagerBootLoading.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 import {pushSystemNotifications} from "@/views/composables/useSystemNotifications.js";
+import {useNotificationStore} from "@/stores/modules/notification.js";
 
 
 
@@ -125,7 +126,6 @@ watch(() => authStore.isAuth, async (loggedIn) => {
             await Promise.all([
                 appStore.getApps(),
                 routeStore.getRoutes(),
-                pushSystemNotifications(),
             ]);
 
         } finally {
@@ -134,6 +134,8 @@ watch(() => authStore.isAuth, async (loggedIn) => {
 
         }
 
+        await pushSystemNotifications();
+
     } else {
 
         optionsStore.reset();
@@ -141,6 +143,8 @@ watch(() => authStore.isAuth, async (loggedIn) => {
         appStore.destroyApps();
 
         routeStore.destroyRoutes();
+
+        useNotificationStore().reset();
 
     }
 

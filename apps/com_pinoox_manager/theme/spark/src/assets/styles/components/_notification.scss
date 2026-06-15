@@ -4,23 +4,39 @@
   z-index: 100000 !important;
   padding:
     max(1rem, calc(#{$toolbar-height} + 0.85rem))
-    0
+    max(1rem, env(safe-area-inset-right, 0px))
     0
     max(1rem, env(safe-area-inset-left, 0px)) !important;
   max-width: min(24rem, calc(100vw - 2rem));
   pointer-events: none;
 
+  &.vue-notification-group {
+    display: block !important;
+  }
+
   .vue-notification-wrapper {
     overflow: visible;
     pointer-events: auto;
+    margin-bottom: 0.65rem;
   }
 
   .spark-notification-shell {
-    margin: 0 0 0.65rem !important;
+    margin: 0 !important;
     padding: 0 !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
+  }
+
+  .vn-fade-enter-active,
+  .vn-fade-leave-active {
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+
+  .vn-fade-enter-from,
+  .vn-fade-leave-to {
+    opacity: 0;
+    transform: translateX(-16px);
   }
 }
 
@@ -123,36 +139,4 @@
   &--info {
     --spark-notification-accent: var(--color-accent);
   }
-}
-
-@keyframes sparkNotificationIn {
-  0% {
-    opacity: 0;
-    transform: translateX(-18px) scale(0.98);
-  }
-
-  100% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-}
-
-@keyframes sparkNotificationOut {
-  0% {
-    opacity: 1;
-    transform: translateX(0) scale(1);
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateX(-12px) scale(0.98);
-  }
-}
-
-.spark-notification-enter-active {
-  animation: sparkNotificationIn 0.32s ease-out;
-}
-
-.spark-notification-leave-active {
-  animation: sparkNotificationOut 0.24s ease-in;
 }
