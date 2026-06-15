@@ -20,7 +20,11 @@
             <ManagerBootLoading v-if="isBooting" key="boot"/>
             <div v-else key="desktop" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
                 <Toolbar v-if="hasToolbar"/>
-                <RouterView/>
+                <RouterView v-slot="{ Component }">
+                    <KeepAlive include="DesktopView">
+                        <component :is="Component"/>
+                    </KeepAlive>
+                </RouterView>
                 <Dockbar v-if="showDock" :apps="dockApps"/>
                 <AppViewAdvanced v-if="isAdvancedAppView"/>
             </div>

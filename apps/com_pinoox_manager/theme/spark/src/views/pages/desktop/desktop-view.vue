@@ -4,6 +4,8 @@
 </template>
 
 <script setup>
+defineOptions({ name: 'DesktopView' });
+
 import { computed, onMounted } from 'vue';
 import ClockWidget from '@/views/components/desktop-widgets/ClockWidget.vue';
 import StorageWidget from '@/views/components/desktop-widgets/StorageWidget.vue';
