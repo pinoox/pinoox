@@ -20,13 +20,14 @@
             <ManagerBootLoading v-if="isBooting" key="boot"/>
             <div v-else key="desktop" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
                 <Toolbar v-if="hasToolbar"/>
-                <RouterView v-slot="{ Component }">
+                <RouterView v-slot="{ Component, route }">
                     <KeepAlive include="DesktopView">
-                        <component :is="Component"/>
+                        <component :is="resolveMainComponent(Component, route)"/>
                     </KeepAlive>
                 </RouterView>
                 <Dockbar v-if="showDock" :apps="dockApps"/>
                 <AppViewAdvanced v-if="isAdvancedAppView"/>
+                <ControlPanelAdvanced v-if="isAdvancedAppView"/>
             </div>
         </Transition>
     </template>
@@ -68,9 +69,12 @@ import {useOptionsStore} from "@/stores/modules/options.js";
 import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
 import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
+import ControlPanelAdvanced from "@/views/pages/control/ControlPanelAdvanced.vue";
 import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
 import ManagerBootLoading from "@/views/components/layouts/ManagerBootLoading.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
+import {isControlRoute} from "@/views/composables/useControlPanel.js";
+import PageDesktop from "@/views/pages/desktop/desktop-view.vue";
 import {pushSystemNotifications} from "@/views/composables/useSystemNotifications.js";
 import {useNotificationStore} from "@/stores/modules/notification.js";
 
@@ -90,6 +94,14 @@ const optionsStore = useOptionsStore();
 const { dockApps } = useDockApps();
 const {isAdvanced: isAdvancedAppView} = useAppViewMode();
 const isBooting = ref(false);
+
+function resolveMainComponent(Component, route) {
+    if (isAdvancedAppView.value && isControlRoute(route)) {
+        return PageDesktop;
+    }
+
+    return Component;
+}
 
 
 

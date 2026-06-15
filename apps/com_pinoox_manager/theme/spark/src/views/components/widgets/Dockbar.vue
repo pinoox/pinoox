@@ -127,7 +127,7 @@
                   />
                   <span class="dockbar__start-user-name">{{ userLabel }}</span>
                 </button>
-                <button type="button" class="dockbar__start-foot-btn" @click="openControlPanel">
+                <button type="button" class="dockbar__start-foot-btn" @click="openControlPanelFromMenu">
                   <Icon :is="saxIcon.control" size="sm"/>
                   <span>کنترل پنل</span>
                 </button>
@@ -200,6 +200,9 @@
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
                     'item--launcher-open': item.action === 'launcher' && appsPanelOpen,
+                    'item--open': item.id === CONTROL_PANEL_ID && isControlPanelOpen(),
+                    'item--minimized': item.id === CONTROL_PANEL_ID && isControlPanelMinimized(),
+                    'item--active': item.id === CONTROL_PANEL_ID && isControlPanelActive(),
                   }"
                   :style="jiggleStyle(item.id)"
                   @click="onItemClick(item)"
@@ -276,6 +279,8 @@ import { useAppStore } from '@/stores/modules/app.js';
 import { useAuthStore } from '@/stores/modules/auth.js';
 import { useNotificationStore } from '@/stores/modules/notification.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
+import { CONTROL_PANEL_ID, useControlPanelWindowStore } from '@/stores/modules/controlPanelWindow.js';
+import { useControlPanel, isControlRoute } from '@/views/composables/useControlPanel.js';
 import { refreshNotifications } from '@/views/composables/useSystemNotifications.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
@@ -312,6 +317,8 @@ const appStore = useAppStore();
 const authStore = useAuthStore();
 const notificationStore = useNotificationStore();
 const appViewWindow = useAppViewWindowStore();
+const controlPanelWindow = useControlPanelWindowStore();
+const { openControlPanel } = useControlPanel();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
@@ -352,6 +359,30 @@ const dockAppsWithMinimized = computed(() => {
 
   return list;
 });
+
+function isControlPanelOpen() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return controlPanelWindow.isOpen;
+}
+
+function isControlPanelMinimized() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return controlPanelWindow.isMinimized;
+}
+
+function isControlPanelActive() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return controlPanelWindow.isActive;
+}
 
 function isAppMinimized(packageName) {
   if (!isAdvanced.value) {
@@ -546,14 +577,14 @@ function openAppFromPanel(app) {
   router.push(resolveAppRoute(app));
 }
 
-function openControlPanel() {
+function openControlPanelFromMenu() {
   closeAppsPanel();
-  router.push('/control/apps');
+  openControlPanel('/control/apps');
 }
 
 function openUserProfile() {
   closeAppsPanel();
-  router.push('/control/profile');
+  openControlPanel('/control/profile');
 }
 
 async function logoutFromPanel() {
@@ -598,6 +629,33 @@ function minimizeOpenApp(item, session) {
   if (router.currentRoute.value.name === 'app-view') {
     router.replace({name: 'desktop'});
   }
+}
+
+function activateControlPanel(item) {
+  if (!controlPanelWindow.isOpen) {
+    openControlPanel(item.route ?? '/control/apps');
+    return;
+  }
+
+  if (controlPanelWindow.isMinimized) {
+    controlPanelWindow.restoreSession();
+    openControlPanel(item.route ?? '/control/apps');
+    return;
+  }
+
+  if (controlPanelWindow.isActive) {
+    controlPanelWindow.minimize(
+        controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
+    );
+
+    if (isControlRoute(router.currentRoute.value)) {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  openControlPanel(item.route ?? '/control/apps');
 }
 
 function activateOpenApp(item) {
@@ -656,6 +714,11 @@ function onItemClick(item) {
   }
 
   closeAppsPanel();
+
+  if (item.id === CONTROL_PANEL_ID && isAdvanced.value) {
+    activateControlPanel(item);
+    return;
+  }
 
   if (isAdvanced.value && isAppOpen(item.id)) {
     activateOpenApp(item);

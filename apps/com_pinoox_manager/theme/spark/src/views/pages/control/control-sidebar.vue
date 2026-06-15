@@ -36,22 +36,29 @@
 
 <script setup>
 import {ref} from 'vue';
-import {useRouter} from 'vue-router';
 import {SidebarMenu} from 'vue-sidebar-menu';
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
 import {lucideSidebar} from "../../../const/icons.js";
 import LucideIcon from "../../components/widgets/LucideIcon.vue";
 import {useSidebarStore} from "../../composables/useSidebar.js";
+import {useControlPanel} from "../../composables/useControlPanel.js";
 
-const router = useRouter();
+defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+});
+
 const sidebar = useSidebarStore();
+const {closeControlPanel: dismissControlPanel} = useControlPanel();
 
 const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);
 };
 
 const closeControlPanel = () => {
-  router.push('/');
+  dismissControlPanel();
 };
 
 const menuIcon = (name) => ({
