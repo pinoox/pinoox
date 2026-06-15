@@ -1,22 +1,35 @@
-import {notify} from '@kyvg/vue3-notification';
+import { notify as packageNotify } from '@kyvg/vue3-notification';
+
+let notifyImpl = packageNotify;
+
+export function bindNotify(notify) {
+    if (typeof notify === 'function') {
+        notifyImpl = notify;
+    }
+}
+
+function dispatch(options) {
+    notifyImpl(options);
+}
 
 const DEFAULT_OPTIONS = {
     duration: 5200,
     ignoreDuplicates: false,
     pauseOnHover: true,
     closeOnClick: false,
+    group: '',
 };
 
 export function toast(options) {
     if (typeof options === 'string') {
-        return notify({
+        return dispatch({
             ...DEFAULT_OPTIONS,
             title: options,
             type: 'info',
         });
     }
 
-    return notify({
+    return dispatch({
         ...DEFAULT_OPTIONS,
         ...options,
     });

@@ -56,10 +56,6 @@ import {DEFAULT_FALLBACK_BACKGROUND} from "@utils/helpers/backgroundHelper.js";
 
 import {useRouteMeta} from "@views/composables/useRouteMeta.js";
 
-import {showSuccessAlert, showErrorAlert} from "@utils/helpers/alertHelper.js";
-
-import {httpEvent} from "@global";
-
 import {computed, ref, watch} from "vue";
 
 import {useAuthStore} from "@/stores/modules/auth.js";
@@ -108,12 +104,6 @@ const bgStyle = computed(() => {
     return { background: DEFAULT_FALLBACK_BACKGROUND };
 
 });
-
-
-
-httpEvent('error_response', showErrorAlert);
-
-httpEvent('response', showSuccessAlert);
 
 
 

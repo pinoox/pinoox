@@ -1,23 +1,67 @@
 import {toastSuccess, toastError, toastWarn} from '@utils/helpers/toastHelper.js';
-import {readApiErrorMessage, readApiMessage} from '@utils/apiEnvelope.js';
+import {isApiEnvelope, readApiErrorMessage, readApiMessage} from '@utils/apiEnvelope.js';
+
+function shouldShowAlert(config) {
+    return config?.alert !== false;
+}
+
+function resolveFlashMessage(body) {
+    const message = readApiMessage(body);
+
+    if (typeof message === 'string' && message.length > 0) {
+        return message;
+    }
+
+    return null;
+}
 
 export function showSuccessAlert(response) {
-    if (!response || response.config?.alert === false) return;
+    if (!response || !shouldShowAlert(response.config)) {
+        return;
+    }
 
-    const title = readApiMessage(response.data);
-    if (!title || typeof title !== 'string') return;
+    const body = response.data;
+
+    if (isApiEnvelope(body) && body.success === false) {
+        const title = readApiErrorMessage({response});
+
+        if (title) {
+            toastError(title);
+        }
+
+        return;
+    }
+
+    const title = resolveFlashMessage(body);
+
+    if (!title) {
+        return;
+    }
+
+    if (isApiEnvelope(body) && body.data === false) {
+        toastWarn(title);
+        return;
+    }
 
     toastSuccess(title);
 }
 
 export function showErrorAlert(error) {
-    if (!error.response || error.config?.alert === false) return;
+    if (!shouldShowAlert(error.config)) {
+        return;
+    }
 
-    const res = error.response;
     const title = readApiErrorMessage(error);
 
-    if (res.status >= 300 && res.status <= 400)
+    if (!title) {
+        return;
+    }
+
+    const status = error.response?.status;
+
+    if (status >= 300 && status <= 400) {
         toastWarn(title);
-    else
+    } else {
         toastError(title);
+    }
 }

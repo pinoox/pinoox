@@ -8,7 +8,8 @@ import router from "./router";
 import "@/assets/styles/tailwind-config.css";
 import "@/assets/styles/main.scss";
 import { createModal } from '@kolirt/vue-modal'
-import Notifications from '@kyvg/vue3-notification';
+import Notifications, { notify } from '@kyvg/vue3-notification';
+import { bindNotify } from '@utils/helpers/toastHelper.js';
 
 const app = createApp(App);
 
@@ -17,6 +18,7 @@ app.use(VueAxios, axios);
 app.use(store);
 app.use(router);
 app.use(Notifications);
+bindNotify(notify);
 app.use(createModal({
     groups: {
         default: {

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getUrl } from '@/boot.js';
 import {readApiErrorMessage} from "@utils/apiEnvelope.js";
+import {showSuccessAlert, showErrorAlert} from '@utils/helpers/alertHelper.js';
 
 const baseUrl = getUrl().API || import.meta.env.VITE_API_PATH;
 
@@ -58,6 +59,7 @@ http.interceptors.request.use((request) => {
 });
 
 http.interceptors.response.use((response) => {
+    showSuccessAlert(response);
     callActions(actions.response, response);
 
     response.config.numProcessing--;
@@ -68,13 +70,17 @@ http.interceptors.response.use((response) => {
 
     return response;
 }, function (error) {
-    error.config.numProcessing--;
+    if (error.config) {
+        error.config.numProcessing--;
+    }
 
+    showErrorAlert(error);
     callActions(actions.error_response, error);
     callActions(actions.error, error);
 
-    if (!error.config.error)
+    if (!error.config?.error) {
         return Promise.reject(error);
+    }
 
     return Promise.reject(readApiErrorMessage(error));
 });

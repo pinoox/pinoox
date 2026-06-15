@@ -34,12 +34,32 @@ export function unwrapApiResponse(response) {
     return unwrapApiBody(response?.data, {status: response?.status ?? null})
 }
 
+function isDisplayMessage(message) {
+    return typeof message === 'string' && message.length > 0 && message !== 'OK'
+}
+
 export function readApiMessage(body) {
-    if (!isApiEnvelope(body)) {
-        return typeof body?.message === 'string' ? body.message : null
+    if (body == null || typeof body !== 'object') {
+        return null
     }
 
-    return typeof body.message === 'string' && body.message !== 'OK' ? body.message : null
+    if (!isApiEnvelope(body)) {
+        if (isDisplayMessage(body.message)) {
+            return body.message
+        }
+
+        return null
+    }
+
+    if (isDisplayMessage(body.message)) {
+        return body.message
+    }
+
+    if (isDisplayMessage(body.meta?.message)) {
+        return body.meta.message
+    }
+
+    return null
 }
 
 export function readApiErrorMessage(error) {

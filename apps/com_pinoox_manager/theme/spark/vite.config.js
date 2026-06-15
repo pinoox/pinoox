@@ -18,6 +18,9 @@ export default defineConfig(({command, mode}) => {
                 input: ['src/main.js', 'src/assets/styles/app-view-error.scss'],
                 output: {
                     manualChunks(id) {
+                        if (id.includes('@kyvg/vue3-notification')) {
+                            return undefined;
+                        }
                         if (id.includes('vendor')) return 'plugins';
                         if (id.includes('node_modules')) return 'vendor';
                     },
@@ -40,6 +43,7 @@ export default defineConfig(({command, mode}) => {
             })
         ],
         resolve: {
+            dedupe: ['vue', '@kyvg/vue3-notification'],
             alias: {
                 '~': fileURLToPath(new URL('./', import.meta.url)),
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
