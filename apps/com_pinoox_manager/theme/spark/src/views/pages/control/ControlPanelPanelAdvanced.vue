@@ -45,7 +45,7 @@
           class="controlPanelWindow__body @container"
           :class="{ 'is-interacting': interacting }"
       >
-        <RouterView/>
+        <ControlPanelFrozenRouterView/>
       </div>
 
       <div
@@ -70,7 +70,7 @@ import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
-import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
+import ControlPanelFrozenRouterView from '@/views/pages/control/ControlPanelFrozenRouterView.vue';
 
 const props = defineProps({
   overlay: {

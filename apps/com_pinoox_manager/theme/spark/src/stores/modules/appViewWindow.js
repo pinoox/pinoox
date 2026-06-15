@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 
 function defaultRect(index = 0) {
     const vw = window.innerWidth;
@@ -145,6 +146,13 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
             }
 
             this.selectedPackage = packageName;
+
+            const controlPanelWindow = useControlPanelWindowStore();
+
+            if (this.topZ <= controlPanelWindow.topZ) {
+                this.topZ = controlPanelWindow.topZ;
+            }
+
             this.topZ += 1;
             this.sessions[packageName].zIndex = this.topZ;
         },

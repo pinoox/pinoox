@@ -34,7 +34,6 @@ function syncRouteSession() {
   }
 
   if (controlPanelWindow.mode === 'floating') {
-    controlPanelWindow.focus();
     return;
   }
 
