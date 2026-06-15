@@ -1,7 +1,5 @@
 import { onMounted, onUnmounted, ref } from 'vue';
 
-const DEFAULT_TIMEZONE = 'Asia/Tehran';
-
 function resolveDateLocale() {
   const lang = document.documentElement.lang?.toLowerCase() ?? 'fa';
 
@@ -12,22 +10,22 @@ function resolveDateLocale() {
   return 'en-GB';
 }
 
-function createFormatters(timezone) {
-  return {
-    moment: new Intl.DateTimeFormat('en-GB', {
-      timeZone: timezone,
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }),
-    date: new Intl.DateTimeFormat(resolveDateLocale(), {
-      timeZone: timezone,
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-    }),
-  };
+/** Same time formatting as Toolbar — browser locale, no invalid IANA offset strings. */
+export function formatClockTime(now = new Date()) {
+  return now.toLocaleTimeString('fa-IR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
+export function formatClockDate(now = new Date()) {
+  return now.toLocaleDateString(resolveDateLocale(), {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 /**
@@ -38,8 +36,6 @@ export function useServerClock(fetchClockData) {
   const clock = ref({ date: '', moment: '' });
 
   let serverOffsetMs = 0;
-  let timezone = DEFAULT_TIMEZONE;
-  let formatters = createFormatters(timezone);
   let tickTimer = null;
 
   function serverNow() {
@@ -48,18 +44,13 @@ export function useServerClock(fetchClockData) {
 
   function tick() {
     const now = serverNow();
-    clock.value.moment = formatters.moment.format(now);
-    clock.value.date = formatters.date.format(now);
+    clock.value.moment = formatClockTime(now);
+    clock.value.date = formatClockDate(now);
   }
 
   async function syncOnce() {
     const data = await fetchClockData();
     const timestamp = Number(data?.timestamp ?? data?.time ?? 0);
-
-    if (data?.timezone) {
-      timezone = data.timezone;
-      formatters = createFormatters(timezone);
-    }
 
     if (timestamp > 0) {
       serverOffsetMs = timestamp * 1000 - Date.now();

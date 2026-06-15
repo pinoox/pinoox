@@ -23,6 +23,7 @@ import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/modules/auth.js";
 import { saxIcon } from "@/const/icons.js";
+import { formatClockTime } from "@/views/composables/useServerClock.js";
 
 const authStore = useAuthStore();
 const formattedTime = ref("");
@@ -32,7 +33,7 @@ const router = useRouter();
 
 const updateTime = () => {
   const now = new Date();
-  formattedTime.value = now.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+  formattedTime.value = formatClockTime(now);
   formattedDate.value = now.toLocaleDateString("fa-IR");
 };
 

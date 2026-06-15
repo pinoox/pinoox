@@ -24,17 +24,16 @@ class WidgetController extends Api
     {
         $timezone = Date::timezone();
         $isFa = Date::isJalali() || app()->lang() === 'fa';
+        $instant = Date::now($timezone);
+        $timestamp = $instant->getTimestamp();
 
         if ($isFa) {
             $now = Date::jalali('now', $timezone);
             $date = $now->format('%A %d %B %Y');
             $moment = $now->format('H:i');
-            $timestamp = $now->timestamp();
         } else {
-            $now = Date::now($timezone);
-            $date = $now->format('l d F Y');
-            $moment = $now->format('H:i');
-            $timestamp = $now->getTimestamp();
+            $date = $instant->format('l d F Y');
+            $moment = $instant->format('H:i');
         }
 
         return [
