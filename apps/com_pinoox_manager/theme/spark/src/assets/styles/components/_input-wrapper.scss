@@ -82,11 +82,6 @@
     flex-shrink: 0;
     padding-inline: 0.85rem 0.35rem;
     color: rgba(255, 255, 255, 0.55);
-
-    :deep(svg) {
-      width: 1.15rem;
-      height: 1.15rem;
-    }
   }
 
   &__prefix {

@@ -31,12 +31,12 @@
             {{ currentSite }}/{{ route.path }}
           </td>
           <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-            <button @click="editRoute(route)" v-if="!route.is_lock" class=" hover:text-blue-300 ml-4">
-              <Icon :is="saxIcon.edit"></Icon>
+            <button @click="editRoute(route)" v-if="!route.is_lock" class="hover:text-blue-300 ml-4">
+              <Icon :is="saxIcon.edit" class="pageRoutes__action-icon" size="sm"/>
             </button>
             <button @click="deleteRoute(route.path)" v-if="!route.is_lock && route.path !== '/'"
                     class="hover:text-red-700 ml-4">
-              <Icon :is="saxIcon.remove"></Icon>
+              <Icon :is="saxIcon.remove" class="pageRoutes__action-icon" size="sm"/>
             </button>
           </td>
         </tr>

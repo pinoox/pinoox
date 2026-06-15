@@ -53,8 +53,7 @@
   }
 
   &__back-icon {
-    width: 1rem;
-    height: 1rem;
+    flex-shrink: 0;
   }
 
   &__head-center {
@@ -66,8 +65,6 @@
   }
 
   &__head-icon {
-    width: 1.15rem;
-    height: 1.15rem;
     color: var(--color-primary);
     flex-shrink: 0;
   }
@@ -176,8 +173,6 @@
   }
 
   &__icon {
-    width: 2.1rem;
-    height: 2.1rem;
     color: rgba(255, 255, 255, 0.95);
   }
 

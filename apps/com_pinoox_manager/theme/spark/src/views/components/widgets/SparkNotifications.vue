@@ -23,7 +23,7 @@
         <span class="spark-notification__accent" aria-hidden="true"/>
 
         <span class="spark-notification__icon" aria-hidden="true">
-          <Icon :is="iconFor(item.type)"/>
+          <Icon :is="iconFor(item.type)" size="md"/>
         </span>
 
         <div class="spark-notification__content">
@@ -37,7 +37,7 @@
             aria-label="بستن"
             @click="close"
         >
-          <Icon :is="saxIcon.notifyClose"/>
+          <Icon :is="saxIcon.notifyClose" size="xs"/>
         </button>
       </article>
     </template>

@@ -9,11 +9,11 @@
       @update:collapsed="onToggleCollapse"
   >
     <template v-slot:toggle-icon>
-      <Icon :is="sidebar.isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight"/>
+      <Icon :is="sidebar.isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight" size="sm"/>
     </template>
 
     <template #icon>
-      <Icon :is="saxIcon.arrowLeft"/>
+      <Icon :is="saxIcon.arrowLeft" size="sm"/>
     </template>
 
   </sidebar-menu>

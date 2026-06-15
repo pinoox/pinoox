@@ -10,6 +10,13 @@ $color-text: #bcbcbc;
 
 $bg-blur: rgba(0, 0, 0, 0.2);
 
+$icon-size-xs: 0.875rem;
+$icon-size-sm: 1rem;
+$icon-size-md: 1.25rem;
+$icon-size-lg: 1.5rem;
+$icon-size-xl: 1.75rem;
+$icon-size-2xl: 2rem;
+
 .v-sidebar-menu {
   --vsm-item-active-line-color: var(--color-primary);
 }

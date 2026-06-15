@@ -2,12 +2,12 @@
   <section class="marketPage">
     <header class="marketPage__head">
       <button type="button" class="marketPage__back" @click="$router.push('/')">
-        <Icon :is="saxIcon.back" class="marketPage__back-icon"/>
+        <Icon :is="saxIcon.back" class="marketPage__back-icon" size="sm"/>
         <span>بازگشت</span>
       </button>
 
       <div class="marketPage__head-center">
-        <Icon :is="saxIcon.market" class="marketPage__head-icon"/>
+        <Icon :is="saxIcon.market" class="marketPage__head-icon" size="sm"/>
         <h1 class="marketPage__head-title">مارکت پینوکس</h1>
       </div>
 
@@ -38,7 +38,7 @@
           <div class="marketSoon__features">
             <div v-for="item in features" :key="item.title" class="marketSoon__feature">
               <span class="marketSoon__feature-icon">
-                <Icon :is="item.icon"/>
+                <Icon :is="item.icon" size="md"/>
               </span>
               <strong>{{ item.title }}</strong>
               <p>{{ item.text }}</p>

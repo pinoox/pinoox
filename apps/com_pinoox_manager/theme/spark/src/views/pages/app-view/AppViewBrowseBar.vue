@@ -15,7 +15,7 @@
           title="صفحه قبل"
           @click="$emit('goBack')"
       >
-        <Icon :is="saxIcon.arrowLeft" class="appView__toolIcon"/>
+        <Icon :is="saxIcon.arrowLeft" class="appView__toolIcon" size="sm"/>
       </button>
 
       <button
@@ -25,7 +25,7 @@
           title="صفحه بعد"
           @click="$emit('goForward')"
       >
-        <Icon :is="saxIcon.arrowRight" class="appView__toolIcon"/>
+        <Icon :is="saxIcon.arrowRight" class="appView__toolIcon" size="sm"/>
       </button>
 
       <button
@@ -35,7 +35,7 @@
           title="بازآوری صفحه"
           @click="$emit('reload')"
       >
-        <Icon :is="saxIcon.refresh" class="appView__toolIcon" :class="{ 'is-spinning': loading }"/>
+        <Icon :is="saxIcon.refresh" class="appView__toolIcon" size="sm" :class="{ 'is-spinning': loading }"/>
       </button>
 
       <button
@@ -45,7 +45,7 @@
           title="اطلاعات برنامه"
           @click="$emit('openPageInfo')"
       >
-        <Icon :is="saxIcon.guide" class="appView__toolIcon"/>
+        <Icon :is="saxIcon.guide" class="appView__toolIcon" size="sm"/>
       </button>
     </div>
 
@@ -69,7 +69,7 @@
           title="اطلاعات برنامه"
           @click="$emit('openPageInfo')"
       >
-        <Icon :is="saxIcon.guide" class="appView__addressInfoIcon"/>
+        <Icon :is="saxIcon.guide" class="appView__addressInfoIcon" size="sm"/>
       </button>
     </div>
   </div>

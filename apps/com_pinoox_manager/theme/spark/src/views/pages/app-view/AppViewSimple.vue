@@ -17,7 +17,7 @@
           title="بازآوری صفحه"
           @click="reload"
       >
-        <Icon :is="saxIcon.refresh" class="appView__reload-icon" :class="{ 'is-spinning': loading }"/>
+        <Icon :is="saxIcon.refresh" class="appView__reload-icon" size="sm" :class="{ 'is-spinning': loading }"/>
         <span>بازآوری</span>
       </button>
     </div>

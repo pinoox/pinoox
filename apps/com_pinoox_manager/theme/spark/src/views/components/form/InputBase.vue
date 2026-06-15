@@ -8,7 +8,7 @@
         class="inputWrapper__icon"
         aria-hidden="true"
     >
-      <Icon :is="icon"/>
+      <Icon :is="icon" size="sm"/>
     </span>
 
     <span
