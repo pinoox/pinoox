@@ -7,7 +7,7 @@
     </template>
 
     <div v-if="!!appStore.appList && appStore.appList.length>0">
-      <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-6">
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4 sm:gap-6">
         <div
             v-for="app in appStore.appList"
             :key="app.package_name"

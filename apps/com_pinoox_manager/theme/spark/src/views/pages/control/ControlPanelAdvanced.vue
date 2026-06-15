@@ -14,11 +14,13 @@ import {watch} from 'vue';
 import {useRoute} from 'vue-router';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
+import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
 import ControlPanelPanelAdvanced from '@/views/pages/control/ControlPanelPanelAdvanced.vue';
 
 const route = useRoute();
 const controlPanelWindow = useControlPanelWindowStore();
+const layout = useControlPanelLayoutStore();
 const {isSimple} = useAppViewMode();
 
 function syncRouteSession() {
@@ -63,6 +65,12 @@ watch(
 watch(isSimple, (simple) => {
   if (simple) {
     controlPanelWindow.dismiss();
+  }
+});
+
+watch(() => layout.isMobile, () => {
+  if (controlPanelWindow.mode === 'floating') {
+    controlPanelWindow.syncFloatingRect();
   }
 });
 </script>

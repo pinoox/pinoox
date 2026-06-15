@@ -85,6 +85,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {lucideSidebar} from '@/const/icons.js';
 import LucideIcon from '@/views/components/widgets/LucideIcon.vue';
 import {useSidebarStore} from '@/views/composables/useSidebar.js';
+import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {
     controlMenuItems,
     isControlMenuItemActive,
@@ -93,6 +94,7 @@ import {
 const router = useRouter();
 const route = useRoute();
 const sidebar = useSidebarStore();
+const layout = useControlPanelLayoutStore();
 
 const openIndex = ref(null);
 const flyout = ref(null);
@@ -177,6 +179,7 @@ function navigate(href) {
     }
 
     closeFlyout();
+    layout.closeMobileSidebar();
     router.push(href);
 }
 

@@ -15,7 +15,7 @@
     bottom: 0;
     right: 0;
     z-index: 10;
-    transition: width 0.3s ease-in-out;
+    transition: width 0.3s ease-in-out, transform 0.25s ease;
     overflow: visible;
   }
 
@@ -31,6 +31,23 @@
       right: $sidebar-width-collapsed;
       width: calc(100% - #{$sidebar-width-collapsed});
     }
+  }
+
+  &__menuToggle {
+    position: absolute;
+    top: 0.65rem;
+    inset-inline-start: 0.65rem;
+    z-index: 12;
+  }
+
+  &__mobileBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 35;
+    border: none;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.45);
+    cursor: default;
   }
 
   &--embedded {
@@ -53,6 +70,72 @@
     .pageControl__page {
       height: 100%;
     }
+
+    .page {
+      margin: 0.35rem;
+      height: calc(100% - 0.7rem);
+      min-height: 0;
+    }
+
+    .page__content {
+      padding: 0.75rem;
+    }
+
+    .page__toolbar {
+      overflow-x: auto;
+      flex-wrap: nowrap;
+      scrollbar-width: thin;
+    }
+  }
+
+  &--mobile {
+    .pageControl__page {
+      width: 100% !important;
+      right: 0 !important;
+      padding-top: 2.75rem;
+    }
+
+    .pageControl__sidebar {
+      width: min(300px, 88vw);
+      transform: translateX(100%);
+      z-index: 40;
+    }
+
+    &.pageControl--mobileSidebarOpen .pageControl__sidebar {
+      transform: translateX(0);
+    }
+
+    .page {
+      margin: 0.25rem;
+      height: calc(100% - 0.5rem);
+      border-radius: 0.45rem;
+    }
+
+    .page__header {
+      padding: 0.75rem;
+    }
+
+    .page__header-title {
+      font-size: 1rem;
+    }
+
+    .page__content {
+      padding: 0.65rem;
+    }
+
+    .page__toolbar {
+      height: auto;
+      min-height: 46px;
+      padding: 0.35rem;
+      gap: 0.35rem;
+    }
+
+    .page__toolbar .toolbarMenu {
+      padding: 0.55rem 0.7rem;
+      height: auto;
+      min-height: 36px;
+      white-space: nowrap;
+    }
   }
 }
 
@@ -72,6 +155,10 @@
   .appView__title-icon {
     opacity: 0.92;
   }
+
+  &.is-floating .appView__shell.is-floatingShell {
+    max-height: calc(100vh - 112px);
+  }
 }
 
 .controlPanelSimple {
@@ -84,5 +171,52 @@
   .pageControl--embedded {
     background: transparent;
     backdrop-filter: none;
+  }
+
+  .appView__toolbar {
+    gap: 0.55rem;
+    flex-wrap: wrap;
+  }
+}
+
+.controlPanelMenuToggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 0.55rem;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+
+  &:hover,
+  &.is-active {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+}
+
+@media (max-width: 1024px) {
+  .pageControl:not(.pageControl--embedded) {
+    .pageControl__page.collapsed {
+      right: $sidebar-width-collapsed;
+      width: calc(100% - #{$sidebar-width-collapsed});
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .controlPanelSimple .appView__back {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.78rem;
+  }
+
+  .controlPanelSimple .appView__title {
+    font-size: 0.82rem;
   }
 }

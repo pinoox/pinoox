@@ -25,7 +25,7 @@
                         <component :is="resolveMainComponent(Component, route)"/>
                     </KeepAlive>
                 </RouterView>
-                <Dockbar v-if="showDock" :apps="dockApps"/>
+                <Dockbar v-if="showDockBar" :apps="dockApps"/>
                 <AppViewAdvanced v-if="isAdvancedAppView"/>
                 <ControlPanelAdvanced v-if="isAdvancedAppView"/>
             </div>
@@ -55,7 +55,7 @@ import {ModalOverlay, ModalTarget} from '@kolirt/vue-modal';
 import {useBackground} from "./views/composables/useBackground.js";
 import {DEFAULT_FALLBACK_BACKGROUND} from "@utils/helpers/backgroundHelper.js";
 
-import {useRouteMeta} from "@views/composables/useRouteMeta.js";
+import {useManagerChrome} from "@/views/composables/useManagerChrome.js";
 
 import {computed, ref, watch} from "vue";
 
@@ -82,7 +82,7 @@ import {useNotificationStore} from "@/stores/modules/notification.js";
 
 const {selectedBackground} = useBackground();
 
-const {hasToolbar, isSingle, showDock} = useRouteMeta();
+const {hasToolbar, isSingle, showDockBar} = useManagerChrome();
 
 const authStore = useAuthStore();
 

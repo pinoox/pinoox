@@ -33,6 +33,8 @@
             @toggle-float="toggleFloating"
         />
 
+        <ControlPanelMenuToggle v-if="layout.isMobile"/>
+
         <div class="appView__title">
           <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
           <span>کنترل پنل</span>
@@ -57,14 +59,17 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import {computed, onMounted, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
+import {fitControlPanelRectAboveDock} from '@/stores/modules/controlPanelLayout.js';
+import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
+import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
 
 const props = defineProps({
   overlay: {
@@ -83,6 +88,7 @@ const props = defineProps({
 
 const router = useRouter();
 const controlPanelWindow = useControlPanelWindowStore();
+const layout = useControlPanelLayoutStore();
 const shellRef = ref(null);
 
 const isFloating = computed(() => props.overlay);
@@ -106,7 +112,7 @@ const {
   isDragging,
   isResizing,
 } = useAppViewFloating(shellRef, sessionRect, {
-  onRectCommit: (rect) => controlPanelWindow.updateRect(rect),
+  onRectCommit: (rect) => controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect)),
 });
 
 function onPanelFocus() {
@@ -144,4 +150,8 @@ function toggleFloating() {
 
   controlPanelWindow.enterFloating();
 }
+
+onMounted(() => {
+  layout.bindViewport();
+});
 </script>

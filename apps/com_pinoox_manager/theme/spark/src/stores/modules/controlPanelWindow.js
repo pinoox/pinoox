@@ -1,23 +1,15 @@
 import {defineStore} from 'pinia';
+import {
+    defaultControlPanelRect,
+    useControlPanelLayoutStore,
+} from '@/stores/modules/controlPanelLayout.js';
 
 export const CONTROL_PANEL_ID = 'control';
-
-function defaultRect() {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-
-    return {
-        x: Math.round(vw * 0.11),
-        y: Math.round(vh * 0.09),
-        w: Math.round(vw * 0.78),
-        h: Math.round(vh * 0.82),
-    };
-}
 
 export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
     state: () => ({
         mode: 'hidden',
-        rect: defaultRect(),
+        rect: defaultControlPanelRect(),
         zIndex: 10050,
         topZ: 10050,
         restoreMode: 'fullscreen',
@@ -46,11 +38,17 @@ export const useControlPanelWindowStore = defineStore('controlPanelWindow', {
         updateRect(rect) {
             this.rect = {...rect};
         },
+        syncFloatingRect() {
+            const layout = useControlPanelLayoutStore();
+
+            this.rect = defaultControlPanelRect(layout.isMobile);
+        },
         openFullscreen() {
             this.mode = 'fullscreen';
             this.focus();
         },
         enterFloating() {
+            this.syncFloatingRect();
             this.mode = 'floating';
             this.focus();
         },

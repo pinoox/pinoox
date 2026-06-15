@@ -54,4 +54,5 @@ export const lucideSidebar = {
     market: 'store',
     chevronLeft: 'chevron-left',
     chevronRight: 'chevron-right',
+    menu: 'menu',
 };
