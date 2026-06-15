@@ -1,55 +1,66 @@
 <template>
     <div class="pageLogin">
+        <div class="pageLogin__scrim" aria-hidden="true"/>
 
         <div class="pageLogin__box">
             <div class="pageLogin__box--header">
-                <div class="pageLogin__box--header-pinoox">
-                    <img src="@/assets/media/pinoox/logo.png" alt="pinoox logo">
-                    <h1>pinoox manager</h1>
-
-
+                <div class="pageLogin__brand">
+                    <img src="@/assets/media/pinoox/logo.png" alt="pinoox logo" class="pageLogin__logo">
+                    <div class="pageLogin__brand-text">
+                        <h1>pinoox manager</h1>
+                        <p>برای ادامه وارد حساب کاربری شوید</p>
+                    </div>
                 </div>
             </div>
 
             <div class="pageLogin__box--body" @keyup.enter="handleLogin">
-                <div class="form">
-                    <Input v-model="params.username" type="text" label="نام کاربری"
-                           placeholder="نام کاربری را وارد کنید"/>
-                    <Input v-model="params.password" type="password" label="رمز عبور"
-                           placeholder="رمز عبور را وارد کنید"/>
+                <div class="pageLogin__form">
+                    <Input
+                        v-model="params.username"
+                        type="text"
+                        label="نام کاربری"
+                        placeholder="نام کاربری را وارد کنید"
+                    />
+                    <Input
+                        v-model="params.password"
+                        type="password"
+                        label="رمز عبور"
+                        placeholder="رمز عبور را وارد کنید"
+                    />
 
                     <Button
-                            label="ورود"
-                            variant="light"
-                            outline
-                            full-width
-                            :is-loading="isLoading"
-                            @click="handleLogin"
+                        class="pageLogin__submit"
+                        label="ورود به پنل"
+                        variant="primary"
+                        size="lg"
+                        full-width
+                        :is-loading="isLoading"
+                        @click="handleLogin"
                     />
                 </div>
             </div>
         </div>
 
-        <a href="http://pinoox.com/" target="_blank" class="pageLogin__copyright">pinoox.com</a>
-
+        <a href="http://pinoox.com/" target="_blank" rel="noopener noreferrer" class="pageLogin__copyright">
+            pinoox.com
+        </a>
     </div>
-
 </template>
 
 <script setup>
-import {nextTick, ref} from "vue";
+import {ref} from "vue";
 import {useRouter} from "vue-router";
 import {authAPI} from "@api/auth.js";
 import {useAuthStore} from "@/stores/modules/auth.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 
 const authStore = useAuthStore();
-const router = useRouter()
+const router = useRouter();
 const isLoading = ref(false);
 const params = ref({
     username: null,
     password: null,
-})
+});
 
 const handleLogin = () => {
     isLoading.value = true;

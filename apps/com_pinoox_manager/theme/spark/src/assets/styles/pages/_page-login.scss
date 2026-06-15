@@ -1,7 +1,6 @@
 @use '../base/variable' as *;
 
 .pageLogin {
-  backdrop-filter: blur(10px);
   width: 100%;
   height: 100%;
   position: relative;
@@ -9,124 +8,144 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-top: 2rem;
+  padding: 2rem 1rem;
+
+  &__scrim {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(0, 0, 0, 0.15) 0%, rgba(0, 0, 0, 0.45) 100%),
+      radial-gradient(circle at 50% 20%, transparent 0%, rgba(0, 0, 0, 0.35) 100%);
+  }
 
   &__box {
-    height: 33rem;
-    max-width: 450px;
-    width: 90%;
-    background: rgba(0, 0, 0, 0.4);
-    border-radius: 1rem;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    transform: scale(0.96);
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    position: relative;
+    z-index: 1;
+    width: min(100%, 26rem);
+    background: rgba(12, 10, 9, 0.52);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 1.25rem;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow:
+      0 24px 48px rgba(0, 0, 0, 0.35),
+      inset 0 1px 0 rgba(255, 255, 255, 0.08);
     display: flex;
     flex-direction: column;
+    animation: loginFadeUp 0.55s ease-out;
+  }
 
-    &:hover {
-      transform: scale(1);
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.75rem;
+    color: $color-text;
+  }
+
+  &__logo {
+    width: 4.5rem;
+    height: 4.5rem;
+    opacity: 0.92;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.35));
+  }
+
+  &__brand-text {
+    h1 {
+      margin: 0;
+      font-size: 0.95rem;
+      letter-spacing: 0.35rem;
+      text-transform: uppercase;
+      color: $color-title;
     }
 
-    &--header {
-      padding: 1rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    p {
+      margin: 0.65rem 0 0;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.62);
+      letter-spacing: 0;
+      text-transform: none;
+    }
+  }
 
-      &-pinoox {
-        padding: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        color: $color-text;
-        animation: fadeIn 1.2s ease-out;
+  &__box--header {
+    padding: 2rem 2rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 
-        img {
-          opacity: 0.8;
-          width: 4rem;
-          height: 4rem;
-          animation: bounceIn 1.2s ease-in-out;
-        }
+  &__box--body {
+    padding: 0 2rem 2rem;
+  }
 
-        h1 {
-          padding: 1rem 0;
-          font-size: 0.9em;
-          letter-spacing: 8px;
-          text-transform: uppercase;
-          animation: letterSpacing 3s infinite ease-in-out alternate;
-        }
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    .inputWrapper {
+      color: $color-text;
+
+      label {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.78);
       }
     }
 
-    &--body {
-      flex-grow: 1;
-      max-width: 75%;
-      width: 100%;
-      height: 100%;
-      margin: 4rem auto;
+    .inputWrapper__form {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 0.65rem;
+      color: #fff;
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 
-      .inputWrapper{
-        color: $color-text;
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.38);
+      }
+
+      &:focus {
+        border-color: rgba(var(--color-primary-rgb), 0.65);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
       }
     }
   }
 
+  &__submit {
+    margin-top: 1rem;
+    min-height: 3rem;
+    font-weight: 600;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 24px rgba(var(--color-primary-rgb), 0.28);
+  }
+
   &__copyright {
     position: fixed;
-    bottom: 2rem;
+    z-index: 1;
+    bottom: 1.5rem;
     letter-spacing: 2px;
-    font-size: 1rem;
-    opacity: 0.4;
-    font-weight: 100;
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.55);
+    text-decoration: none;
+    transition: color 0.2s ease, opacity 0.2s ease;
 
     &:hover {
-      cursor: pointer;
-      color: #018eed;
+      color: #fff;
       opacity: 1;
     }
   }
 }
 
-// Keyframe Animations
-@keyframes letterSpacing {
-  0% {
-    letter-spacing: 5px;
-    opacity: 0.6;
-  }
-  50% {
-    letter-spacing: 8px;
-    opacity: 1;
-  }
-  100% {
-    letter-spacing: 5px;
-    opacity: 0.6;
-  }
-}
-
-@keyframes fadeIn {
+@keyframes loginFadeUp {
   0% {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(18px);
   }
   100% {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes bounceIn {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  60% {
-    opacity: 1;
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
   }
 }
