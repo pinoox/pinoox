@@ -7,8 +7,8 @@ import { PINOOX_ICON_GRADIENT } from '@/const/pinooxBrand.js';
 
 export const systemDockApps = [
     { id: 'apps', name: 'اپ‌ها', action: 'launcher', route: null, icon: saxIcon.manager, image: null },
-    { id: 'market', name: 'مارکت', route: '/market', icon: saxIcon.market, image: null },
     { id: 'control', name: 'کنترل پنل', route: '/control/apps', icon: saxIcon.control, image: null },
+    { id: 'market', name: 'مارکت', route: '/market', icon: saxIcon.market, image: null },
 ];
 
 export function resolveAppRoute(app) {
