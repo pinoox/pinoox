@@ -170,6 +170,8 @@
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    container-type: inline-size;
+    container-name: control-panel;
 
     &.is-interacting {
       pointer-events: none;
@@ -190,6 +192,8 @@
 
   .appView__frame {
     background: transparent;
+    container-type: inline-size;
+    container-name: control-panel;
   }
 
   .pageControl--embedded {

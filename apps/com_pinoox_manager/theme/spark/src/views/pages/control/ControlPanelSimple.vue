@@ -18,11 +18,12 @@
       </div>
     </div>
 
-    <div class="appView__frame controlPanelSimple__frame">
+    <div class="appView__frame controlPanelSimple__frame @container">
       <div
           class="pageControl pageControl--embedded"
           :class="{
             'pageControl--mobile': layout.isMobile,
+            'pageControl--compact': layout.isCompact,
             'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
             'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
           }"

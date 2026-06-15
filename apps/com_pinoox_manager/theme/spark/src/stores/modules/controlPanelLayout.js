@@ -1,7 +1,7 @@
 import {defineStore} from 'pinia';
 
-const MOBILE_MAX = 768;
-const COMPACT_MAX = 1024;
+export const MOBILE_MAX = 768;
+export const COMPACT_MAX = 1024;
 const DOCK_CLEARANCE = 112;
 
 let resizeHandler = null;
@@ -44,8 +44,23 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
         isCompact: false,
         mobileSidebarOpen: false,
         viewportBound: false,
+        frameWidthSource: false,
+        frameWidth: 0,
     }),
     actions: {
+        applyBreakpoints(width) {
+            const safeWidth = Math.max(0, Math.round(width));
+
+            this.isMobile = safeWidth <= MOBILE_MAX;
+            this.isCompact = safeWidth <= COMPACT_MAX;
+
+            if (!this.isMobile) {
+                this.mobileSidebarOpen = false;
+            }
+        },
+        syncFromViewport() {
+            this.applyBreakpoints(window.innerWidth);
+        },
         bindViewport() {
             if (this.viewportBound) {
                 return;
@@ -54,13 +69,8 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
             this.viewportBound = true;
 
             const update = () => {
-                const width = window.innerWidth;
-
-                this.isMobile = width <= MOBILE_MAX;
-                this.isCompact = width <= COMPACT_MAX;
-
-                if (!this.isMobile) {
-                    this.mobileSidebarOpen = false;
+                if (!this.frameWidthSource) {
+                    this.syncFromViewport();
                 }
             };
 
@@ -76,6 +86,16 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
             window.removeEventListener('resize', resizeHandler);
             resizeHandler = null;
             this.viewportBound = false;
+        },
+        setFrameWidth(width) {
+            this.frameWidthSource = true;
+            this.frameWidth = Math.max(0, Math.round(width));
+            this.applyBreakpoints(this.frameWidth);
+        },
+        clearFrameWidth() {
+            this.frameWidthSource = false;
+            this.frameWidth = 0;
+            this.syncFromViewport();
         },
         toggleMobileSidebar() {
             this.mobileSidebarOpen = !this.mobileSidebarOpen;

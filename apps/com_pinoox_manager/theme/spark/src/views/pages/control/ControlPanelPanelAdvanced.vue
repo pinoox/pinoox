@@ -42,7 +42,7 @@
       </header>
 
       <div
-          class="controlPanelWindow__body"
+          class="controlPanelWindow__body @container"
           :class="{ 'is-interacting': interacting }"
       >
         <RouterView/>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref} from 'vue';
+import {computed, ref} from 'vue';
 import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
@@ -67,6 +67,7 @@ import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js
 import {fitControlPanelRectAboveDock} from '@/stores/modules/controlPanelLayout.js';
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
+import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
 import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
@@ -104,6 +105,8 @@ const panelStyle = computed(() => {
   return {zIndex: props.zIndex};
 });
 
+const {updateShellWidth} = useControlPanelShellLayout(shellRef, isFloating);
+
 const {
   shellStyle: floatingStyle,
   onDragStart,
@@ -112,7 +115,10 @@ const {
   isDragging,
   isResizing,
 } = useAppViewFloating(shellRef, sessionRect, {
-  onRectCommit: (rect) => controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect)),
+  onRectCommit: (rect) => {
+    controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect));
+    updateShellWidth();
+  },
 });
 
 function onPanelFocus() {
@@ -158,8 +164,4 @@ function toggleFloating() {
 
   controlPanelWindow.enterFloating();
 }
-
-onMounted(() => {
-  layout.bindViewport();
-});
 </script>

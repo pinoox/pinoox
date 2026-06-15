@@ -4,6 +4,7 @@
       :class="{
         'pageControl--embedded': embedded,
         'pageControl--mobile': layout.isMobile,
+        'pageControl--compact': layout.isCompact,
         'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
         'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
       }"

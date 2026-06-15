@@ -70,7 +70,10 @@ watch(isSimple, (simple) => {
 });
 
 watch(() => layout.isMobile, () => {
-  if (controlPanelWindow.mode === 'floating') {
+  if (
+      controlPanelWindow.mode === 'floating'
+      && !layout.frameWidthSource
+  ) {
     controlPanelWindow.syncFloatingRect();
   }
 });
