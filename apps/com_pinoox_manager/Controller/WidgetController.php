@@ -16,9 +16,10 @@ namespace App\com_pinoox_manager\Controller;
 use App\com_pinoox_manager\Component\StorageHelper;
 use App\com_pinoox_manager\Component\WidgetHelper;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\Date;
 
-class WidgetController extends Api
+class WidgetController extends ApiController
 {
     public function clock()
     {
@@ -82,11 +83,9 @@ class WidgetController extends Api
         $result = StorageHelper::saveSettings($mode, $path, $limitGb);
 
         if (empty($result['saved']))
-            return self::error($result['message'] ?? 'ذخیره تنظی�
-ات انجا�
- نشد');
+            return $this->error($result['message'] ?? 'manager.storage_settings_save_failed');
 
-        return $result;
+        return $this->message('manager.storage_settings_saved_successfully', $result);
     }
 
     public function settings()
@@ -105,18 +104,13 @@ class WidgetController extends Api
         $widgets = $request->payload('widgets', []);
 
         if (!is_array($widgets))
-            return self::error('فر�
-ت داده نا�
-عتبر است');
+            return $this->error('manager.invalid_payload');
 
         $result = WidgetHelper::save($widgets);
 
         if (empty($result['saved']))
-            return self::error($result['message'] ?? 'ذخیره تنظی�
-ات انجا�
- نشد');
+            return $this->error($result['message'] ?? 'manager.storage_settings_save_failed');
 
-        return $result;
+        return $this->message('manager.widgets_saved_successfully', $result);
     }
 }
-

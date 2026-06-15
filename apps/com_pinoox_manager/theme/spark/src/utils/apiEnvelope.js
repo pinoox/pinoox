@@ -35,31 +35,45 @@ export function unwrapApiResponse(response) {
 }
 
 function isDisplayMessage(message) {
-    return typeof message === 'string' && message.length > 0 && message !== 'OK'
+    if (typeof message !== 'string') {
+        return false;
+    }
+
+    const text = message.trim();
+
+    return text.length > 0 && text !== 'OK';
 }
 
 export function readApiMessage(body) {
     if (body == null || typeof body !== 'object') {
-        return null
+        return null;
     }
 
     if (!isApiEnvelope(body)) {
         if (isDisplayMessage(body.message)) {
-            return body.message
+            return body.message.trim();
         }
 
-        return null
+        return null;
+    }
+
+    if (body.success !== true) {
+        if (isDisplayMessage(body.message)) {
+            return body.message.trim();
+        }
+
+        return null;
     }
 
     if (isDisplayMessage(body.message)) {
-        return body.message
+        return body.message.trim();
     }
 
     if (isDisplayMessage(body.meta?.message)) {
-        return body.meta.message
+        return body.meta.message.trim();
     }
 
-    return null
+    return null;
 }
 
 export function readApiErrorMessage(error) {

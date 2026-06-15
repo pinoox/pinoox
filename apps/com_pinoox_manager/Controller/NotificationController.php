@@ -15,9 +15,10 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\NotificationHelper;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\Date;
 
-class NotificationController extends Api
+class NotificationController extends ApiController
 {
     public function index()
     {
@@ -27,7 +28,7 @@ class NotificationController extends Api
             return $ntf;
         }, $result);
 
-        return $this->message(null, $result);
+        return $this->ok($result);
     }
 
     public function hide(Request $request)
@@ -35,7 +36,9 @@ class NotificationController extends Api
         $ntf_id = $request->payload('ntf_id');
         $status = $ntf_id && NotificationHelper::updateStatus($ntf_id, NotificationHelper::hide);
 
-        return $status ? $this->message(null) : $this->message(null, false);
+        return $status
+            ? $this->message('manager.done_successfully')
+            : $this->deny('manager.error_happened');
     }
 
     public function seen(Request $request)
@@ -50,7 +53,7 @@ class NotificationController extends Api
             }
         }
 
-        return $this->message(null);
+        return $this->ok();
     }
 }
 

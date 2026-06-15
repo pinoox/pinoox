@@ -6,13 +6,13 @@ return [
     "required" => "مقدار :attribute الزامی است",
     'username_or_password_is_wrong' => 'نام کاربری یا رمز عبور اشتباه است',
     "email" => "فرمت :attribute معتبر نیست.",
-    "alpha_dash" => ":attribute باید شامل حروف الفبا و عدد و خظ تیره(-) باشد.",
-    "ascii" => ":attribute .باید شامل کاراکترها و نمادهای الفبایی تک بایتی باشد",
+    "alpha_dash" => ":attribute باید شامل حروف الفبا و عدد و خط تیره(-) باشد.",
+    "ascii" => ":attribute باید شامل کاراکترها و نمادهای الفبایی تک‌بایتی باشد",
     "different" => ":attribute و :other باید متفاوت باشند.",
     "same" => ":attribute و :other باید مانند هم باشند.",
     "confirmed" => ":attribute با تاییدیه مطابقت ندارد.",
     "mimes" => ":attribute با فرمت :values مجاز است.",
-    'uploaded' => 'فیلد :attribute به درستی اپلود نشد.',
+    'uploaded' => 'فیلد :attribute به درستی آپلود نشد.',
 
     "min" => [
         "numeric" => ":attribute نباید کوچکتر از :min باشد.",

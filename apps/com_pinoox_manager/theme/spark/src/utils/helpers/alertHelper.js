@@ -5,16 +5,6 @@ function shouldShowAlert(config) {
     return config?.alert !== false;
 }
 
-function resolveFlashMessage(body) {
-    const message = readApiMessage(body);
-
-    if (typeof message === 'string' && message.length > 0) {
-        return message;
-    }
-
-    return null;
-}
-
 export function showSuccessAlert(response) {
     if (!response || !shouldShowAlert(response.config)) {
         return;
@@ -22,28 +12,27 @@ export function showSuccessAlert(response) {
 
     const body = response.data;
 
-    if (isApiEnvelope(body) && body.success === false) {
-        const title = readApiErrorMessage({response});
-
-        if (title) {
-            toastError(title);
-        }
-
+    if (body == null || typeof body !== 'object') {
         return;
     }
 
-    const title = resolveFlashMessage(body);
+    const message = readApiMessage(body);
 
-    if (!title) {
+    if (isApiEnvelope(body) && body.success === false) {
+        toastError(message || readApiErrorMessage({response}));
+        return;
+    }
+
+    if (!message) {
         return;
     }
 
     if (isApiEnvelope(body) && body.data === false) {
-        toastWarn(title);
+        toastError(message);
         return;
     }
 
-    toastSuccess(title);
+    toastSuccess(message);
 }
 
 export function showErrorAlert(error) {

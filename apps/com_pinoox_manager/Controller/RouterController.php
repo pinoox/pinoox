@@ -16,9 +16,10 @@ namespace App\com_pinoox_manager\Controller;
 use App\com_pinoox_manager\Component\AppHelper;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppRouter;
 
-class RouterController extends Api
+class RouterController extends ApiController
 {
     public function getAll()
     {

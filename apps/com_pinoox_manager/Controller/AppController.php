@@ -17,11 +17,12 @@ use App\com_pinoox_manager\Component\AppHelper;
 use App\com_pinoox_manager\Component\AppIconPack;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\File;
 use Pinoox\Portal\Wizard\AppWizard;
 
-class AppController extends Api
+class AppController extends ApiController
 {
     const manualPath = 'downloads/packages/manual/';
 
@@ -65,10 +66,11 @@ class AppController extends Api
             AppEngine::config($packageName)
                 ->set($key, $config)
                 ->save();
-            return $this->message($config);
-        } else {
-            return $this->message(null, false);
+
+            return $this->message('manager.config_saved_successfully');
         }
+
+        return $this->deny('manager.invalid_request');
     }
 
     public function install(Request $request)
@@ -129,20 +131,22 @@ class AppController extends Api
     public function installPackage($filename)
     {
         if (empty($filename))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
+            return $this->deny('manager.request_install_app_not_valid');
 
         $pinFile = path(self::manualPath . $filename);
         if (!is_file($pinFile))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
+            return $this->deny('manager.request_install_app_not_valid');
+
         if (Wizard::installApp($pinFile)) {
-            return $this->message(t('manager.done_successfully'), true);
-        } else {
-            $message = Wizard::getMessage();
-            if (empty($message))
-                return $this->message(t('manager.request_install_app_not_valid'), false);
-            else
-                return $this->message($message, false);
+            return $this->message('manager.installed_successfully');
         }
+
+        $message = Wizard::getMessage();
+
+        if (empty($message))
+            return $this->deny('manager.request_install_app_not_valid');
+
+        return $this->deny($message);
     }
 
     public function files()
@@ -172,20 +176,21 @@ class AppController extends Api
         $filename = $request->payload('filename');
 
         if (empty($filename))
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         $pinFile = path(self::manualPath . $filename);
         if (!is_file($pinFile))
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         Wizard::deletePackageFile($pinFile);
-        return $this->message(t('manager.delete_successfully'));
+
+        return $this->message('manager.delete_successfully');
     }
 
     public function filesUpload(Request $request)
     {
         if (!$request->files->has('files'))
-            return $this->message(t('manager.invalid_request'), false);
+            return $this->deny('manager.invalid_request');
 
         $path = path(self::manualPath);
         if (!is_dir($path))
@@ -204,17 +209,20 @@ class AppController extends Api
         }
 
         if ($uploaded === 0)
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
-        return $this->message($uploaded === 1 ? t('manager.file_uploaded_correctly') : t('manager.files_uploaded_correctly'));
+        return $this->message(
+            $uploaded === 1 ? 'manager.file_uploaded_correctly' : 'manager.files_uploaded_correctly'
+        );
     }
 
     public function remove($packageName)
     {
         if (empty($packageName))
-            return $this->message(t('manager.request_not_valid'), false);
+            return $this->deny('manager.request_not_valid');
 
         Wizard::deleteApp($packageName);
-        return $this->message(t('manager.done_successfully'));
+
+        return $this->message('manager.delete_successfully');
     }
 }

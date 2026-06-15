@@ -43,7 +43,7 @@ export const mdiIcon ={
 
 /** Lucide names for control panel sidebar menu. */
 export const lucideSidebar = {
-    back: 'arrow-right',
+    close: 'x',
     widgets: 'layout-grid',
     apps: 'boxes',
     upload: 'upload',

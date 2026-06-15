@@ -14,11 +14,12 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Http;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Url;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
-class AccountController extends Api
+class AccountController extends ApiController
 {
     private function decodeResponse(?ResponseInterface $response): array
     {
@@ -59,10 +60,10 @@ class AccountController extends Api
                 ->set('token_key', $array['token_key'])
                 ->save();
 
-            return $this->message($array['token_key']);
+            return $this->message('setting/account.connected_successfully');
         }
 
-        return $this->message(null, false);
+        return $this->deny('setting/account.connect_failed');
     }
 
     public function getConnectData()
@@ -77,7 +78,6 @@ class AccountController extends Api
             ->set('token_key', null)
             ->save();
 
-        return $this->message('logout');
+        return $this->message('manager.logout');
     }
 }
-

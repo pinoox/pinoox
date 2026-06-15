@@ -10,6 +10,6 @@ export const widgetAPI = {
         params: path ? { path } : {},
         alert: false,
     }),
-    saveWidgets: (payload) => http.post(`${BASE_URL}/saveWidgets`, payload, {alert: false}),
-    saveStorageSettings: (payload) => http.post(`${BASE_URL}/storageSettings`, payload, {alert: false}),
+    saveWidgets: (payload) => http.post(`${BASE_URL}/saveWidgets`, payload),
+    saveStorageSettings: (payload) => http.post(`${BASE_URL}/storageSettings`, payload),
 };
