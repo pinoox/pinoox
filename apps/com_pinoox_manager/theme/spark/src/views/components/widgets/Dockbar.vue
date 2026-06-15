@@ -46,9 +46,14 @@
               aria-label="اپلیکیشن‌ها"
           >
             <header class="dockbar__start-head">
-              <div class="dockbar__start-title-wrap">
-                <Icon :is="saxIcon.apps" class="dockbar__start-title-icon" size="sm"/>
-                <h2 class="dockbar__start-title">اپ‌ها</h2>
+              <div class="dockbar__start-title-row">
+                <div class="dockbar__start-title-wrap">
+                  <Icon :is="saxIcon.apps" class="dockbar__start-title-icon" size="sm"/>
+                  <h2 class="dockbar__start-title">اپ‌ها</h2>
+                </div>
+                <span v-if="filteredApps.length" class="dockbar__start-count">
+                  {{ filteredApps.length }} اپ
+                </span>
               </div>
               <div class="dockbar__start-search">
                 <Icon :is="saxIcon.search" class="dockbar__start-search-icon" size="xs"/>
@@ -71,7 +76,9 @@
                     class="dockbar__start-tile"
                     @click="openAppFromPanel(app)"
                 >
-                  <AppIcon v-bind="appIconProps(app)" size="sm" class="dockbar__start-tile-icon"/>
+                  <span class="dockbar__start-tile-icon-wrap">
+                    <AppIcon v-bind="appIconProps(app)" size="tray" class="dockbar__start-tile-icon"/>
+                  </span>
                   <span class="dockbar__start-tile-name">{{ app.name }}</span>
                 </button>
               </div>

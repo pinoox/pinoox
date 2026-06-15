@@ -8,6 +8,7 @@ return [
     'enable' => true,
     'sys-app' => true,
     'theme' => 'spark',
+    'hidden' => true,
     'name' => 'manager',
     'description' => 'Manager',
     'icon' => '@layout-dashboard',
