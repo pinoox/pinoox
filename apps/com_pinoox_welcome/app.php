@@ -3,8 +3,9 @@
 return [
     'package' => 'com_pinoox_welcome',
     'name' => 'welcome',
+    'title' => '@manifest.title',
     'developer' => 'pinoox',
-    'description' => 'Pinoox sample welcome app',
+    'description' => '@manifest.description',
     'version-name' => '2.1.0',
     'version-code' => 6,
     'icon' => 'icon.png',

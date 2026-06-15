@@ -3,8 +3,9 @@
 return [
     'package' => 'com_pinoox_comingsoon',
     'name' => 'coming',
+    'title' => '@manifest.title',
     'developer' => 'armin dev',
-    'description' => 'Maintenance and coming-soon page for your site',
+    'description' => '@manifest.description',
     'version-name' => '1.1.0',
     'version-code' => 2,
     'icon' => 'icon.png',

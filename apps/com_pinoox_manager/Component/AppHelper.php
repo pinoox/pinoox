@@ -28,9 +28,12 @@ namespace App\com_pinoox_manager\Component;
 
 
 
+use Pinoox\Component\Package\AppManifest;
 use Pinoox\Portal\App\AppRouter;
 
 use Pinoox\Portal\App\AppEngine;
+
+use Pinoox\Portal\Lang;
 
 use Pinoox\Component\Package\AppManager;
 
@@ -141,6 +144,8 @@ class AppHelper
 
 
             $iconMeta = AppIconPack::resolve($app->package(), $appConfig->get('icon'), $appConfig);
+            $labels = AppManifest::labels($app->package());
+            $locale = Lang::locale();
 
             $result[$app->package()] = [
 
@@ -152,9 +157,11 @@ class AppHelper
 
                 'router' => $isRouter,
 
-                'name' => $appConfig->get('name'),
+                'name' => AppManifest::displayName($app->package(), $locale),
 
-                'description' => $appConfig->get('description'),
+                'description' => AppManifest::description($app->package(), $locale),
+
+                'labels' => $labels,
 
                 'version' => $appConfig->get('version-name'),
 
@@ -209,12 +216,13 @@ class AppHelper
             $app = AppEngine::config($packageName);
 
             $iconMeta = AppIconPack::resolve($packageName, $app->get('icon'), $app);
+            $locale = Lang::locale();
 
 
 
             $result = [
 
-                'name' => $app->get('name'),
+                'name' => AppManifest::displayName($packageName, $locale),
 
                 'hidden' => $app->get('hidden'),
 
@@ -228,7 +236,9 @@ class AppHelper
 
                 'sys-app' => $app->get('sys-app'),
 
-                'description' => $app->get('description'),
+                'description' => AppManifest::description($packageName, $locale),
+
+                'labels' => AppManifest::labels($packageName),
 
                 'version' => $app->get('version-name'),
 

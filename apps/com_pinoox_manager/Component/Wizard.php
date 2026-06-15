@@ -14,6 +14,10 @@
 namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Component\Migration\MigrationToolkit;
+use Pinoox\Component\Package\AppManifest;
+use Pinoox\Component\Package\ManifestLabel;
+use Pinoox\Component\Package\ManifestLangLoader;
+use Pinoox\Component\Package\ManifestLangRef;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
@@ -279,10 +283,16 @@ class Wizard
 
         if (empty($meta['title'])) {
             $title = null;
-        } else if (empty($meta['title'][Lang::locale()])) {
-            $title = array_values($meta['title'])[0];
+        } else if (ManifestLabel::isLangRef($meta['title'])) {
+            $parsed = ManifestLangRef::parse($meta['title']);
+            $paths = ManifestLangLoader::pathsForApp((string) ($meta['app'] ?? ''));
+            $title = ManifestLangLoader::get($paths, $parsed['key'], Lang::locale());
+        } else if (ManifestLabel::isLocaleMap($meta['title'])) {
+            $title = ManifestLabel::fromLocaleMap($meta['title'], Lang::locale());
+        } else if (is_string($meta['title'])) {
+            $title = $meta['title'];
         } else {
-            $title = $meta['title'][Lang::locale()];
+            $title = null;
         }
 
         return [
