@@ -87,9 +87,27 @@
               </p>
             </div>
             <footer class="dockbar__start-foot">
-              <button type="button" class="dockbar__start-foot-btn" @click="openControlPanel">
-                <Icon :is="saxIcon.control" size="sm"/>
-                <span>کنترل پنل</span>
+              <div class="dockbar__start-foot-end">
+                <div class="dockbar__start-user">
+                  <img
+                      v-if="userAvatar"
+                      :src="userAvatar"
+                      :alt="userLabel"
+                      class="dockbar__start-user-avatar"
+                  />
+                  <span v-else class="dockbar__start-user-fallback" aria-hidden="true">
+                    <Icon :is="saxIcon.user" size="xs"/>
+                  </span>
+                  <span class="dockbar__start-user-name">{{ userLabel }}</span>
+                </div>
+                <button type="button" class="dockbar__start-foot-btn" @click="openControlPanel">
+                  <Icon :is="saxIcon.control" size="sm"/>
+                  <span>کنترل پنل</span>
+                </button>
+              </div>
+              <button type="button" class="dockbar__start-foot-logout" @click="logoutFromPanel">
+                <Icon :is="saxIcon.logout" size="sm"/>
+                <span>خروج</span>
               </button>
             </footer>
           </div>
@@ -228,9 +246,11 @@ import { useBackground } from '@/views/composables/useBackground.js';
 import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js';
 import { systemDockApps, useDockApps, resolveAppRoute } from '@/views/composables/useDockApps.js';
 import { useAppStore } from '@/stores/modules/app.js';
+import { useAuthStore } from '@/stores/modules/auth.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
+import { getUrl } from '@/boot.js';
 import { saxIcon } from '@/const/icons.js';
 
 const props = defineProps({
@@ -260,6 +280,7 @@ const TOOLTIP_GAP = 14;
 
 const router = useRouter();
 const appStore = useAppStore();
+const authStore = useAuthStore();
 const appViewWindow = useAppViewWindowStore();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
@@ -348,6 +369,15 @@ const dockRoot = ref(null);
 const { tone, remeasure } = useDockBackdropTone(selectedBackground, dockRoot);
 
 const toneClass = computed(() => `dockbar--tone-${tone.value}`);
+
+const userLabel = computed(() => {
+  const user = authStore.user ?? {};
+  const fullName = [user.fname, user.lname].filter(Boolean).join(' ').trim();
+
+  return fullName || user.username || user.email || 'کاربر';
+});
+
+const userAvatar = computed(() => authStore.user?.avatar_thumb || getUrl().AVATAR || '');
 
 const filteredApps = computed(() => {
   const list = appStore.appList ?? [];
@@ -482,6 +512,13 @@ function openAppFromPanel(app) {
 function openControlPanel() {
   closeAppsPanel();
   router.push('/control/apps');
+}
+
+function logoutFromPanel() {
+  closeAppsPanel();
+  authStore.logout().then(() => {
+    router.replace({ name: 'login' });
+  });
 }
 
 function dockItemIconProps(item) {

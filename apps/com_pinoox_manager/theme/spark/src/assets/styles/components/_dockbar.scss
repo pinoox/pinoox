@@ -363,23 +363,77 @@
 
   &__start-foot {
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
     margin-top: 0.35rem;
     padding-top: 0.65rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
 
-  &__start-foot-btn {
+  &__start-foot-end {
     display: flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
-    width: 100%;
-    padding: 0.65rem 0.85rem;
+    min-width: 0;
+  }
+
+  &__start-user {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+    max-width: 11rem;
+    padding: 0.3rem 0.55rem 0.3rem 0.45rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__start-user-avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  &__start-user-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    flex-shrink: 0;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  &__start-user-name {
+    min-width: 0;
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.88);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  &__start-foot-btn,
+  &__start-foot-logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+    padding: 0.55rem 0.75rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.06);
     color: rgba(255, 255, 255, 0.88);
-    font-size: 0.88rem;
+    font-size: 0.82rem;
     font-weight: 500;
     cursor: pointer;
     transition:
@@ -395,6 +449,15 @@
     &:active {
       transform: scale(0.98);
       background: rgba(255, 255, 255, 0.05);
+    }
+  }
+
+  &__start-foot-logout {
+    color: rgba(255, 210, 210, 0.92);
+
+    &:hover {
+      background: rgba(220, 80, 80, 0.14);
+      border-color: rgba(255, 120, 120, 0.28);
     }
   }
 
