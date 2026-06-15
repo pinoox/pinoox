@@ -4,6 +4,7 @@
       :menu="menuItems"
       :collapsed="sidebar.isCollapsed"
       :rtl="true"
+      :relative="true"
       width="300px"
       width-collapsed="72px"
       :show-toggle="true"
@@ -69,7 +70,7 @@ const menuIcon = (name) => ({
 const menuLink = (item) => ({
   ...item,
   icon: menuIcon(item.iconName),
-  attributes: { title: item.title },
+  attributes: {'aria-label': item.title},
 });
 
 const menuItems = ref([
@@ -96,7 +97,7 @@ const menuItems = ref([
   {
     title: 'تنظیمات',
     icon: menuIcon(lucideSidebar.setting),
-    attributes: { title: 'تنظیمات' },
+    attributes: {'aria-label': 'تنظیمات'},
     child: [
       {
         href: '/control/settings/appearance',
