@@ -72,8 +72,14 @@
 }
 
 .controlPanelSimple {
-  &__frame {
+  background: transparent;
+
+  .appView__frame {
     background: transparent;
-    overflow: hidden;
+  }
+
+  .pageControl--embedded {
+    background: transparent;
+    backdrop-filter: none;
   }
 }
