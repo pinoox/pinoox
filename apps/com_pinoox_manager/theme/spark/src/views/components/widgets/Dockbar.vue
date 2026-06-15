@@ -86,6 +86,12 @@
                 اپی یافت نشد
               </p>
             </div>
+            <footer class="dockbar__start-foot">
+              <button type="button" class="dockbar__start-foot-btn" @click="openControlPanel">
+                <Icon :is="saxIcon.control" size="sm"/>
+                <span>کنترل پنل</span>
+              </button>
+            </footer>
           </div>
         </transition>
 
@@ -467,6 +473,11 @@ function toggleAppsPanel() {
 function openAppFromPanel(app) {
   closeAppsPanel();
   router.push(resolveAppRoute(app));
+}
+
+function openControlPanel() {
+  closeAppsPanel();
+  router.push('/control/apps');
 }
 
 function resolveAppSnapshot(item) {
