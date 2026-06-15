@@ -1,3 +1,4 @@
+import './assets/js/fonts.js';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import VueSvgInlinePlugin from 'vue-svg-inline-plugin';
@@ -5,7 +6,7 @@ import 'vue-svg-inline-plugin/src/polyfills';
 import App from './App.vue';
 import router from './router';
 import './assets/scss/style.scss';
-import CodeBlock from 'vue3-code-block';
+import CodeBlock from '@wdns/vue-code-block';
 import { createI18n } from 'vue-i18n';
 import messages from './assets/js/i18n';
 import { getBoot } from './boot.js';

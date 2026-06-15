@@ -5,7 +5,7 @@
       :code="code"
       label="app.php"
       dir="ltr"
-      theme="base16-onedark"
+      :theme="false"
       highlightjs
       lang="php"
     />
@@ -16,6 +16,7 @@
 import { ref } from "vue";
 import hljs from "highlight.js/lib/core";
 import langPhp from "highlight.js/lib/languages/php";
+import "highlight.js/styles/base16/onedark.min.css";
 
 hljs.registerLanguage("php", langPhp);
 
