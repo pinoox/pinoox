@@ -16,15 +16,6 @@
     <template #header>
       <div v-if="!isMenuCollapsed" class="sidebar__header">
         <span class="sidebar__header-title">کنترل پنل</span>
-        <button
-            v-if="layout.isMobile"
-            type="button"
-            class="sidebar__mobileClose"
-            aria-label="بستن منو"
-            @click="layout.closeMobileSidebar()"
-        >
-          <LucideIcon :name="lucideSidebar.close" size="sm"/>
-        </button>
       </div>
     </template>
 
@@ -67,7 +58,15 @@ const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);
 };
 
-const onItemClick = () => {
+const onItemClick = (event, item) => {
+  if (!layout.isMobile) {
+    return;
+  }
+
+  if (item?.child?.length) {
+    return;
+  }
+
   layout.closeMobileSidebar();
 };
 </script>

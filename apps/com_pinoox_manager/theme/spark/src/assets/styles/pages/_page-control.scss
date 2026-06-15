@@ -52,10 +52,7 @@
   }
 
   &__menuToggle {
-    position: absolute;
-    top: 0.65rem;
-    inset-inline-start: 0.65rem;
-    z-index: 12;
+    display: none;
   }
 
   &__mobileBackdrop {
@@ -116,7 +113,6 @@
     .pageControl__page {
       width: 100% !important;
       right: 0 !important;
-      padding-top: 2.75rem;
     }
 
     .pageControl__sidebar {
