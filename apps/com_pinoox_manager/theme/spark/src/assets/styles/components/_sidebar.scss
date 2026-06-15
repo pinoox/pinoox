@@ -3,17 +3,63 @@
   --vsm-icon-bg: transparent;
   --vsm-icon-active-bg: transparent;
   --vsm-icon-open-bg: transparent;
+  --vsm-icon-active-color: inherit;
+  --vsm-icon-open-color: inherit;
   --vsm-toggle-btn-bg: transparent;
   --vsm-badge-bg: transparent;
-  --vsm-item-open-bg: rgba(255, 255, 255, 0.08);
-  --vsm-item-hover-bg: rgba(255, 255, 255, 0.06);
-  --vsm-dropdown-bg: rgba(0, 0, 0, 0.2);
+  --vsm-item-open-bg: rgba(255, 255, 255, 0.07);
+  --vsm-item-open-color: rgba(255, 255, 255, 0.96);
+  --vsm-item-hover-bg: rgba(255, 255, 255, 0.09);
+  --vsm-item-hover-color: rgba(255, 255, 255, 0.96);
+  --vsm-item-active-bg: rgba(169, 73, 46, 0.18);
+  --vsm-item-active-line-color: transparent;
+  --vsm-dropdown-bg: rgba(0, 0, 0, 0.22);
 
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
 
+  .vsm--link {
+    border-radius: 0.62rem;
+    margin: 0.1rem 0.55rem;
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      box-shadow 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .vsm--link_level-1 {
+    color: rgba(255, 255, 255, 0.76);
+  }
+
+  .vsm--link_level-1.vsm--link_hover:not(.vsm--link_active) {
+    transform: translateX(-2px);
+  }
+
+  .vsm--link_level-1.vsm--link_active {
+    color: #fff;
+    font-weight: 600;
+    box-shadow: none !important;
+  }
+
+  .vsm--link_level-1.vsm--link_open {
+    font-weight: 500;
+  }
+
   .vsm--link.back {
-    background: rgba(255, 255, 255, 0.03);
+    margin-bottom: 0.35rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+
+    &.vsm--link_hover {
+      background: rgba(255, 255, 255, 0.09);
+      border-color: rgba(255, 255, 255, 0.12);
+    }
+
+    &.vsm--link_active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.14);
+    }
   }
 
   .vsm--icon {
@@ -22,26 +68,76 @@
     justify-content: center;
     min-width: 1.75rem;
     background: transparent !important;
-    color: rgba(255, 255, 255, 0.88);
+    color: rgba(255, 255, 255, 0.72);
+    transition: transform 0.22s ease;
   }
 
-  .vsm--link_level-1.vsm--link_active .vsm--icon,
-  .vsm--link_level-1.vsm--link_open .vsm--icon,
-  .vsm--link_level-1.vsm--link_hover .vsm--icon {
-    background: transparent !important;
-    color: var(--color-primary, #a9492e);
+  .vsm--link_level-1.vsm--link_hover:not(.vsm--link_active) .vsm--icon {
+    transform: scale(1.06);
+  }
+
+  .vsm--link_level-1.vsm--link_active .vsm--icon {
+    transform: scale(1.05);
+  }
+
+  .vsm--dropdown {
+    margin: 0.15rem 0.45rem 0.3rem;
+    padding: 0.35rem;
+    border-radius: 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.07);
+  }
+
+  .vsm--link_level-2 {
+    margin: 0.08rem 0;
+    padding-inline-start: 2.55rem;
+    color: rgba(255, 255, 255, 0.66);
+    font-size: 0.92em;
+  }
+
+  .vsm--link_level-2.vsm--link_hover {
+    color: rgba(255, 255, 255, 0.92);
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(-1px);
+  }
+
+  .vsm--link_level-2.vsm--link_active {
+    color: #fff;
+    font-weight: 600;
+    background: rgba(169, 73, 46, 0.22);
+    box-shadow: none;
+  }
+
+  .vsm--header {
+    letter-spacing: 0.06em;
+    opacity: 0.55;
+    padding-top: 0.65rem;
+    padding-bottom: 0.35rem;
+  }
+
+  .vsm--arrow {
+    opacity: 0.55;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .vsm--link_hover .vsm--arrow,
+  .vsm--link_open .vsm--arrow {
+    opacity: 0.9;
   }
 
   .vsm--toggle-btn {
     background: transparent !important;
+    opacity: 0.55;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    transition: opacity 0.2s ease, background 0.2s ease;
+
+    &:hover {
+      opacity: 0.95;
+      background: rgba(255, 255, 255, 0.06) !important;
+    }
   }
 }
 
 .v-sidebar-menu .vsm--mobile-bg {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
-}
-
-.vsm--toggle-btn {
-  opacity: 0.5;
 }

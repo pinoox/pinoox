@@ -7,7 +7,7 @@ return [
     'description' => 'Maintenance and coming-soon page for your site',
     'version-name' => '1.1.0',
     'version-code' => 2,
-    'icon' => '@clock',
+    'icon' => 'icon.png',
     'enable' => true,
     'sys-app' => true,
     'theme' => 'default',
