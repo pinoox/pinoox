@@ -18,9 +18,11 @@ use App\com_pinoox_manager\Component\AppIconPack;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\ApiController;
+use Pinoox\Component\Package\Pinx\PinxInstaller;
+use Pinoox\Component\Package\Pinx\PinxReader;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\File;
-use Pinoox\Portal\Wizard\AppWizard;
+use Pinoox\Support\SystemConfig;
 
 class AppController extends ApiController
 {
@@ -79,9 +81,8 @@ class AppController extends ApiController
             'file' => [
                 'file',
                 function ($attribute, $value, $fail) {
-                    if ($value->getClientOriginalExtension() !== 'pin') {
-                        $fail('آپلود فایل با پسوند .pin �
-جاز است!');
+                    if (strtolower($value->getClientOriginalExtension()) !== 'pinx') {
+                        $fail('آپلود فایل با پسوند .pinx مجاز است!');
                     }
                 }
             ],
@@ -96,15 +97,24 @@ class AppController extends ApiController
             return $this->error('manager.error_happened');
         }
 
-        $pin = $result->path;
+        $pinx = $result->path;
 
         try {
-            $wizard = AppWizard::open($pin);
-            $wizard->migration(true);
-            if (!$wizard->isInstalled())
-                $wizard->install();
-            else
-                return $this->error('manager.error_happened');
+            $reader = new PinxReader();
+            $reader->open($pinx);
+            $manifest = $reader->manifest();
+            $reader->close();
+
+            if (AppEngine::exists($manifest->package())) {
+                return $this->error('manager.currently_installed');
+            }
+
+            $installer = new PinxInstaller(AppEngine::___(), SystemConfig::path('wizard_tmp'));
+            $installResult = $installer->install($pinx);
+
+            if (!$installResult->success) {
+                return $this->error($installResult->message);
+            }
 
         } catch (\Exception $e) {
             return $this->error($e->getMessage());
@@ -133,11 +143,11 @@ class AppController extends ApiController
         if (empty($filename))
             return $this->deny('manager.request_install_app_not_valid');
 
-        $pinFile = path(self::manualPath . $filename);
-        if (!is_file($pinFile))
+        $pinxFile = path(self::manualPath . $filename);
+        if (!is_file($pinxFile))
             return $this->deny('manager.request_install_app_not_valid');
 
-        if (Wizard::installApp($pinFile)) {
+        if (Wizard::installApp($pinxFile)) {
             return $this->message('manager.installed_successfully');
         }
 
@@ -155,16 +165,25 @@ class AppController extends ApiController
         if (!is_dir($path))
             return [];
 
-        $files = File::get_files_by_pattern($path, '*.pin');
+        $files = File::get_files_by_pattern($path, '*.pinx');
         $files = array_map(function ($file) {
-            $data = Wizard::pullDataPackage($file);
-            if (!Wizard::isValidNamePackage($data['package_name'])) {
-                $data = Wizard::pullTemplateMeta($file);
-                if (!Wizard::isValidNamePackage($data['app'])) {
-                    Wizard::deletePackageFile($file);
-                    return false;
-                }
+            try {
+                $data = Wizard::pullPackageMeta($file);
+            } catch (\Throwable) {
+                Wizard::deletePackageFile($file);
+                return false;
             }
+
+            if ($data['type'] === 'app' && !Wizard::isValidNamePackage($data['package_name'])) {
+                Wizard::deletePackageFile($file);
+                return false;
+            }
+
+            if ($data['type'] === 'theme' && !Wizard::isValidNamePackage($data['app'])) {
+                Wizard::deletePackageFile($file);
+                return false;
+            }
+
             return $data;
         }, $files);
 
@@ -178,11 +197,11 @@ class AppController extends ApiController
         if (empty($filename))
             return $this->deny('manager.error_happened');
 
-        $pinFile = path(self::manualPath . $filename);
-        if (!is_file($pinFile))
+        $pinxFile = path(self::manualPath . $filename);
+        if (!is_file($pinxFile))
             return $this->deny('manager.error_happened');
 
-        Wizard::deletePackageFile($pinFile);
+        Wizard::deletePackageFile($pinxFile);
 
         return $this->message('manager.delete_successfully');
     }
@@ -202,7 +221,7 @@ class AppController extends ApiController
 
         $uploaded = 0;
         foreach ($files as $file) {
-            if ($file->getClientOriginalExtension() !== 'pin')
+            if (strtolower($file->getClientOriginalExtension()) !== 'pinx')
                 continue;
             $file->move($path, $file->getClientOriginalName());
             $uploaded++;

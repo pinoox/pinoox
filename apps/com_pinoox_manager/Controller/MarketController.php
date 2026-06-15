@@ -106,7 +106,7 @@ class MarketController extends ApiController
         if (empty($data['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/apps/' . $package_name . '.pin');
+        $path = path('downloads/apps/' . $package_name . '.pinx');
         $download = Http::get('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash']);
         if ($download)
             file_put_contents($path, $download->getContent());
@@ -153,7 +153,7 @@ class MarketController extends ApiController
         if (empty($result['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/templates/' . $uid . '.pin');
+        $path = path('downloads/templates/' . $uid . '.pinx');
         $download = Http::get('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash']);
         if ($download)
             file_put_contents($path, $download->getContent());

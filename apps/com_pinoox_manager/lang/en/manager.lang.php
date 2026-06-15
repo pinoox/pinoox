@@ -106,7 +106,7 @@ return [
     'theme' => 'theme',
     'templates' => 'templates',
     'add_template' => 'Add template',
-    'upload_pinoox_package_for_installing' => 'upload app with *.pin extension for installing',
+    'upload_pinoox_package_for_installing' => 'upload app with *.pinx extension for installing',
     'market_home' => 'applications market',
     'market_account' => 'account',
     'live_preview' => 'live preview',

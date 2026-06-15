@@ -76,7 +76,7 @@ const download = async () => {
 const install = async () => {
   isInstalling.value = true;
   try {
-    await appAPI.installPackage(`${route.params.package_name}.pin`);
+    await appAPI.installPackage(`${route.params.package_name}.pinx`);
     await appStore.getApps();
     router.push('/control/apps');
   } finally {

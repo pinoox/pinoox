@@ -14,10 +14,9 @@
 namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Component\Migration\MigrationToolkit;
-use Pinoox\Component\Package\AppManifest;
-use Pinoox\Component\Package\ManifestLabel;
-use Pinoox\Component\Package\ManifestLangLoader;
-use Pinoox\Component\Package\ManifestLangRef;
+use Pinoox\Component\Package\Pinx\PinxInstaller;
+use Pinoox\Component\Package\Pinx\PinxManifest;
+use Pinoox\Component\Package\Pinx\PinxReader;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
@@ -25,60 +24,29 @@ use Pinoox\Component\File;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Portal\Lang;
 use Pinoox\Portal\Url;
-use Pinoox\Portal\Wizard\AppWizard;
-use Pinoox\Portal\Wizard\TemplateWizard;
 use Pinoox\Portal\Zip;
+use Pinoox\Support\SystemConfig;
 
 class Wizard
 {
-    private static $isApp = false;
+    private const PACKAGE_EXT = '.pinx';
 
-    private static $message = null;
+    private static ?string $message = null;
 
-    public static function installApp($pinFile)
+    public static function installApp(string $pinxFile): bool
     {
-        $appWizard = AppWizard::open($pinFile)
-            ->migration();
-
-        if (!$appWizard->isInstalled())
-            $appWizard->install();
-
-        return true;
+        return self::runInstall($pinxFile);
     }
 
-    public static function pullDataPackage($pinFile)
+    public static function pullDataPackage(string $pinxFile): array
     {
-        $filename = File::fullname($pinFile);
-        $size = File::size($pinFile);
+        $meta = self::pullPackageMeta($pinxFile);
 
-        $appWizard = AppWizard::open($pinFile);
-        $info = $appWizard->getInfo();
-        $info = !empty($info) ? $info : [];
-        $defaultData = AppEngine::getDefaultData();
-        $info = array_merge($defaultData, $info);
-        $icon = Url::asset('resources/default.png');
-        if (!empty($info['icon'])) {
-            $iconFile = $info['icon_path'];
-            if (is_file($iconFile))
-                $icon = Url::asset($info['icon_path']);
+        if ($meta['type'] !== 'app') {
+            throw new \RuntimeException('Package is not an app.');
         }
 
-        return [
-            'type' => 'app',
-            'filename' => $filename,
-            'package_name' => $info['package'],
-            'package' => $info['package'],
-            'app' => $info['package'],
-            'name' => $info['name'],
-            'description' => $info['description'],
-            'version' => $info['version-name'],
-            'version-code' => $info['version-code'],
-            'version_code' => $info['version-code'],
-            'developer' => $info['developer'],
-            'path_icon' => $info['icon'],
-            'icon' => $icon,
-            'size' => File::print_size($size, 1),
-        ];
+        return $meta;
     }
 
     public static function isValidNamePackage($packageName)
@@ -117,44 +85,35 @@ class Wizard
         return true;
     }
 
-    public static function deletePackageFile($pinFile)
+    public static function deletePackageFile(string $pinxFile): void
     {
-        AppWizard::open($pinFile)->deleteTemp();
-        FileSystem::remove($pinFile);
+        FileSystem::remove($pinxFile);
     }
 
-    public static function updateApp($pinFile)
+    public static function updateApp(string $pinxFile): bool
     {
-        $data = self::pullDataPackage($pinFile);
+        $data = self::pullDataPackage($pinxFile);
 
         if (!self::isValidNamePackage($data['package_name'])) {
-            self::deletePackageFile($pinFile);
+            self::deletePackageFile($pinxFile);
             return false;
         }
 
-        $appWizard = AppWizard::open($pinFile)->migration();
+        if (!AppEngine::exists($data['package_name'])) {
+            return self::installApp($pinxFile);
+        }
 
-        if (!$appWizard->isUpdateAvailable())
+        if (!self::checkVersion($data)) {
             return false;
+        }
 
-        if (!self::checkVersion($data))
+        if (!self::runInstall($pinxFile)) {
             return false;
+        }
 
-        $appWizard->force()->install();
-
-        $app = AppEngine::config($data['package']);
-        $app->set('version-code', $data['version-code']);
-        $app->set('version-name', $data['version']);
-        $app->set('name', $data['name']);
-        $app->set('developer', $data['developer']);
-        $app->set('description', $data['description']);
-        $app->set('icon', $data['path_icon']);
-        $app->save();
-
-        self::deletePackageFile($pinFile);
+        self::deletePackageFile($pinxFile);
 
         return true;
-
     }
 
     public static function getMessage()
@@ -207,13 +166,13 @@ class Wizard
 
     public static function isDownloaded($package_name)
     {
-        $file = path('downloads/apps/' . $package_name . '.pin');
-        return (!empty($file) && file_exists($file));
+        $file = self::appDownloadPath($package_name);
+        return is_file($file);
     }
 
     public static function getDownloaded($package_name)
     {
-        return path('downloads/apps/' . $package_name . '.pin');
+        return self::appDownloadPath($package_name);
     }
 
     public static function templateState($package_name, $uid)
@@ -236,20 +195,34 @@ class Wizard
 
     public static function isDownloadedTemplate($uid)
     {
-        $file = path("downloads/templates/$uid.pin");
-        return (!empty($file) && file_exists($file));
+        $file = self::templateDownloadPath($uid);
+        return is_file($file);
     }
 
     public static function getDownloadedTemplate($uid)
     {
-        return path("downloads/templates/$uid.pin");
+        return self::templateDownloadPath($uid);
     }
 
-    public static function installTemplate($file, $packageName, $meta)
+    public static function installTemplate(string $file, string $packageName, $meta = null): bool
     {
         try {
-            TemplateWizard::open($file)->install();
-            return true;
+            $reader = new PinxReader();
+            $reader->open($file);
+            $manifest = $reader->manifest();
+            $reader->close();
+
+            if (!$manifest->isTheme()) {
+                self::$message = 'Package is not a theme.';
+                return false;
+            }
+
+            if ($manifest->targetApp() !== $packageName) {
+                self::$message = 'Theme target app mismatch.';
+                return false;
+            }
+
+            return self::runInstall($file);
         } catch (\Throwable $e) {
             self::$message = $e->getMessage();
             return false;
@@ -270,45 +243,109 @@ class Wizard
         return file_exists($file);
     }
 
-    public static function pullTemplateMeta($pinFile)
+    public static function pullTemplateMeta(string $pinxFile): array
     {
-        // todo template meta
-        $filename = File::fullname($pinFile);
-        $size = File::size($pinFile);
-        $name = File::name($pinFile);
+        $meta = self::pullPackageMeta($pinxFile);
 
-        $meta = TemplateWizard::open($pinFile)->getInfo();
-
-        $cover = Url::asset('resources/theme.jpg');
-
-        if (empty($meta['title'])) {
-            $title = null;
-        } else if (ManifestLabel::isLangRef($meta['title'])) {
-            $parsed = ManifestLangRef::parse($meta['title']);
-            $paths = ManifestLangLoader::pathsForApp((string) ($meta['app'] ?? ''));
-            $title = ManifestLangLoader::get($paths, $parsed['key'], Lang::locale());
-        } else if (ManifestLabel::isLocaleMap($meta['title'])) {
-            $title = ManifestLabel::fromLocaleMap($meta['title'], Lang::locale());
-        } else if (is_string($meta['title'])) {
-            $title = $meta['title'];
-        } else {
-            $title = null;
+        if ($meta['type'] !== 'theme') {
+            throw new \RuntimeException('Package is not a theme.');
         }
+
+        return $meta;
+    }
+
+    public static function pullPackageMeta(string $pinxFile): array
+    {
+        $reader = new PinxReader();
+
+        try {
+            $reader->open($pinxFile);
+            $manifest = $reader->manifest();
+
+            if ($manifest->isTheme()) {
+                return self::buildThemeMeta($pinxFile, $manifest);
+            }
+
+            return self::buildAppMeta($pinxFile, $manifest);
+        } finally {
+            $reader->close();
+        }
+    }
+
+    private static function runInstall(string $pinxFile, array $options = []): bool
+    {
+        try {
+            $installer = new PinxInstaller(AppEngine::___(), SystemConfig::path('wizard_tmp'));
+            $result = $installer->install($pinxFile, $options);
+
+            if (!$result->success) {
+                self::$message = $result->message;
+                return false;
+            }
+
+            return true;
+        } catch (\Throwable $e) {
+            self::$message = $e->getMessage();
+            return false;
+        }
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function buildAppMeta(string $pinxFile, PinxManifest $manifest): array
+    {
+        $locale = Lang::locale();
+
+        return [
+            'type' => 'app',
+            'filename' => File::fullname($pinxFile),
+            'package_name' => $manifest->package(),
+            'package' => $manifest->package(),
+            'app' => $manifest->package(),
+            'name' => $manifest->title($locale),
+            'description' => $manifest->description($locale),
+            'version' => $manifest->versionName(),
+            'version-code' => $manifest->versionCode(),
+            'version_code' => $manifest->versionCode(),
+            'developer' => $manifest->developer(),
+            'path_icon' => 'icon.png',
+            'icon' => Url::asset('resources/default.png'),
+            'size' => File::print_size(File::size($pinxFile), 1),
+        ];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function buildThemeMeta(string $pinxFile, PinxManifest $manifest): array
+    {
+        $locale = Lang::locale();
 
         return [
             'type' => 'theme',
-            'filename' => $filename,
-            'template_name' => $title,
-            'app' => @$meta['app'],
-            'name' => @$meta['name'],
-            'title' => @$meta['title'],
-            'description' => @$meta['description'],
-            'version' => @$meta['version'],
-            'version-code' => @$meta['app_version'],
-            'developer' => @$meta['developer'],
-            'path_cover' => @$meta['cover'],
-            'cover' => $cover,
-            'size' => File::print_size($size, 1),
+            'filename' => File::fullname($pinxFile),
+            'template_name' => $manifest->title($locale),
+            'app' => $manifest->targetApp(),
+            'name' => $manifest->themeName(),
+            'title' => $manifest->title($locale),
+            'description' => $manifest->description($locale),
+            'version' => $manifest->versionName(),
+            'version-code' => $manifest->versionCode(),
+            'developer' => $manifest->developer(),
+            'path_cover' => '',
+            'cover' => Url::asset('resources/theme.jpg'),
+            'size' => File::print_size(File::size($pinxFile), 1),
         ];
+    }
+
+    private static function appDownloadPath(string $package_name): string
+    {
+        return path('downloads/apps/' . $package_name . self::PACKAGE_EXT);
+    }
+
+    private static function templateDownloadPath(string $uid): string
+    {
+        return path('downloads/templates/' . $uid . self::PACKAGE_EXT);
     }
 }
