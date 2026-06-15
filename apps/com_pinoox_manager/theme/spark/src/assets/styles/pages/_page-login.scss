@@ -96,32 +96,17 @@
   &__form {
     display: flex;
     flex-direction: column;
-    gap: 0.25rem;
+    gap: 1.1rem;
 
     .inputWrapper {
-      color: $color-text;
+      gap: 0.45rem;
 
       label {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.78);
-      }
-    }
-
-    .inputWrapper__form {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: 0.65rem;
-      color: #fff;
-      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
-
-      &::placeholder {
-        color: rgba(255, 255, 255, 0.38);
-      }
-
-      &:focus {
-        border-color: rgba(var(--color-primary-rgb), 0.65);
-        background: rgba(255, 255, 255, 0.1);
-        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.18);
+        font-size: 0.8125rem;
+        font-weight: 500;
+        letter-spacing: 0.02em;
+        color: rgba(255, 255, 255, 0.84);
+        padding-inline-start: 0.2rem;
       }
     }
   }

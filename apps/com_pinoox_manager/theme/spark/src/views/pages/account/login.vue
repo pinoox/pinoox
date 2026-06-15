@@ -20,14 +20,20 @@
                     <Input
                         v-model="params.username"
                         type="text"
+                        variant="glass"
+                        :icon="saxIcon.user"
                         label="نام کاربری"
                         placeholder="نام کاربری را وارد کنید"
+                        autocomplete="username"
                     />
                     <Input
                         v-model="params.password"
                         type="password"
+                        variant="glass"
+                        :icon="saxIcon.lock"
                         label="رمز عبور"
                         placeholder="رمز عبور را وارد کنید"
+                        autocomplete="current-password"
                     />
 
                     <Button
@@ -55,6 +61,7 @@ import {useRouter} from "vue-router";
 import {authAPI} from "@api/auth.js";
 import {useAuthStore} from "@/stores/modules/auth.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
+import {saxIcon} from "@/const/icons.js";
 
 const authStore = useAuthStore();
 const router = useRouter();

@@ -24,6 +24,8 @@ export const saxIcon = {
     market: sax.ShopIcon,
     widgets: sax.Element3Icon,
     refresh: sax.Refresh2Icon,
+    lock: sax.LockIcon,
+    user: sax.UserIcon,
 };
 
 export const mdiIcon ={

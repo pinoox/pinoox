@@ -1,24 +1,32 @@
 <template>
   <div
-      class="relative flex items-center w-full border border-gray-300 rounded-md overflow-hidden"
-      :class="{ 'flex-row': direction === 'rtl', 'flex-row-reverse': direction === 'ltr' }"
+      class="inputWrapper__control"
+      :class="controlClass"
   >
-   <span
-       v-if="prefix"
-       :class="{ 'rtl': direction === 'rtl', 'ltr': direction === 'ltr' }"
-       class="inputWrapper__prefix bg-gray-900 px-3 py-3 text-gray-300 text-sm"
-   >
+    <span
+        v-if="icon"
+        class="inputWrapper__icon"
+        aria-hidden="true"
+    >
+      <Icon :is="icon"/>
+    </span>
+
+    <span
+        v-if="prefix"
+        :class="{ 'rtl': direction === 'rtl', 'ltr': direction === 'ltr' }"
+        class="inputWrapper__prefix"
+    >
       {{ prefix }}
     </span>
 
-    <!-- Input Field -->
     <input
-        class="inputWrapper__form flex-1 px-2 py-2"
+        class="inputWrapper__form"
         :type="type"
         :placeholder="placeholder"
         :required="required"
         :disabled="disabled"
         :value="modelValue"
+        :autocomplete="autocomplete"
         :class="{ 'text-left': direction === 'ltr', 'text-right': direction === 'rtl' }"
         @input="emit('update:modelValue', $event.target.value)"
     />
@@ -26,6 +34,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
+import Icon from '@/views/components/widgets/Icon.vue';
+
 const props = defineProps({
   modelValue: [String, Number],
   type: {
@@ -42,7 +53,28 @@ const props = defineProps({
     validator: (value) => ["ltr", "rtl"].includes(value),
   },
   prefix: String,
+  autocomplete: {
+    type: String,
+    default: undefined,
+  },
+  variant: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'glass'].includes(value),
+  },
+  icon: {
+    type: [Object, Function],
+    default: null,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
+
+const controlClass = computed(() => ({
+  'inputWrapper__control--default': props.variant === 'default',
+  'inputWrapper__control--glass': props.variant === 'glass',
+  'inputWrapper__control--with-icon': Boolean(props.icon),
+  'flex-row': props.direction === 'rtl',
+  'flex-row-reverse': props.direction === 'ltr',
+}));
 </script>

@@ -14,7 +14,87 @@
   width: 100%;
   position: relative;
 
+  &__control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    overflow: hidden;
+
+    &--default {
+      border: 1px solid #d1d5db;
+      border-radius: 0.375rem;
+    }
+
+    &--glass {
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 0.75rem;
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+
+      &:focus-within {
+        border-color: rgba(var(--color-primary-rgb), 0.75);
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.2);
+      }
+
+      .inputWrapper__icon {
+        color: rgba(255, 255, 255, 0.55);
+        transition: color 0.2s ease;
+      }
+
+      &:focus-within .inputWrapper__icon {
+        color: rgba(255, 255, 255, 0.92);
+      }
+
+      .inputWrapper__form {
+        border: none;
+        background: transparent;
+        color: #fff;
+        padding: 0.9rem 1rem;
+
+        &::placeholder {
+          color: rgba(255, 255, 255, 0.36);
+        }
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active {
+          -webkit-box-shadow: 0 0 0 40px rgba(28, 24, 22, 0.95) inset !important;
+          -webkit-text-fill-color: #fff !important;
+          caret-color: #fff;
+        }
+      }
+    }
+
+    &--with-icon .inputWrapper__form {
+      padding-inline-start: 0.35rem;
+    }
+  }
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding-inline: 0.85rem 0.35rem;
+    color: rgba(255, 255, 255, 0.55);
+
+    :deep(svg) {
+      width: 1.15rem;
+      height: 1.15rem;
+    }
+  }
+
   &__prefix {
+    padding: 0.75rem;
+    font-size: 0.875rem;
+    color: #d1d5db;
+    background: #111827;
+
     &.rtl {
       direction: rtl;
     }
@@ -26,8 +106,8 @@
 
   &__form {
     width: 100%;
+    flex: 1;
     padding: 10px;
-    border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 1rem;
     transition: border 0.3s ease, box-shadow 0.3s ease;
