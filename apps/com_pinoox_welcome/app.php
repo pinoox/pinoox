@@ -7,7 +7,7 @@ return [
     'description' => 'Pinoox sample welcome app',
     'version-name' => '2.1.0',
     'version-code' => 6,
-    'icon' => 'icon.png',
+    'icon' => '@sparkles',
     'enable' => true,
     'sys-app' => true,
     'theme' => 'welcome',

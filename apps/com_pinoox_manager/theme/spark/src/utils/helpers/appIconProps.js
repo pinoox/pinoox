@@ -8,7 +8,8 @@ export function appIconProps(app, overrides = {}) {
     return overrides;
   }
 
-  const isCustom = app.icon_source === 'custom';
+  const forceLucide = overrides.forceLucide === true;
+  const isCustom = !forceLucide && app.icon_source === 'custom';
   const iconStyle = app.icon_style ?? 'crystal';
   const colors = Array.isArray(app.icon_colors) && app.icon_colors.length
       ? app.icon_colors
@@ -18,9 +19,15 @@ export function appIconProps(app, overrides = {}) {
     src: isCustom ? (app.icon ?? '') : '',
     lucide: app.icon_lucide ?? '',
     colors,
-    iconStyle,
-    iconSource: app.icon_source ?? '',
+    iconStyle: forceLucide ? 'crystal' : iconStyle,
+    iconSource: forceLucide ? 'lucide' : (app.icon_source ?? ''),
     alt: app.name ?? '',
+    forceLucide,
     ...overrides,
   };
+}
+
+/** Control panel: always Lucide, no custom PNG tiles. */
+export function controlPanelIconProps(app, overrides = {}) {
+  return appIconProps(app, { forceLucide: true, ...overrides });
 }

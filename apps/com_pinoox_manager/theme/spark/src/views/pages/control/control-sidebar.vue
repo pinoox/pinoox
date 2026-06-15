@@ -9,11 +9,11 @@
       @update:collapsed="onToggleCollapse"
   >
     <template v-slot:toggle-icon>
-      <Icon :is="sidebar.isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight" size="sm"/>
+      <LucideIcon :name="sidebar.isCollapsed ? lucideSidebar.chevronLeft : lucideSidebar.chevronRight" size="sm"/>
     </template>
 
     <template #icon>
-      <Icon :is="saxIcon.arrowLeft" size="sm"/>
+      <LucideIcon :name="lucideSidebar.chevronLeft" size="sm"/>
     </template>
 
   </sidebar-menu>
@@ -23,8 +23,8 @@
 import {ref} from 'vue';
 import {SidebarMenu} from 'vue-sidebar-menu';
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
-import {saxIcon as icons, saxIcon} from "../../../const/icons.js";
-import Icon from "../../components/widgets/Icon.vue";
+import {lucideSidebar} from "../../../const/icons.js";
+import LucideIcon from "../../components/widgets/LucideIcon.vue";
 import {useSidebarStore} from "../../composables/useSidebar.js";
 
 const sidebar = useSidebarStore();
@@ -32,6 +32,11 @@ const sidebar = useSidebarStore();
 const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);
 };
+
+const menuIcon = (name) => ({
+  element: LucideIcon,
+  attributes: { name },
+});
 
 const menuItems = ref([
   {
@@ -42,49 +47,31 @@ const menuItems = ref([
     href: '/',
     title: 'برگشت',
     class: 'back',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.back },
-    },
+    icon: menuIcon(lucideSidebar.back),
   },
   {
     href: '/control/widgets',
     title: 'ویجت‌ها',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.widgets },
-    },
+    icon: menuIcon(lucideSidebar.widgets),
   },
   {
     href: '/control/apps',
     title: 'اپلیکیشن‌ها',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.apps },
-    },
+    icon: menuIcon(lucideSidebar.apps),
   },
   {
     href: '/control/apps/manual',
     title: 'نصب دستی',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.upload },
-    },
+    icon: menuIcon(lucideSidebar.upload),
   },
   {
     href: '/control/routes',
     title: 'مسیریابی',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.routes },
-    },
+    icon: menuIcon(lucideSidebar.routes),
   },
   {
     title: 'تنظیمات',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.setting },
-    },
+    icon: menuIcon(lucideSidebar.setting),
     child: [
       {
         href: '/control/settings/appearance',
@@ -99,26 +86,17 @@ const menuItems = ref([
   {
     href: '/control/profile',
     title: 'حساب کاربری',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.profile },
-    },
+    icon: menuIcon(lucideSidebar.profile),
   },
   {
     href: '/control/pincore',
     title: 'پینوکس',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.pincore },
-    },
+    icon: menuIcon(lucideSidebar.pincore),
   },
   {
     href: '/market',
     title: 'مارکت',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.market },
-    },
+    icon: menuIcon(lucideSidebar.market),
   },
 ]);
 </script>

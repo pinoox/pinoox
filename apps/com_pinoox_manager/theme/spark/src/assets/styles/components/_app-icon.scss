@@ -338,22 +338,7 @@
   }
 
   .appIcon--has-lucide {
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-  }
-
-  .appIcon-wrap:hover .appIcon--lucide-crystal {
-    transform: translateY(-2px) scale(1.04);
-    --app-icon-shadow:
-      0 0 0 1px rgba(169, 73, 46, 0.22),
-      0 14px 28px rgba(0, 0, 0, 0.24),
-      0 1px 0 rgba(255, 255, 255, 0.62) inset;
-  }
-
-  .appIcon-wrap:hover .appIcon--lucide-gradient {
-    transform: translateY(-2px) scale(1.04);
-    --app-icon-shadow:
-      0 14px 28px rgba(0, 0, 0, 0.28),
-      0 3px 8px rgba(0, 0, 0, 0.16);
+    transition: transform 0.22s ease;
   }
 
   .appIcon--md {
@@ -367,7 +352,7 @@
 
 .pageRoutes {
   .appIcon {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease;
   }
 
   tr:hover .appIcon {
@@ -375,7 +360,54 @@
   }
 }
 
-.pageAppManager,
+.pageControl,
+.modalRoutes,
+.modal-app-picker,
+.pageAppManager {
+  .appIcon:not(.appIcon--custom-image) {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+  }
+
+  .appIcon--lucide-crystal,
+  .appIcon--lucide-gradient {
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .appIcon--has-lucide.appIcon--xs {
+    --app-icon-lucide-scale: 0.78;
+  }
+
+  .appIcon--has-lucide.appIcon--sm {
+    --app-icon-lucide-scale: 0.76;
+  }
+
+  .appIcon--has-lucide.appIcon--md,
+  .appIcon--has-lucide.appIcon--lg,
+  .appIcon--has-lucide.appIcon--xl {
+    --app-icon-lucide-scale: 0.74;
+  }
+
+  .appIcon--lucide-crystal .appIcon__lucide,
+  .appIcon--lucide-gradient .appIcon__lucide {
+    color: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  }
+
+  .appIcon-wrap:hover .appIcon--has-lucide,
+  tr:hover .appIcon--has-lucide {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
 .pageMarketDetails {
   .appIcon:not(.appIcon--custom-image) {
     box-shadow:

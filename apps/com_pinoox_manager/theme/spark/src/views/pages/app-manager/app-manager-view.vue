@@ -8,7 +8,7 @@
 
     <template v-else-if="app">
       <div class="mb-6 flex items-center gap-4">
-        <AppIcon v-bind="appIconProps(app)" size="lg"/>
+        <AppIcon v-bind="controlPanelIconProps(app)" size="lg"/>
         <div>
           <h2 class="text-xl font-bold">{{ app.name }}</h2>
           <p class="opacity-70">{{ app.description }}</p>
@@ -36,7 +36,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRoute } from "vue-router";
 import { saxIcon } from "@/const/icons.js";
 import { useAppStore } from "@/stores/modules/app.js";
-import { appIconProps } from "@utils/helpers/appIconProps.js";
+import { controlPanelIconProps } from "@utils/helpers/appIconProps.js";
 
 const route = useRoute();
 const appStore = useAppStore();

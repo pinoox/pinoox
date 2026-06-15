@@ -1,4 +1,14 @@
 .sidebar {
+  --vsm-base-bg: rgba(0, 0, 0, 0.1);
+  --vsm-icon-bg: transparent;
+  --vsm-icon-active-bg: transparent;
+  --vsm-icon-open-bg: transparent;
+  --vsm-toggle-btn-bg: transparent;
+  --vsm-badge-bg: transparent;
+  --vsm-item-open-bg: rgba(255, 255, 255, 0.08);
+  --vsm-item-hover-bg: rgba(255, 255, 255, 0.06);
+  --vsm-dropdown-bg: rgba(0, 0, 0, 0.2);
+
   background: rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(10px);
 
@@ -11,6 +21,19 @@
     align-items: center;
     justify-content: center;
     min-width: 1.75rem;
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.88);
+  }
+
+  .vsm--link_level-1.vsm--link_active .vsm--icon,
+  .vsm--link_level-1.vsm--link_open .vsm--icon,
+  .vsm--link_level-1.vsm--link_hover .vsm--icon {
+    background: transparent !important;
+    color: var(--color-primary, #a9492e);
+  }
+
+  .vsm--toggle-btn {
+    background: transparent !important;
   }
 }
 

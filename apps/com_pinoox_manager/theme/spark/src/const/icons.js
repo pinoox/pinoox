@@ -40,3 +40,18 @@ export const saxIcon = {
 export const mdiIcon ={
     autoScroll: m.mdiGestureSwipeVertical,
 }
+
+/** Lucide names for control panel sidebar menu. */
+export const lucideSidebar = {
+    back: 'arrow-right',
+    widgets: 'layout-grid',
+    apps: 'boxes',
+    upload: 'upload',
+    routes: 'route',
+    setting: 'settings',
+    profile: 'user',
+    pincore: 'code',
+    market: 'store',
+    chevronLeft: 'chevron-left',
+    chevronRight: 'chevron-right',
+};

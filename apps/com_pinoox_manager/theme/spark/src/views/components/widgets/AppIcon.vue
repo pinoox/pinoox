@@ -209,21 +209,35 @@ const props = defineProps({
 
   },
 
+  forceLucide: {
+
+    type: Boolean,
+
+    default: false,
+
+  },
+
 });
 
 
 
 const lucideComponent = computed(() => resolveLucideComponent(props.lucide));
 
-const showLucide = computed(() => props.iconSource !== 'custom' && Boolean(props.lucide) && Boolean(lucideComponent.value));
+const showImage = computed(() => !props.forceLucide && props.iconSource === 'custom' && Boolean(props.src));
 
-const showImage = computed(() => props.iconSource === 'custom' && Boolean(props.src));
+const showLucide = computed(() => {
+  if (props.forceLucide) {
+    return Boolean(lucideComponent.value);
+  }
+
+  return props.iconSource !== 'custom' && Boolean(props.lucide) && Boolean(lucideComponent.value);
+});
 
 const showGlyph = computed(() => !showLucide.value && !showImage.value && Boolean(props.glyph));
 
 const isCustomImage = computed(() => showImage.value);
 
-const isLucideGradient = computed(() => props.iconStyle === 'gradient');
+const isLucideGradient = computed(() => !props.forceLucide && props.iconStyle === 'gradient');
 
 const isLucideCrystal = computed(() => !isLucideGradient.value);
 
