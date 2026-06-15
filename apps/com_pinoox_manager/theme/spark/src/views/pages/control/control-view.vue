@@ -3,7 +3,7 @@
       class="pageControl"
       :class="{
         'pageControl--embedded': embedded,
-        'pageControl--mobile': layout.isMobile,
+        'pageControl--mobile': layout.isCompact,
         'pageControl--compact': layout.isCompact,
         'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
         'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isCompact,
@@ -11,7 +11,7 @@
   >
     <Transition name="pageControlBackdrop">
       <button
-          v-if="layout.isMobile && layout.mobileSidebarOpen"
+          v-if="layout.isCompact && layout.mobileSidebarOpen"
           type="button"
           class="pageControl__mobileBackdrop"
           aria-label="بستن منو"
@@ -22,7 +22,8 @@
     <ControlSidebar class="pageControl__sidebar" :embedded="embedded"/>
 
     <div class="pageControl__page" :class="pageClasses">
-      <RouterView/>
+      <ControlPanelEmbeddedOutlet v-if="embedded"/>
+      <RouterView v-else/>
     </div>
   </div>
 </template>
@@ -31,6 +32,7 @@
 import {computed, onMounted, onUnmounted, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import ControlSidebar from './control-sidebar.vue';
+import ControlPanelEmbeddedOutlet from './ControlPanelEmbeddedOutlet.vue';
 import {useSidebarStore} from '../../composables/useSidebar.js';
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 

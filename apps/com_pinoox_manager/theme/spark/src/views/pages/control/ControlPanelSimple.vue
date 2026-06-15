@@ -1,7 +1,7 @@
 <template>
   <section class="appView appView--simple controlPanelSimple">
     <div class="appView__toolbar">
-      <ControlPanelMenuToggle v-if="layout.isMobile"/>
+      <ControlPanelMenuToggle v-if="layout.isCompact"/>
 
       <button
           type="button"
@@ -22,7 +22,7 @@
       <div
           class="pageControl pageControl--embedded"
           :class="{
-            'pageControl--mobile': layout.isMobile,
+            'pageControl--mobile': layout.isCompact,
             'pageControl--compact': layout.isCompact,
             'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
             'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isCompact,
@@ -30,7 +30,7 @@
       >
         <Transition name="pageControlBackdrop">
           <button
-              v-if="layout.isMobile && layout.mobileSidebarOpen"
+              v-if="layout.isCompact && layout.mobileSidebarOpen"
               type="button"
               class="pageControl__mobileBackdrop"
               aria-label="بستن منو"

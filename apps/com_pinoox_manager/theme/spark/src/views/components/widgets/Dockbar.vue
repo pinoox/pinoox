@@ -633,35 +633,23 @@ function minimizeOpenApp(item, session) {
 
 function activateControlPanel(item) {
   const fallbackPath = item.route ?? '/control/apps';
+  const path = controlPanelWindow.lastPath || fallbackPath;
 
   if (!controlPanelWindow.isOpen) {
-    openControlPanel(controlPanelWindow.lastPath || fallbackPath);
+    openControlPanel(path);
     return;
   }
 
   if (controlPanelWindow.isMinimized) {
-    controlPanelWindow.restoreSession();
-
-    const path = controlPanelWindow.lastPath || fallbackPath;
-
-    if (router.currentRoute.value.path !== path) {
-      router.push(path);
-    }
-
+    openControlPanel(path);
     return;
   }
 
   if (controlPanelWindow.isActive) {
-    if (isControlRoute(router.currentRoute.value)) {
-      controlPanelWindow.minimize(
-          controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
-          router.currentRoute.value.path,
-      );
-    } else {
-      controlPanelWindow.minimize(
-          controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
-      );
-    }
+    controlPanelWindow.minimize(
+        controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
+        path,
+    );
 
     if (isControlRoute(router.currentRoute.value)) {
       router.replace({name: 'desktop'});
@@ -670,7 +658,7 @@ function activateControlPanel(item) {
     return;
   }
 
-  openControlPanel(controlPanelWindow.lastPath || fallbackPath);
+  openControlPanel(path);
 }
 
 function activateOpenApp(item) {

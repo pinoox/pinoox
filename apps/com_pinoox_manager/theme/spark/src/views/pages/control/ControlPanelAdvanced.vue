@@ -16,6 +16,7 @@ import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
+import {syncControlPanelMemoryRouter} from '@/router/controlPanelMemoryRouter.js';
 import ControlPanelPanelAdvanced from '@/views/pages/control/ControlPanelPanelAdvanced.vue';
 
 const route = useRoute();
@@ -27,6 +28,8 @@ function syncRouteSession() {
   if (isSimple.value || !isControlRoute(route)) {
     return;
   }
+
+  syncControlPanelMemoryRouter(route.path);
 
   if (controlPanelWindow.mode === 'minimized') {
     controlPanelWindow.restoreSession();

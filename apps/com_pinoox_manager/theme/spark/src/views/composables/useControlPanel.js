@@ -1,6 +1,7 @@
 import {useRouter} from 'vue-router';
 import {CONTROL_PANEL_ID, useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
+import {syncControlPanelMemoryRouter} from '@/router/controlPanelMemoryRouter.js';
 
 export {CONTROL_PANEL_ID};
 
@@ -13,7 +14,24 @@ export function useControlPanel() {
     const {isAdvanced} = useAppViewMode();
     const controlPanelWindow = useControlPanelWindowStore();
 
-    function openControlPanel(path = '/control/apps') {
+    async function openControlPanel(path = '/control/apps') {
+        controlPanelWindow.setLastPath(path);
+
+        if (isAdvanced.value) {
+            await syncControlPanelMemoryRouter(path);
+
+            if (controlPanelWindow.isMinimized) {
+                controlPanelWindow.restoreSession();
+                return;
+            }
+
+            if (!controlPanelWindow.isActive) {
+                controlPanelWindow.openFullscreen();
+            }
+
+            return;
+        }
+
         router.push(path);
     }
 

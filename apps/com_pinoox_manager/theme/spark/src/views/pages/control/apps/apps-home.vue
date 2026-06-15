@@ -2,8 +2,8 @@
   <Page title="اپلیکیشن‌ها" class="pageApps">
     <template #toolbar>
       <Menu @click="openModalInstallApp" :icon="saxIcon.add" label="نصب اپلکیشن"/>
-      <Menu @click="$router.push('/control/apps/manual')" :icon="saxIcon.upload" label="نصب دستی"/>
-      <Menu @click="$router.push('/market')" :icon="saxIcon.market" label="مارکت"/>
+      <Menu @click="router.push({ name: 'apps-manual' })" :icon="saxIcon.upload" label="نصب دستی"/>
+      <Menu @click="globalRouter.push('/market')" :icon="saxIcon.market" label="مارکت"/>
     </template>
 
     <div v-if="!!appStore.appList && appStore.appList.length>0">
@@ -38,8 +38,10 @@ import {openModal} from "@kolirt/vue-modal";
 import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
 import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
+import {useGlobalRouter} from "@/views/composables/useGlobalRouter.js";
 
 const router = useRouter();
+const globalRouter = useGlobalRouter();
 const appStore = useAppStore();
 
 function openModalInstallApp() {
@@ -49,6 +51,6 @@ function openModalInstallApp() {
 }
 
 function openApp(app) {
-  router.push(`/app-manager/${app.package_name}/config`);
+  globalRouter.push(`/app-manager/${app.package_name}/config`);
 }
 </script>

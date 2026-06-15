@@ -33,7 +33,7 @@
             @toggle-float="toggleFloating"
         />
 
-        <ControlPanelMenuToggle v-if="layout.isMobile"/>
+        <ControlPanelMenuToggle v-if="layout.isCompact"/>
 
         <div class="appView__title">
           <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
@@ -45,7 +45,7 @@
           class="controlPanelWindow__body @container"
           :class="{ 'is-interacting': interacting }"
       >
-        <ControlPanelFrozenRouterView/>
+        <PageControl embedded/>
       </div>
 
       <div
@@ -70,7 +70,7 @@ import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
-import ControlPanelFrozenRouterView from '@/views/pages/control/ControlPanelFrozenRouterView.vue';
+import PageControl from '@/views/pages/control/control-view.vue';
 
 const props = defineProps({
   overlay: {
@@ -144,16 +144,18 @@ function closeWindow() {
 }
 
 function minimizeWindow() {
-  if (isControlRoute(router.currentRoute.value)) {
-    controlPanelWindow.minimize(
-        isFloating.value ? 'floating' : 'fullscreen',
-        router.currentRoute.value.path,
-    );
-  } else {
-    controlPanelWindow.minimize(isFloating.value ? 'floating' : 'fullscreen');
-  }
+  const path = isControlRoute(router.currentRoute.value)
+      ? router.currentRoute.value.path
+      : controlPanelWindow.lastPath;
 
-  router.push({name: 'desktop'});
+  controlPanelWindow.minimize(
+      isFloating.value ? 'floating' : 'fullscreen',
+      path,
+  );
+
+  if (isControlRoute(router.currentRoute.value)) {
+    router.push({name: 'desktop'});
+  }
 }
 
 function toggleFloating() {

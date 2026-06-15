@@ -3,15 +3,7 @@ import PageDesktop from '@/views/pages/desktop/desktop-view.vue';
 import PageLogin from '@/views/pages/account/login.vue';
 
 import ControlPanelView from '@/views/pages/control/control-panel-view.vue';
-import PageProfile from '@/views/pages/control/profile/profile-home.vue';
-import PageAppearanceSettings from '@/views/pages/control/settings/appearance-settings.vue';
-import PageApps from '@/views/pages/control/apps/apps-home.vue';
-import PageAppsManual from '@/views/pages/control/apps/apps-manual.vue';
-import PageRoutes from '@/views/pages/control/routes/routes-home.vue';
-import PagePincore from '@/views/pages/control/pincore/pincore-home.vue';
-import PageWidgets from '@/views/pages/control/widgets/widgets-home.vue';
-import PageWidgetDetail from '@/views/pages/control/widgets/widget-detail.vue';
-import PageApplicationSettings from '@/views/pages/control/settings/application-settings.vue';
+import {createControlPanelChildRoutes} from '@/router/controlPanelRoutes.js';
 import PageAppView from '@/views/pages/app-view/app-view.vue';
 
 import AppManagerView from '@/views/pages/app-manager/app-manager-view.vue';
@@ -48,62 +40,7 @@ export const routes = [
             toolbar: false,
             showDock: false,
         },
-        children: [
-            {
-                path: '',
-                redirect: { name: 'apps' },
-            },
-            {
-                path: 'appearance',
-                redirect: { name: 'settings-appearance' },
-            },
-            {
-                path: 'widgets',
-                name: 'widgets',
-                component: PageWidgets,
-            },
-            {
-                path: 'widgets/:id',
-                name: 'widget-detail',
-                component: PageWidgetDetail,
-                props: true,
-            },
-            {
-                path: 'apps',
-                name: 'apps',
-                component: PageApps,
-            },
-            {
-                path: 'apps/manual',
-                name: 'apps-manual',
-                component: PageAppsManual,
-            },
-            {
-                path: 'routes',
-                name: 'routes',
-                component: PageRoutes,
-            },
-            {
-                path: 'profile',
-                name: 'profile',
-                component: PageProfile,
-            },
-            {
-                path: 'pincore',
-                name: 'pincore',
-                component: PagePincore,
-            },
-            {
-                path: 'settings/appearance',
-                name: 'settings-appearance',
-                component: PageAppearanceSettings,
-            },
-            {
-                path: 'settings/application',
-                name: 'settings-application',
-                component: PageApplicationSettings,
-            },
-        ],
+        children: createControlPanelChildRoutes(),
     },
     {
         path: '/app-manager/:package_name',

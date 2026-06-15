@@ -1,12 +1,9 @@
 import {computed} from 'vue';
-import {useRoute} from 'vue-router';
 import {useRouteMeta} from '@/views/composables/useRouteMeta.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
-import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 
 export function useManagerChrome() {
-    const route = useRoute();
     const {hasToolbar: routeHasToolbar, isSingle, showDock} = useRouteMeta();
     const {isAdvanced} = useAppViewMode();
     const controlPanelWindow = useControlPanelWindowStore();
@@ -17,8 +14,8 @@ export function useManagerChrome() {
         }
 
         return isAdvanced.value
-            && isControlRoute(route)
-            && controlPanelWindow.mode === 'floating';
+            && controlPanelWindow.mode === 'floating'
+            && controlPanelWindow.isVisible;
     });
 
     const showDockBar = computed(() => {
@@ -26,7 +23,7 @@ export function useManagerChrome() {
             return true;
         }
 
-        if (!isAdvanced.value || !isControlRoute(route)) {
+        if (!isAdvanced.value) {
             return false;
         }
 
