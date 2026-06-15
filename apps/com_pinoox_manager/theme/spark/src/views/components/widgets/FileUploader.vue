@@ -18,6 +18,7 @@
 
 <script setup>
 import {ref, watch} from "vue";
+import {toast} from "@/utils/global.js";
 
 const file = ref(null);
 const emit = defineEmits(['select']);
@@ -35,7 +36,10 @@ const handleDrop = (event) => {
     event.preventDefault();
     const droppedFile = event.dataTransfer.files[0];
     if (!droppedFile || !droppedFile.name.endsWith('.pin')) {
-        alert("لطفاً فقط فایل با فرمت .pin را رها کنید.");
+        toast({
+            title: 'لطفاً فقط فایل با فرمت .pin را رها کنید.',
+            type: 'warn',
+        });
         return;
     }
     file.value = droppedFile;

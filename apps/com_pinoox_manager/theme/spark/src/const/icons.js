@@ -26,6 +26,11 @@ export const saxIcon = {
     refresh: sax.Refresh2Icon,
     lock: sax.LockIcon,
     user: sax.UserIcon,
+    notifySuccess: sax.TickCircleIcon,
+    notifyError: sax.DangerIcon,
+    notifyWarn: sax.Warning2Icon,
+    notifyInfo: sax.InfoCircleIcon,
+    notifyClose: sax.CloseSquareIcon,
 };
 
 export const mdiIcon ={

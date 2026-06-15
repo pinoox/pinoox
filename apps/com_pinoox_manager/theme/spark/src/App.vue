@@ -1,6 +1,6 @@
 <template>
 
-    <Notifications class="notification"/>
+    <SparkNotifications/>
 
 
 
@@ -69,6 +69,7 @@ import {useOptionsStore} from "@/stores/modules/options.js";
 import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
 import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
+import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 
 

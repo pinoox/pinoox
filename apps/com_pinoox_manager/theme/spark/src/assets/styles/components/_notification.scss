@@ -1,32 +1,168 @@
-.vue-notification-group {
-  z-index: 9999999 !important;
+@use '../base/variable' as *;
+
+.spark-notifications {
+  z-index: 100000 !important;
+  padding:
+    max(1rem, calc(#{$toolbar-height} + 0.85rem))
+    0
+    0
+    max(1rem, env(safe-area-inset-left, 0px)) !important;
+  max-width: min(24rem, calc(100vw - 2rem));
+  pointer-events: none;
+
+  .vue-notification-wrapper {
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .spark-notification-shell {
+    margin: 0 0 0.65rem !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+  }
 }
 
-.notification {
-  margin: 1rem;
+.spark-notification {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 0.75rem;
+  padding: 0.85rem 0.85rem 0.85rem 0.95rem;
+  border-radius: 0.85rem;
+  color: $color-title;
+  background: rgba(19, 13, 11, 0.82);
+  backdrop-filter: blur(20px) saturate(1.15);
+  -webkit-backdrop-filter: blur(20px) saturate(1.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
 
-  .vue-notification {
-    margin-bottom: 0.5rem;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 5px 10px rgba(#222, 0.1);
-    border-left: initial;
-    border-right: 5px solid;
+  &__accent {
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    width: 3px;
+    border-radius: 0.85rem 0 0 0.85rem;
+    background: var(--spark-notification-accent, var(--color-accent));
+  }
 
-    &.error {
-      background: var(--color-primary) !important;
-      border-color: var(--color-primary);
-    }
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 0.65rem;
+    flex-shrink: 0;
+    color: var(--spark-notification-accent, var(--color-accent));
+    background: rgba(255, 255, 255, 0.06);
 
-    &.success {
-      background: var(--color-success) !important;
-      border-color: var(--color-success);
+    svg {
+      width: 1.2rem;
+      height: 1.2rem;
     }
   }
 
-  &-title {
-    font-size: 1rem;
-    text-align: right;
-    line-height: normal;
+  &__content {
+    min-width: 0;
+    padding-top: 0.1rem;
   }
+
+  &__title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: $color-title;
+    word-break: break-word;
+  }
+
+  &__text {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: $color-text;
+    word-break: break-word;
+  }
+
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin-top: 0.05rem;
+    padding: 0;
+    border: none;
+    border-radius: 0.45rem;
+    background: transparent;
+    color: rgba(255, 255, 255, 0.45);
+    cursor: pointer;
+    transition: color 0.2s ease, background 0.2s ease;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.08);
+    }
+  }
+
+  &--success {
+    --spark-notification-accent: var(--color-success);
+  }
+
+  &--error {
+    --spark-notification-accent: var(--color-danger);
+  }
+
+  &--warn {
+    --spark-notification-accent: var(--color-warning);
+  }
+
+  &--info {
+    --spark-notification-accent: var(--color-accent);
+  }
+}
+
+@keyframes sparkNotificationIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-18px) scale(0.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes sparkNotificationOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(-12px) scale(0.98);
+  }
+}
+
+.spark-notification-enter-active {
+  animation: sparkNotificationIn 0.32s ease-out;
+}
+
+.spark-notification-leave-active {
+  animation: sparkNotificationOut 0.24s ease-in;
 }
