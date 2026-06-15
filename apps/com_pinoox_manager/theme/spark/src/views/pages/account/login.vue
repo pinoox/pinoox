@@ -5,7 +5,9 @@
         <div class="pageLogin__box">
             <div class="pageLogin__box--header">
                 <div class="pageLogin__brand">
-                    <img src="@/assets/media/pinoox/logo.png" alt="pinoox logo" class="pageLogin__logo">
+                    <span class="pageLogin__logo-wrap">
+                        <img src="@/assets/media/pinoox/logo.png" alt="Pinoox" class="pageLogin__logo" width="72" height="72">
+                    </span>
                     <div class="pageLogin__brand-text">
                         <h1>pinoox manager</h1>
                         <p>برای ادامه وارد حساب کاربری شوید</p>
