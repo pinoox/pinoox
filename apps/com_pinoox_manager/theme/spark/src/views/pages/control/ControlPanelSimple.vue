@@ -25,7 +25,7 @@
             'pageControl--mobile': layout.isMobile,
             'pageControl--compact': layout.isCompact,
             'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
-            'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
+            'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isCompact,
           }"
       >
         <Transition name="pageControlBackdrop">
@@ -39,7 +39,7 @@
         </Transition>
 
         <ControlSidebar class="pageControl__sidebar" embedded/>
-        <div class="pageControl__page" :class="{'collapsed': sidebarStore.isCollapsed && !layout.isMobile}">
+        <div class="pageControl__page" :class="{'collapsed': sidebarStore.isCollapsed && !layout.isCompact}">
           <RouterView/>
         </div>
       </div>
@@ -71,9 +71,9 @@ watch(() => route.path, () => {
   layout.closeMobileSidebar();
 });
 
-watch(() => layout.isMobile, (mobile) => {
-  if (mobile) {
-    sidebarStore.setCollapsed(true);
+watch(() => layout.isCompact, (compact) => {
+  if (compact) {
+    sidebarStore.setCollapsed(false);
     layout.closeMobileSidebar();
   }
 });

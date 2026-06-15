@@ -9,7 +9,7 @@
       :disable-hover="true"
       width="300px"
       width-collapsed="72px"
-      :show-toggle="!layout.isMobile"
+      :hide-toggle="layout.isCompact"
       @update:collapsed="onToggleCollapse"
       @item-click="onItemClick"
   >
@@ -51,10 +51,14 @@ const layout = useControlPanelLayoutStore();
 
 const menuItems = ref(toSidebarMenuItems(LucideIcon));
 
-const isMenuCollapsed = computed(() => sidebar.isCollapsed && !layout.isMobile);
+const isMenuCollapsed = computed(() => sidebar.isCollapsed && !layout.isCompact);
 const showSidebar = computed(() => !layout.isMobile || layout.mobileSidebarOpen);
 
 const onToggleCollapse = (collapsed) => {
+  if (layout.isCompact) {
+    return;
+  }
+
   sidebar.setCollapsed(collapsed);
 };
 

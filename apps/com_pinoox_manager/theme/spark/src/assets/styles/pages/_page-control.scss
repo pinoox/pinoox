@@ -113,6 +113,12 @@
     }
   }
 
+  &--compact {
+    .pageControl__sidebar .sidebar .vsm--toggle-btn {
+      display: none !important;
+    }
+  }
+
   &--mobile {
     .pageControl__page {
       width: 100% !important;

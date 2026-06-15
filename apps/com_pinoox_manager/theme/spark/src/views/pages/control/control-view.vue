@@ -6,7 +6,7 @@
         'pageControl--mobile': layout.isMobile,
         'pageControl--compact': layout.isCompact,
         'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
-        'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
+        'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isCompact,
       }"
   >
     <Transition name="pageControlBackdrop">
@@ -46,16 +46,16 @@ const sidebarStore = useSidebarStore();
 const layout = useControlPanelLayoutStore();
 
 const pageClasses = computed(() => ({
-  collapsed: sidebarStore.isCollapsed && !layout.isMobile,
+  collapsed: sidebarStore.isCollapsed && !layout.isCompact,
 }));
 
 watch(() => route.path, () => {
   layout.closeMobileSidebar();
 });
 
-watch(() => layout.isMobile, (mobile) => {
-  if (mobile) {
-    sidebarStore.setCollapsed(true);
+watch(() => layout.isCompact, (compact) => {
+  if (compact) {
+    sidebarStore.setCollapsed(false);
     layout.closeMobileSidebar();
   }
 });
