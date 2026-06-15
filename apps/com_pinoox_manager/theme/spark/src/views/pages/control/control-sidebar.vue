@@ -1,29 +1,30 @@
 <template>
+  <ControlSidebarCollapsed v-if="sidebar.isCollapsed"/>
+
   <sidebar-menu
+      v-else
       class="sidebar"
       :menu="menuItems"
-      :collapsed="sidebar.isCollapsed"
+      :collapsed="false"
       :rtl="true"
-      :relative="true"
       width="300px"
       width-collapsed="72px"
       :show-toggle="true"
       @update:collapsed="onToggleCollapse"
   >
     <template #header>
-      <div v-if="!sidebar.isCollapsed" class="sidebar__header">
+      <div class="sidebar__header">
         <span class="sidebar__header-title">کنترل پنل</span>
       </div>
     </template>
 
     <template v-slot:toggle-icon>
-      <LucideIcon :name="sidebar.isCollapsed ? lucideSidebar.chevronLeft : lucideSidebar.chevronRight" size="sm"/>
+      <LucideIcon :name="lucideSidebar.chevronRight" size="sm"/>
     </template>
 
     <template #icon>
       <LucideIcon :name="lucideSidebar.chevronLeft" size="sm"/>
     </template>
-
   </sidebar-menu>
 </template>
 
@@ -31,9 +32,11 @@
 import {ref} from 'vue';
 import {SidebarMenu} from 'vue-sidebar-menu';
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
-import {lucideSidebar} from "../../../const/icons.js";
-import LucideIcon from "../../components/widgets/LucideIcon.vue";
-import {useSidebarStore} from "../../composables/useSidebar.js";
+import {lucideSidebar} from '../../../const/icons.js';
+import LucideIcon from '../../components/widgets/LucideIcon.vue';
+import {useSidebarStore} from '../../composables/useSidebar.js';
+import {toSidebarMenuItems} from '@/views/pages/control/controlMenuItems.js';
+import ControlSidebarCollapsed from '@/views/pages/control/control-sidebar-collapsed.vue';
 
 defineProps({
   embedded: {
@@ -44,71 +47,9 @@ defineProps({
 
 const sidebar = useSidebarStore();
 
+const menuItems = ref(toSidebarMenuItems(LucideIcon));
+
 const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);
 };
-
-const menuIcon = (name) => ({
-  element: LucideIcon,
-  attributes: { name },
-});
-
-const menuLink = (item) => ({
-  ...item,
-  icon: menuIcon(item.iconName),
-  attributes: {'aria-label': item.title},
-});
-
-const menuItems = ref([
-  menuLink({
-    href: '/control/widgets',
-    title: 'ویجت‌ها',
-    iconName: lucideSidebar.widgets,
-  }),
-  menuLink({
-    href: '/control/apps',
-    title: 'اپلیکیشن‌ها',
-    iconName: lucideSidebar.apps,
-  }),
-  menuLink({
-    href: '/control/apps/manual',
-    title: 'نصب دستی',
-    iconName: lucideSidebar.upload,
-  }),
-  menuLink({
-    href: '/control/routes',
-    title: 'مسیریابی',
-    iconName: lucideSidebar.routes,
-  }),
-  {
-    title: 'تنظیمات',
-    icon: menuIcon(lucideSidebar.setting),
-    attributes: {'aria-label': 'تنظیمات'},
-    child: [
-      {
-        href: '/control/settings/appearance',
-        title: 'ظاهر و زمینه',
-      },
-      {
-        href: '/control/settings/application',
-        title: 'تنظیمات اپلیکیشن',
-      },
-    ],
-  },
-  menuLink({
-    href: '/control/profile',
-    title: 'حساب کاربری',
-    iconName: lucideSidebar.profile,
-  }),
-  menuLink({
-    href: '/control/pincore',
-    title: 'پینوکس',
-    iconName: lucideSidebar.pincore,
-  }),
-  menuLink({
-    href: '/market',
-    title: 'مارکت',
-    iconName: lucideSidebar.market,
-  }),
-]);
 </script>
