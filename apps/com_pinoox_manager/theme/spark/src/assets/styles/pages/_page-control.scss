@@ -65,6 +65,10 @@
     cursor: default;
   }
 
+  &--mobile .pageControl__sidebar {
+    transition: transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+
   &--embedded {
     background: rgba(0, 0, 0, 0.18);
     width: 100%;
@@ -211,14 +215,64 @@
   background: rgba(255, 255, 255, 0.08);
   color: rgba(255, 255, 255, 0.9);
   cursor: pointer;
-  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    transform 0.14s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.18s ease;
 
-  &:hover,
-  &.is-active {
+  &:hover {
     background: rgba(255, 255, 255, 0.14);
     border-color: rgba(255, 255, 255, 0.2);
     color: #fff;
   }
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  &.is-active {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.24);
+    color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.08);
+  }
+
+  &__iconWrap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+  }
+
+  &__icon {
+    display: inline-flex;
+  }
+}
+
+.controlPanelMenuIcon-enter-active,
+.controlPanelMenuIcon-leave-active {
+  transition:
+    opacity 0.14s ease,
+    transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.controlPanelMenuIcon-enter-from,
+.controlPanelMenuIcon-leave-to {
+  opacity: 0;
+  transform: scale(0.72) rotate(-18deg);
+}
+
+.pageControlBackdrop-enter-active,
+.pageControlBackdrop-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.pageControlBackdrop-enter-from,
+.pageControlBackdrop-leave-to {
+  opacity: 0;
 }
 
 @media (max-width: 1024px) {

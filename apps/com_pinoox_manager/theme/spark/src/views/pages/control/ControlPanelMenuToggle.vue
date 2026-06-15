@@ -4,9 +4,19 @@
       class="controlPanelMenuToggle"
       :class="{ 'is-active': layout.mobileSidebarOpen }"
       aria-label="منوی کنترل پنل"
+      :aria-expanded="layout.mobileSidebarOpen"
       @click="layout.toggleMobileSidebar()"
   >
-    <LucideIcon :name="lucideSidebar.menu" size="sm"/>
+    <span class="controlPanelMenuToggle__iconWrap" aria-hidden="true">
+      <Transition name="controlPanelMenuIcon" mode="out-in">
+        <LucideIcon
+            :key="layout.mobileSidebarOpen ? 'close' : 'menu'"
+            :name="layout.mobileSidebarOpen ? lucideSidebar.close : lucideSidebar.menu"
+            size="sm"
+            class="controlPanelMenuToggle__icon"
+        />
+      </Transition>
+    </span>
   </button>
 </template>
 

@@ -27,13 +27,15 @@
             'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
           }"
       >
-        <button
-            v-if="layout.isMobile && layout.mobileSidebarOpen"
-            type="button"
-            class="pageControl__mobileBackdrop"
-            aria-label="بستن منو"
-            @click="layout.closeMobileSidebar()"
-        />
+        <Transition name="pageControlBackdrop">
+          <button
+              v-if="layout.isMobile && layout.mobileSidebarOpen"
+              type="button"
+              class="pageControl__mobileBackdrop"
+              aria-label="بستن منو"
+              @click="layout.closeMobileSidebar()"
+          />
+        </Transition>
 
         <ControlSidebar class="pageControl__sidebar" embedded/>
         <div class="pageControl__page" :class="{'collapsed': sidebarStore.isCollapsed && !layout.isMobile}">
