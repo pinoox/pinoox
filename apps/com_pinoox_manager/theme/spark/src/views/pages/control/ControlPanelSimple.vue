@@ -12,7 +12,12 @@
     </div>
 
     <div class="appView__frame controlPanelSimple__frame">
-      <PageControl embedded/>
+      <div class="pageControl pageControl--embedded">
+        <ControlSidebar class="pageControl__sidebar" embedded/>
+        <div class="pageControl__page" :class="{'collapsed': sidebarStore.isCollapsed}">
+          <RouterView/>
+        </div>
+      </div>
     </div>
   </section>
 </template>
@@ -21,9 +26,11 @@
 import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
-import PageControl from '@/views/pages/control/control-view.vue';
+import ControlSidebar from '@/views/pages/control/control-sidebar.vue';
+import {useSidebarStore} from '@/views/composables/useSidebar.js';
 
 const router = useRouter();
+const sidebarStore = useSidebarStore();
 
 function goBack() {
   if (window.history.length > 1) {

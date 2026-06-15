@@ -43,7 +43,7 @@
           class="controlPanelWindow__body"
           :class="{ 'is-interacting': interacting }"
       >
-        <PageControl embedded/>
+        <RouterView/>
       </div>
 
       <div
@@ -65,7 +65,6 @@ import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js
 import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
-import PageControl from '@/views/pages/control/control-view.vue';
 
 const props = defineProps({
   overlay: {
