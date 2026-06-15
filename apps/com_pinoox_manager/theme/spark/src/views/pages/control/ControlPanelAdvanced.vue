@@ -43,22 +43,32 @@ function syncRouteSession() {
   }
 }
 
+function syncControlPanelOnLeave() {
+  if (!controlPanelWindow.isOpen || controlPanelWindow.isMinimized) {
+    return;
+  }
+
+  if (controlPanelWindow.mode !== 'fullscreen') {
+    return;
+  }
+
+  controlPanelWindow.minimize('fullscreen', controlPanelWindow.lastPath);
+}
+
 watch(
     () => route.path,
-    (path) => {
+    () => {
       if (isSimple.value) {
         return;
       }
 
       if (isControlRoute(route)) {
-        controlPanelWindow.setLastPath(path);
+        controlPanelWindow.setLastPath(route.path);
         syncRouteSession();
         return;
       }
 
-      if (controlPanelWindow.isOpen && !controlPanelWindow.isMinimized) {
-        controlPanelWindow.close();
-      }
+      syncControlPanelOnLeave();
     },
     {immediate: true},
 );
