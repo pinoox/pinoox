@@ -11,16 +11,8 @@
       @update:collapsed="onToggleCollapse"
   >
     <template #header>
-      <div class="sidebar__header" :class="{ 'is-collapsed': sidebar.isCollapsed }">
-        <span v-if="!sidebar.isCollapsed" class="sidebar__header-title">کنترل پنل</span>
-        <button
-            type="button"
-            class="sidebar__close"
-            aria-label="بستن کنترل پنل"
-            @click="closeControlPanel"
-        >
-          <LucideIcon :name="lucideSidebar.close" size="sm"/>
-        </button>
+      <div v-if="!sidebar.isCollapsed" class="sidebar__header">
+        <span class="sidebar__header-title">کنترل پنل</span>
       </div>
     </template>
 
@@ -42,7 +34,6 @@ import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
 import {lucideSidebar} from "../../../const/icons.js";
 import LucideIcon from "../../components/widgets/LucideIcon.vue";
 import {useSidebarStore} from "../../composables/useSidebar.js";
-import {useControlPanel} from "../../composables/useControlPanel.js";
 
 defineProps({
   embedded: {
@@ -52,14 +43,9 @@ defineProps({
 });
 
 const sidebar = useSidebarStore();
-const {closeControlPanel: dismissControlPanel} = useControlPanel();
 
 const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);
-};
-
-const closeControlPanel = () => {
-  dismissControlPanel();
 };
 
 const menuIcon = (name) => ({
