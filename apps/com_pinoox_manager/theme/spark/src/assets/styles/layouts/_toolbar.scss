@@ -15,8 +15,11 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 0;
+    padding: 0.4rem 0.55rem;
+    min-width: 2.25rem;
+    min-height: 2.25rem;
     border: none;
+    border-radius: 0.5rem;
     background: none;
     color: inherit;
     cursor: pointer;
@@ -24,6 +27,10 @@
 
     &:hover {
       color: var(--color-primary);
+    }
+
+    &:active {
+      transform: scale(0.96);
     }
   }
 

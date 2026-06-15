@@ -67,6 +67,7 @@ import {computed} from 'vue';
 import Icon from '@/views/components/widgets/Icon.vue';
 
 import {saxIcon} from '@/const/icons.js';
+import {PINOOX_ICON_GRADIENT} from '@/const/pinooxBrand.js';
 
 import {lucideIconSize, resolveLucideComponent} from '@/utils/lucideIcon.js';
 
@@ -252,9 +253,9 @@ const lucideColors = computed(() => {
   const colors = Array.isArray(props.colors) ? props.colors.filter(Boolean) : [];
 
   return {
-    c0: colors[0] ?? '#a9492e',
-    c1: colors[1] ?? colors[0] ?? '#c45c3e',
-    c2: colors[2] ?? colors[1] ?? '#8b3a24',
+    c0: colors[0] ?? PINOOX_ICON_GRADIENT[0],
+    c1: colors[1] ?? colors[0] ?? PINOOX_ICON_GRADIENT[1],
+    c2: colors[2] ?? colors[1] ?? PINOOX_ICON_GRADIENT[2],
   };
 });
 

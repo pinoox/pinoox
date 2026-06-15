@@ -3,6 +3,8 @@ import { useAppStore } from '@/stores/modules/app.js';
 import { useOptionsStore } from '@/stores/modules/options.js';
 import { saxIcon } from '@/const/icons.js';
 
+import { PINOOX_ICON_GRADIENT } from '@/const/pinooxBrand.js';
+
 export const systemDockApps = [
     { id: 'apps', name: 'اپ‌ها', action: 'launcher', route: null, icon: saxIcon.manager, image: null },
     { id: 'market', name: 'مارکت', route: '/market', icon: saxIcon.market, image: null },
@@ -22,13 +24,18 @@ export function resolveAppRoute(app) {
 }
 
 function mapAppToDockItem(app) {
+    const iconStyle = app.icon_style ?? 'crystal';
+    const colors = Array.isArray(app.icon_colors) && app.icon_colors.length
+        ? app.icon_colors
+        : (iconStyle === 'gradient' ? PINOOX_ICON_GRADIENT : []);
+
     return {
         id: app.package_name,
         name: app.name,
         image: app.icon_source === 'custom' ? app.icon : null,
         lucide: app.icon_lucide,
-        colors: app.icon_colors,
-        iconStyle: app.icon_style ?? 'crystal',
+        colors,
+        iconStyle,
         iconSource: app.icon_source,
         route: resolveAppRoute(app),
     };

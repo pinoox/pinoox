@@ -63,7 +63,7 @@ class AppIconPack
             'custom' => "Set icon => 'icon.png' and place the file in the app folder",
             'browse' => 'https://lucide.dev/icons/',
             'style_crystal' => 'Default Lucide tile is crystal/glass (no extra config)',
-            'style_gradient' => "Set icon_colors => ['#a9492e', '#c45c3e'] or icon_style => 'gradient'",
+            'style_gradient' => "Set icon_style => 'gradient' or icon_colors => [...] (defaults to Pinoox logo colors)",
         ];
     }
 
@@ -178,7 +178,7 @@ class AppIconPack
      */
     private static function defaultColors(): array
     {
-        return ['#a9492e', '#c45c3e', '#8b3a24'];
+        return ['#3399FF', '#0066FF', '#003B8E'];
     }
 
     /**
@@ -186,15 +186,14 @@ class AppIconPack
      */
     private static function resolveAppearance(mixed $appConfig): array
     {
-        $style = 'crystal';
-        $colors = [];
-
         if ($appConfig === null || !is_object($appConfig) || !method_exists($appConfig, 'get')) {
-            return ['style' => $style, 'colors' => $colors];
+            return ['style' => 'crystal', 'colors' => []];
         }
 
         $rawColors = $appConfig->get('icon_colors') ?? $appConfig->get('icon-colors') ?? [];
         $iconStyle = strtolower(trim((string) ($appConfig->get('icon_style') ?? $appConfig->get('icon-style') ?? '')));
+
+        $colors = [];
 
         if (is_array($rawColors)) {
             $colors = self::normalizeColors($rawColors);
@@ -209,10 +208,10 @@ class AppIconPack
         }
 
         if (in_array($iconStyle, ['crystal', 'glass'], true)) {
-            $style = 'crystal';
+            return ['style' => 'crystal', 'colors' => []];
         }
 
-        return ['style' => $style, 'colors' => []];
+        return ['style' => 'crystal', 'colors' => []];
     }
 
     /**

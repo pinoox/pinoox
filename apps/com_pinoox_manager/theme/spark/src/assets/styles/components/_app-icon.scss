@@ -43,10 +43,16 @@
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     overflow: visible;
+    --app-icon-image-scale: 84%;
+    --app-icon-image-shadow:
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
 
     .appIcon__image {
+      width: var(--app-icon-image-scale);
+      height: var(--app-icon-image-scale);
       border-radius: 22%;
-      filter: none;
+      filter: var(--app-icon-image-shadow);
     }
   }
 
@@ -68,12 +74,16 @@
   }
 
   &--custom-image.appIcon--dock {
-    width: 88%;
-    height: 88%;
     --app-icon-padding: 0;
+    --app-icon-image-scale: 92%;
+    flex: 0 0 88%;
+    align-self: center;
 
     .appIcon__image {
       border-radius: 22%;
+      margin: auto;
+      object-fit: contain;
+      object-position: center center;
     }
   }
 
@@ -95,9 +105,9 @@
   }
 
   &--lucide-gradient {
-    --icon-c0: #a9492e;
-    --icon-c1: #c45c3e;
-    --icon-c2: #8b3a24;
+    --icon-c0: #3399FF;
+    --icon-c1: #0066FF;
+    --icon-c2: #003B8E;
     --app-icon-bg: linear-gradient(152deg, var(--icon-c0) 0%, var(--icon-c1) 54%, var(--icon-c2) 100%);
     --app-icon-border: rgba(255, 255, 255, 0.28);
     --app-icon-shadow:
@@ -382,6 +392,13 @@
   .item-image.appIcon,
   .appIcon.item-image {
     transition: opacity 0.28s ease, filter 0.28s ease, transform 0.28s ease;
+  }
+
+  .item--app .appIcon--custom-image.item-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
   }
 
   .appIcon--has-lucide.item-image {
