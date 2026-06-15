@@ -88,18 +88,14 @@
             </div>
             <footer class="dockbar__start-foot">
               <div class="dockbar__start-foot-end">
-                <div class="dockbar__start-user">
+                <button type="button" class="dockbar__start-user" @click="openUserProfile">
                   <img
-                      v-if="userAvatar"
-                      :src="userAvatar"
+                      :src="userAvatarSrc(authStore.user)"
                       :alt="userLabel"
                       class="dockbar__start-user-avatar"
                   />
-                  <span v-else class="dockbar__start-user-fallback" aria-hidden="true">
-                    <Icon :is="saxIcon.user" size="xs"/>
-                  </span>
                   <span class="dockbar__start-user-name">{{ userLabel }}</span>
-                </div>
+                </button>
                 <button type="button" class="dockbar__start-foot-btn" @click="openControlPanel">
                   <Icon :is="saxIcon.control" size="sm"/>
                   <span>کنترل پنل</span>
@@ -250,7 +246,7 @@ import { useAuthStore } from '@/stores/modules/auth.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
-import { getUrl } from '@/boot.js';
+import { userAvatarSrc, userDisplayName } from '@utils/helpers/userAvatar.js';
 import { saxIcon } from '@/const/icons.js';
 
 const props = defineProps({
@@ -370,14 +366,7 @@ const { tone, remeasure } = useDockBackdropTone(selectedBackground, dockRoot);
 
 const toneClass = computed(() => `dockbar--tone-${tone.value}`);
 
-const userLabel = computed(() => {
-  const user = authStore.user ?? {};
-  const fullName = [user.fname, user.lname].filter(Boolean).join(' ').trim();
-
-  return fullName || user.username || user.email || 'کاربر';
-});
-
-const userAvatar = computed(() => authStore.user?.avatar_thumb || getUrl().AVATAR || '');
+const userLabel = computed(() => userDisplayName(authStore.user));
 
 const filteredApps = computed(() => {
   const list = appStore.appList ?? [];
@@ -514,11 +503,20 @@ function openControlPanel() {
   router.push('/control/apps');
 }
 
-function logoutFromPanel() {
+function openUserProfile() {
   closeAppsPanel();
-  authStore.logout().then(() => {
-    router.replace({ name: 'login' });
-  });
+  router.push('/control/profile');
+}
+
+async function logoutFromPanel() {
+  closeAppsPanel();
+
+  try {
+    await authStore.logout();
+    await router.replace({ name: 'login' });
+  } finally {
+    authStore.finishLogout();
+  }
 }
 
 function dockItemIconProps(item) {

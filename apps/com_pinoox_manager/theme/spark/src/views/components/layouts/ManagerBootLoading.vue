@@ -15,7 +15,7 @@
 
       <p class="managerBoot__title">pinoox manager</p>
       <p class="managerBoot__status">
-        در حال بارگذاری
+        {{ status }}
         <span class="managerBoot__dots" aria-hidden="true">
           <span>.</span><span>.</span><span>.</span>
         </span>
@@ -23,3 +23,12 @@
     </div>
   </div>
 </template>
+
+<script setup>
+defineProps({
+  status: {
+    type: String,
+    default: 'در حال بارگذاری',
+  },
+});
+</script>

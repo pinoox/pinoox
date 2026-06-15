@@ -45,10 +45,13 @@ const navigate = () => {
   }
 };
 
-const logout = () => {
-  authStore.logout().then(() => {
-    router.replace({name: 'login'});
-  });
+const logout = async () => {
+  try {
+    await authStore.logout();
+    await router.replace({name: 'login'});
+  } finally {
+    authStore.finishLogout();
+  }
 };
 
 onMounted(() => {

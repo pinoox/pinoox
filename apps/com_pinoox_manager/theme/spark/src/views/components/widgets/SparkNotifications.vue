@@ -2,7 +2,7 @@
   <Notifications
       classes="spark-notification-shell"
       position="top left"
-      width="100%"
+      :width="380"
       :max="5"
       :duration="4200"
       :speed="320"

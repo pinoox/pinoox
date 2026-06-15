@@ -2,6 +2,11 @@
 
     <SparkNotifications/>
 
+    <ManagerBootLoading
+        v-if="authStore.isLoggingOut"
+        status="در حال خروج"
+    />
+
 
 
     <div v-if="isSingle" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
@@ -66,6 +71,7 @@ import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
 import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
 import ManagerBootLoading from "@/views/components/layouts/ManagerBootLoading.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
+import {pushSystemNotifications} from "@/views/composables/useSystemNotifications.js";
 
 
 
@@ -116,7 +122,11 @@ watch(() => authStore.isAuth, async (loggedIn) => {
 
             await optionsStore.load();
 
-            await Promise.all([appStore.getApps(), routeStore.getRoutes()]);
+            await Promise.all([
+                appStore.getApps(),
+                routeStore.getRoutes(),
+                pushSystemNotifications(),
+            ]);
 
         } finally {
 
