@@ -27,8 +27,8 @@
     overflow: hidden;
 
     &.collapsed {
-      right: 66px;
-      width: calc(100% - 70px);
+      right: $sidebar-width-collapsed;
+      width: calc(100% - #{$sidebar-width-collapsed});
     }
   }
 }

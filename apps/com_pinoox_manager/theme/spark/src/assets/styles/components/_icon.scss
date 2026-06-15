@@ -88,6 +88,10 @@
   .vsm--link_level-1 .vsm--icon {
     margin-inline: 0.15rem 0.55rem;
   }
+
+  &.vsm_collapsed .vsm--link_level-1 .vsm--icon {
+    margin-inline: 0;
+  }
 }
 
 .pageEmpty__icon {

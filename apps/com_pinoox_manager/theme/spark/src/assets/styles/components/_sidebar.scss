@@ -166,6 +166,106 @@
       background: rgba(255, 255, 255, 0.06) !important;
     }
   }
+
+  &.vsm_collapsed {
+    background: rgba(0, 0, 0, 0.24);
+    border-inline-start: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: -10px 0 28px rgba(0, 0, 0, 0.18);
+
+    .vsm--menu {
+      padding: 0.35rem 0.2rem 0.5rem;
+    }
+
+    .vsm--link_level-1 {
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      margin: 0.28rem auto;
+      padding: 0 !important;
+      border-radius: 0.78rem;
+      border: 1px solid transparent;
+      box-sizing: border-box;
+
+      &.vsm--link_hover:not(.vsm--link_active) {
+        transform: none;
+        background: rgba(255, 255, 255, 0.09) !important;
+        border-color: rgba(255, 255, 255, 0.1);
+      }
+
+      &.vsm--link_active {
+        background: rgba(169, 73, 46, 0.3) !important;
+        border-color: rgba(255, 255, 255, 0.14);
+        box-shadow:
+          inset 0 1px 0 rgba(255, 255, 255, 0.1),
+          0 6px 16px rgba(169, 73, 46, 0.18);
+      }
+
+      &.vsm--link_open {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.12);
+      }
+    }
+
+    .vsm--icon {
+      margin: 0 !important;
+      min-width: 0;
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    .vsm--arrow {
+      display: none;
+    }
+
+    .sidebar__header {
+      padding: 0.7rem 0 0.55rem;
+      border-bottom-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .sidebar__close {
+      width: 2.45rem;
+      height: 2.45rem;
+      border-radius: 0.78rem;
+    }
+
+    .vsm--toggle-btn {
+      height: 2.85rem;
+      opacity: 0.72;
+      border-top-color: rgba(255, 255, 255, 0.06);
+    }
+
+    .vsm--mobile-bg {
+      border-radius: 0.78rem;
+      background: rgba(255, 255, 255, 0.07) !important;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .vsm--link_mobile {
+      border-radius: 0.72rem;
+      background: rgba(19, 13, 11, 0.82) !important;
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+      color: rgba(255, 255, 255, 0.94) !important;
+      font-weight: 600;
+    }
+
+    .vsm--child_mobile .vsm--dropdown {
+      margin: 0;
+      padding: 0.35rem;
+      border-radius: 0.78rem;
+      background: rgba(19, 13, 11, 0.88);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: 0 14px 36px rgba(0, 0, 0, 0.34);
+    }
+
+    .vsm--child_mobile .vsm--link_level-2 {
+      margin: 0.1rem 0;
+      padding-inline-start: 0.85rem;
+      border-radius: 0.55rem;
+    }
+  }
 }
 
 .v-sidebar-menu .vsm--mobile-bg {

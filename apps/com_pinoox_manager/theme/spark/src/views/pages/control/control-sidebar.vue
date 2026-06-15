@@ -5,6 +5,7 @@
       :collapsed="sidebar.isCollapsed"
       :rtl="true"
       width="300px"
+      width-collapsed="72px"
       :show-toggle="true"
       @update:collapsed="onToggleCollapse"
   >
@@ -58,30 +59,37 @@ const menuIcon = (name) => ({
   attributes: { name },
 });
 
+const menuLink = (item) => ({
+  ...item,
+  icon: menuIcon(item.iconName),
+  attributes: { title: item.title },
+});
+
 const menuItems = ref([
-  {
+  menuLink({
     href: '/control/widgets',
     title: 'ویجت‌ها',
-    icon: menuIcon(lucideSidebar.widgets),
-  },
-  {
+    iconName: lucideSidebar.widgets,
+  }),
+  menuLink({
     href: '/control/apps',
     title: 'اپلیکیشن‌ها',
-    icon: menuIcon(lucideSidebar.apps),
-  },
-  {
+    iconName: lucideSidebar.apps,
+  }),
+  menuLink({
     href: '/control/apps/manual',
     title: 'نصب دستی',
-    icon: menuIcon(lucideSidebar.upload),
-  },
-  {
+    iconName: lucideSidebar.upload,
+  }),
+  menuLink({
     href: '/control/routes',
     title: 'مسیریابی',
-    icon: menuIcon(lucideSidebar.routes),
-  },
+    iconName: lucideSidebar.routes,
+  }),
   {
     title: 'تنظیمات',
     icon: menuIcon(lucideSidebar.setting),
+    attributes: { title: 'تنظیمات' },
     child: [
       {
         href: '/control/settings/appearance',
@@ -93,20 +101,20 @@ const menuItems = ref([
       },
     ],
   },
-  {
+  menuLink({
     href: '/control/profile',
     title: 'حساب کاربری',
-    icon: menuIcon(lucideSidebar.profile),
-  },
-  {
+    iconName: lucideSidebar.profile,
+  }),
+  menuLink({
     href: '/control/pincore',
     title: 'پینوکس',
-    icon: menuIcon(lucideSidebar.pincore),
-  },
-  {
+    iconName: lucideSidebar.pincore,
+  }),
+  menuLink({
     href: '/market',
     title: 'مارکت',
-    icon: menuIcon(lucideSidebar.market),
-  },
+    iconName: lucideSidebar.market,
+  }),
 ]);
 </script>
