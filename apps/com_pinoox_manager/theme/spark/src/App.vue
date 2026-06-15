@@ -10,23 +10,17 @@
 
     </div>
 
-    <div v-else-if="authStore.isAuth && isBooting" class="desktop-loading">
-
-        در حال بارگذاری...
-
-    </div>
-
-    <div v-else-if="authStore.isAuth" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
-
-        <Toolbar v-if="hasToolbar"/>
-
-        <RouterView/>
-
-        <Dockbar v-if="showDock" :apps="dockApps"/>
-
-        <AppViewAdvanced v-if="isAdvancedAppView"/>
-
-    </div>
+    <template v-else-if="authStore.isAuth">
+        <Transition name="manager-boot-fade" mode="out-in">
+            <ManagerBootLoading v-if="isBooting" key="boot"/>
+            <div v-else key="desktop" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
+                <Toolbar v-if="hasToolbar"/>
+                <RouterView/>
+                <Dockbar v-if="showDock" :apps="dockApps"/>
+                <AppViewAdvanced v-if="isAdvancedAppView"/>
+            </div>
+        </Transition>
+    </template>
 
 
 
@@ -70,6 +64,7 @@ import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
 import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
 import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
+import ManagerBootLoading from "@/views/components/layouts/ManagerBootLoading.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 
 
