@@ -14,11 +14,6 @@ export function useControlPanel() {
     const controlPanelWindow = useControlPanelWindowStore();
 
     function openControlPanel(path = '/control/apps') {
-        if (isAdvanced.value) {
-            router.push(path);
-            return;
-        }
-
         router.push(path);
     }
 

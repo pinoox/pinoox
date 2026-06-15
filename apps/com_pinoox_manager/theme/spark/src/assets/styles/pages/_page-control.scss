@@ -70,3 +70,10 @@
     opacity: 0.92;
   }
 }
+
+.controlPanelSimple {
+  &__frame {
+    background: transparent;
+    overflow: hidden;
+  }
+}
