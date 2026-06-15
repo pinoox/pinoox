@@ -193,9 +193,7 @@ export const useOptionsStore = defineStore('options', {
 
             let pins = Array.isArray(this.dockPins)
                 ? [...this.dockPins]
-                : (appList ?? [])
-                    .filter((app) => app.dock)
-                    .map((app) => app.package_name);
+                : [];
 
 
 

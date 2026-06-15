@@ -56,9 +56,7 @@ export function useDockApps() {
                 .map(mapAppToDockItem);
         }
 
-        return list
-            .filter((app) => app.dock)
-            .map(mapAppToDockItem);
+        return [];
     });
 
     function isDockPinned(packageName) {
@@ -67,8 +65,7 @@ export function useDockApps() {
         if (pins !== null)
             return pins.includes(packageName);
 
-        const app = appStore.appList?.find((item) => item.package_name === packageName);
-        return !!app?.dock;
+        return false;
     }
 
     async function toggleDockPin(packageName) {

@@ -37,16 +37,6 @@ class OptionController extends Api
         return $background;
     }
 
-    private function defaultDockPins(): array
-    {
-        $pins = [];
-        foreach (AppHelper::getAll() as $app) {
-            if (!empty($app['dock']))
-                $pins[] = $app['package_name'];
-        }
-        return $pins;
-    }
-
     public function toggleDockPin(string $packageName)
     {
         if (!AppHelper::getOne($packageName))
@@ -54,7 +44,7 @@ class OptionController extends Api
         $options = Config::name('options')->get() ?? [];
         $pins = $options['dock_pins'] ?? null;
         if (!is_array($pins))
-            $pins = $this->defaultDockPins();
+            $pins = [];
         $wasPinned = in_array($packageName, $pins, true);
         if ($wasPinned) {
             $pins = array_values(array_filter($pins, fn($pkg) => $pkg !== $packageName));
