@@ -1,8 +1,6 @@
 <template>
   <section class="appView appView--simple controlPanelSimple">
-    <div class="appView__toolbar">
-      <ControlPanelMenuToggle v-if="layout.isCompact || layout.isMobile"/>
-
+    <div class="appView__toolbar controlPanelSimple__toolbar">
       <button
           type="button"
           class="appView__back"
@@ -12,7 +10,9 @@
         بستن
       </button>
 
-      <div class="appView__title">
+      <ControlPanelMenuToggle v-if="layout.isCompact"/>
+
+      <div class="appView__title controlPanelSimple__title">
         <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
         <span>کنترل پنل</span>
       </div>
@@ -65,6 +65,7 @@ const route = useRoute();
 
 onMounted(() => {
   layout.bindViewport();
+  layout.syncBreakpoints();
 });
 
 watch(() => route.path, () => {

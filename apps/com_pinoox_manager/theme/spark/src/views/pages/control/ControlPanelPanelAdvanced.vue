@@ -14,6 +14,7 @@
         class="appView__shell"
         :class="{
           'is-floatingShell': isFloating,
+          'is-compact': layout.isCompact,
           'is-interacting': interacting,
           'is-dragging': isDragging,
           'is-resizing': isResizing,
@@ -22,7 +23,7 @@
         @mousedown="onPanelFocus"
     >
       <header
-          class="appView__toolbar"
+          class="appView__toolbar controlPanelWindow__toolbar"
           :class="{ 'is-draggable': isFloating }"
           @mousedown="onToolbarMouseDown"
       >
@@ -33,9 +34,13 @@
             @toggle-float="toggleFloating"
         />
 
-        <ControlPanelMenuToggle v-if="layout.isCompact || layout.isMobile"/>
+        <ControlPanelMenuToggle
+            v-if="layout.isCompact"
+            @click.stop
+            @mousedown.stop
+        />
 
-        <div class="appView__title">
+        <div class="appView__title controlPanelWindow__title">
           <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
           <span>کنترل پنل</span>
         </div>
@@ -59,7 +64,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
@@ -70,6 +75,7 @@ import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
 import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
+import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
 import PageControl from '@/views/pages/control/control-view.vue';
 
 const props = defineProps({
@@ -119,6 +125,28 @@ const {
     controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect));
     updateShellWidth();
   },
+});
+
+onMounted(async () => {
+  layout.bindViewport();
+  layout.syncBreakpoints();
+  await nextTick();
+  updateShellWidth();
+});
+
+watch(
+    () => controlPanelWindow.isVisible,
+    async (visible) => {
+      if (visible) {
+        layout.syncBreakpoints();
+        await nextTick();
+        updateShellWidth();
+      }
+    },
+);
+
+watch(isFloating, () => {
+  updateShellWidth();
 });
 
 function onPanelFocus() {

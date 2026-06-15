@@ -47,29 +47,43 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
         frameWidthSource: false,
         frameWidth: 0,
     }),
+    getters: {
+        showMenuToggle(state) {
+            return state.isCompact;
+        },
+    },
     actions: {
-        applyBreakpoints(width) {
-            const safeWidth = Math.max(0, Math.round(width));
+        syncBreakpoints() {
+            const viewportWidth = window.innerWidth;
+            const frameWidth = this.frameWidthSource ? this.frameWidth : 0;
+            const widths = [viewportWidth];
 
-            this.isMobile = safeWidth <= MOBILE_MAX;
-            this.isCompact = safeWidth <= COMPACT_MAX;
+            if (frameWidth > 0) {
+                widths.push(frameWidth);
+            }
 
-            if (!this.isMobile) {
+            const minWidth = Math.min(...widths);
+
+            this.isMobile = minWidth <= MOBILE_MAX || viewportWidth <= MOBILE_MAX;
+            this.isCompact = minWidth <= COMPACT_MAX || viewportWidth <= COMPACT_MAX;
+
+            if (!this.isCompact) {
                 this.mobileSidebarOpen = false;
             }
         },
         syncFromViewport() {
-            this.applyBreakpoints(window.innerWidth);
+            this.syncBreakpoints();
         },
         bindViewport() {
             if (this.viewportBound) {
+                this.syncBreakpoints();
                 return;
             }
 
             this.viewportBound = true;
 
             const update = () => {
-                this.syncFromViewport();
+                this.syncBreakpoints();
             };
 
             update();
@@ -88,11 +102,12 @@ export const useControlPanelLayoutStore = defineStore('controlPanelLayout', {
         setFrameWidth(width) {
             this.frameWidthSource = true;
             this.frameWidth = Math.max(0, Math.round(width));
+            this.syncBreakpoints();
         },
         clearFrameWidth() {
             this.frameWidthSource = false;
             this.frameWidth = 0;
-            this.syncFromViewport();
+            this.syncBreakpoints();
         },
         toggleMobileSidebar() {
             this.mobileSidebarOpen = !this.mobileSidebarOpen;

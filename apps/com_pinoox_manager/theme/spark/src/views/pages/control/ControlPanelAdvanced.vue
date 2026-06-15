@@ -81,6 +81,15 @@ watch(isSimple, (simple) => {
   }
 });
 
+watch(
+    () => controlPanelWindow.isVisible,
+    (visible) => {
+      if (visible) {
+        layout.syncBreakpoints();
+      }
+    },
+);
+
 watch(() => layout.isMobile, () => {
   if (
       controlPanelWindow.mode === 'floating'

@@ -10,12 +10,9 @@ export function useControlPanelShellLayout(shellRef, isFloating) {
     let shellObserver = null;
 
     function updateShellWidth() {
-        if (!unref(isVisible)) {
-            layout.clearFrameWidth();
-            return;
-        }
+        layout.bindViewport();
 
-        if (!unref(isFloating)) {
+        if (!unref(isVisible)) {
             layout.clearFrameWidth();
             return;
         }
@@ -24,7 +21,10 @@ export function useControlPanelShellLayout(shellRef, isFloating) {
 
         if (width > 0) {
             layout.setFrameWidth(width);
+            return;
         }
+
+        layout.syncBreakpoints();
     }
 
     function bindShellObserver() {
@@ -37,7 +37,7 @@ export function useControlPanelShellLayout(shellRef, isFloating) {
         shellObserver.observe(shellRef.value);
     }
 
-    watch([isFloating, isVisible], updateShellWidth);
+    watch([isFloating, isVisible], updateShellWidth, {immediate: true});
 
     onMounted(() => {
         layout.bindViewport();

@@ -187,10 +187,22 @@
   .appView__toolbar {
     gap: 0.55rem;
     flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .controlPanelWindow__title {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
   }
 
   .controlPanelMenuToggle {
     flex-shrink: 0;
+  }
+
+  .appView__shell.is-compact .appView__toolbar {
+    gap: 0.4rem;
+    padding-inline: 0.6rem;
   }
 
   .appView__title-icon {
@@ -218,7 +230,18 @@
 
   .appView__toolbar {
     gap: 0.55rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    min-width: 0;
+  }
+
+  .controlPanelSimple__title {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .controlPanelSimple__toolbar .appView__back {
+    flex-shrink: 0;
   }
 }
 

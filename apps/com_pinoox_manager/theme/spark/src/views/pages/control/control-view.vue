@@ -64,6 +64,7 @@ watch(() => layout.isCompact, (compact) => {
 
 onMounted(() => {
   layout.bindViewport();
+  layout.syncBreakpoints();
 });
 
 onUnmounted(() => {
