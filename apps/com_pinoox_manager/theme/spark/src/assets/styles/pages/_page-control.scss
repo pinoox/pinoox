@@ -14,8 +14,26 @@
     top: $toolbar-height;
     bottom: 0;
     right: 0;
+    width: $sidebar-width;
     z-index: 10;
     transition: width 0.3s ease-in-out, transform 0.25s ease;
+    overflow: hidden;
+
+    .sidebar.v-sidebar-menu {
+      position: relative !important;
+      top: auto !important;
+      left: auto !important;
+      right: auto !important;
+      bottom: auto !important;
+      height: 100%;
+      width: 100% !important;
+      max-width: none !important;
+      z-index: 1;
+    }
+  }
+
+  &--sidebarCollapsed &__sidebar {
+    width: $sidebar-width-collapsed;
     overflow: visible;
   }
 
@@ -63,8 +81,14 @@
       top: 0;
       bottom: 0;
       right: 0;
-      overflow: visible;
+      width: $sidebar-width;
+      overflow: hidden;
       z-index: 30;
+    }
+
+    &.pageControl--sidebarCollapsed .pageControl__sidebar {
+      width: $sidebar-width-collapsed;
+      overflow: visible;
     }
 
     .pageControl__page {

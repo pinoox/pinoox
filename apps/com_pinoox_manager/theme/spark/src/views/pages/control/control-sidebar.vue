@@ -1,12 +1,12 @@
 <template>
-  <ControlSidebarCollapsed v-if="showCollapsedRail"/>
-
   <sidebar-menu
-      v-else-if="showExpandedMenu"
+      v-if="showSidebar"
       class="sidebar"
       :menu="menuItems"
-      :collapsed="false"
+      :collapsed="isMenuCollapsed"
       :rtl="true"
+      :relative="true"
+      :disable-hover="true"
       width="300px"
       width-collapsed="72px"
       :show-toggle="!layout.isMobile"
@@ -14,7 +14,7 @@
       @item-click="onItemClick"
   >
     <template #header>
-      <div class="sidebar__header">
+      <div v-if="!isMenuCollapsed" class="sidebar__header">
         <span class="sidebar__header-title">کنترل پنل</span>
         <button
             v-if="layout.isMobile"
@@ -29,7 +29,7 @@
     </template>
 
     <template v-slot:toggle-icon>
-      <LucideIcon :name="lucideSidebar.chevronRight" size="sm"/>
+      <LucideIcon :name="isMenuCollapsed ? lucideSidebar.chevronLeft : lucideSidebar.chevronRight" size="sm"/>
     </template>
 
     <template #icon>
@@ -47,7 +47,6 @@ import LucideIcon from '../../components/widgets/LucideIcon.vue';
 import {useSidebarStore} from '../../composables/useSidebar.js';
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {toSidebarMenuItems} from '@/views/pages/control/controlMenuItems.js';
-import ControlSidebarCollapsed from '@/views/pages/control/control-sidebar-collapsed.vue';
 
 defineProps({
   embedded: {
@@ -61,8 +60,8 @@ const layout = useControlPanelLayoutStore();
 
 const menuItems = ref(toSidebarMenuItems(LucideIcon));
 
-const showCollapsedRail = computed(() => sidebar.isCollapsed && !layout.isMobile);
-const showExpandedMenu = computed(() => !sidebar.isCollapsed || layout.mobileSidebarOpen);
+const isMenuCollapsed = computed(() => sidebar.isCollapsed && !layout.isMobile);
+const showSidebar = computed(() => !layout.isMobile || layout.mobileSidebarOpen);
 
 const onToggleCollapse = (collapsed) => {
   sidebar.setCollapsed(collapsed);

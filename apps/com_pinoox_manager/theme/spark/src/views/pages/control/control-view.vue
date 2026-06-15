@@ -5,6 +5,7 @@
         'pageControl--embedded': embedded,
         'pageControl--mobile': layout.isMobile,
         'pageControl--mobileSidebarOpen': layout.mobileSidebarOpen,
+        'pageControl--sidebarCollapsed': sidebarStore.isCollapsed && !layout.isMobile,
       }"
   >
     <button
