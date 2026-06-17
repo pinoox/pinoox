@@ -10,6 +10,5 @@ return [
     'write_correct_url' => 'enter a valid route',
     'this_url_exists_before' => 'this route is already exists',
     'no_can_route_package' => 'this app cannot be routed',
-    'no_add_multiple_package' => 'this app already has a route and cannot add another',
-    'no_multiple_package' => 'this app already has a route and cannot add another',
+    'no_multiple_package' => 'This app accepts only one URL (set router.type to single in app.php)',
 ];

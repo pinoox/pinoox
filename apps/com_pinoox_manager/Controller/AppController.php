@@ -61,8 +61,16 @@ class AppController extends ApiController
 
         if ($key == 'dock')
             $config = !$config;
-        if ($key == 'router')
-            $config = $config === 'multiple' ? 'single' : 'multiple';
+        if ($key == 'router') {
+            $routerConfig = AppEngine::config($packageName)->get('router');
+
+            if (!is_array($routerConfig)) {
+                $routerConfig = ['routes' => []];
+            }
+
+            $routerConfig['type'] = $config === 'multiple' ? 'single' : 'multiple';
+            $config = $routerConfig;
+        }
 
         if (!is_null($config)) {
             AppEngine::config($packageName)

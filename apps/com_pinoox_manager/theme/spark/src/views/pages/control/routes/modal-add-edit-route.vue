@@ -43,8 +43,11 @@
                         class="modalRoutes__appOption"
                         :class="{
             'is-selected': app.package_name === params.packageName,
-            'is-dimmed': app.package_name !== params.packageName && params.packageName
+            'is-dimmed': appOptionDimmed(app),
+            'is-disabled': !isAppSelectable(app),
           }"
+                        :disabled="!isAppSelectable(app)"
+                        :title="appOptionTitle(app)"
                 >
                     <AppIcon v-bind="resolveRouteAppIconProps(app)" size="lg"/>
                     <span class="text-sm text-gray-400">{{ resolveAppDisplayLabel(app) }}</span>
@@ -76,6 +79,8 @@ import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
 import {resolveAppDisplayLabel} from "@utils/helpers/appDisplayLabel.js";
+import {canAssignAnotherRoute, resolveRouterMode} from "@utils/helpers/appRoutePolicy.js";
+import {translate} from "@utils/helpers/managerLang.js";
 import {routerAPI} from "@api/router.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 import {resolveApiFailure} from "@utils/apiEnvelope.js";
@@ -108,9 +113,52 @@ const searchQuery = ref('');
 const currentStep = ref(1);
 const isSaving = ref(false);
 
+const isEditingRoute = computed(() => Boolean(props.payload?.path) && !props.hasSelectApp);
+
 const filteredApps = computed(() => {
-    return appStore.fetchAppsLikeName(searchQuery.value);
+    const routes = routeStore.routeList;
+    const editingPackage = props.payload?.package ?? null;
+
+    return appStore.fetchAppsLikeName(searchQuery.value).filter((app) => {
+        if (isEditingRoute.value && app.package_name === editingPackage) {
+            return true;
+        }
+
+        return canAssignAnotherRoute(app, routes);
+    });
 });
+
+function isAppSelectable(app) {
+    if (isEditingRoute.value && app.package_name === (props.payload?.package ?? params.value.packageName)) {
+        return true;
+    }
+
+    return canAssignAnotherRoute(app, routeStore.routeList);
+}
+
+function appOptionDimmed(app) {
+    if (app.package_name === params.value.packageName) {
+        return false;
+    }
+
+    if (params.value.packageName) {
+        return true;
+    }
+
+    return !isAppSelectable(app);
+}
+
+function appOptionTitle(app) {
+    if (isAppSelectable(app)) {
+        return resolveAppDisplayLabel(app);
+    }
+
+    if (resolveRouterMode(app) === 'single') {
+        return translate('app_single_route_only');
+    }
+
+    return resolveAppDisplayLabel(app);
+}
 
 const canGoNext = computed(() => {
     return String(params.value.path ?? '').trim().length > 0;
@@ -128,6 +176,11 @@ const routePreview = computed(() => {
 });
 
 const selectPackage = (app) => {
+    if (!isAppSelectable(app)) {
+        toastError(translate('app_single_route_only'));
+        return;
+    }
+
     params.value.packageName = app.package_name;
 };
 

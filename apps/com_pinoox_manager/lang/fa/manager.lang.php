@@ -142,6 +142,7 @@ return [
     'lock_time_change_failed' => 'تغییر زمان قفل انجام نشد',
     'app_view_mode_unchanged' => 'حالت نمایش اپ تغییری نکرد',
     'app_not_found' => 'اپلیکیشن یافت نشد',
+    'unknown_app' => 'برنامه نامشخص',
     'config_saved_successfully' => 'تنظیمات با موفقیت ذخیره شد',
     'template_activated_successfully' => 'قالب با موفقیت فعال شد',
     'update_not_available' => 'نسخه جدیدی برای بروزرسانی موجود نیست',

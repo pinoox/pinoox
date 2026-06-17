@@ -511,6 +511,18 @@
     &.is-dimmed {
       opacity: 0.38;
     }
+
+    &.is-disabled {
+      cursor: not-allowed;
+      opacity: 0.32;
+
+      &:hover {
+        transform: none;
+        border-color: rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        box-shadow: none;
+      }
+    }
   }
 }
 

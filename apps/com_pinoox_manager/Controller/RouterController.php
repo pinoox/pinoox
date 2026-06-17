@@ -14,9 +14,11 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
+use App\com_pinoox_manager\Component\AppRoutePolicy;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\ApiController;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 
 class RouterController extends ApiController
@@ -63,15 +65,26 @@ class RouterController extends ApiController
             return $this->error('manager.request_not_valid');
 
         $package = AppHelper::getOne($data['packageName']);
-        if (empty($package) || empty($package['router']))
+        $routerConfig = AppEngine::config($data['packageName'])->get('router');
+
+        if (empty($package) || !AppRoutePolicy::isRoutable($routerConfig))
             return $this->error('setting/router.no_can_route_package');
 
-        $routerMode = is_array($package['router'])
-            ? ($package['router']['type'] ?? 'single')
-            : $package['router'];
+        if (!AppRoutePolicy::allowsMultiple($routerConfig)) {
+            $existingPaths = array_keys(AppRouter::getByPackage($data['packageName']));
 
-        if ($routerMode !== 'multiple' && AppRouter::existByPackage($data['packageName']))
-            return $this->error('setting/router.no_multiple_package');
+            if (!$isEdit && count($existingPaths) > 0) {
+                return $this->error('setting/router.no_multiple_package');
+            }
+
+            if ($isEdit) {
+                $oldPackage = AppRouter::get($data['oldPath']);
+
+                if ($oldPackage !== $data['packageName'] && count($existingPaths) > 0) {
+                    return $this->error('setting/router.no_multiple_package');
+                }
+            }
+        }
 
         if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
             return $this->error('setting/router.this_url_exists_before');

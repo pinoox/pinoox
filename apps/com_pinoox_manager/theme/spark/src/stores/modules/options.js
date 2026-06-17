@@ -6,6 +6,8 @@ import { unwrapResponse } from '@utils/helpers/apiHelper.js';
 
 import { resolveWallpaperId, wallpaperUrl } from '@utils/helpers/backgroundHelper.js';
 
+import { useAppStore } from '@/stores/modules/app.js';
+
 
 
 export const useOptionsStore = defineStore('options', {
@@ -179,9 +181,18 @@ export const useOptionsStore = defineStore('options', {
 
             this.lang = lang;
 
-            if (data.direction)
-
+            if (data.direction) {
                 document.body.className = data.direction;
+                document.documentElement.setAttribute('dir', data.direction);
+            }
+
+            document.documentElement.setAttribute('lang', lang);
+
+            const appStore = useAppStore();
+
+            if (appStore.isLoaded) {
+                await appStore.getApps();
+            }
 
             return data;
 

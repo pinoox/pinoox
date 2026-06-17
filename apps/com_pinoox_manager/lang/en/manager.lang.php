@@ -139,6 +139,7 @@ return [
     'lock_time_change_failed' => 'failed to update lock time',
     'app_view_mode_unchanged' => 'app view mode is unchanged',
     'app_not_found' => 'application not found',
+    'unknown_app' => 'Unknown app',
     'config_saved_successfully' => 'settings saved successfully',
     'template_activated_successfully' => 'template activated successfully',
     'update_not_available' => 'no update available',

@@ -26,8 +26,6 @@
 
 namespace App\com_pinoox_manager\Component;
 
-
-
 use Pinoox\Component\Package\AppManifest;
 use Pinoox\Portal\App\AppRouter;
 
@@ -119,7 +117,7 @@ class AppHelper
 
             $isRouter = $appConfig->get('router');
 
-            if ($isCheckRouter && !$isRouter)
+            if ($isCheckRouter && !AppRoutePolicy::isRoutable($isRouter))
 
                 continue;
 
@@ -156,6 +154,8 @@ class AppHelper
                 'dock' => $appConfig->get('dock'),
 
                 'router' => $isRouter,
+
+                'router_mode' => AppRoutePolicy::resolveMode($isRouter),
 
                 'name' => AppManifest::displayName($app->package(), $locale),
 
@@ -229,6 +229,8 @@ class AppHelper
                 'dock' => $app->get('dock'),
 
                 'router' => $app->get('router'),
+
+                'router_mode' => AppRoutePolicy::resolveMode($app->get('router')),
 
                 'enable' => $app->get('enable'),
 
