@@ -14,6 +14,12 @@ const MESSAGES = {
         route_url_copy: 'کپی آدرس',
         route_url_copied: 'کپی شد',
         route_url_open: 'باز کردن در تب جدید',
+        route_delete_title: 'حذف آدرس',
+        route_delete_lead: 'آیا از حذف این مسیریابی مطمئن هستید؟',
+        route_delete_hint: 'با حذف، این آدرس دیگر به برنامه‌ای متصل نخواهد بود.',
+        route_delete_cancel: 'انصراف',
+        route_delete_confirm: 'بله، حذف شود',
+        route_delete_progress: 'در حال حذف…',
     },
     en: {
         unknown_app: 'Unknown app',
@@ -27,6 +33,12 @@ const MESSAGES = {
         route_url_copy: 'Copy address',
         route_url_copied: 'Copied',
         route_url_open: 'Open in new tab',
+        route_delete_title: 'Delete route',
+        route_delete_lead: 'Are you sure you want to delete this route?',
+        route_delete_hint: 'After deletion, this address will no longer be linked to an app.',
+        route_delete_cancel: 'Cancel',
+        route_delete_confirm: 'Yes, delete',
+        route_delete_progress: 'Deleting…',
     },
 };
 

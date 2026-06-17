@@ -123,7 +123,7 @@
                     type="button"
                     class="routeCard__action routeCard__action--delete"
                     :title="translate('route_action_delete')"
-                    @click="deleteRoute(route.path)"
+                    @click="openDeleteRouteModal(route)"
                 >
                   <Icon :is="saxIcon.remove" size="md"/>
                 </button>
@@ -161,7 +161,7 @@ import {saxIcon} from '@/const/icons.js';
 import {openModal} from '@kolirt/vue-modal';
 import ModalGuide from '@views/components/commons/ModalGuide.vue';
 import ModalAddEditRoute from '@views/pages/control/routes/modal-add-edit-route.vue';
-import {routerAPI} from "@api/router.js";
+import ModalDeleteRoute from '@views/pages/control/routes/modal-delete-route.vue';
 import {useRouteStore} from "@/stores/modules/route.js";
 import {useAppStore} from "@/stores/modules/app.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
@@ -328,12 +328,10 @@ function editRoute(route) {
   openModalAddEditRoute(route);
 }
 
-function deleteRoute(path) {
-  routerAPI.remove({
-    path: path,
-  }).then(() => {
-    routeStore.deleteRouteByPath(path);
-  });
+function openDeleteRouteModal(route) {
+  void openModal(ModalDeleteRoute, {props: {route}}).then(() => {
+    routeStore.deleteRouteByPath(route.path);
+  }).catch(() => {});
 }
 
 </script>

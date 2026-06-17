@@ -5,6 +5,6 @@ const BASE_URL = '/router';
 
 export const routerAPI = {
     getAll: () => http.get(BASE_URL + '/getAll', {alert: false}),
-    remove: (params) => http.post(BASE_URL + '/remove', params),
+    remove: (params, config) => http.post(BASE_URL + '/remove', params, config),
     save: (params) => http.post(BASE_URL + '/save', params, HTTP_ALERT_SILENT),
 };
