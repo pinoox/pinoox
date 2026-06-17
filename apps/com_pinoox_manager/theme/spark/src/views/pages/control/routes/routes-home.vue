@@ -52,6 +52,24 @@
               <div class="routeCard__url">
                 <span class="routeCard__url-origin">{{ currentSite }}</span>
                 <span class="routeCard__url-path">{{ routeUrlSuffix(route.path) }}</span>
+                <span class="routeCard__url-actions">
+                  <button
+                      type="button"
+                      class="routeCard__url-action"
+                      title="کپی آدرس"
+                      @click.stop="copyRouteUrl(route)"
+                  >
+                    <Icon :is="saxIcon.copy" size="xs"/>
+                  </button>
+                  <button
+                      type="button"
+                      class="routeCard__url-action"
+                      title="باز کردن در تب جدید"
+                      @click.stop="openRouteUrl(route)"
+                  >
+                    <Icon :is="saxIcon.externalLink" size="xs"/>
+                  </button>
+                </span>
               </div>
             </div>
 
@@ -65,7 +83,10 @@
                 :title="appActionLabel(route)"
                 @click="openRouteEditor(route)"
             >
-              <AppIcon v-bind="appIconProps(routeApp(route))" size="sm"/>
+              <AppIcon
+                  v-bind="resolveRouteAppIconProps(routeApp(route), route?.package)"
+                  size="md"
+              />
               <span class="routeCard__app-name">{{ appDisplayName(route) }}</span>
             </button>
 
@@ -119,7 +140,8 @@ import ModalAddEditRoute from '@views/pages/control/routes/modal-add-edit-route.
 import {routerAPI} from "@api/router.js";
 import {useRouteStore} from "@/stores/modules/route.js";
 import {useAppStore} from "@/stores/modules/app.js";
-import {appIconProps} from "@utils/helpers/appIconProps.js";
+import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
+import {resolveAppDisplayLabel} from "@utils/helpers/appDisplayLabel.js";
 
 const routeStore = useRouteStore();
 const appStore = useAppStore();
@@ -154,6 +176,32 @@ function routeUrlSuffix(path) {
   return path.startsWith('/') ? path : `/${path}`;
 }
 
+function buildRouteUrl(route) {
+  return `${currentSite}${routeUrlSuffix(route?.path)}`;
+}
+
+async function copyRouteUrl(route) {
+  const url = buildRouteUrl(route);
+
+  try {
+    await navigator.clipboard.writeText(url);
+  } catch {
+    const input = document.createElement('textarea');
+    input.value = url;
+    input.setAttribute('readonly', '');
+    input.style.position = 'absolute';
+    input.style.left = '-9999px';
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy');
+    document.body.removeChild(input);
+  }
+}
+
+function openRouteUrl(route) {
+  window.open(buildRouteUrl(route), '_blank', 'noopener,noreferrer');
+}
+
 function routeCardClass(route) {
   return {
     'routeCard--default': isDefaultRoute(route),
@@ -170,7 +218,7 @@ function routeApp(route) {
 }
 
 function appDisplayName(route) {
-  return routeApp(route)?.name ?? 'برنامه نامشخص';
+  return resolveAppDisplayLabel(routeApp(route), route?.package);
 }
 
 function appActionLabel(route) {

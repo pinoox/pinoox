@@ -46,8 +46,8 @@
             'is-dimmed': app.package_name !== params.packageName && params.packageName
           }"
                 >
-                    <AppIcon v-bind="appIconProps(app)" size="lg"/>
-                    <span class="text-sm text-gray-400">{{ app.name }}</span>
+                    <AppIcon v-bind="resolveRouteAppIconProps(app)" size="lg"/>
+                    <span class="text-sm text-gray-400">{{ resolveAppDisplayLabel(app) }}</span>
                 </button>
             </div>
             <div class="flex justify-between mt-4 gap-2">
@@ -74,7 +74,8 @@ import {closeModal, useModalContext} from '@kolirt/vue-modal';
 import Button from '@/views/components/widgets/Button.vue';
 import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
-import {appIconProps} from "@utils/helpers/appIconProps.js";
+import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
+import {resolveAppDisplayLabel} from "@utils/helpers/appDisplayLabel.js";
 import {routerAPI} from "@api/router.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 import {resolveApiFailure} from "@utils/apiEnvelope.js";

@@ -1,6 +1,6 @@
 import * as sax from '@placetopay/iconsax-vue/outline';
 import * as m from '@mdi/js';
-import { LogOut } from 'lucide-vue-next';
+import { Copy, ExternalLink, LogOut } from 'lucide-vue-next';
 
 // Define an object of icons
 export const saxIcon = {
@@ -28,6 +28,8 @@ export const saxIcon = {
     widgets: sax.Element3Icon,
     refresh: sax.Refresh2Icon,
     lock: sax.LockIcon,
+    copy: Copy,
+    externalLink: ExternalLink,
     logout: LogOut,
     user: sax.UserIcon,
     notifySuccess: sax.TickCircleIcon,
