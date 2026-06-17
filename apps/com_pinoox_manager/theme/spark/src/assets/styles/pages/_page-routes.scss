@@ -424,6 +424,13 @@
     }
   }
 
+  .modalRoutes__emptyApps {
+    margin: 1.5rem 0 0;
+    text-align: center;
+    font-size: 0.84rem;
+    color: rgba(255, 255, 255, 0.58);
+  }
+
   .modalRoutes__appOption {
     display: flex;
     flex-direction: column;

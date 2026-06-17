@@ -1,5 +1,5 @@
 import {toastSuccess, toastError, toastWarn} from '@utils/helpers/toastHelper.js';
-import {isApiEnvelope, readApiErrorMessage, readApiMessage} from '@utils/apiEnvelope.js';
+import {isApiEnvelope, readApiErrorFromBody, readApiErrorMessage, readApiMessage} from '@utils/apiEnvelope.js';
 
 function shouldShowAlert(config) {
     return config?.alert !== false;
@@ -19,7 +19,7 @@ export function showSuccessAlert(response) {
     const message = readApiMessage(body);
 
     if (isApiEnvelope(body) && body.success === false) {
-        toastError(message || readApiErrorMessage({response}));
+        toastError(readApiErrorFromBody(body) || readApiErrorMessage({response}));
         return;
     }
 

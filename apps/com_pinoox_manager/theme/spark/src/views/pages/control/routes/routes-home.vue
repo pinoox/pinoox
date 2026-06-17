@@ -94,7 +94,6 @@
             <button type="button" class="routeCard routeCard--add" @click="openModalAddEditRoute()">
               <span class="routeCard__add-icon" aria-hidden="true">+</span>
               <span class="routeCard__add-label">افزودن آدرس جدید</span>
-              <span class="routeCard__add-hint">{{ currentSite }}/shop</span>
             </button>
           </li>
         </ul>

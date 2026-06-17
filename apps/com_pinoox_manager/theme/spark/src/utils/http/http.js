@@ -78,11 +78,7 @@ http.interceptors.response.use((response) => {
     callActions(actions.error_response, error);
     callActions(actions.error, error);
 
-    if (!error.config?.error) {
-        return Promise.reject(error);
-    }
-
-    return Promise.reject(readApiErrorMessage(error));
+    return Promise.reject(error);
 });
 
 http.token = getTokenAuth();
