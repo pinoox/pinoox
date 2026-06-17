@@ -76,6 +76,7 @@ import {useAppStore} from '@/stores/modules/app.js';
 import {resolveRouteAppIconProps} from '@utils/helpers/appIconProps.js';
 import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from '@utils/helpers/appDisplayLabel.js';
 import {translate} from '@utils/helpers/managerLang.js';
+import {formatSiteOriginForDisplay} from '@utils/helpers/siteUrlHelper.js';
 import {routerAPI} from '@api/router.js';
 import {HTTP_ALERT_SILENT} from '@utils/helpers/alertHelper.js';
 import {unwrapResponse} from '@utils/helpers/apiHelper.js';
@@ -95,7 +96,7 @@ const appStore = useAppStore();
 const isDeleting = ref(false);
 const isDone = ref(false);
 
-const siteOrigin = getUrl().SITE;
+const siteOrigin = formatSiteOriginForDisplay(getUrl().SITE);
 
 const routeApp = computed(() => appStore.fetchAppByPackage(props.route?.package));
 

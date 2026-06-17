@@ -14,7 +14,7 @@
                     label="آدرس"
                     direction="ltr"
                     placeholder="shop"
-                    :prefix="domain + '/'"
+                    :prefix="addressPrefix"
             />
             <div class="flex justify-end mt-4 gap-2">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
@@ -90,6 +90,8 @@ import {routerAPI} from "@api/router.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
 import {resolveApiFailure} from "@utils/apiEnvelope.js";
 import {toastError} from "@utils/helpers/toastHelper.js";
+import { getUrl } from '@/boot.js';
+import {formatSiteOriginForDisplay, formatSiteOriginPrefix} from '@utils/helpers/siteUrlHelper.js';
 
 const props = defineProps({
     payload: {
@@ -106,7 +108,9 @@ const {confirm} = useModalContext();
 const appStore = useAppStore();
 const routeStore = useRouteStore();
 
-const domain = computed(() => window.location.hostname);
+const siteUrl = getUrl().SITE;
+
+const addressPrefix = computed(() => formatSiteOriginPrefix(siteUrl));
 
 const params = ref({
     path: '',
@@ -175,9 +179,10 @@ const canSave = computed(() => {
 
 const routePreview = computed(() => {
     const path = String(params.value.path ?? '').trim();
-    if (!path || path === '/') return `${domain.value}/`;
+    const base = formatSiteOriginForDisplay(siteUrl);
+    if (!path || path === '/') return `${base}/`;
     const normalized = path.startsWith('/') ? path : `/${path}`;
-    return `${domain.value}${normalized}`;
+    return `${base}${normalized}`;
 });
 
 const selectPackage = (app) => {

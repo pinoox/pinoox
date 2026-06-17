@@ -167,11 +167,13 @@ import {useAppStore} from "@/stores/modules/app.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
 import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from "@utils/helpers/appDisplayLabel.js";
 import {translate} from "@utils/helpers/managerLang.js";
+import {formatSiteOriginForDisplay} from "@utils/helpers/siteUrlHelper.js";
 
 const routeStore = useRouteStore();
 const appStore = useAppStore();
 
-const currentSite = getUrl().SITE;
+const siteUrl = getUrl().SITE;
+const currentSite = formatSiteOriginForDisplay(siteUrl);
 const copiedRouteKey = ref(null);
 let copiedRouteTimer = null;
 
@@ -204,7 +206,7 @@ function routeUrlSuffix(path) {
 }
 
 function buildRouteUrl(route) {
-  return `${currentSite}${routeUrlSuffix(route?.path)}`;
+  return `${siteUrl}${routeUrlSuffix(route?.path)}`;
 }
 
 function routeCopyKey(route) {
