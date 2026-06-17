@@ -7,7 +7,8 @@
   height: calc(100vh - $toolbar-height - 1.5rem);
   display: flex;
   flex-direction: column;
-  background: $bg-blur;
+  background: $bg-panel;
+  backdrop-filter: blur(16px);
   overflow: hidden;
 
   &__header {

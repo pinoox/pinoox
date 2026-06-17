@@ -3,35 +3,35 @@
         <div v-if="!props.hasSelectApp" class="modalRoutes__steps" aria-hidden="true">
             <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 1, 'is-done': currentStep > 1 }">۱. آدرس</span>
             <span class="modalRoutes__stepLine"/>
-            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 2 }">۲. اپلیکیشن</span>
+            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 2 }">۲. برنامه</span>
         </div>
 
         <div v-if="currentStep === 1" class="form">
-            <p class="modalRoutes__hint">آدرسی که کاربر در مرورگر وارد می‌کند را مشخص کنید.</p>
+            <p class="modalRoutes__hint">آدرسی را بنویسید که می‌خواهید در مرورگر باز شود.</p>
             <Input
                     type="text"
                     v-model="params.path"
-                    label="آدرس مسیر"
+                    label="آدرس"
                     direction="ltr"
                     placeholder="shop"
                     :prefix="domain + '/'"
             />
             <div class="flex justify-end mt-4 gap-2">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
-                <Button @click="goToNextStep" :disabled="!params.path" label="انتخاب اپلیکیشن" variant="primary"/>
+                <Button @click="goToNextStep" :disabled="!params.path" label="انتخاب برنامه" variant="primary"/>
             </div>
         </div>
 
         <div v-else class="form">
             <p class="modalRoutes__hint">
-                <span v-if="props.hasSelectApp">اپلیکیشن پیش‌فرض سایت را انتخاب کنید.</span>
-                <span v-else>مسیر <code dir="ltr">{{ routePreview }}</code> به کدام اپلیکیشن متصل شود؟</span>
+                <span v-if="props.hasSelectApp">وقتی کسی آدرس اصلی سایت را باز می‌کند، کدام برنامه نمایش داده شود؟</span>
+                <span v-else>با باز کردن <code>{{ routePreview }}</code> کدام برنامه نمایش داده شود؟</span>
             </p>
             <Input
                     type="text"
                     v-model="searchQuery"
-                    label="جستجو..."
-                    placeholder="نام اپلیکیشن را بنویسید"
+                    label="جستجو"
+                    placeholder="نام برنامه را بنویسید"
             />
             <div class="modal-app-picker grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-8">
                 <button
@@ -147,7 +147,7 @@ const save = () => {
 
 const isEdit = computed(() => (!!props.payload));
 const title = computed(() => {
-    if (props.hasSelectApp) return 'اپلیکیشن پیش‌فرض';
-    return isEdit.value ? 'ویرایش مسیر' : 'افزودن مسیر جدید';
+    if (props.hasSelectApp) return 'برنامهٔ صفحه اصلی';
+    return isEdit.value ? 'ویرایش آدرس' : 'افزودن آدرس جدید';
 });
 </script>

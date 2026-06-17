@@ -14,10 +14,10 @@
     gap: 0.875rem;
     padding: 1rem 1.1rem;
     border-radius: 0.875rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     background:
-      radial-gradient(circle at 100% 0%, rgba(var(--color-primary-rgb, 99, 102, 241), 0.14), transparent 52%),
-      rgba(255, 255, 255, 0.04);
+      radial-gradient(circle at 100% 0%, rgba(var(--color-primary-rgb, 99, 102, 241), 0.16), transparent 52%),
+      rgba(255, 255, 255, 0.06);
   }
 
   .routeMap__intro-iconWrap {
@@ -28,8 +28,8 @@
     width: 2.75rem;
     height: 2.75rem;
     border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
   }
 
   .routeMap__intro-icon {
@@ -39,43 +39,25 @@
 
   .routeMap__intro-title {
     margin: 0 0 0.35rem;
-    font-size: 0.95rem;
+    font-size: 0.98rem;
     font-weight: 600;
     color: $color-title;
   }
 
   .routeMap__intro-desc {
     margin: 0;
-    font-size: 0.8125rem;
-    line-height: 1.65;
-    color: rgba(255, 255, 255, 0.62);
+    font-size: 0.84rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.78);
   }
 
   .routeMap__board {
     position: relative;
     padding: 1.15rem 1rem 1.25rem;
     border-radius: 1rem;
-    border: 1px solid $color-border;
-    background:
-      linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%),
-      rgba(0, 0, 0, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(12, 12, 18, 0.88);
     overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0 auto 0 50%;
-      width: 1px;
-      transform: translateX(-50%);
-      background: linear-gradient(
-        180deg,
-        transparent 0%,
-        rgba(255, 255, 255, 0.06) 18%,
-        rgba(255, 255, 255, 0.06) 82%,
-        transparent 100%
-      );
-      pointer-events: none;
-    }
   }
 
   .routeMap__site {
@@ -85,7 +67,7 @@
     flex-direction: column;
     align-items: center;
     gap: 0.2rem;
-    margin-bottom: 1.35rem;
+    margin-bottom: 1rem;
   }
 
   .routeMap__site-pulse {
@@ -94,28 +76,56 @@
     height: 0.65rem;
     border-radius: 50%;
     background: var(--color-primary);
-    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb, 99, 102, 241), 0.18);
+    box-shadow: 0 0 0 4px rgba(var(--color-primary-rgb, 99, 102, 241), 0.22);
 
     &::after {
       content: '';
       position: absolute;
       inset: -0.35rem;
       border-radius: 50%;
-      border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.35);
+      border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.4);
       animation: routeSitePulse 2.4s ease-out infinite;
     }
   }
 
   .routeMap__site-label {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
     font-weight: 600;
     color: $color-title;
     letter-spacing: 0.01em;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 
   .routeMap__site-caption {
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.58);
+  }
+
+  .routeMap__columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.65rem;
+    padding: 0 0.15rem;
     font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.45);
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.52);
+    text-align: center;
+
+    span:first-child {
+      text-align: left;
+    }
+
+    span:last-child {
+      text-align: right;
+    }
+  }
+
+  .routeMap__columns-arrow {
+    color: var(--color-primary);
+    font-size: 0.95rem;
+    line-height: 1;
   }
 
   .routeMap__list {
@@ -135,10 +145,10 @@
     grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     gap: 0.65rem;
-    padding: 0.85rem 0.9rem;
+    padding: 0.9rem 1rem;
     border-radius: 0.875rem;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
     transition:
       transform 0.18s ease,
       border-color 0.18s ease,
@@ -147,22 +157,16 @@
 
     &:hover {
       transform: translateY(-0.08rem);
-      border-color: rgba(255, 255, 255, 0.18);
-      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16);
-      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(255, 255, 255, 0.22);
+      box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+      background: rgba(255, 255, 255, 0.08);
     }
 
     &--default {
-      border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.28);
+      border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.34);
       background:
-        radial-gradient(circle at 0% 50%, rgba(var(--color-primary-rgb, 99, 102, 241), 0.12), transparent 58%),
-        rgba(255, 255, 255, 0.04);
-    }
-
-    &--locked {
-      .routeCard__url {
-        opacity: 0.92;
-      }
+        radial-gradient(circle at 0% 50%, rgba(var(--color-primary-rgb, 99, 102, 241), 0.16), transparent 58%),
+        rgba(255, 255, 255, 0.07);
     }
 
     &--add {
@@ -171,24 +175,25 @@
       align-items: center;
       justify-content: center;
       gap: 0.25rem;
-      min-height: 5.5rem;
+      min-height: 5rem;
       width: 100%;
       cursor: pointer;
       border-style: dashed;
-      border-color: rgba(255, 255, 255, 0.16);
-      background: transparent;
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.03);
       color: inherit;
       font: inherit;
 
       &:hover {
-        border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.45);
-        background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.06);
+        border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.5);
+        background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.08);
       }
     }
   }
 
   .routeCard__pathBlock {
     min-width: 0;
+    text-align: left;
   }
 
   .routeCard__badges {
@@ -202,7 +207,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.25rem;
-    padding: 0.12rem 0.45rem;
+    padding: 0.14rem 0.5rem;
     border-radius: 999px;
     font-size: 0.68rem;
     font-weight: 600;
@@ -210,14 +215,14 @@
 
     &--default {
       color: var(--color-primary);
-      background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.14);
-      border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.24);
+      background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.18);
+      border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.28);
     }
 
     &--lock {
-      color: rgba(255, 255, 255, 0.72);
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: rgba(255, 255, 255, 0.82);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
     }
   }
 
@@ -226,18 +231,18 @@
     align-items: baseline;
     flex-wrap: wrap;
     gap: 0;
-    padding: 0.55rem 0.65rem;
+    padding: 0.6rem 0.7rem;
     border-radius: 0.55rem;
-    background: rgba(0, 0, 0, 0.28);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(0, 0, 0, 0.42);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.78rem;
+    font-size: 0.82rem;
     line-height: 1.4;
     overflow: hidden;
   }
 
   .routeCard__url-origin {
-    color: rgba(255, 255, 255, 0.48);
+    color: rgba(255, 255, 255, 0.55);
     white-space: nowrap;
   }
 
@@ -251,23 +256,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 0.15rem;
     flex-shrink: 0;
-    width: 2.5rem;
-    color: rgba(255, 255, 255, 0.38);
-  }
-
-  .routeCard__connector-line {
-    display: block;
-    width: 0.85rem;
-    height: 1px;
-    background: currentColor;
+    width: 2rem;
   }
 
   .routeCard__connector-arrow {
-    --icon-size: 0.95rem;
+    --icon-size: 1.1rem;
     color: var(--color-primary);
-    opacity: 0.85;
   }
 
   .routeCard__app {
@@ -275,19 +270,19 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.35rem;
+    gap: 0.45rem;
     min-width: 0;
-    padding: 0.35rem 0.5rem;
+    padding: 0.4rem 0.55rem;
     border: none;
     border-radius: 0.65rem;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.04);
     color: inherit;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.06);
-      transform: scale(1.03);
+      background: rgba(255, 255, 255, 0.1);
+      transform: scale(1.02);
     }
 
     .appIcon {
@@ -300,7 +295,7 @@
   }
 
   .routeCard__app-name {
-    font-size: 0.8125rem;
+    font-size: 0.84rem;
     font-weight: 600;
     color: $color-title;
     text-align: center;
@@ -310,19 +305,10 @@
     white-space: nowrap;
   }
 
-  .routeCard__app-package {
-    font-size: 0.68rem;
-    color: rgba(255, 255, 255, 0.42);
-    max-width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .routeCard__actions {
     position: absolute;
     top: 0.55rem;
-    left: 0.55rem;
+    right: 0.55rem;
     display: flex;
     align-items: center;
     gap: 0.2rem;
@@ -344,10 +330,10 @@
     width: 1.75rem;
     height: 1.75rem;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: 0.45rem;
-    background: rgba(0, 0, 0, 0.35);
-    color: rgba(255, 255, 255, 0.78);
+    background: rgba(0, 0, 0, 0.5);
+    color: rgba(255, 255, 255, 0.85);
     cursor: pointer;
     transition:
       color 0.15s ease,
@@ -372,10 +358,10 @@
     width: 2rem;
     height: 2rem;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.1);
     font-size: 1.25rem;
     line-height: 1;
-    color: rgba(255, 255, 255, 0.82);
+    color: rgba(255, 255, 255, 0.9);
   }
 
   .routeCard__add-label {
@@ -385,9 +371,9 @@
   }
 
   .routeCard__add-hint {
-    font-size: 0.72rem;
-    color: rgba(255, 255, 255, 0.45);
-    direction: ltr;
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.55);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   }
 }
 
@@ -423,16 +409,18 @@
 
   .modalRoutes__hint {
     margin: 0 0 0.85rem;
-    font-size: 0.8125rem;
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.58);
+    font-size: 0.84rem;
+    line-height: 1.65;
+    color: rgba(255, 255, 255, 0.72);
 
     code {
       padding: 0.1rem 0.35rem;
       border-radius: 0.35rem;
-      background: rgba(0, 0, 0, 0.28);
+      background: rgba(0, 0, 0, 0.35);
       color: #fff;
       font-size: 0.78rem;
+      direction: ltr;
+      unicode-bidi: isolate;
     }
   }
 
@@ -456,12 +444,12 @@
 
     &:hover {
       transform: scale(1.05);
-      background: rgba(255, 255, 255, 0.04);
+      background: rgba(255, 255, 255, 0.06);
     }
 
     &.is-selected {
       border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.45);
-      background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.1);
+      background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.12);
     }
 
     &.is-dimmed {
@@ -489,7 +477,7 @@
 
 @media (max-width: 768px) {
   .pageRoutes {
-    .routeMap__board::before {
+    .routeMap__columns {
       display: none;
     }
 
@@ -500,8 +488,11 @@
     }
 
     .routeCard__connector {
-      width: auto;
       transform: rotate(90deg);
+    }
+
+    .routeCard__pathBlock {
+      text-align: center;
     }
 
     .routeCard__actions {
