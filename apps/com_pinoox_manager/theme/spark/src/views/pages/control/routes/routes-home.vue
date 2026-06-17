@@ -18,7 +18,7 @@
         </div>
       </div>
 
-      <div v-if="sortedRoutes.length" class="routeMap__board">
+      <div v-if="sortedRoutes.length" class="routeMap__board" dir="ltr">
         <div class="routeMap__site">
           <span class="routeMap__site-pulse" aria-hidden="true"/>
           <span class="routeMap__site-label" dir="ltr">{{ currentSite }}</span>
@@ -50,22 +50,31 @@
                 </span>
               </div>
 
-              <div class="routeCard__url">
+              <div class="routeCard__url" dir="ltr">
                 <span class="routeCard__url-origin">{{ currentSite }}</span>
                 <span class="routeCard__url-path">{{ routeUrlSuffix(route.path) }}</span>
                 <span class="routeCard__url-actions">
+                  <span
+                      v-if="isRouteUrlCopied(route)"
+                      class="routeCard__copyFeedback"
+                      role="status"
+                      aria-live="polite"
+                  >
+                    {{ translate('route_url_copied') }}
+                  </span>
                   <button
                       type="button"
                       class="routeCard__url-action"
-                      title="کپی آدرس"
+                      :class="{'routeCard__url-action--copied': isRouteUrlCopied(route)}"
+                      :title="isRouteUrlCopied(route) ? translate('route_url_copied') : translate('route_url_copy')"
                       @click.stop="copyRouteUrl(route)"
                   >
-                    <Icon :is="saxIcon.copy" size="xs"/>
+                    <Icon :is="isRouteUrlCopied(route) ? saxIcon.notifySuccess : saxIcon.copy" size="xs"/>
                   </button>
                   <button
                       type="button"
                       class="routeCard__url-action"
-                      title="باز کردن در تب جدید"
+                      :title="translate('route_url_open')"
                       @click.stop="openRouteUrl(route)"
                   >
                     <Icon :is="saxIcon.externalLink" size="xs"/>
@@ -144,7 +153,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue';
+import {computed, onUnmounted, ref} from 'vue';
 import { getUrl } from '@/boot.js';
 import {saxIcon} from '@/const/icons.js';
 import {openModal} from '@kolirt/vue-modal';
@@ -161,6 +170,8 @@ const routeStore = useRouteStore();
 const appStore = useAppStore();
 
 const currentSite = getUrl().SITE;
+const copiedRouteKey = ref(null);
+let copiedRouteTimer = null;
 
 const sortedRoutes = computed(() => {
   return [...routeStore.routeList].sort((a, b) => {
@@ -194,23 +205,51 @@ function buildRouteUrl(route) {
   return `${currentSite}${routeUrlSuffix(route?.path)}`;
 }
 
+function routeCopyKey(route) {
+  return route?.path ?? buildRouteUrl(route);
+}
+
+function isRouteUrlCopied(route) {
+  return copiedRouteKey.value === routeCopyKey(route);
+}
+
+function showRouteUrlCopied(route) {
+  copiedRouteKey.value = routeCopyKey(route);
+  clearTimeout(copiedRouteTimer);
+  copiedRouteTimer = setTimeout(() => {
+    if (copiedRouteKey.value === routeCopyKey(route)) {
+      copiedRouteKey.value = null;
+    }
+  }, 1800);
+}
+
 async function copyRouteUrl(route) {
   const url = buildRouteUrl(route);
 
   try {
     await navigator.clipboard.writeText(url);
+    showRouteUrlCopied(route);
   } catch {
-    const input = document.createElement('textarea');
-    input.value = url;
-    input.setAttribute('readonly', '');
-    input.style.position = 'absolute';
-    input.style.left = '-9999px';
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
+    try {
+      const input = document.createElement('textarea');
+      input.value = url;
+      input.setAttribute('readonly', '');
+      input.style.position = 'absolute';
+      input.style.left = '-9999px';
+      document.body.appendChild(input);
+      input.select();
+      document.execCommand('copy');
+      document.body.removeChild(input);
+      showRouteUrlCopied(route);
+    } catch {
+      copiedRouteKey.value = null;
+    }
   }
 }
+
+onUnmounted(() => {
+  clearTimeout(copiedRouteTimer);
+});
 
 function openRouteUrl(route) {
   window.open(buildRouteUrl(route), '_blank', 'noopener,noreferrer');

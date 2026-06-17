@@ -100,6 +100,9 @@
     color: $color-title;
     letter-spacing: 0.01em;
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: center;
   }
 
   .routeMap__site-caption {
@@ -258,16 +261,39 @@
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 0.72rem;
     line-height: 1.35;
-    overflow: hidden;
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: left;
+    overflow: visible;
   }
 
   .routeCard__url-actions {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
     flex-shrink: 0;
     margin-inline-start: auto;
     padding-inline-start: 0.3rem;
+  }
+
+  .routeCard__copyFeedback {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 0.35rem);
+    z-index: 2;
+    padding: 0.18rem 0.45rem;
+    border-radius: 0.4rem;
+    border: 1px solid rgba(134, 239, 172, 0.35);
+    background: rgba(22, 101, 52, 0.92);
+    color: #bbf7d0;
+    font-size: 0.62rem;
+    font-weight: 600;
+    line-height: 1.2;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.28);
+    animation: routeCopyFeedbackIn 0.22s ease;
   }
 
   .routeCard__url-action {
@@ -285,12 +311,21 @@
     transition:
       color 0.15s ease,
       border-color 0.15s ease,
-      background 0.15s ease;
+      background 0.15s ease,
+      transform 0.15s ease;
 
     &:hover {
       color: #fff;
       border-color: rgba(var(--color-primary-rgb, 99, 102, 241), 0.45);
       background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.14);
+    }
+
+    &--copied {
+      color: #86efac;
+      border-color: rgba(134, 239, 172, 0.45);
+      background: rgba(22, 101, 52, 0.35);
+      transform: scale(1.08);
+      animation: routeCopyPulse 0.35s ease;
     }
   }
 
@@ -298,6 +333,8 @@
     flex: 1 1 auto;
     min-width: 0;
     color: rgba(255, 255, 255, 0.55);
+    direction: ltr;
+    unicode-bidi: isolate;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -308,6 +345,8 @@
     min-width: 0;
     color: #fff;
     font-weight: 600;
+    direction: ltr;
+    unicode-bidi: isolate;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -626,6 +665,32 @@
   100% {
     transform: scale(1.35);
     opacity: 0;
+  }
+}
+
+@keyframes routeCopyFeedbackIn {
+  0% {
+    opacity: 0;
+    transform: translateY(0.25rem) scale(0.92);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes routeCopyPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  45% {
+    transform: scale(1.14);
+  }
+
+  100% {
+    transform: scale(1.08);
   }
 }
 

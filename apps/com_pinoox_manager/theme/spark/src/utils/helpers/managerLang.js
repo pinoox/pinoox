@@ -11,6 +11,9 @@ const MESSAGES = {
         route_action_no_delete: 'غیرقابل حذف',
         route_actions_locked: 'آدرس ثابت — قابل ویرایش نیست',
         route_actions_unavailable: 'عملیاتی وجود ندارد',
+        route_url_copy: 'کپی آدرس',
+        route_url_copied: 'کپی شد',
+        route_url_open: 'باز کردن در تب جدید',
     },
     en: {
         unknown_app: 'Unknown app',
@@ -21,6 +24,9 @@ const MESSAGES = {
         route_action_no_delete: 'Cannot delete',
         route_actions_locked: 'Fixed route — not editable',
         route_actions_unavailable: 'No actions available',
+        route_url_copy: 'Copy address',
+        route_url_copied: 'Copied',
+        route_url_open: 'Open in new tab',
     },
 };
 
