@@ -20,6 +20,12 @@ const MESSAGES = {
         route_delete_cancel: 'انصراف',
         route_delete_confirm: 'بله، حذف شود',
         route_delete_progress: 'در حال حذف…',
+        route_save_progress_create: 'در حال ایجاد آدرس…',
+        route_save_progress_edit: 'در حال ذخیره آدرس…',
+        route_save_progress_home: 'در حال ذخیره…',
+        route_save_success_create: 'آدرس با موفقیت ایجاد شد',
+        route_save_success_edit: 'آدرس ذخیره شد',
+        route_save_success_home: 'برنامهٔ صفحه اصلی ذخیره شد',
     },
     en: {
         unknown_app: 'Unknown app',
@@ -39,6 +45,12 @@ const MESSAGES = {
         route_delete_cancel: 'Cancel',
         route_delete_confirm: 'Yes, delete',
         route_delete_progress: 'Deleting…',
+        route_save_progress_create: 'Creating address…',
+        route_save_progress_edit: 'Saving address…',
+        route_save_progress_home: 'Saving…',
+        route_save_success_create: 'Address created successfully',
+        route_save_success_edit: 'Address saved',
+        route_save_success_home: 'Homepage app saved',
     },
 };
 
