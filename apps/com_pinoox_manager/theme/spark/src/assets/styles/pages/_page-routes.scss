@@ -619,6 +619,18 @@
     }
   }
 
+  .modalRoutes__pathWarn {
+    margin: 0 0 0.85rem;
+    padding: 0.55rem 0.7rem;
+    border-radius: 0.55rem;
+    border: 1px solid rgba(252, 165, 165, 0.35);
+    background: rgba(211, 47, 47, 0.12);
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: #fecaca;
+    animation: routeDeleteStatusIn 0.28s ease;
+  }
+
   .modalRoutes__emptyApps {
     margin: 1.5rem 0 0;
     text-align: center;

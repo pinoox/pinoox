@@ -20,9 +20,12 @@
                     placeholder="shop"
                     :prefix="addressPrefix"
             />
+            <p v-if="isDuplicatePath" class="modalRoutes__pathWarn" role="alert">
+                {{ duplicatePathMessage }}
+            </p>
             <div class="flex justify-end mt-4 gap-2">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
-                <Button @click="goToNextStep" :is-disabled="!canGoNext" label="انتخاب برنامه" variant="primary"/>
+                <Button @click="goToNextStep" :is-disabled="!canProceedStep1" label="انتخاب برنامه" variant="primary"/>
             </div>
         </div>
 
@@ -240,6 +243,36 @@ const canGoNext = computed(() => {
     return String(params.value.path ?? '').trim().length > 0;
 });
 
+const duplicateRoute = computed(() => {
+    if (!canGoNext.value) {
+        return null;
+    }
+
+    const path = normalizePath(params.value.path);
+    const oldPath = normalizePath(params.value.oldPath);
+
+    if (isEditingRoute.value && path === oldPath) {
+        return null;
+    }
+
+    return routeStore.fetchRouteByPath(path);
+});
+
+const isDuplicatePath = computed(() => duplicateRoute.value != null);
+
+const duplicatePathMessage = computed(() => {
+    if (!duplicateRoute.value) {
+        return '';
+    }
+
+    const app = appStore.fetchAppByPackage(duplicateRoute.value.package);
+    const appName = resolveAppDisplayLabel(app, duplicateRoute.value.package);
+
+    return translate('route_path_duplicate').replace('{app}', appName);
+});
+
+const canProceedStep1 = computed(() => canGoNext.value && !isDuplicatePath.value);
+
 const canSave = computed(() => {
     return Boolean(params.value.packageName) && (props.hasSelectApp || canGoNext.value);
 });
@@ -272,6 +305,12 @@ const goToNextStep = () => {
         toastError('لطفاً آدرس را وارد کنید.');
         return;
     }
+
+    if (isDuplicatePath.value) {
+        toastError(duplicatePathMessage.value);
+        return;
+    }
+
     currentStep.value = 2;
 };
 
@@ -347,6 +386,12 @@ const save = async () => {
         payload = buildSavePayload();
     } catch (validationError) {
         toastError(validationError.message);
+        return;
+    }
+
+    if (isDuplicatePath.value) {
+        toastError(duplicatePathMessage.value);
+        currentStep.value = 1;
         return;
     }
 

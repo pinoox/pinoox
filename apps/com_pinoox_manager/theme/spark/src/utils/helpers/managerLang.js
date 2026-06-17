@@ -26,6 +26,7 @@ const MESSAGES = {
         route_save_success_create: 'آدرس با موفقیت ایجاد شد',
         route_save_success_edit: 'آدرس ذخیره شد',
         route_save_success_home: 'برنامهٔ صفحه اصلی ذخیره شد',
+        route_path_duplicate: 'این آدرس قبلاً ثبت شده و به برنامه «{app}» متصل است.',
     },
     en: {
         unknown_app: 'Unknown app',
@@ -51,6 +52,7 @@ const MESSAGES = {
         route_save_success_create: 'Address created successfully',
         route_save_success_edit: 'Address saved',
         route_save_success_home: 'Homepage app saved',
+        route_path_duplicate: 'This address already exists and is linked to «{app}».',
     },
 };
 
