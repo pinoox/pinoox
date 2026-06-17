@@ -19,6 +19,29 @@ $icon-size-lg: 1.5rem;
 $icon-size-xl: 1.75rem;
 $icon-size-2xl: 2rem;
 
+// Theme CSS variables — SCSS bundle must define these; Tailwind @theme alone is not emitted in production.
+:root {
+  --color-darkest: #130D0B;
+  --color-dark: #3B1D21;
+  --color-primary: #A9492E;
+  --color-success: #1F9254;
+  --color-warning: #ff8b07;
+  --color-danger: #D32F2F;
+  --color-accent: #16788F;
+  --color-light: #d0d0d0;
+  --color-secondary: #3B1D21;
+
+  --color-darkest-rgb: 19, 13, 11;
+  --color-dark-rgb: 59, 29, 33;
+  --color-primary-rgb: 169, 73, 46;
+  --color-secondary-rgb: 58, 29, 33;
+  --color-success-rgb: 31, 146, 84;
+  --color-warning-rgb: 255, 139, 7;
+  --color-danger-rgb: 211, 47, 47;
+  --color-accent-rgb: 22, 120, 143;
+  --color-light-rgb: 208, 208, 208;
+}
+
 .v-sidebar-menu {
   --vsm-item-active-line-color: var(--color-primary);
 }

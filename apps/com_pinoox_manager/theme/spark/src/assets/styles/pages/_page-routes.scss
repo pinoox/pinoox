@@ -40,7 +40,7 @@
 
   .routeMap__intro-icon {
     --icon-size: 1.35rem;
-    color: var(--color-primary);
+    color: #fff;
   }
 
   .routeMap__intro-title {
@@ -234,7 +234,7 @@
     line-height: 1.2;
 
     &--default {
-      color: var(--color-primary);
+      color: #fff;
       background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.18);
       border: 1px solid rgba(var(--color-primary-rgb, 99, 102, 241), 0.28);
     }
