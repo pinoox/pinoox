@@ -299,17 +299,15 @@
 
   .routeCard__app {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    justify-content: flex-end;
-    gap: 0.65rem;
+    justify-content: center;
+    gap: 0.45rem;
     min-width: 0;
-    padding: 0.55rem 0.75rem;
+    padding: 0.55rem 0.65rem;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 0.75rem;
-    background:
-      radial-gradient(circle at 100% 50%, rgba(255, 255, 255, 0.06), transparent 62%),
-      rgba(255, 255, 255, 0.04);
+    background: rgba(255, 255, 255, 0.04);
     color: inherit;
     cursor: pointer;
     transition:
@@ -320,19 +318,19 @@
 
     &:hover {
       border-color: rgba(255, 255, 255, 0.2);
-      background:
-        radial-gradient(circle at 100% 50%, rgba(var(--color-primary-rgb, 99, 102, 241), 0.12), transparent 62%),
-        rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.08);
       box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
       transform: translateY(-0.06rem);
     }
 
-    .appIcon {
+    .appIcon,
+    .appBrandIcon {
       flex-shrink: 0;
       transition: transform 0.2s ease;
     }
 
-    &:hover .appIcon {
+    &:hover .appIcon,
+    &:hover .appBrandIcon {
       transform: scale(1.05);
     }
   }
@@ -341,8 +339,8 @@
     font-size: 0.84rem;
     font-weight: 600;
     color: $color-title;
-    text-align: right;
-    min-width: 0;
+    text-align: center;
+    max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

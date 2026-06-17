@@ -4,10 +4,12 @@ import { useOptionsStore } from '@/stores/modules/options.js';
 const MESSAGES = {
     fa: {
         unknown_app: 'برنامه نامشخص',
+        system_app_manager: 'منجر — مدیریت پینوکس',
         app_single_route_only: 'این برنامه فقط یک آدرس می‌پذیرد (در app.php با type: single)',
     },
     en: {
         unknown_app: 'Unknown app',
+        system_app_manager: 'Manager — Pinoox Control Panel',
         app_single_route_only: 'This app accepts only one URL (router.type: single in app.php)',
     },
 };

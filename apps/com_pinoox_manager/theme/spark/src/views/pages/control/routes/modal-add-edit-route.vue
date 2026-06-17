@@ -49,7 +49,12 @@
                         :disabled="!isAppSelectable(app)"
                         :title="appOptionTitle(app)"
                 >
-                    <AppIcon v-bind="resolveRouteAppIconProps(app)" size="lg"/>
+                    <AppBrandIcon
+                        v-if="isManagerBrandApp(app)"
+                        v-bind="managerBrandIconProps(app)"
+                        size="lg"
+                    />
+                    <AppIcon v-else v-bind="resolveRouteAppIconProps(app)" size="lg"/>
                     <span class="text-sm text-gray-400">{{ resolveAppDisplayLabel(app) }}</span>
                 </button>
             </div>
@@ -78,7 +83,7 @@ import Button from '@/views/components/widgets/Button.vue';
 import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
-import {resolveAppDisplayLabel} from "@utils/helpers/appDisplayLabel.js";
+import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from "@utils/helpers/appDisplayLabel.js";
 import {canAssignAnotherRoute, resolveRouterMode} from "@utils/helpers/appRoutePolicy.js";
 import {translate} from "@utils/helpers/managerLang.js";
 import {routerAPI} from "@api/router.js";

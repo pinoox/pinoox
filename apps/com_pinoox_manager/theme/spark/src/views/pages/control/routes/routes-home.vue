@@ -83,7 +83,13 @@
                 :title="appActionLabel(route)"
                 @click="openRouteEditor(route)"
             >
+              <AppBrandIcon
+                  v-if="isManagerBrandApp(routeApp(route), route?.package)"
+                  v-bind="managerBrandIconProps(routeApp(route), route?.package)"
+                  size="md"
+              />
               <AppIcon
+                  v-else
                   v-bind="resolveRouteAppIconProps(routeApp(route), route?.package)"
                   size="md"
               />
@@ -141,7 +147,7 @@ import {routerAPI} from "@api/router.js";
 import {useRouteStore} from "@/stores/modules/route.js";
 import {useAppStore} from "@/stores/modules/app.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
-import {resolveAppDisplayLabel} from "@utils/helpers/appDisplayLabel.js";
+import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from "@utils/helpers/appDisplayLabel.js";
 
 const routeStore = useRouteStore();
 const appStore = useAppStore();
