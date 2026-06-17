@@ -1,8 +1,13 @@
 <template>
   <section class="appView appView--simple">
     <div class="appView__toolbar">
-      <button type="button" class="appView__back" @click="goBack">
-        ← بازگشت
+      <button
+          type="button"
+          class="appView__back"
+          aria-label="بستن"
+          @click="closePreview"
+      >
+        بستن
       </button>
 
       <div v-if="app" class="appView__title">
@@ -85,11 +90,8 @@ const app = computed(() =>
 
 const embedUrl = computed(() => buildSecretViewEmbedUrl(props.package_name));
 
-function goBack() {
-  if (window.history.length > 1)
-    router.back();
-  else
-    router.push({name: 'desktop'});
+function closePreview() {
+  router.push({name: 'desktop'});
 }
 
 function reload() {
@@ -99,10 +101,6 @@ function reload() {
 
 function handleFrameLoad() {
   onFrameLoad(frameRef.value);
-}
-
-function closePreview() {
-  router.push({name: 'desktop'});
 }
 
 function onFrameMessage(event) {

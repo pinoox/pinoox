@@ -1,43 +1,55 @@
 <template>
     <SimpleModal :title="title" size="sm" class="modalRoutes">
+        <div v-if="!props.hasSelectApp" class="modalRoutes__steps" aria-hidden="true">
+            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 1, 'is-done': currentStep > 1 }">۱. آدرس</span>
+            <span class="modalRoutes__stepLine"/>
+            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 2 }">۲. اپلیکیشن</span>
+        </div>
+
         <div v-if="currentStep === 1" class="form">
+            <p class="modalRoutes__hint">آدرسی که کاربر در مرورگر وارد می‌کند را مشخص کنید.</p>
             <Input
                     type="text"
                     v-model="params.path"
                     label="آدرس مسیر"
                     direction="ltr"
-                    placeholder="نام مسیر"
+                    placeholder="shop"
                     :prefix="domain + '/'"
             />
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end mt-4 gap-2">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
-                <Button @click="goToNextStep" :disabled="!params.path" label="ادامه" variant="primary"/>
+                <Button @click="goToNextStep" :disabled="!params.path" label="انتخاب اپلیکیشن" variant="primary"/>
             </div>
         </div>
 
         <div v-else class="form">
+            <p class="modalRoutes__hint">
+                <span v-if="props.hasSelectApp">اپلیکیشن پیش‌فرض سایت را انتخاب کنید.</span>
+                <span v-else>مسیر <code dir="ltr">{{ routePreview }}</code> به کدام اپلیکیشن متصل شود؟</span>
+            </p>
             <Input
                     type="text"
                     v-model="searchQuery"
                     label="جستجو..."
                     placeholder="نام اپلیکیشن را بنویسید"
             />
-            <div class="modal-app-picker grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-12">
-                <div
+            <div class="modal-app-picker grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-8">
+                <button
+                        type="button"
                         v-for="app in filteredApps"
                         :key="app.package_name"
                         @click="selectPackage(app)"
-                        class="flex flex-col items-center justify-center space-y-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
+                        class="modalRoutes__appOption"
                         :class="{
-            'opacity-100': app.package_name === params.packageName,
-            'opacity-40': app.package_name !== params.packageName && params.packageName
+            'is-selected': app.package_name === params.packageName,
+            'is-dimmed': app.package_name !== params.packageName && params.packageName
           }"
                 >
                     <AppIcon v-bind="appIconProps(app)" size="lg"/>
                     <span class="text-sm text-gray-400">{{ app.name }}</span>
-                </div>
+                </button>
             </div>
-            <div class="flex justify-between mt-4">
+            <div class="flex justify-between mt-4 gap-2">
                 <Button v-if="!props.hasSelectApp" @click="goToPreviousStep" label="بازگشت" variant="dark"/>
                 <Button v-else @click="closeModal" label="بستن" variant="dark"/>
                 <Button @click="save" :disabled="!params.packageName" label="ذخیره" variant="primary"/>
@@ -81,9 +93,15 @@ const params = ref({
 const searchQuery = ref('');
 const currentStep = ref(1);
 
-
 const filteredApps = computed(() => {
     return appStore.fetchAppsLikeName(searchQuery.value);
+});
+
+const routePreview = computed(() => {
+    const path = params.value.path || '';
+    if (!path || path === '/') return `${domain.value}/`;
+    const normalized = path.startsWith('/') ? path : `/${path}`;
+    return `${domain.value}${normalized}`;
 });
 
 const selectPackage = (app) => {
@@ -128,5 +146,8 @@ const save = () => {
 };
 
 const isEdit = computed(() => (!!props.payload));
-const title = computed(() => (isEdit.value ? 'ویرایش' : 'افزودن مسیر جدید'));
+const title = computed(() => {
+    if (props.hasSelectApp) return 'اپلیکیشن پیش‌فرض';
+    return isEdit.value ? 'ویرایش مسیر' : 'افزودن مسیر جدید';
+});
 </script>

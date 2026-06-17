@@ -350,16 +350,6 @@
   }
 }
 
-.pageRoutes {
-  .appIcon {
-    transition: transform 0.2s ease;
-  }
-
-  tr:hover .appIcon {
-    transform: scale(1.06);
-  }
-}
-
 .pageControl,
 .modalRoutes,
 .modal-app-picker,
