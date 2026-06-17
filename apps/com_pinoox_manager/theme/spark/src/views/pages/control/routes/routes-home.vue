@@ -18,10 +18,10 @@
         </div>
       </div>
 
-      <div v-if="sortedRoutes.length" class="routeMap__board" dir="ltr">
+      <div v-if="sortedRoutes.length" class="routeMap__board">
         <div class="routeMap__site">
           <span class="routeMap__site-pulse" aria-hidden="true"/>
-          <span class="routeMap__site-label">{{ currentSite }}</span>
+          <span class="routeMap__site-label" dir="ltr">{{ currentSite }}</span>
           <span class="routeMap__site-caption">آدرس سایت شما</span>
         </div>
 
@@ -105,7 +105,7 @@
                     :title="translate('route_action_edit')"
                     @click="editRoute(route)"
                 >
-                  <Icon :is="saxIcon.edit" size="sm"/>
+                  <Icon :is="saxIcon.edit" size="md"/>
                 </button>
                 <button
                     v-if="canDeleteRoute(route)"
@@ -114,7 +114,7 @@
                     :title="translate('route_action_delete')"
                     @click="deleteRoute(route.path)"
                 >
-                  <Icon :is="saxIcon.remove" size="sm"/>
+                  <Icon :is="saxIcon.remove" size="md"/>
                 </button>
                 <span v-else class="routeCard__actionSlot routeCard__actionSlot--hint">
                   {{ translate('route_action_no_delete') }}
