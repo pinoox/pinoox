@@ -51,8 +51,10 @@
               </div>
 
               <div class="routeCard__url" dir="ltr">
-                <span class="routeCard__url-origin">{{ currentSite }}</span>
-                <span class="routeCard__url-path">{{ routeUrlSuffix(route.path) }}</span>
+                <span class="routeCard__url-address">
+                  <span class="routeCard__url-origin">{{ currentSite }}</span>
+                  <span class="routeCard__url-path">{{ routeUrlSuffix(route.path) }}</span>
+                </span>
                 <span class="routeCard__url-actions">
                   <span
                       v-if="isRouteUrlCopied(route)"

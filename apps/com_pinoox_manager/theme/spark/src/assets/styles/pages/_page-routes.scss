@@ -201,6 +201,7 @@
     grid-template-rows: 1fr auto 1fr;
     grid-template-columns: minmax(0, 1fr);
     align-self: stretch;
+    width: 100%;
     min-width: 0;
     max-width: 100%;
     text-align: left;
@@ -249,11 +250,14 @@
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
-    gap: 0;
+    justify-content: space-between;
+    gap: 0.35rem;
     grid-row: 2;
     grid-column: 1;
     align-self: center;
+    width: 100%;
     min-width: 0;
+    box-sizing: border-box;
     padding: 0.42rem 0.45rem;
     border-radius: 0.55rem;
     background: rgba(0, 0, 0, 0.42);
@@ -267,14 +271,26 @@
     overflow: visible;
   }
 
+  .routeCard__url-address {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+    direction: ltr;
+    unicode-bidi: isolate;
+    text-align: left;
+  }
+
   .routeCard__url-actions {
     position: relative;
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
+    flex: 0 0 auto;
     flex-shrink: 0;
-    margin-inline-start: auto;
-    padding-inline-start: 0.3rem;
+    padding-inline-start: 0.15rem;
   }
 
   .routeCard__copyFeedback {
@@ -330,7 +346,7 @@
   }
 
   .routeCard__url-origin {
-    flex: 1 1 auto;
+    flex: 0 1 auto;
     min-width: 0;
     color: rgba(255, 255, 255, 0.55);
     direction: ltr;
@@ -341,7 +357,7 @@
   }
 
   .routeCard__url-path {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     min-width: 0;
     color: #fff;
     font-weight: 600;
@@ -378,7 +394,7 @@
     color: inherit;
     cursor: pointer;
     align-self: center;
-    overflow: hidden;
+    overflow: visible;
     transition:
       background 0.15s ease,
       border-color 0.15s ease,

@@ -28,7 +28,7 @@ export function resolveAppDisplayLabel(app, packageName = null) {
 
 export function managerBrandIconProps(app, packageName = null) {
     return {
-        lucide: 'layout-dashboard',
+        lucide: 'settings',
         alt: resolveAppDisplayLabel(app, packageName),
     };
 }

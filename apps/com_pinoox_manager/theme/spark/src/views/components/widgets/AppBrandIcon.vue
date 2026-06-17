@@ -1,15 +1,14 @@
 <template>
   <span class="appBrandIcon" :class="sizeClass">
-    <AppIcon
-        :lucide="lucide"
-        :colors="colors"
-        icon-style="gradient"
-        icon-source="lucide"
-        :size="size"
-        :alt="alt"
-    />
+    <img :src="pinooxLogo" :alt="alt" class="appBrandIcon__logo" draggable="false"/>
     <span class="appBrandIcon__badge" aria-hidden="true">
-      <img :src="pinooxLogo" alt="" class="appBrandIcon__logo" draggable="false"/>
+      <AppIcon
+          :lucide="lucide"
+          :colors="colors"
+          icon-style="gradient"
+          icon-source="lucide"
+          size="xs"
+      />
     </span>
   </span>
 </template>
@@ -28,7 +27,7 @@ const SIZE_MAP = {
 const props = defineProps({
   lucide: {
     type: String,
-    default: 'layout-dashboard',
+    default: 'settings',
   },
   colors: {
     type: Array,
