@@ -28,7 +28,8 @@
         <div class="routeMap__columns" aria-hidden="true">
           <span>آدرس در مرورگر</span>
           <span class="routeMap__columns-arrow">→</span>
-          <span>برنامه‌ای که باز می‌شود</span>
+          <span>برنامه</span>
+          <span>عملیات</span>
         </div>
 
         <ul class="routeMap__list">
@@ -86,34 +87,40 @@
               <AppBrandIcon
                   v-if="isManagerBrandApp(routeApp(route), route?.package)"
                   v-bind="managerBrandIconProps(routeApp(route), route?.package)"
-                  size="md"
+                  size="sm"
               />
               <AppIcon
                   v-else
                   v-bind="resolveRouteAppIconProps(routeApp(route), route?.package)"
-                  size="md"
+                  size="sm"
               />
               <span class="routeCard__app-name">{{ appDisplayName(route) }}</span>
             </button>
 
-            <div v-if="canManageRoute(route)" class="routeCard__actions">
-              <button
-                  type="button"
-                  class="routeCard__action routeCard__action--edit"
-                  title="ویرایش"
-                  @click="editRoute(route)"
-              >
-                <Icon :is="saxIcon.edit" class="pageRoutes__action-icon" size="sm"/>
-              </button>
-              <button
-                  v-if="!isDefaultRoute(route)"
-                  type="button"
-                  class="routeCard__action routeCard__action--delete"
-                  title="حذف"
-                  @click="deleteRoute(route.path)"
-              >
-                <Icon :is="saxIcon.remove" class="pageRoutes__action-icon" size="sm"/>
-              </button>
+            <div class="routeCard__actions">
+              <div v-if="canManageRoute(route)" class="routeCard__actionsRow">
+                <button
+                    type="button"
+                    class="routeCard__action routeCard__action--edit"
+                    :title="translate('route_action_edit')"
+                    @click="editRoute(route)"
+                >
+                  <Icon :is="saxIcon.edit" size="sm"/>
+                </button>
+                <button
+                    v-if="canDeleteRoute(route)"
+                    type="button"
+                    class="routeCard__action routeCard__action--delete"
+                    :title="translate('route_action_delete')"
+                    @click="deleteRoute(route.path)"
+                >
+                  <Icon :is="saxIcon.remove" size="sm"/>
+                </button>
+                <span v-else class="routeCard__actionSlot routeCard__actionSlot--hint">
+                  {{ translate('route_action_no_delete') }}
+                </span>
+              </div>
+              <p v-else class="routeCard__actionHint">{{ routeActionsHint(route) }}</p>
             </div>
           </li>
 
@@ -148,6 +155,7 @@ import {useRouteStore} from "@/stores/modules/route.js";
 import {useAppStore} from "@/stores/modules/app.js";
 import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
 import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from "@utils/helpers/appDisplayLabel.js";
+import {translate} from "@utils/helpers/managerLang.js";
 
 const routeStore = useRouteStore();
 const appStore = useAppStore();
@@ -217,6 +225,18 @@ function routeCardClass(route) {
 
 function canManageRoute(route) {
   return !route.is_lock || isDefaultRoute(route);
+}
+
+function canDeleteRoute(route) {
+  return canManageRoute(route) && !isDefaultRoute(route);
+}
+
+function routeActionsHint(route) {
+  if (route.is_lock) {
+    return translate('route_actions_locked');
+  }
+
+  return translate('route_actions_unavailable');
 }
 
 function routeApp(route) {

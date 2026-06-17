@@ -1,6 +1,12 @@
 @use '../base/variable' as *;
 
 .pageRoutes {
+  --route-grid-address: 3fr;
+  --route-grid-app: 1fr;
+  --route-grid-actions: 1fr;
+  --route-grid-arrow: 1.75rem;
+  --route-card-grid: minmax(0, var(--route-grid-address)) var(--route-grid-arrow) minmax(0, var(--route-grid-app)) minmax(0, var(--route-grid-actions));
+
   .routeMap {
     display: flex;
     flex-direction: column;
@@ -103,8 +109,8 @@
 
   .routeMap__columns {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
+    grid-template-columns: var(--route-card-grid);
+    align-items: end;
     gap: 0.65rem;
     margin-bottom: 0.65rem;
     padding: 0 0.15rem;
@@ -115,10 +121,6 @@
 
     span:first-child {
       text-align: left;
-    }
-
-    span:last-child {
-      text-align: right;
     }
   }
 
@@ -142,10 +144,10 @@
   .routeCard {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    align-items: center;
+    grid-template-columns: var(--route-card-grid);
+    align-items: stretch;
     gap: 0.65rem;
-    padding: 0.9rem 1rem;
+    padding: 0.75rem 0.85rem;
     border-radius: 0.875rem;
     border: 1px solid rgba(255, 255, 255, 0.12);
     background: rgba(255, 255, 255, 0.06);
@@ -193,7 +195,9 @@
 
   .routeCard__pathBlock {
     min-width: 0;
+    max-width: 100%;
     text-align: left;
+    overflow: hidden;
   }
 
   .routeCard__badges {
@@ -229,15 +233,16 @@
   .routeCard__url {
     display: flex;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 0.35rem 0;
-    padding: 0.55rem 0.65rem;
+    flex-wrap: nowrap;
+    gap: 0;
+    min-width: 0;
+    padding: 0.42rem 0.45rem;
     border-radius: 0.55rem;
     background: rgba(0, 0, 0, 0.42);
     border: 1px solid rgba(255, 255, 255, 0.1);
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 0.82rem;
-    line-height: 1.4;
+    font-size: 0.72rem;
+    line-height: 1.35;
     overflow: hidden;
   }
 
@@ -245,8 +250,9 @@
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
+    flex-shrink: 0;
     margin-inline-start: auto;
-    padding-inline-start: 0.35rem;
+    padding-inline-start: 0.3rem;
   }
 
   .routeCard__url-action {
@@ -274,14 +280,22 @@
   }
 
   .routeCard__url-origin {
+    flex: 1 1 auto;
+    min-width: 0;
     color: rgba(255, 255, 255, 0.55);
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .routeCard__url-path {
+    flex: 0 1 auto;
+    min-width: 0;
     color: #fff;
     font-weight: 600;
-    word-break: break-all;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .routeCard__connector {
@@ -289,12 +303,8 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    width: 2rem;
-  }
-
-  .routeCard__connector-arrow {
-    --icon-size: 1.1rem;
-    color: var(--color-primary);
+    width: var(--route-grid-arrow);
+    align-self: center;
   }
 
   .routeCard__app {
@@ -302,93 +312,153 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 0.45rem;
+    gap: 0.3rem;
+    width: 100%;
     min-width: 0;
-    padding: 0.55rem 0.65rem;
+    min-height: 4.75rem;
+    padding: 0.4rem 0.35rem;
+    box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 0.75rem;
-    background: rgba(255, 255, 255, 0.04);
+    border-radius: 0.65rem;
+    background: rgba(255, 255, 255, 0.05);
     color: inherit;
     cursor: pointer;
+    align-self: center;
+    overflow: hidden;
     transition:
       background 0.15s ease,
-      transform 0.15s ease,
       border-color 0.15s ease,
       box-shadow 0.15s ease;
 
     &:hover {
       border-color: rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
-      transform: translateY(-0.06rem);
+      background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
     }
 
     .appIcon,
     .appBrandIcon {
       flex-shrink: 0;
-      transition: transform 0.2s ease;
     }
+  }
 
-    &:hover .appIcon,
-    &:hover .appBrandIcon {
-      transform: scale(1.05);
-    }
+  .routeCard__connector-arrow {
+    --icon-size: 1.1rem;
+    color: var(--color-primary);
   }
 
   .routeCard__app-name {
-    font-size: 0.84rem;
+    font-size: 0.72rem;
     font-weight: 600;
     color: $color-title;
     text-align: center;
-    max-width: 100%;
+    width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.25;
   }
 
   .routeCard__actions {
-    position: absolute;
-    top: 0.55rem;
-    right: 0.55rem;
     display: flex;
     align-items: center;
-    gap: 0.2rem;
-    opacity: 0;
-    transform: translateY(-0.15rem);
-    transition: opacity 0.15s ease, transform 0.15s ease;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    min-height: 4.75rem;
+    padding: 0.28rem 0.2rem;
+    box-sizing: border-box;
+    border: 1px dashed rgba(255, 255, 255, 0.12);
+    border-radius: 0.65rem;
+    background: rgba(255, 255, 255, 0.03);
+    align-self: center;
+    overflow: hidden;
   }
 
-  .routeCard:hover .routeCard__actions,
-  .routeCard:focus-within .routeCard__actions {
-    opacity: 1;
-    transform: translateY(0);
+  .routeCard__actionsRow {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .routeCard__actionSlot {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    flex-shrink: 0;
+
+    &--hint {
+      flex: 1 1 100%;
+      width: 100%;
+      min-height: 2rem;
+      padding: 0.2rem 0.25rem;
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: 0.55rem;
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 0.58rem;
+      font-weight: 500;
+      line-height: 1.3;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.52);
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+  }
+
+  .routeCard__actionHint {
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    padding: 0.2rem 0.25rem;
+    font-size: 0.58rem;
+    font-weight: 500;
+    line-height: 1.35;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.55);
+    overflow-wrap: anywhere;
+    word-break: break-word;
   }
 
   .routeCard__action {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 1.75rem;
-    height: 1.75rem;
+    width: 2.05rem;
+    height: 2.05rem;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0.45rem;
-    background: rgba(0, 0, 0, 0.5);
-    color: rgba(255, 255, 255, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 0.55rem;
+    background: rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.88);
     cursor: pointer;
     transition:
       color 0.15s ease,
       border-color 0.15s ease,
-      background 0.15s ease;
+      background 0.15s ease,
+      transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-0.06rem);
+      background: rgba(255, 255, 255, 0.12);
+    }
 
     &--edit:hover {
       color: #93c5fd;
-      border-color: rgba(147, 197, 253, 0.35);
+      border-color: rgba(147, 197, 253, 0.45);
+      background: rgba(147, 197, 253, 0.12);
     }
 
     &--delete:hover {
       color: #fca5a5;
-      border-color: rgba(252, 165, 165, 0.35);
+      border-color: rgba(252, 165, 165, 0.45);
+      background: rgba(252, 165, 165, 0.12);
     }
   }
 
@@ -550,7 +620,10 @@
     .routeCard {
       grid-template-columns: 1fr;
       gap: 0.55rem;
-      padding-top: 2.35rem;
+    }
+
+    .routeMap__columns {
+      grid-template-columns: 1fr;
     }
 
     .routeCard__connector {
@@ -559,11 +632,6 @@
 
     .routeCard__pathBlock {
       text-align: center;
-    }
-
-    .routeCard__actions {
-      opacity: 1;
-      transform: none;
     }
 
     .routeMap__intro {
