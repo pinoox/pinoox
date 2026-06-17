@@ -1,27 +1,44 @@
 import {toastSuccess, toastError, toastWarn} from '@utils/helpers/toastHelper.js';
 import {isApiEnvelope, readApiErrorFromBody, readApiErrorMessage, readApiMessage} from '@utils/apiEnvelope.js';
 
-function shouldShowAlert(config) {
+/** Suppresses interceptor toasts (success and HTTP error). Use when the caller handles feedback. */
+export const HTTP_ALERT_SILENT = {alert: false};
+
+/** Enables success toast from interceptor; errors still show unless alert is false. */
+export const HTTP_ALERT_SUCCESS = {successAlert: true};
+
+function shouldShowErrorAlert(config) {
     return config?.alert !== false;
 }
 
+function shouldShowSuccessAlert(config) {
+    return config?.successAlert === true;
+}
+
 export function showSuccessAlert(response) {
-    if (!response || !shouldShowAlert(response.config)) {
+    if (!response) {
         return;
     }
 
+    const config = response.config;
     const body = response.data;
 
     if (body == null || typeof body !== 'object') {
         return;
     }
 
-    const message = readApiMessage(body);
-
     if (isApiEnvelope(body) && body.success === false) {
-        toastError(readApiErrorFromBody(body) || readApiErrorMessage({response}));
+        if (shouldShowErrorAlert(config)) {
+            toastError(readApiErrorFromBody(body) || readApiErrorMessage({response}));
+        }
         return;
     }
+
+    if (!shouldShowSuccessAlert(config)) {
+        return;
+    }
+
+    const message = readApiMessage(body);
 
     if (!message) {
         return;
@@ -36,7 +53,7 @@ export function showSuccessAlert(response) {
 }
 
 export function showErrorAlert(error) {
-    if (!shouldShowAlert(error.config)) {
+    if (!shouldShowErrorAlert(error.config)) {
         return;
     }
 
