@@ -59,7 +59,9 @@ http.interceptors.request.use((request) => {
 });
 
 http.interceptors.response.use((response) => {
-    showSuccessAlert(response);
+    if (response.config?.alert !== false) {
+        showSuccessAlert(response);
+    }
     callActions(actions.response, response);
 
     response.config.numProcessing--;
@@ -74,7 +76,9 @@ http.interceptors.response.use((response) => {
         error.config.numProcessing--;
     }
 
-    showErrorAlert(error);
+    if (error.config?.alert !== false) {
+        showErrorAlert(error);
+    }
     callActions(actions.error_response, error);
     callActions(actions.error, error);
 
@@ -82,5 +86,17 @@ http.interceptors.response.use((response) => {
 });
 
 http.token = getTokenAuth();
+
+http.postForm = (url, data, config = {}) => {
+    const formData = data instanceof FormData ? data : data;
+    return http.post(url, formData, {
+        ...config,
+        headers: {
+            ...(config.headers || {}),
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+
 window.$http = http;
 export default http;

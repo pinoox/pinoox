@@ -107,13 +107,25 @@ class MarketController extends ApiController
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
         $path = path('downloads/apps/' . $package_name . '.pinx');
-        $download = Http::get('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash']);
-        if ($download)
-            file_put_contents($path, $download->getContent());
+        if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash'], $path)) {
+            Config::name('market')->set($package_name, $data['result'])->save();
 
-        Config::name('market')->set($package_name, $data['result'])->save();
+            return $this->message('manager.download_completed');
+        }
 
-        return $this->message('manager.download_completed');
+        return $this->deny('manager.error_happened');
+    }
+
+    private function downloadToFile(string $url, string $targetPath): bool
+    {
+        $dir = dirname($targetPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $response = Http::get($url, ['sink' => $targetPath]);
+
+        return $response !== null && is_file($targetPath) && filesize($targetPath) > 0;
     }
 
     public function getTemplates($package_name)
@@ -154,10 +166,10 @@ class MarketController extends ApiController
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
         $path = path('downloads/templates/' . $uid . '.pinx');
-        $download = Http::get('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash']);
-        if ($download)
-            file_put_contents($path, $download->getContent());
+        if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash'], $path)) {
+            return $this->message('manager.download_completed');
+        }
 
-        return $this->message('manager.download_completed');
+        return $this->deny('manager.error_happened');
     }
 }

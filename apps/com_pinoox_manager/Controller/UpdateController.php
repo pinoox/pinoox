@@ -70,14 +70,26 @@ class UpdateController extends ApiController
             return $this->deny('manager.update_not_available');
 
         $file = path('temp/pincore.pin');
-        $response = Http::get('https://www.pinoox.com/api/v1/update/get');
-        if ($response)
-            file_put_contents($file, $response->getContent());
+        if ($this->downloadToFile('https://www.pinoox.com/api/v1/update/get', $file)) {
+            Wizard::updateCore($file);
+            $this->notificationInstall($server_version);
 
-        Wizard::updateCore($file);
-        $this->notificationInstall($server_version);
+            return $this->message('manager.update_successfully', $this->getVersions());
+        }
 
-        return $this->message('manager.update_successfully', $this->getVersions());
+        return $this->deny('manager.error_happened');
+    }
+
+    private function downloadToFile(string $url, string $targetPath): bool
+    {
+        $dir = dirname($targetPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $response = Http::get($url, ['sink' => $targetPath]);
+
+        return $response !== null && is_file($targetPath) && filesize($targetPath) > 0;
     }
 
     private function notificationInstall(array $version): void

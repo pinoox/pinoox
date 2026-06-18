@@ -15,6 +15,7 @@ use App\com_pinoox_manager\Controller\MarketController;
 use App\com_pinoox_manager\Controller\NotificationController;
 use App\com_pinoox_manager\Controller\UpdateController;
 use App\com_pinoox_manager\Controller\TemplateController;
+use App\com_pinoox_manager\Controller\PinionController;
 
 return [
     [
@@ -250,6 +251,41 @@ return [
         'uri' => '/app/filesUpload',
         'action' => [AppController::class, 'filesUpload'],
         'name' => 'app.filesUpload',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'POST',
+        'uri' => '/app/pinion/init',
+        'action' => [PinionController::class, 'init'],
+        'name' => 'app.pinion.init',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'POST',
+        'uri' => '/app/pinion/upload',
+        'action' => [PinionController::class, 'upload'],
+        'name' => 'app.pinion.upload',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'POST',
+        'uri' => '/app/pinion/complete',
+        'action' => [PinionController::class, 'complete'],
+        'name' => 'app.pinion.complete',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'GET',
+        'uri' => '/app/pinion/status/{uploadId}',
+        'action' => [PinionController::class, 'status'],
+        'name' => 'app.pinion.status',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'POST',
+        'uri' => '/app/pinion/abort/{uploadId}',
+        'action' => [PinionController::class, 'abort'],
+        'name' => 'app.pinion.abort',
         'flow' => ['manager.auth'],
     ],
     [

@@ -2,6 +2,13 @@
   <Page title="نصب دستی" class="pageAppsManual">
     <FileUploader ref="fileUploaderRef" @select="onSelect"/>
 
+    <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-4">
+      <div class="h-2 rounded-full bg-white/10 overflow-hidden">
+        <div class="h-full bg-primary transition-all" :style="{ width: `${uploadProgress}%` }"/>
+      </div>
+      <p class="mt-2 text-sm opacity-70">در حال بارگذاری… {{ uploadProgress }}%</p>
+    </div>
+
     <div class="mt-4">
       <Button label="آپلود فایل‌ها" variant="primary" :is-loading="isUploading" @click="uploadFiles"/>
     </div>
@@ -27,11 +34,14 @@
 import { onMounted, ref } from "vue";
 import { appAPI } from "@api/app.js";
 import { useAppStore } from "@/stores/modules/app.js";
+import { uploadPackageFile } from "@utils/pinion.js";
+import { toast } from "@global";
 
 const appStore = useAppStore();
 const files = ref([]);
 const selectedFiles = ref([]);
 const isUploading = ref(false);
+const uploadProgress = ref(0);
 const fileUploaderRef = ref(null);
 
 const loadFiles = async () => {
@@ -48,13 +58,24 @@ const onSelect = (file) => {
 const uploadFiles = async () => {
   if (!selectedFiles.value.length) return;
   isUploading.value = true;
+  uploadProgress.value = 0;
   try {
-    const formData = new FormData();
-    selectedFiles.value.forEach(f => formData.append('files', f));
-    await appAPI.filesUpload(formData);
+    for (const file of selectedFiles.value) {
+      await uploadPackageFile(file, {
+        onProgress: (value) => {
+          uploadProgress.value = value;
+        },
+      });
+    }
     fileUploaderRef.value?.resetFile();
     selectedFiles.value = [];
+    uploadProgress.value = 100;
     await loadFiles();
+    toast({title: 'فایل‌ها با موفقیت بارگذاری شدند', type: 'success'});
+  } catch (error) {
+    uploadProgress.value = 0;
+    toast({title: 'خطا در بارگذاری فایل', type: 'error'});
+    throw error;
   } finally {
     isUploading.value = false;
   }

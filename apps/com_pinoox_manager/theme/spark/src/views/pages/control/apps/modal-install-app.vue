@@ -16,6 +16,7 @@ defineOptions({modalGroup: 'default'});
 import {closeModal, useModalContext} from '@kolirt/vue-modal'
 import {ref} from "vue";
 import {appAPI} from "@api/app.js";
+import {uploadPackageFile, shouldUsePinion} from "@utils/pinion.js";
 import {toast} from "@global";
 
 const {confirm} = useModalContext();
@@ -40,9 +41,18 @@ const install = () => {
 
   isLoading.value = true;
 
-  appAPI.install({
-    file: file.value
-  }).then((response) => {
+  const runInstall = async () => {
+    if (shouldUsePinion(file.value)) {
+      const result = await uploadPackageFile(file.value);
+      const filename = result?.filename || file.value.name;
+      await appAPI.installPackage(filename);
+      return;
+    }
+
+    await appAPI.install({file: file.value});
+  };
+
+  runInstall().then(() => {
     fileUploaderRef.value.resetFile();
     toast({
       title: 'با موفقیت نصب شد',
