@@ -101,7 +101,7 @@ function pinoox_composer_requirements(): array
     if ($require === []) {
         return $cache = $defaults;
     }
-    $php = pinoox_normalize_php_constraint((string) ($require['php'] ?? '8.1.0'));
+    $php = pinoox_normalize_php_constraint((string) ($require['php'] ?? '8.2.0'));
 
     $extensions = [];
 
@@ -124,11 +124,11 @@ function pinoox_normalize_php_constraint(string $constraint): string
     $constraint = trim($constraint);
 
     if ($constraint === '') {
-        return '8.1.0';
+        return '8.2.0';
     }
 
     if (preg_match('/(\d+\.\d+(?:\.\d+)?)/', $constraint, $matches) !== 1) {
-        return '8.1.0';
+        return '8.2.0';
     }
 
     $version = $matches[1];
@@ -150,18 +150,18 @@ function pinoox_composer_php_constraint(): string
     $file = pinoox_base_path() . '/composer.json';
 
     if (!is_file($file)) {
-        return '^8.1';
+        return '^8.2';
     }
 
     $json = json_decode((string) file_get_contents($file), true);
 
     if (!is_array($json)) {
-        return '^8.1';
+        return '^8.2';
     }
 
     $require = is_array($json['require'] ?? null) ? $json['require'] : [];
 
-    return (string) ($require['php'] ?? '^8.1');
+    return (string) ($require['php'] ?? '^8.2');
 }
 
 function pinoox_php_version_ok(?string $minimum = null): bool
@@ -217,7 +217,7 @@ function pinoox_requirement_defaults(): array
     }
 
     return $defaults = [
-        'php' => (string) ($loaded['php'] ?? '8.1.0'),
+        'php' => (string) ($loaded['php'] ?? '8.2.0'),
         'extensions' => is_array($loaded['extensions'] ?? null) ? $loaded['extensions'] : [],
     ];
 }

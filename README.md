@@ -4,7 +4,7 @@
 
 **Build web apps in PHP — one project, many apps, zero clutter.**
 
-Pinoox is an HMVC platform for PHP 8.1+. You install it once, then add **apps** under `apps/` — each app is a small MVC module with its own routes, database, and theme. Perfect when you want structure without carrying a heavy framework everywhere.
+Pinoox is an HMVC platform for PHP 8.2+. You install it once, then add **apps** under `apps/` — each app is a small MVC module with its own routes, database, and theme. Perfect when you want structure without carrying a heavy framework everywhere.
 
 **[Read the documentation →](https://github.com/pinoox/docs)**
 
