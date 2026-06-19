@@ -248,14 +248,18 @@ const canGoNext = computed(() => {
 });
 
 const duplicateRoute = computed(() => {
-    if (!canGoNext.value) {
-        return null;
-    }
-
     const path = normalizePath(params.value.path);
     const oldPath = normalizePath(params.value.oldPath);
 
+    if (isEditingHomeRoute.value && path === '/') {
+        return null;
+    }
+
     if (isEditingRoute.value && path === oldPath) {
+        return null;
+    }
+
+    if (!props.hasSelectApp && !String(params.value.path ?? '').trim()) {
         return null;
     }
 

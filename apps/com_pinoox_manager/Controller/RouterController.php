@@ -109,7 +109,7 @@ class RouterController extends ApiController
             }
         }
 
-        if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
+        if (!$this->isRoutePathAvailable($data['path'], $data['oldPath'] ?? ''))
             return $this->error('setting/router.this_url_exists_before');
 
         if ($isEdit && !empty($data['oldPath']) && $data['oldPath'] !== $data['path']) {
@@ -118,5 +118,22 @@ class RouterController extends ApiController
 
         AppRouter::set($data['path'], $data['packageName']);
         return $this->message($isEdit ? 'manager.edited_successfully' : 'manager.added_successfully');
+    }
+
+    private function isRoutePathAvailable(string $path, string $oldPath): bool
+    {
+        if (!AppRouter::exists($path)) {
+            return true;
+        }
+
+        if ($path === $oldPath) {
+            return true;
+        }
+
+        if ($path === '/' && $oldPath === '') {
+            return true;
+        }
+
+        return false;
     }
 }
