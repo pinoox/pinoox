@@ -24,8 +24,7 @@ class WidgetController extends ApiController
     public function clock()
     {
         $timezone = Date::timezone();
-        $calendar = Date::isJalali() || app()->lang() === 'fa' ? 'jalali' : 'gregorian';
-        $manager = Date::usingCalendar($calendar);
+        $manager = Date::usingCalendar(Date::calendar());
         $instant = Date::now($timezone);
         $timestamp = $instant->getTimestamp();
 
@@ -33,8 +32,8 @@ class WidgetController extends ApiController
             'time' => $timestamp,
             'timestamp' => $timestamp,
             'timezone' => $timezone,
-            'date' => $manager->display('now', 'full', $calendar),
-            'moment' => $manager->display('now', 'time', $calendar),
+            'date' => $manager->display('now', 'full'),
+            'moment' => $manager->display('now', 'time'),
         ];
     }
 

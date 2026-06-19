@@ -18,6 +18,9 @@ return [
     'developer' => 'Pinoox Team',
     'minpin' => 2,
     'lang' => 'fa',
+    'date' => [
+        'calendar' => 'jalali', // jalali | gregorian
+    ],
     'transport' => [
         'user' => 'platform',
     ],
