@@ -1,7 +1,7 @@
 import { ref, watch, provide, inject, computed } from "vue";
 import { useOptionsStore } from "@/stores/modules/options.js";
 
-import { wallpaperUrl } from "@utils/helpers/backgroundHelper.js";
+import { wallpaperUrl, normalizeWallpaperUrl } from "@utils/helpers/backgroundHelper.js";
 
 const WALLPAPER_CACHE_KEY = 'manager_wallpaper_url';
 
@@ -80,7 +80,7 @@ export function useBackground() {
 
     const syncBackground = () => {
 
-        const url = optionsStore.backgroundUrl || readCachedWallpaper() || null;
+        const url = normalizeWallpaperUrl(optionsStore.backgroundUrl || readCachedWallpaper() || null);
 
         selectedBackground.value = url;
 
