@@ -25,18 +25,41 @@ class RouterController extends ApiController
 {
     public function getAll()
     {
+        $routeMap = AppRouter::routes();
+        $routes = [];
 
-        $routes = AppRouter::get();
-        if (!empty($routes)) {
-            foreach ($routes as $path => $packageName) {
-                $routes[$path] = [
-                    'path' => $path,
-                    'package' => $packageName,
-                    'is_lock' => ($path === '/manager'),
-                ];
-            }
+        foreach ($routeMap as $path => $packageName) {
+            $routes[$path] = $this->formatRouteEntry($path, $packageName);
         }
+
+        if (!isset($routes['/'])) {
+            $routes['/'] = $this->formatRouteEntry(
+                '/',
+                AppRouter::find('/')->getPackageName(),
+                isImplicit: true,
+            );
+        }
+
         return $routes;
+    }
+
+    /**
+     * @return array{path: string, package: string, is_lock: bool, is_home: bool, is_implicit?: bool}
+     */
+    private function formatRouteEntry(string $path, string $packageName, bool $isImplicit = false): array
+    {
+        $entry = [
+            'path' => $path,
+            'package' => $packageName,
+            'is_lock' => $path === '/manager',
+            'is_home' => $path === '/',
+        ];
+
+        if ($isImplicit) {
+            $entry['is_implicit'] = true;
+        }
+
+        return $entry;
     }
 
     public function remove(Request $request)
@@ -89,9 +112,10 @@ class RouterController extends ApiController
         if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
             return $this->error('setting/router.this_url_exists_before');
 
-        if ($isEdit) {
+        if ($isEdit && !empty($data['oldPath']) && $data['oldPath'] !== $data['path']) {
             AppRouter::delete($data['oldPath']);
         }
+
         AppRouter::set($data['path'], $data['packageName']);
         return $this->message($isEdit ? 'manager.edited_successfully' : 'manager.added_successfully');
     }

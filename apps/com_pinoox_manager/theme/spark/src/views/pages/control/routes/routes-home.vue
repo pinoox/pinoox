@@ -1,6 +1,7 @@
 <template>
   <Page title="مسیریابی" class="pageRoutes">
     <template #toolbar>
+      <Menu @click="openHomeAppModal()" :icon="saxIcon.home" label="صفحه اصلی"/>
       <Menu @click="openModalAddEditRoute()" :icon="saxIcon.add" label="افزودن"/>
       <Menu @click="openGuideModal" :icon="saxIcon.guide" label="راهنما"/>
     </template>
@@ -310,11 +311,24 @@ function openModalAddEditRoute(route = null) {
   }
 }
 
+function openHomeAppModal() {
+  openModalEditApp(homeRoute.value);
+}
+
 function openModalEditApp(route = null) {
   openModal(ModalAddEditRoute, {props: {payload: route, hasSelectApp: true}}).then(() => {
   }).catch(() => {
   });
 }
+
+const homeRoute = computed(() => {
+  return routeStore.fetchRouteByPath('/') ?? {
+    path: '/',
+    package: null,
+    is_home: true,
+    is_implicit: true,
+  };
+});
 
 function openRouteEditor(route) {
   if (isDefaultRoute(route)) {

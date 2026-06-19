@@ -32,10 +32,16 @@ export const useRouteStore = defineStore('route', {
             this.routes = routes;
         },
         saveRoute(path, packageName, oldPath) {
-            this.deleteRouteByPath(oldPath);
+            if (oldPath) {
+                this.deleteRouteByPath(oldPath);
+            }
+
             this.addRoute(path, {
                 path: path,
                 package: packageName,
+                is_home: path === '/',
+                is_implicit: false,
+                is_lock: path === '/manager',
             });
         },
         addRoute(path, routeData) {

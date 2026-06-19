@@ -190,6 +190,8 @@ const isDone = ref(false);
 
 const isEditingRoute = computed(() => Boolean(props.payload?.path) && !props.hasSelectApp);
 
+const isEditingHomeRoute = computed(() => props.hasSelectApp || props.payload?.path === '/');
+
 const selectedApp = computed(() => appStore.fetchAppByPackage(params.value.packageName));
 
 const selectedAppLabel = computed(() => resolveAppDisplayLabel(selectedApp.value, params.value.packageName));
@@ -199,7 +201,7 @@ const filteredApps = computed(() => {
     const editingPackage = props.payload?.package ?? null;
 
     return appStore.fetchAppsLikeName(searchQuery.value).filter((app) => {
-        if (isEditingRoute.value && app.package_name === editingPackage) {
+        if ((isEditingRoute.value || isEditingHomeRoute.value) && app.package_name === editingPackage) {
             return true;
         }
 
@@ -208,7 +210,9 @@ const filteredApps = computed(() => {
 });
 
 function isAppSelectable(app) {
-    if (isEditingRoute.value && app.package_name === (props.payload?.package ?? params.value.packageName)) {
+    const activePackage = props.payload?.package ?? params.value.packageName;
+
+    if ((isEditingRoute.value || isEditingHomeRoute.value) && app.package_name === activePackage) {
         return true;
     }
 
@@ -319,10 +323,12 @@ const goToPreviousStep = () => {
 };
 
 const resetForm = (data = null) => {
+    const homePath = data?.path === '/' ? '/' : (data?.path ?? '');
+
     params.value = {
-        path: data?.path ?? '',
+        path: homePath,
         packageName: data?.package ?? null,
-        oldPath: data?.path ?? '',
+        oldPath: data?.is_implicit ? '' : homePath,
     };
     searchQuery.value = '';
     isSaving.value = false;
