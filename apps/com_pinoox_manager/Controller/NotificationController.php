@@ -24,7 +24,7 @@ class NotificationController extends ApiController
     {
         $result = NotificationHelper::getAll();
         $result = array_map(function ($ntf) {
-            $ntf['insert_jDate'] = Date::jalali($ntf['insert_date'])->format('d F Y');
+            $ntf['insert_jDate'] = Date::usingCalendar('jalali')->smart($ntf['insert_date'], 'd F Y');
             return $ntf;
         }, $result);
 

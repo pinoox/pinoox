@@ -24,25 +24,17 @@ class WidgetController extends ApiController
     public function clock()
     {
         $timezone = Date::timezone();
-        $isFa = Date::isJalali() || app()->lang() === 'fa';
+        $calendar = Date::isJalali() || app()->lang() === 'fa' ? 'jalali' : 'gregorian';
+        $manager = Date::usingCalendar($calendar);
         $instant = Date::now($timezone);
         $timestamp = $instant->getTimestamp();
-
-        if ($isFa) {
-            $now = Date::jalali('now', $timezone);
-            $date = $now->format('%A %d %B %Y');
-            $moment = $now->format('H:i');
-        } else {
-            $date = $instant->format('l d F Y');
-            $moment = $instant->format('H:i');
-        }
 
         return [
             'time' => $timestamp,
             'timestamp' => $timestamp,
             'timezone' => $timezone,
-            'date' => $date,
-            'moment' => $moment,
+            'date' => $manager->display('now', 'full', $calendar),
+            'moment' => $manager->display('now', 'time', $calendar),
         ];
     }
 

@@ -7,10 +7,6 @@
             "email": "dev@pinoox.com"
         }
     ],
-    "require": {
-        "morilog/jalali": "^v3.4.1",
-        "nesbot/carbon": "^2.73"
-    },
     "config": {
         "sort-packages": true
     }
