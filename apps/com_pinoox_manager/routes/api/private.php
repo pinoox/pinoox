@@ -227,6 +227,13 @@ return [
     ],
     [
         'method' => 'GET',
+        'uri' => '/app/packageMeta/{filename}',
+        'action' => [AppController::class, 'packageMeta'],
+        'name' => 'app.packageMeta.filename',
+        'flow' => ['manager.auth'],
+    ],
+    [
+        'method' => 'GET',
         'uri' => '/app/installPackage/{filename}',
         'action' => [AppController::class, 'installPackage'],
         'name' => 'app.installPackage.filename',

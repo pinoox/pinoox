@@ -34,20 +34,16 @@
 <script setup>
 import {useRouter} from "vue-router";
 import {saxIcon} from "@/const/icons.js";
-import {openModal} from "@kolirt/vue-modal";
-import ModalInstallApp from "@views/pages/control/apps/modal-install-app.vue";
+import {usePackageInstallerStore} from "@/stores/modules/packageInstaller.js";
 import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
-import {useGlobalRouter} from "@/views/composables/useGlobalRouter.js";
-
 const router = useRouter();
 const globalRouter = useGlobalRouter();
 const appStore = useAppStore();
+const packageInstallerStore = usePackageInstallerStore();
 
 function openModalInstallApp() {
-  openModal(ModalInstallApp, {props: {}}).then(() => {
-    appStore.getApps();
-  }).catch(() => {});
+  packageInstallerStore.show();
 }
 
 function openApp(app) {

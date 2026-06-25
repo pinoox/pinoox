@@ -18,7 +18,7 @@
     <template v-else-if="authStore.isAuth">
         <Transition name="manager-boot-fade" mode="out-in">
             <ManagerBootLoading v-if="isBooting" key="boot"/>
-            <div v-else key="desktop" :style="bgStyle" class="w-full h-screen bg-cover bg-center">
+            <div v-else key="desktop" :style="bgStyle" class="w-full h-screen bg-cover bg-center" @dragover.prevent @drop="onDropPackage">
                 <Toolbar v-if="hasToolbar"/>
                 <RouterView v-slot="{ Component, route }">
                     <KeepAlive include="DesktopView">
@@ -26,6 +26,7 @@
                     </KeepAlive>
                 </RouterView>
                 <Dockbar v-if="showDockBar" :apps="dockApps"/>
+                <PackageInstallerFloater/>
                 <AppViewAdvanced v-if="isAdvancedAppView"/>
                 <ControlPanelAdvanced v-if="isAdvancedAppView"/>
             </div>
@@ -68,6 +69,7 @@ import {useRouteStore} from "@/stores/modules/route.js";
 import {useOptionsStore} from "@/stores/modules/options.js";
 import {useDockApps} from "@/views/composables/useDockApps.js";
 import Dockbar from "@/views/components/widgets/Dockbar.vue";
+import PackageInstallerFloater from "@/views/components/widgets/PackageInstallerFloater.vue";
 import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
 import ControlPanelAdvanced from "@/views/pages/control/ControlPanelAdvanced.vue";
 import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
@@ -77,6 +79,7 @@ import {isControlRoute} from "@/views/composables/useControlPanel.js";
 import PageDesktop from "@/views/pages/desktop/desktop-view.vue";
 import {pushSystemNotifications} from "@/views/composables/useSystemNotifications.js";
 import {useNotificationStore} from "@/stores/modules/notification.js";
+import {usePackageInstaller} from "@/views/composables/usePackageInstaller.js";
 
 
 
@@ -93,7 +96,19 @@ const routeStore = useRouteStore();
 const optionsStore = useOptionsStore();
 const { dockApps } = useDockApps();
 const {isAdvanced: isAdvancedAppView} = useAppViewMode();
+const {openInstaller} = usePackageInstaller();
 const isBooting = ref(false);
+
+function onDropPackage(event) {
+    const file = event.dataTransfer?.files?.[0];
+
+    if (!file || !String(file.name).toLowerCase().endsWith('.pinx')) {
+        return;
+    }
+
+    event.preventDefault();
+    openInstaller(file);
+}
 
 function resolveMainComponent(Component, route) {
     if (isAdvancedAppView.value && isControlRoute(route)) {

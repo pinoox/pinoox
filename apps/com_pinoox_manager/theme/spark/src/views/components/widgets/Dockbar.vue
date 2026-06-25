@@ -127,6 +127,10 @@
                   />
                   <span class="dockbar__start-user-name">{{ userLabel }}</span>
                 </button>
+                <button type="button" class="dockbar__start-foot-btn" @click="openPackageInstaller">
+                  <Icon :is="saxIcon.upload" size="sm"/>
+                  <span>نصب بسته</span>
+                </button>
                 <button type="button" class="dockbar__start-foot-btn" @click="openControlPanelFromMenu">
                   <Icon :is="saxIcon.control" size="sm"/>
                   <span>کنترل پنل</span>
@@ -287,6 +291,7 @@ import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
 import { userAvatarSrc, userDisplayName } from '@utils/helpers/userAvatar.js';
 import { saxIcon } from '@/const/icons.js';
+import { usePackageInstallerStore } from '@/stores/modules/packageInstaller.js';
 
 const props = defineProps({
   size: { type: Number, default: 52 },
@@ -323,6 +328,7 @@ const { openControlPanel } = useControlPanel();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
+const packageInstallerStore = usePackageInstallerStore();
 
 const dockAppsWithMinimized = computed(() => {
   const list = [...props.apps];
@@ -584,6 +590,11 @@ function toggleAppsPanel() {
 function openAppFromPanel(app) {
   closeAppsPanel();
   router.push(resolveAppRoute(app));
+}
+
+function openPackageInstaller() {
+  closeAppsPanel();
+  packageInstallerStore.show();
 }
 
 function openControlPanelFromMenu() {

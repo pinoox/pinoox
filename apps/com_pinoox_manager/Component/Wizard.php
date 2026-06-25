@@ -245,6 +245,51 @@ class Wizard
         return $meta;
     }
 
+    public static function installFromManual(string $pinxFile): bool
+    {
+        try {
+            $meta = self::pullPackageMeta($pinxFile);
+
+            if ($meta['type'] === 'theme') {
+                if (!self::isValidNamePackage($meta['app'])) {
+                    self::$message = t('manager.request_install_app_not_valid');
+
+                    return false;
+                }
+
+                if (!self::installTemplate($pinxFile, $meta['app'], $meta)) {
+                    return false;
+                }
+
+                self::deletePackageFile($pinxFile);
+
+                return true;
+            }
+
+            if (!self::isValidNamePackage($meta['package_name'])) {
+                self::$message = t('manager.request_install_app_not_valid');
+
+                return false;
+            }
+
+            if (($meta['install_mode'] ?? 'install') === 'update') {
+                return self::updateApp($pinxFile);
+            }
+
+            if (!self::runInstall($pinxFile)) {
+                return false;
+            }
+
+            self::deletePackageFile($pinxFile);
+
+            return true;
+        } catch (\Throwable $e) {
+            self::$message = $e->getMessage();
+
+            return false;
+        }
+    }
+
     public static function pullPackageMeta(string $pinxFile): array
     {
         $manifest = Pinx::manifest($pinxFile);
@@ -307,8 +352,11 @@ class Wizard
      */
     private static function buildThemeMeta(string $pinxFile, PinxManifest $manifest): array
     {
+        $installMode = self::isInstalledTemplate($manifest->targetApp(), $manifest->themeName()) ? 'update' : 'install';
+
         return [
             'type' => 'theme',
+            'install_mode' => $installMode,
             'filename' => File::fullname($pinxFile),
             'template_name' => $manifest->name(),
             'app' => $manifest->targetApp(),

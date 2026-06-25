@@ -20,6 +20,10 @@
             <strong>{{ file.name || file.package_name }}</strong>
             <span class="block text-sm opacity-70">{{ file.filename }}</span>
           </div>
+          <div v-if="file.install_mode" class="text-xs opacity-60 mt-1">
+            {{ file.type === 'theme' ? 'قالب' : 'اپ' }} ·
+            {{ file.install_mode === 'update' ? 'بروزرسانی' : 'نصب' }}
+          </div>
           <div class="flex gap-2">
             <Button label="نصب" variant="primary" size="sm" @click="installFile(file)"/>
             <Button label="حذف" variant="dark" outline size="sm" @click="deleteFile(file)"/>
@@ -33,11 +37,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { appAPI } from "@api/app.js";
-import { useAppStore } from "@/stores/modules/app.js";
 import { uploadPackageFile } from "@utils/pinion.js";
+import { usePackageInstaller } from "@/views/composables/usePackageInstaller.js";
 import { toast } from "@global";
 
 const appStore = useAppStore();
+const { previewStagedFile } = usePackageInstaller();
 const files = ref([]);
 const selectedFiles = ref([]);
 const isUploading = ref(false);
@@ -82,9 +87,7 @@ const uploadFiles = async () => {
 };
 
 const installFile = async (file) => {
-  await appAPI.installPackage(file.filename);
-  await appStore.getApps();
-  await loadFiles();
+  await previewStagedFile(file.filename);
 };
 
 const deleteFile = async (file) => {

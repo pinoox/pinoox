@@ -111,6 +111,32 @@ export function shouldUsePinion(file, threshold = PINION_THRESHOLD) {
     return file instanceof File && file.size > threshold;
 }
 
+export function resolveUploadedFilename(result, fallbackFile) {
+    if (!result) {
+        return fallbackFile?.name ?? null;
+    }
+
+    const session = result.session ?? result;
+
+    if (result.filename) {
+        return result.filename;
+    }
+
+    if (session?.filename) {
+        return session.filename;
+    }
+
+    const pathValue = result.path ?? session?.path ?? '';
+
+    if (pathValue) {
+        const parts = String(pathValue).split(/[/\\]/);
+
+        return parts[parts.length - 1] || fallbackFile?.name || null;
+    }
+
+    return fallbackFile?.name ?? null;
+}
+
 export async function uploadPackageFile(file, options = {}) {
     if (shouldUsePinion(file)) {
         return uploadWithPinion(file, options);

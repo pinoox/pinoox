@@ -20,7 +20,6 @@ use Pinoox\Component\File as FileHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\Pinx;
 
 class AppController extends ApiController
 {
@@ -94,36 +93,28 @@ class AppController extends ApiController
             ],
         ]);
 
-        $result = File::upload('file')
-            ->to('uploads/apps')
-            ->diskOnly()
-            ->save();
+        $path = path(self::manualPath);
+        if (!is_dir($path)) {
+            mkdir($path, 0755, true);
+        }
 
-        if (!$result->success || empty($result->path)) {
+        $upload = $request->files->get('file');
+        $filename = $upload->getClientOriginalName();
+        $upload->move($path, $filename);
+
+        $pinxFile = path(self::manualPath . $filename);
+
+        if (Wizard::installFromManual($pinxFile)) {
+            return $this->message('manager.installed_successfully');
+        }
+
+        $message = Wizard::getMessage();
+
+        if (empty($message)) {
             return $this->error('manager.error_happened');
         }
 
-        $pinx = $result->path;
-
-        try {
-            $manifest = Pinx::manifest($pinx);
-
-            if (AppEngine::exists($manifest->package())) {
-                return $this->error('manager.currently_installed');
-            }
-
-            $installResult = Pinx::install($pinx);
-
-            if (!$installResult->success) {
-                return $this->error($installResult->message);
-            }
-
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage());
-        }
-
-        return $this->message('manager.installed_successfully');
-
+        return $this->deny($message);
     }
 
     public function getAll(Request $request)
@@ -145,11 +136,12 @@ class AppController extends ApiController
         if (empty($filename))
             return $this->deny('manager.request_install_app_not_valid');
 
+        $filename = basename($filename);
         $pinxFile = path(self::manualPath . $filename);
         if (!is_file($pinxFile))
             return $this->deny('manager.request_install_app_not_valid');
 
-        if (Wizard::installApp($pinxFile)) {
+        if (Wizard::installFromManual($pinxFile)) {
             return $this->message('manager.installed_successfully');
         }
 
@@ -159,6 +151,24 @@ class AppController extends ApiController
             return $this->deny('manager.request_install_app_not_valid');
 
         return $this->deny($message);
+    }
+
+    public function packageMeta($filename)
+    {
+        if (empty($filename))
+            return $this->deny('manager.error_happened');
+
+        $filename = basename($filename);
+        $pinxFile = path(self::manualPath . $filename);
+
+        if (!is_file($pinxFile))
+            return $this->deny('manager.error_happened');
+
+        try {
+            return Wizard::pullPackageMeta($pinxFile);
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage());
+        }
     }
 
     public function files()
