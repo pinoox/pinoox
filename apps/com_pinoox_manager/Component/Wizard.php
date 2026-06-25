@@ -13,6 +13,7 @@
 
 namespace App\com_pinoox_manager\Component;
 
+use App\com_pinoox_manager\Component\PackagePaths;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
@@ -374,11 +375,11 @@ class Wizard
 
     private static function appDownloadPath(string $package_name): string
     {
-        return path('downloads/apps/' . $package_name . self::PACKAGE_EXT);
+        return path(PackagePaths::APPS . $package_name . self::PACKAGE_EXT);
     }
 
     private static function templateDownloadPath(string $uid): string
     {
-        return path('downloads/templates/' . $uid . self::PACKAGE_EXT);
+        return path(PackagePaths::TEMPLATES . $uid . self::PACKAGE_EXT);
     }
 }

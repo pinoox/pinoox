@@ -13,6 +13,7 @@
 
 namespace App\com_pinoox_manager\Controller;
 
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\File;
 use Pinoox\Component\Template\Theme\ThemeManifest;
@@ -23,8 +24,6 @@ use Pinoox\Portal\Url;
 
 class TemplateController extends ApiController
 {
-    const manualPath = 'downloads/packages/manual/';
-
     public function get($packageName)
     {
         $themePath = path('~apps/' . $packageName . '/theme/');
@@ -82,7 +81,7 @@ class TemplateController extends ApiController
         if (empty($filename))
             return $this->deny('manager.request_install_template_not_valid');
 
-        $pinFile = path(self::manualPath . $filename);
+        $pinFile = PackagePaths::manualFile($filename);
         if (!is_file($pinFile))
             return $this->deny('manager.request_install_template_not_valid');
 

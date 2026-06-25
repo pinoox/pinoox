@@ -13,6 +13,7 @@
 
 namespace App\com_pinoox_manager\Controller;
 
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Http;
 use Pinoox\Component\Http\Request;
@@ -106,7 +107,7 @@ class MarketController extends ApiController
         if (empty($data['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/apps/' . $package_name . '.pinx');
+        $path = path(PackagePaths::APPS . $package_name . '.pinx');
         if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash'], $path)) {
             Config::name('market')->set($package_name, $data['result'])->save();
 
@@ -165,7 +166,7 @@ class MarketController extends ApiController
         if (empty($result['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/templates/' . $uid . '.pinx');
+        $path = path(PackagePaths::TEMPLATES . $uid . '.pinx');
         if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash'], $path)) {
             return $this->message('manager.download_completed');
         }

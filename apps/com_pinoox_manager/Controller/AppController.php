@@ -15,6 +15,7 @@ namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
 use App\com_pinoox_manager\Component\AppIconPack;
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\File as FileHelper;
 use Pinoox\Component\Http\Request;
@@ -23,8 +24,6 @@ use Pinoox\Portal\App\AppEngine;
 
 class AppController extends ApiController
 {
-    const manualPath = 'downloads/packages/manual/';
-
     public function get($filter = null)
     {
         switch ($filter) {
@@ -93,16 +92,13 @@ class AppController extends ApiController
             ],
         ]);
 
-        $path = path(self::manualPath);
-        if (!is_dir($path)) {
-            mkdir($path, 0755, true);
-        }
+        PackagePaths::ensureManualDir();
 
         $upload = $request->files->get('file');
         $filename = $upload->getClientOriginalName();
-        $upload->move($path, $filename);
+        $upload->move(PackagePaths::manualDir(), $filename);
 
-        $pinxFile = path(self::manualPath . $filename);
+        $pinxFile = PackagePaths::manualFile($filename);
 
         if (Wizard::installFromManual($pinxFile)) {
             return $this->message('manager.installed_successfully');
@@ -137,7 +133,7 @@ class AppController extends ApiController
             return $this->deny('manager.request_install_app_not_valid');
 
         $filename = basename($filename);
-        $pinxFile = path(self::manualPath . $filename);
+        $pinxFile = PackagePaths::manualFile($filename);
         if (!is_file($pinxFile))
             return $this->deny('manager.request_install_app_not_valid');
 
@@ -159,7 +155,7 @@ class AppController extends ApiController
             return $this->deny('manager.error_happened');
 
         $filename = basename($filename);
-        $pinxFile = path(self::manualPath . $filename);
+        $pinxFile = PackagePaths::manualFile($filename);
 
         if (!is_file($pinxFile))
             return $this->deny('manager.error_happened');
@@ -173,7 +169,7 @@ class AppController extends ApiController
 
     public function files()
     {
-        $path = path(self::manualPath);
+        $path = PackagePaths::manualDir();
         if (!is_dir($path))
             return [];
 
@@ -209,7 +205,7 @@ class AppController extends ApiController
         if (empty($filename))
             return $this->deny('manager.error_happened');
 
-        $pinxFile = path(self::manualPath . $filename);
+        $pinxFile = PackagePaths::manualFile($filename);
         if (!is_file($pinxFile))
             return $this->deny('manager.error_happened');
 
@@ -223,9 +219,7 @@ class AppController extends ApiController
         if (!$request->files->has('files'))
             return $this->deny('manager.invalid_request');
 
-        $path = path(self::manualPath);
-        if (!is_dir($path))
-            mkdir($path, 0755, true);
+        $path = PackagePaths::ensureManualDir();
 
         $files = $request->files->all('files');
         if (!is_array($files))
