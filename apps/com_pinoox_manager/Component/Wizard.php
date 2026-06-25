@@ -296,20 +296,24 @@ class Wizard
     private static function buildAppMeta(string $pinxFile, PinxManifest $manifest): array
     {
         $locale = Lang::locale();
+        $installMode = AppEngine::exists($manifest->package()) ? 'update' : 'install';
 
         return [
             'type' => 'app',
+            'install_mode' => $installMode,
             'filename' => File::fullname($pinxFile),
             'package_name' => $manifest->package(),
             'package' => $manifest->package(),
             'app' => $manifest->package(),
-            'name' => $manifest->title($locale),
-            'description' => $manifest->description($locale),
+            'name' => $manifest->name(),
+            'description' => $manifest->description(),
             'version' => $manifest->versionName(),
             'version-code' => $manifest->versionCode(),
             'version_code' => $manifest->versionCode(),
             'developer' => $manifest->developer(),
-            'path_icon' => 'icon.png',
+            'path_icon' => $manifest->icon() ?: 'icon.png',
+            'icon_entry' => $manifest->iconEntry(),
+            'has_icon' => $manifest->hasIcon(),
             'icon' => Url::asset('resources/default.png'),
             'size' => File::print_size(File::size($pinxFile), 1),
         ];
@@ -320,16 +324,14 @@ class Wizard
      */
     private static function buildThemeMeta(string $pinxFile, PinxManifest $manifest): array
     {
-        $locale = Lang::locale();
-
         return [
             'type' => 'theme',
             'filename' => File::fullname($pinxFile),
-            'template_name' => $manifest->title($locale),
+            'template_name' => $manifest->name(),
             'app' => $manifest->targetApp(),
             'name' => $manifest->themeName(),
-            'title' => $manifest->title($locale),
-            'description' => $manifest->description($locale),
+            'title' => $manifest->name(),
+            'description' => $manifest->description(),
             'version' => $manifest->versionName(),
             'version-code' => $manifest->versionCode(),
             'developer' => $manifest->developer(),
