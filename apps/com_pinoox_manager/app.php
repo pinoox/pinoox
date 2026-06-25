@@ -13,8 +13,8 @@ return [
     'title' => '@manifest.title',
     'description' => '@manifest.description',
     'icon' => '@layout-dashboard',
-    'version-name' => '2.3.3',
-    'version-code' => 14,
+    'version-name' => '2.3.4',
+    'version-code' => 15,
     'developer' => 'Pinoox Team',
     'minpin' => 2,
     'lang' => 'fa',
@@ -35,9 +35,9 @@ return [
         'lifetime_unit' => 'day',
     ],
     'access' => [
+        'super_roles' => ['admin'],
         'groups' => [
             'admin' => ['*'],
-            'manager' => ['manager.*'],
         ],
     ],
     'flow' => [
