@@ -37,6 +37,8 @@ import {saxIcon} from "@/const/icons.js";
 import {usePackageInstallerStore} from "@/stores/modules/packageInstaller.js";
 import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
+import {useGlobalRouter} from "@/views/composables/useGlobalRouter.js";
+
 const router = useRouter();
 const globalRouter = useGlobalRouter();
 const appStore = useAppStore();
