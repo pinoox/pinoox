@@ -18,11 +18,9 @@ use App\com_pinoox_manager\Component\AppIconPack;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\ApiController;
-use Pinoox\Component\Package\Pinx\PinxInstaller;
-use Pinoox\Component\Package\Pinx\PinxReader;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\File;
-use Pinoox\Support\SystemConfig;
+use Pinoox\Portal\Pinx;
 
 class AppController extends ApiController
 {
@@ -108,17 +106,13 @@ class AppController extends ApiController
         $pinx = $result->path;
 
         try {
-            $reader = new PinxReader();
-            $reader->open($pinx);
-            $manifest = $reader->manifest();
-            $reader->close();
+            $manifest = Pinx::manifest($pinx);
 
             if (AppEngine::exists($manifest->package())) {
                 return $this->error('manager.currently_installed');
             }
 
-            $installer = new PinxInstaller(AppEngine::___(), SystemConfig::path('wizard_tmp'));
-            $installResult = $installer->install($pinx);
+            $installResult = Pinx::install($pinx);
 
             if (!$installResult->success) {
                 return $this->error($installResult->message);

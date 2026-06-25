@@ -13,18 +13,15 @@
 
 namespace App\com_pinoox_manager\Component;
 
-use Pinoox\Component\Package\Pinx\PinxInstaller;
 use Pinoox\Component\Package\Pinx\PinxManifest;
-use Pinoox\Component\Package\Pinx\PinxReader;
-use Pinoox\Component\Package\Pinx\PinxUninstaller;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
 use Pinoox\Component\File;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Portal\Lang;
+use Pinoox\Portal\Pinx;
 use Pinoox\Portal\Url;
 use Pinoox\Portal\Zip;
-use Pinoox\Support\SystemConfig;
 
 class Wizard
 {
@@ -124,7 +121,7 @@ class Wizard
 
     public static function deleteApp($packageName)
     {
-        $result = (new PinxUninstaller(AppEngine::___()))->uninstallApp($packageName);
+        $result = Pinx::uninstallApp($packageName);
 
         if (!$result->success) {
             self::$message = $result->message;
@@ -204,10 +201,7 @@ class Wizard
     public static function installTemplate(string $file, string $packageName, $meta = null): bool
     {
         try {
-            $reader = new PinxReader();
-            $reader->open($file);
-            $manifest = $reader->manifest();
-            $reader->close();
+            $manifest = Pinx::manifest($file);
 
             if (!$manifest->isTheme()) {
                 self::$message = 'Package is not a theme.';
@@ -253,27 +247,19 @@ class Wizard
 
     public static function pullPackageMeta(string $pinxFile): array
     {
-        $reader = new PinxReader();
+        $manifest = Pinx::manifest($pinxFile);
 
-        try {
-            $reader->open($pinxFile);
-            $manifest = $reader->manifest();
-
-            if ($manifest->isTheme()) {
-                return self::buildThemeMeta($pinxFile, $manifest);
-            }
-
-            return self::buildAppMeta($pinxFile, $manifest);
-        } finally {
-            $reader->close();
+        if ($manifest->isTheme()) {
+            return self::buildThemeMeta($pinxFile, $manifest);
         }
+
+        return self::buildAppMeta($pinxFile, $manifest);
     }
 
     private static function runInstall(string $pinxFile, array $options = []): bool
     {
         try {
-            $installer = new PinxInstaller(AppEngine::___(), SystemConfig::path('wizard_tmp'));
-            $result = $installer->install($pinxFile, $options);
+            $result = Pinx::install($pinxFile, $options);
 
             if (!$result->success) {
                 self::$message = $result->message;
