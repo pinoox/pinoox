@@ -37,18 +37,20 @@ import {saxIcon} from "@/const/icons.js";
 import {usePackageInstallerStore} from "@/stores/modules/packageInstaller.js";
 import {appIconProps} from "@utils/helpers/appIconProps.js";
 import {useAppStore} from "@/stores/modules/app.js";
+import {useControlPanelNavigation} from "@/views/composables/useControlPanelNavigation.js";
 import {useGlobalRouter} from "@/views/composables/useGlobalRouter.js";
 
 const router = useRouter();
 const globalRouter = useGlobalRouter();
 const appStore = useAppStore();
 const packageInstallerStore = usePackageInstallerStore();
+const {pushAppManager} = useControlPanelNavigation();
 
 function openModalInstallApp() {
   packageInstallerStore.show();
 }
 
 function openApp(app) {
-  globalRouter.push(`/app-manager/${app.package_name}/config`);
+  pushAppManager(app.package_name, 'config');
 }
 </script>

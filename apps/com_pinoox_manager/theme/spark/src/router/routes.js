@@ -6,12 +6,6 @@ import ControlPanelView from '@/views/pages/control/control-panel-view.vue';
 import {createControlPanelChildRoutes} from '@/router/controlPanelRoutes.js';
 import PageAppView from '@/views/pages/app-view/app-view.vue';
 
-import AppManagerView from '@/views/pages/app-manager/app-manager-view.vue';
-import AppDetails from '@/views/pages/app-manager/app-details.vue';
-import AppConfig from '@/views/pages/app-manager/app-config.vue';
-import AppUsers from '@/views/pages/app-manager/app-users.vue';
-import AppTemplates from '@/views/pages/app-manager/app-templates.vue';
-
 import MarketHome from '@/views/pages/market/market-home.vue';
 
 export const routes = [
@@ -43,39 +37,12 @@ export const routes = [
         children: createControlPanelChildRoutes(),
     },
     {
-        path: '/app-manager/:package_name',
-        component: AppManagerView,
-        props: true,
-        children: [
-            {
-                path: 'details',
-                name: 'app-details',
-                component: AppDetails,
-                props: true,
-            },
-            {
-                path: 'config',
-                name: 'app-config',
-                component: AppConfig,
-                props: true,
-            },
-            {
-                path: 'users',
-                name: 'app-users',
-                component: AppUsers,
-                props: true,
-            },
-            {
-                path: 'templates',
-                name: 'app-templates',
-                component: AppTemplates,
-                props: true,
-            },
-            {
-                path: '',
-                redirect: to => ({ name: 'app-details', params: to.params }),
-            },
-        ],
+        path: '/app-manager/:package_name/:section?',
+        redirect: (to) => {
+            const section = to.params.section || 'details';
+
+            return `/control/apps/${to.params.package_name}/${section}`;
+        },
     },
     {
         path: '/market',
@@ -87,7 +54,7 @@ export const routes = [
     },
     {
         path: '/market/:package_name',
-        redirect: { name: 'market-home' },
+        redirect: {name: 'market-home'},
     },
     {
         path: '/login',

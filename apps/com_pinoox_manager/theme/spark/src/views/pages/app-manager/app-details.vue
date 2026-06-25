@@ -81,12 +81,12 @@
 
 <script setup>
 import {computed} from 'vue';
-import {useRouter} from 'vue-router';
 import {openModal} from '@kolirt/vue-modal';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
 import {resolveRouterMode} from '@utils/helpers/appRoutePolicy.js';
 import {useGlobalRouter} from '@/views/composables/useGlobalRouter.js';
+import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 import {translate} from '@utils/helpers/managerLang.js';
 import {toastSuccess} from '@utils/helpers/toastHelper.js';
 import ModalUninstallApp from '@/views/pages/app-manager/modal-uninstall-app.vue';
@@ -102,8 +102,8 @@ const props = defineProps({
   },
 });
 
-const router = useRouter();
 const globalRouter = useGlobalRouter();
+const {pushAppManager, pushControlPath} = useControlPanelNavigation();
 
 const isSystemApp = computed(() => !!(props.app?.sys_app ?? props.app?.['sys-app']));
 
@@ -155,11 +155,11 @@ function openApp() {
 }
 
 function goConfig() {
-  router.push(`/app-manager/${props.packageName}/config`);
+  pushAppManager(props.packageName, 'config');
 }
 
 function goTemplates() {
-  router.push(`/app-manager/${props.packageName}/templates`);
+  pushAppManager(props.packageName, 'templates');
 }
 
 function openUninstallModal() {
@@ -171,7 +171,7 @@ function openUninstallModal() {
   }).then((result) => {
     if (result?.uninstalled) {
       toastSuccess(translate('delete_successfully'));
-      router.push('/control/apps');
+      pushControlPath('/control/apps');
     }
   }).catch(() => {});
 }

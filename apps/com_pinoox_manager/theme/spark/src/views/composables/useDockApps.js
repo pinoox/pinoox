@@ -2,6 +2,7 @@ import { computed } from 'vue';
 import { useAppStore } from '@/stores/modules/app.js';
 import { useOptionsStore } from '@/stores/modules/options.js';
 import { saxIcon } from '@/const/icons.js';
+import { controlPanelAppPath } from '@/router/controlPanelPaths.js';
 
 import { PINOOX_ICON_GRADIENT } from '@/const/pinooxBrand.js';
 
@@ -13,14 +14,14 @@ export const systemDockApps = [
 
 export function resolveAppRoute(app) {
     if (app.open === 'app-users')
-        return `/app-manager/${app.package_name}/users`;
+        return controlPanelAppPath(app.package_name, 'users');
     if (app.open === 'app-config')
-        return `/app-manager/${app.package_name}/config`;
+        return controlPanelAppPath(app.package_name, 'config');
     if (app.open === 'app-view')
         return { name: 'app-view', params: { package_name: app.package_name } };
     if (app.open)
         return { name: app.open, params: { package_name: app.package_name } };
-    return `/app-manager/${app.package_name}/details`;
+    return controlPanelAppPath(app.package_name, 'details');
 }
 
 function mapAppToDockItem(app) {

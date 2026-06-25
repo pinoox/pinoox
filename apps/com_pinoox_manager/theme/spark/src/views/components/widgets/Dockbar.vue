@@ -557,6 +557,16 @@ function open(item) {
     return;
   }
 
+  if (typeof item.route === 'object') {
+    router.push(item.route);
+    return;
+  }
+
+  if (String(item.route).startsWith('/control')) {
+    openControlPanel(item.route);
+    return;
+  }
+
   router.push(item.route);
 }
 

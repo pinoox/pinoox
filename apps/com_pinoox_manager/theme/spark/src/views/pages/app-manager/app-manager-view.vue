@@ -1,7 +1,7 @@
 <template>
   <Page :title="app?.name || 'مدیریت اپ'" class="pageAppManager">
     <template #toolbar>
-      <Menu v-if="app" :icon="saxIcon.back" label="بازگشت" @click="$router.push('/control/apps')"/>
+      <Menu v-if="app" :icon="saxIcon.back" label="بازگشت" @click="pushControlPath('/control/apps')"/>
     </template>
 
     <div v-if="isLoading" class="appManagerLoading">
@@ -49,9 +49,11 @@ import Icon from '@/views/components/widgets/Icon.vue';
 import WidgetLoading from '@/views/components/desktop-widgets/WidgetLoading.vue';
 import {useAppStore} from '@/stores/modules/app.js';
 import {appIconProps} from '@utils/helpers/appIconProps.js';
+import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 
 const route = useRoute();
 const appStore = useAppStore();
+const {pushControlPath, appManagerPath} = useControlPanelNavigation();
 const isLoading = ref(true);
 const packageName = computed(() => route.params.package_name);
 const app = computed(() => appStore.fetchAppByPackage(packageName.value));
@@ -72,16 +74,12 @@ const heroBadges = computed(() => {
   return list;
 });
 
-const navItems = computed(() => {
-  const base = `/app-manager/${packageName.value}`;
-
-  return [
-    {to: `${base}/details`, label: 'جزئیات', icon: saxIcon.guide},
-    {to: `${base}/config`, label: 'تنظیمات', icon: saxIcon.setting},
-    {to: `${base}/users`, label: 'کاربران', icon: saxIcon.user},
-    {to: `${base}/templates`, label: 'قالب‌ها', icon: saxIcon.appearance},
-  ];
-});
+const navItems = computed(() => [
+  {to: appManagerPath(packageName.value, 'details'), label: 'جزئیات', icon: saxIcon.guide},
+  {to: appManagerPath(packageName.value, 'config'), label: 'تنظیمات', icon: saxIcon.setting},
+  {to: appManagerPath(packageName.value, 'users'), label: 'کاربران', icon: saxIcon.user},
+  {to: appManagerPath(packageName.value, 'templates'), label: 'قالب‌ها', icon: saxIcon.appearance},
+]);
 
 onMounted(async () => {
   if (!appStore.isLoaded) {
