@@ -13,12 +13,11 @@
 
 namespace App\com_pinoox_manager\Component;
 
-use Pinoox\Component\Migration\MigrationToolkit;
 use Pinoox\Component\Package\Pinx\PinxInstaller;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Component\Package\Pinx\PinxReader;
+use Pinoox\Component\Package\Pinx\PinxUninstaller;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\App\AppRouter;
 use Pinoox\Portal\Config;
 use Pinoox\Component\File;
 use Pinoox\Portal\FileSystem;
@@ -125,17 +124,15 @@ class Wizard
 
     public static function deleteApp($packageName)
     {
-        $appPath = path('~apps/' . $packageName);
-        File::remove($appPath);
+        $result = (new PinxUninstaller(AppEngine::___()))->uninstallApp($packageName);
 
-        //remove route
-        AppRouter::deletePackage($packageName);
+        if (!$result->success) {
+            self::$message = $result->message;
 
-        //remove database
-        $mig = new MigrationToolkit();
-        $mig->package($packageName)
-            ->action('rollback')
-            ->load();
+            return false;
+        }
+
+        return true;
     }
 
     public static function updateCore($file)
