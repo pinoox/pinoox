@@ -246,7 +246,24 @@ class AppController extends ApiController
         if (empty($packageName))
             return $this->deny('manager.request_not_valid');
 
-        Wizard::deleteApp($packageName);
+        if (!AppEngine::exists($packageName))
+            return $this->deny('manager.request_not_valid');
+
+        $config = AppEngine::config($packageName);
+
+        if ($config->get('sys-app')) {
+            return $this->deny('manager.cannot_delete_system_app');
+        }
+
+        if (!Wizard::deleteApp($packageName)) {
+            $message = Wizard::getMessage();
+
+            if (empty($message)) {
+                return $this->deny('manager.error_happened');
+            }
+
+            return $this->deny($message);
+        }
 
         return $this->message('manager.delete_successfully');
     }

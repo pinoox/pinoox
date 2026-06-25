@@ -14,5 +14,5 @@ export const appAPI = {
     files: () => http.get(`${BASE_URL}/files`, {alert: false}),
     deleteFile: (filename) => http.post(`${BASE_URL}/deleteFile`, {filename}),
     filesUpload: (formData) => http.postForm(`${BASE_URL}/filesUpload`, formData),
-    remove: (packageName) => http.post(`${BASE_URL}/remove/${packageName}`),
+    remove: (packageName, config) => http.post(`${BASE_URL}/remove/${packageName}`, null, config),
 };

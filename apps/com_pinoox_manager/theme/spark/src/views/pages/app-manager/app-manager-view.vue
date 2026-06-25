@@ -4,22 +4,32 @@
       <Menu v-if="app" :icon="saxIcon.back" label="بازگشت" @click="$router.push('/control/apps')"/>
     </template>
 
-    <div v-if="isLoading" class="opacity-70 py-8 text-center">در حال بارگذاری...</div>
+    <div v-if="isLoading" class="appManagerLoading">
+      <WidgetLoading/>
+    </div>
 
     <template v-else-if="app">
-      <div class="mb-6 flex items-center gap-4">
+      <header class="appManagerHero">
         <AppIcon v-bind="appIconProps(app)" size="lg"/>
-        <div>
-          <h2 class="text-xl font-bold">{{ app.name }}</h2>
-          <p class="opacity-70">{{ app.description }}</p>
+        <div class="appManagerHero__text">
+          <h2 class="appManagerHero__title">{{ app.name }}</h2>
+          <span class="appManagerHero__package" dir="ltr">{{ packageName }}</span>
         </div>
-      </div>
+        <div v-if="heroBadges.length" class="appManagerHero__badges">
+          <span v-for="badge in heroBadges" :key="badge" class="appManagerHero__badge">{{ badge }}</span>
+        </div>
+      </header>
 
-      <nav class="app-manager-nav">
-        <router-link :to="`/app-manager/${packageName}/details`">جزئیات</router-link>
-        <router-link :to="`/app-manager/${packageName}/config`">تنظیمات</router-link>
-        <router-link :to="`/app-manager/${packageName}/users`">کاربران</router-link>
-        <router-link :to="`/app-manager/${packageName}/templates`">قالب‌ها</router-link>
+      <nav class="appManagerNav" aria-label="بخش‌های مدیریت اپ">
+        <router-link
+            v-for="item in navItems"
+            :key="item.to"
+            :to="item.to"
+            class="appManagerNav__link"
+        >
+          <Icon :is="item.icon" size="xs"/>
+          <span>{{ item.label }}</span>
+        </router-link>
       </nav>
 
       <RouterView v-slot="{ Component }">
@@ -32,11 +42,13 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
-import { saxIcon } from "@/const/icons.js";
-import { useAppStore } from "@/stores/modules/app.js";
-import { appIconProps } from "@utils/helpers/appIconProps.js";
+import {computed, onMounted, ref} from 'vue';
+import {useRoute} from 'vue-router';
+import {saxIcon} from '@/const/icons.js';
+import Icon from '@/views/components/widgets/Icon.vue';
+import WidgetLoading from '@/views/components/desktop-widgets/WidgetLoading.vue';
+import {useAppStore} from '@/stores/modules/app.js';
+import {appIconProps} from '@utils/helpers/appIconProps.js';
 
 const route = useRoute();
 const appStore = useAppStore();
@@ -44,10 +56,38 @@ const isLoading = ref(true);
 const packageName = computed(() => route.params.package_name);
 const app = computed(() => appStore.fetchAppByPackage(packageName.value));
 
+const isSystemApp = computed(() => !!(app.value?.sys_app ?? app.value?.['sys-app']));
+
+const heroBadges = computed(() => {
+  const list = [];
+
+  if (isSystemApp.value) {
+    list.push('سیستمی');
+  }
+
+  if (app.value?.version) {
+    list.push(`v${app.value.version}`);
+  }
+
+  return list;
+});
+
+const navItems = computed(() => {
+  const base = `/app-manager/${packageName.value}`;
+
+  return [
+    {to: `${base}/details`, label: 'جزئیات', icon: saxIcon.guide},
+    {to: `${base}/config`, label: 'تنظیمات', icon: saxIcon.setting},
+    {to: `${base}/users`, label: 'کاربران', icon: saxIcon.user},
+    {to: `${base}/templates`, label: 'قالب‌ها', icon: saxIcon.appearance},
+  ];
+});
+
 onMounted(async () => {
-  if (!appStore.isLoaded)
+  if (!appStore.isLoaded) {
     await appStore.getApps();
+  }
+
   isLoading.value = false;
 });
 </script>
-
