@@ -261,6 +261,13 @@ return [
         'flow' => ['manager.auth'],
     ],
     [
+        'method' => 'GET',
+        'uri' => '/app/pinion/limits',
+        'action' => [PinionController::class, 'limits'],
+        'name' => 'app.pinion.limits',
+        'flow' => ['manager.auth'],
+    ],
+    [
         'method' => 'POST',
         'uri' => '/app/pinion/init',
         'action' => [PinionController::class, 'init'],

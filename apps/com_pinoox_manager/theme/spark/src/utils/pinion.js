@@ -2,10 +2,46 @@ import {http} from "@global";
 import formDataHelper from "@utils/helpers/formDataHelper.js";
 
 const BASE_URL = '/app/pinion';
-const PINION_THRESHOLD = 8 * 1024 * 1024;
+const FALLBACK_THRESHOLD = 8 * 1024 * 1024;
+const FALLBACK_CHUNK = 5 * 1024 * 1024;
+const FALLBACK_PARALLEL = 2;
 const STORAGE_KEY = 'pinion_sessions';
 
 const unwrapData = (response) => response?.data?.data ?? response?.data ?? null;
+
+let cachedLimits = null;
+let limitsPromise = null;
+
+export async function getPinionLimits({force = false} = {}) {
+    if (cachedLimits && !force) {
+        return cachedLimits;
+    }
+
+    if (limitsPromise && !force) {
+        return limitsPromise;
+    }
+
+    limitsPromise = http.get(`${BASE_URL}/limits`, {alert: false})
+        .then((response) => {
+            cachedLimits = unwrapData(response) ?? {};
+            return cachedLimits;
+        })
+        .catch(() => {
+            cachedLimits = {
+                pinion_threshold: FALLBACK_THRESHOLD,
+                chunk_size: FALLBACK_CHUNK,
+                parallel: FALLBACK_PARALLEL,
+                direct_upload_enabled: true,
+            };
+
+            return cachedLimits;
+        })
+        .finally(() => {
+            limitsPromise = null;
+        });
+
+    return limitsPromise;
+}
 
 async function sha256Hex(blob) {
     const buffer = await blob.arrayBuffer();
@@ -45,14 +81,18 @@ export async function uploadWithPinion(file, {
     onProgress,
     chunkSize,
     signal,
-    parallel = 2,
+    parallel,
 } = {}) {
+    const limits = await getPinionLimits();
     const fingerprint = buildFingerprint(file);
+    const resolvedChunk = chunkSize ?? limits.chunk_size ?? FALLBACK_CHUNK;
+    const resolvedParallel = parallel ?? limits.parallel ?? FALLBACK_PARALLEL;
+
     const initResponse = await http.post(`${BASE_URL}/init`, {
         filename: file.name,
         size: file.size,
         mime: file.type || null,
-        chunk_size: chunkSize,
+        chunk_size: resolvedChunk,
         fingerprint,
     }, {alert: false, signal});
 
@@ -64,14 +104,14 @@ export async function uploadWithPinion(file, {
 
     storeSession(fingerprint, session);
 
-    const size = session.chunk_size || chunkSize || 5 * 1024 * 1024;
+    const size = session.chunk_size || resolvedChunk;
     const indexes = (session.missing_indexes?.length ? session.missing_indexes : Array.from({
         length: session.total_chunks || Math.ceil(file.size / size),
     }, (_, i) => i));
 
     let uploadedBytes = session.bytes_received || 0;
     const queue = [...indexes];
-    const workers = Array.from({length: Math.max(1, parallel)}, async () => {
+    const workers = Array.from({length: Math.max(1, resolvedParallel)}, async () => {
         while (queue.length) {
             const index = queue.shift();
             const start = index * size;
@@ -107,8 +147,23 @@ export async function uploadWithPinion(file, {
     return unwrapData(completeResponse);
 }
 
-export function shouldUsePinion(file, threshold = PINION_THRESHOLD) {
-    return file instanceof File && file.size > threshold;
+export async function shouldUsePinion(file, threshold) {
+    if (!(file instanceof File)) {
+        return false;
+    }
+
+    const limits = await getPinionLimits();
+    const resolvedThreshold = threshold ?? limits.pinion_threshold ?? FALLBACK_THRESHOLD;
+
+    if (limits.direct_upload_enabled === false) {
+        return true;
+    }
+
+    if (limits.max_file_size > 0 && file.size > limits.max_file_size) {
+        return false;
+    }
+
+    return file.size > resolvedThreshold;
 }
 
 export function resolveUploadedFilename(result, fallbackFile) {
@@ -138,7 +193,7 @@ export function resolveUploadedFilename(result, fallbackFile) {
 }
 
 export async function uploadPackageFile(file, options = {}) {
-    if (shouldUsePinion(file)) {
+    if (await shouldUsePinion(file, options.threshold)) {
         return uploadWithPinion(file, options);
     }
 
@@ -148,6 +203,7 @@ export async function uploadPackageFile(file, options = {}) {
 }
 
 export const pinionAPI = {
+    limits: (config = {}) => http.get(`${BASE_URL}/limits`, {alert: false, ...config}),
     init: (payload) => http.post(`${BASE_URL}/init`, payload, {alert: false}),
     upload: (formData, config = {}) => http.post(`${BASE_URL}/upload`, formData, {
         alert: false,

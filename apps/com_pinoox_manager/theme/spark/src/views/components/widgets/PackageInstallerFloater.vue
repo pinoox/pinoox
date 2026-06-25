@@ -50,8 +50,8 @@
       <div class="packageInstaller__body">
         <template v-if="store.phase === 'idle'">
           <p class="packageInstaller__hint">
-            فایل <strong>.pinx</strong> را انتخاب کنید. برای فایل‌های بزرگ‌تر از ۸ مگابایت، آپلود قطعه‌ای
-            <strong>Pinion</strong> به‌صورت خودکار انجام می‌شود.
+            فایل <strong>.pinx</strong> را انتخاب کنید. اندازه قطعه و آستانه Pinion بر اساس محدودیت‌های PHP/هاست
+            (<code>upload_max_filesize</code>، <code>post_max_size</code>) به‌صورت خودکار تنظیم می‌شود.
           </p>
           <FileUploader ref="fileUploaderRef" @select="onSelect"/>
           <div class="packageInstaller__foot">
