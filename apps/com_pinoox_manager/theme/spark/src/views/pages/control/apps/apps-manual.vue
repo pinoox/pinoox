@@ -41,7 +41,6 @@ import { uploadPackageFile } from "@utils/pinion.js";
 import { usePackageInstaller } from "@/views/composables/usePackageInstaller.js";
 import { toast } from "@global";
 
-const appStore = useAppStore();
 const { previewStagedFile } = usePackageInstaller();
 const files = ref([]);
 const selectedFiles = ref([]);
