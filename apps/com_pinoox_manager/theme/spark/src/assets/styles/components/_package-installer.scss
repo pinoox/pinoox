@@ -50,6 +50,15 @@
     background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.22);
     color: #dbeafe;
     flex-shrink: 0;
+    overflow: hidden;
+
+    .appIcon {
+      --app-icon-size: 1.65rem;
+      --app-icon-radius: 999px;
+      --app-icon-padding: 0;
+      --app-icon-border: transparent;
+      --app-icon-shadow: none;
+    }
   }
 
   &__text {
@@ -178,7 +187,32 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem;
-    margin-bottom: 0.65rem;
+    margin-bottom: 0.45rem;
+  }
+
+  &__preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.85rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__previewText {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__statusHead,
+  &__successHead {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: 0.85rem;
+  }
+
+  &__statusHead &__statusTitle,
+  &__successHead &__success {
+    margin: 0;
   }
 
   &__badge {
@@ -197,13 +231,13 @@
   }
 
   &__packageName {
-    margin: 0 0 0.45rem;
+    margin: 0 0 0.35rem;
     font-size: 1.05rem;
     font-weight: 700;
   }
 
   &__description {
-    margin: 0 0 0.75rem;
+    margin: 0;
     font-size: 0.82rem;
     line-height: 1.6;
     opacity: 0.78;

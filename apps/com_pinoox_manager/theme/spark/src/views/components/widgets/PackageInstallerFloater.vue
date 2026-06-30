@@ -9,7 +9,8 @@
         @click="restorePanel"
     >
       <span class="packageInstallerFab__icon">
-        <Icon :is="saxIcon.upload" size="sm"/>
+        <AppIcon v-if="store.meta" v-bind="packageIconProps" size="sm" variant="soft"/>
+        <Icon v-else :is="saxIcon.upload" size="sm"/>
       </span>
       <span class="packageInstallerFab__text">
         <span v-if="store.isBusy" class="packageInstallerFab__progress">{{ store.progress }}%</span>
@@ -78,12 +79,17 @@
         </template>
 
         <template v-else-if="store.phase === 'preview' && store.meta">
-          <div class="packageInstaller__badges">
-            <span class="packageInstaller__badge">{{ store.typeLabel }}</span>
-            <span class="packageInstaller__badge is-accent">{{ store.actionLabel }}</span>
+          <div class="packageInstaller__preview">
+            <AppIcon v-bind="packageIconProps" size="md"/>
+            <div class="packageInstaller__previewText">
+              <div class="packageInstaller__badges">
+                <span class="packageInstaller__badge">{{ store.typeLabel }}</span>
+                <span class="packageInstaller__badge is-accent">{{ store.actionLabel }}</span>
+              </div>
+              <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
+              <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
+            </div>
           </div>
-          <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
-          <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
           <dl class="packageInstaller__meta">
             <div v-if="store.meta.type === 'app'">
               <dt>پکیج</dt>
@@ -115,12 +121,20 @@
         </template>
 
         <template v-else-if="store.phase === 'installing'">
-          <p class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
+          <div v-if="store.meta" class="packageInstaller__statusHead">
+            <AppIcon v-bind="packageIconProps" size="sm"/>
+            <p class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
+          </div>
+          <p v-else class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
           <WidgetLoading/>
         </template>
 
         <template v-else-if="store.phase === 'success'">
-          <p class="packageInstaller__success">{{ store.actionLabel }} با موفقیت انجام شد.</p>
+          <div v-if="store.meta" class="packageInstaller__successHead">
+            <AppIcon v-bind="packageIconProps" size="sm"/>
+            <p class="packageInstaller__success">{{ store.actionLabel }} با موفقیت انجام شد.</p>
+          </div>
+          <p v-else class="packageInstaller__success">{{ store.actionLabel }} با موفقیت انجام شد.</p>
           <div class="packageInstaller__foot">
             <Button label="بستن" variant="primary" @click="store.dismiss()"/>
             <Button label="بسته دیگر" variant="dark" outline @click="store.reset()"/>
@@ -144,11 +158,15 @@ import {computed, onMounted, ref, watch} from 'vue';
 import DraggableWidget from '@/views/components/widgets/DraggableWidget.vue';
 import FileUploader from '@/views/components/widgets/FileUploader.vue';
 import WidgetLoading from '@/views/components/desktop-widgets/WidgetLoading.vue';
+import AppIcon from '@/views/components/widgets/AppIcon.vue';
 import {saxIcon} from '@/const/icons.js';
+import {packageMetaIconProps} from '@utils/helpers/appIconProps.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {usePackageInstaller} from '@/views/composables/usePackageInstaller.js';
+import {useAppStore} from '@/stores/modules/app.js';
 
 const store = usePackageInstallerStore();
+const appStore = useAppStore();
 const {uploadSelectedFile, confirmInstall, consumePendingFile} = usePackageInstaller();
 
 const fileUploaderRef = ref(null);
@@ -161,6 +179,8 @@ const displayName = computed(() => {
 
     return store.meta.name || store.meta.template_name || store.meta.package_name || store.filename;
 });
+
+const packageIconProps = computed(() => packageMetaIconProps(store.meta, appStore));
 
 function onSelect(file) {
     selectedFile.value = file;

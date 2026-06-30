@@ -72,6 +72,60 @@ export function appIconPropsForPackage(appStore, packageName, fallback = {}) {
   };
 }
 
+export function packageMetaIconProps(meta, appStore = null) {
+  if (!meta) {
+    return {};
+  }
+
+  const alt = meta.name || meta.template_name || meta.package_name || meta.filename || '';
+
+  if (meta.has_icon && meta.icon) {
+    return {
+      src: meta.icon,
+      iconSource: 'custom',
+      alt,
+    };
+  }
+
+  if (meta.type === 'theme' && meta.cover && !String(meta.cover).includes('theme.jpg')) {
+    return {
+      src: meta.cover,
+      iconSource: 'custom',
+      alt,
+    };
+  }
+
+  const packageName = meta.type === 'app'
+      ? (meta.package_name || meta.package)
+      : meta.app;
+
+  if (packageName && appStore) {
+    const props = appIconPropsForPackage(appStore, packageName, {name: alt});
+
+    if (props) {
+      return props;
+    }
+  }
+
+  if (meta.type === 'theme') {
+    return {
+      lucide: 'palette',
+      colors: ['#F472B6', '#DB2777', '#831843'],
+      iconStyle: 'gradient',
+      iconSource: 'lucide',
+      alt,
+    };
+  }
+
+  return {
+    lucide: 'box',
+    colors: PINOOX_ICON_GRADIENT,
+    iconStyle: 'gradient',
+    iconSource: 'lucide',
+    alt,
+  };
+}
+
 export function resolveRouteAppIconProps(app, packageName = null) {
   const pkg = packageName ?? app?.package_name ?? app?.package ?? null;
 

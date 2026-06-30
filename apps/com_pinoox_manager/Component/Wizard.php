@@ -324,8 +324,8 @@ class Wizard
      */
     private static function buildAppMeta(string $pinxFile, PinxManifest $manifest): array
     {
-        $locale = Lang::locale();
         $installMode = AppEngine::exists($manifest->package()) ? 'update' : 'install';
+        $iconDataUri = self::resolvePinxIcon($pinxFile, $manifest);
 
         return [
             'type' => 'app',
@@ -342,10 +342,19 @@ class Wizard
             'developer' => $manifest->developer(),
             'path_icon' => $manifest->icon() ?: 'icon.png',
             'icon_entry' => $manifest->iconEntry(),
-            'has_icon' => $manifest->hasIcon(),
-            'icon' => Url::asset('resources/default.png'),
+            'has_icon' => $iconDataUri !== null,
+            'icon' => $iconDataUri ?: Url::asset('resources/default.png'),
             'size' => File::print_size(File::size($pinxFile), 1),
         ];
+    }
+
+    private static function resolvePinxIcon(string $pinxFile, PinxManifest $manifest): ?string
+    {
+        if (!$manifest->hasIcon()) {
+            return null;
+        }
+
+        return Pinx::withReader($pinxFile, static fn ($reader) => $reader->iconDataUri());
     }
 
     /**
@@ -354,6 +363,7 @@ class Wizard
     private static function buildThemeMeta(string $pinxFile, PinxManifest $manifest): array
     {
         $installMode = self::isInstalledTemplate($manifest->targetApp(), $manifest->themeName()) ? 'update' : 'install';
+        $iconDataUri = self::resolvePinxIcon($pinxFile, $manifest);
 
         return [
             'type' => 'theme',
@@ -368,7 +378,9 @@ class Wizard
             'version-code' => $manifest->versionCode(),
             'developer' => $manifest->developer(),
             'path_cover' => '',
-            'cover' => Url::asset('resources/theme.jpg'),
+            'has_icon' => $iconDataUri !== null,
+            'icon' => $iconDataUri,
+            'cover' => $iconDataUri ?: Url::asset('resources/theme.jpg'),
             'size' => File::print_size(File::size($pinxFile), 1),
         ];
     }
