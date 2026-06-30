@@ -8,7 +8,7 @@
     </section>
 
     <section v-if="app?.description" class="appDetails__card">
-      <h3 class="appDetails__cardTitle">توضیحات</h3>
+      <h3 class="appDetails__cardTitle">{{ translate('app_details_about') }}</h3>
       <p class="appDetails__description">{{ app.description }}</p>
     </section>
 
@@ -19,26 +19,26 @@
     </section>
 
     <section v-if="routes.length" class="appDetails__card">
-      <h3 class="appDetails__cardTitle">مسیرهای فعال</h3>
+      <h3 class="appDetails__cardTitle">{{ translate('app_details_addresses') }}</h3>
       <ul class="appDetails__routes">
         <li v-for="route in routesPreview" :key="route.path" dir="ltr">
           <code>{{ route.path }}</code>
         </li>
       </ul>
       <p v-if="routes.length > routesPreview.length" class="appDetails__routesMore">
-        +{{ routes.length - routesPreview.length }} مسیر دیگر
+        +{{ routes.length - routesPreview.length }} {{ translate('app_details_more_addresses') }}
       </p>
     </section>
 
     <section class="appDetails__actions">
       <Button
-          label="اجرای اپ"
+          :label="translate('app_run')"
           variant="primary"
           :icon="saxIcon.externalLink"
           @click="openApp"
       />
       <Button
-          label="تنظیمات"
+          :label="translate('app_settings')"
           variant="dark"
           outline
           :icon="saxIcon.setting"
@@ -46,7 +46,7 @@
       />
       <Button
           v-if="hasTemplates"
-          label="قالب‌ها"
+          :label="translate('app_templates')"
           variant="dark"
           outline
           :icon="saxIcon.appearance"
@@ -56,20 +56,17 @@
 
     <section v-if="isSystemApp" class="appDetails__notice appDetails__notice--info">
       <Icon :is="saxIcon.notifyInfo" size="sm"/>
-      <p>این اپلیکیشن سیستمی است و از طریق پنل قابل حذف نیست.</p>
+      <p>{{ translate('app_system_notice') }}</p>
     </section>
 
     <section v-else class="appDetails__danger">
       <div class="appDetails__dangerHead">
         <Icon :is="saxIcon.remove" size="sm"/>
-        <h3>حذف اپلیکیشن</h3>
+        <h3>{{ translate('app_uninstall_title') }}</h3>
       </div>
-      <p>
-        با حذف، فایل‌های اپ، جداول دیتابیس (rollback)، مسیرها و کش pinker پاک می‌شوند.
-        برای نصب مجدد باید بسته <strong>.pinx</strong> را دوباره نصب کنید.
-      </p>
+      <p>{{ translate('app_uninstall_intro') }}</p>
       <Button
-          label="حذف اپلیکیشن"
+          :label="translate('app_uninstall_button')"
           variant="danger"
           outline
           :icon="saxIcon.remove"
@@ -120,31 +117,33 @@ const hasTemplates = computed(() => !isSystemApp.value);
 const routerModeLabel = computed(() => {
   const mode = resolveRouterMode(props.app);
 
-  return mode === 'single' ? 'تک‌مسیره' : 'چندمسیره';
+  return mode === 'single'
+      ? translate('app_routing_single')
+      : translate('app_routing_multiple');
 });
 
 const statItems = computed(() => [
-  {label: 'نسخه', value: props.app?.version || '—', ltr: false},
-  {label: 'کد نسخه', value: props.app?.version_code ?? '—', ltr: true},
-  {label: 'توسعه‌دهنده', value: props.app?.developer || '—', ltr: false},
-  {label: 'پکیج', value: props.packageName, ltr: true},
-  {label: 'مسیریابی', value: routerModeLabel.value, ltr: false},
-  {label: 'مسیرها', value: String(routes.value.length), ltr: true},
+  {label: translate('app_stat_version'), value: props.app?.version || '—', ltr: false},
+  {label: translate('app_stat_version_code'), value: props.app?.version_code ?? '—', ltr: true},
+  {label: translate('app_stat_developer'), value: props.app?.developer || '—', ltr: false},
+  {label: translate('app_stat_package'), value: props.packageName, ltr: true},
+  {label: translate('app_stat_routing'), value: routerModeLabel.value, ltr: false},
+  {label: translate('app_stat_address_count'), value: String(routes.value.length), ltr: true},
 ]);
 
 const badges = computed(() => {
   const list = [];
 
   if (isSystemApp.value) {
-    list.push({label: 'اپ سیستمی', class: 'is-system'});
+    list.push({label: translate('app_badge_system'), class: 'is-system'});
   }
 
   if (props.app?.hidden) {
-    list.push({label: 'مخفی', class: 'is-muted'});
+    list.push({label: translate('app_badge_hidden'), class: 'is-muted'});
   }
 
   if (props.app?.dock === false) {
-    list.push({label: 'بدون داک', class: 'is-muted'});
+    list.push({label: translate('app_badge_no_dock'), class: 'is-muted'});
   }
 
   return list;
