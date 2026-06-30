@@ -36,17 +36,12 @@ async function onClick(event) {
         return;
     }
 
-    if (!isControlPanelMemoryPath(props.item.href)) {
-        if (isControlRoute(globalRouter.currentRoute.value)) {
-            await globalRouter.push(props.item.href);
-        } else {
-            window.location.assign(props.item.href);
-        }
+    event.preventDefault();
 
+    if (!isControlPanelMemoryPath(props.item.href)) {
+        await globalRouter.push(props.item.href);
         return;
     }
-
-    event.preventDefault();
 
     await syncControlPanelMemoryRouter(props.item.href);
     controlPanelWindow.setLastPath(props.item.href);

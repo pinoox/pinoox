@@ -19,6 +19,13 @@
     color: $color-text;
   }
 
+  &.is-compact {
+    padding: 0;
+    box-shadow: none;
+    max-width: none;
+    margin: 0;
+  }
+
   &__drop-area {
     border: 2px dashed $color-border;
     padding: 30px;

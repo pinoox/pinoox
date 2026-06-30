@@ -20,7 +20,8 @@ import {ref, onMounted, computed} from 'vue';
 
 const props = defineProps({
   initialX: {type: [Number, String], default: "100px"},
-  initialY: {type: [Number, String], default: "100px"}
+  initialY: {type: [Number, String], default: "100px"},
+  centered: {type: Boolean, default: false},
 });
 
 const widget = ref(null);
@@ -31,11 +32,31 @@ const posY = ref(props.initialY);
 const computedPosX = computed(() => typeof posX.value === 'string' ? posX.value : `${posX.value}px`);
 const computedPosY = computed(() => typeof posY.value === 'string' ? posY.value : `${posY.value}px`);
 
-onMounted(() => {
-  if (widget.value) {
-    widget.value.style.left = computedPosX.value;
-    widget.value.style.top = computedPosY.value;
+function centerInViewport() {
+  if (!widget.value) {
+    return;
   }
+
+  const rect = widget.value.getBoundingClientRect();
+  const x = Math.max(0, (window.innerWidth - rect.width) / 2);
+  const y = Math.max(0, (window.innerHeight - rect.height) / 2);
+
+  posX.value = `${x}px`;
+  posY.value = `${y}px`;
+}
+
+onMounted(() => {
+  if (!widget.value) {
+    return;
+  }
+
+  if (props.centered) {
+    centerInViewport();
+    return;
+  }
+
+  widget.value.style.left = computedPosX.value;
+  widget.value.style.top = computedPosY.value;
 });
 
 const startDrag = (event) => {

@@ -50,11 +50,9 @@ function syncControlPanelOnLeave() {
     return;
   }
 
-  if (controlPanelWindow.mode !== 'fullscreen') {
-    return;
-  }
+  const restoreMode = controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen';
 
-  controlPanelWindow.minimize('fullscreen', controlPanelWindow.lastPath);
+  controlPanelWindow.minimize(restoreMode, controlPanelWindow.lastPath);
 }
 
 watch(

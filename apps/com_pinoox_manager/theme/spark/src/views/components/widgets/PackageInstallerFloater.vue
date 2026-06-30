@@ -8,16 +8,25 @@
         aria-label="نصب‌کننده بسته"
         @click="restorePanel"
     >
-      <Icon :is="saxIcon.upload" size="sm"/>
-      <span v-if="store.isBusy" class="packageInstallerFab__progress">{{ store.progress }}%</span>
-      <span v-else class="packageInstallerFab__label">بسته</span>
+      <span class="packageInstallerFab__icon">
+        <Icon :is="saxIcon.upload" size="sm"/>
+      </span>
+      <span class="packageInstallerFab__text">
+        <span v-if="store.isBusy" class="packageInstallerFab__progress">{{ store.progress }}%</span>
+        <span v-else class="packageInstallerFab__label">نصب بسته</span>
+      </span>
     </button>
 
+    <div
+        v-if="store.visible && !store.minimized"
+        class="packageInstallerBackdrop"
+        aria-hidden="true"
+    />
+
     <DraggableWidget
-        v-else-if="store.visible"
+        v-if="store.visible && !store.minimized"
         class="packageInstaller"
-        initialX="calc(100% - 380px)"
-        initialY="calc(100% - 420px)"
+        centered
     >
       <template #header>
         <div class="packageInstaller__head">
@@ -49,11 +58,7 @@
 
       <div class="packageInstaller__body">
         <template v-if="store.phase === 'idle'">
-          <p class="packageInstaller__hint">
-            فایل <strong>.pinx</strong> را انتخاب کنید. اندازه قطعه و آستانه Pinion بر اساس محدودیت‌های PHP/هاست
-            (<code>upload_max_filesize</code>، <code>post_max_size</code>) به‌صورت خودکار تنظیم می‌شود.
-          </p>
-          <FileUploader ref="fileUploaderRef" @select="onSelect"/>
+          <FileUploader ref="fileUploaderRef" compact @select="onSelect"/>
           <div class="packageInstaller__foot">
             <Button
                 label="بارگذاری و بررسی"
