@@ -141,11 +141,11 @@ export function createInitialLangState() {
 }
 
 export function resolveLangState(boot = getBoot()) {
-    const locale = hasLocale(boot.locale) ? boot.locale : resolveInitialLocale()
+    const locale = resolveInitialLocale()
 
     return {
         locale,
-        direction: boot.direction ?? getDirection(locale),
+        direction: getDirection(locale),
         pack: mergeLangPack(boot.lang, locale),
     }
 }

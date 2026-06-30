@@ -36,7 +36,7 @@
 import {onMounted} from 'vue'
 import {useRouter} from 'vue-router'
 import {installAPI} from '@api/install.js'
-import {getDirection, getLangPack} from '@/lang/index.js'
+import {getLangPack} from '@/lang/index.js'
 import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import {shouldShowBootstrapError} from '@/utils/resolveInstallerApi.js'
 
@@ -53,11 +53,13 @@ const items = [
 ]
 
 async function selectLang(selectedLang) {
+    store.setLang(getLangPack(selectedLang), selectedLang)
+
     try {
         const data = await installAPI.changeLang(selectedLang)
-        store.setLang(data, selectedLang, data.direction)
+        store.setLang(data, selectedLang)
     } catch {
-        store.setLang(getLangPack(selectedLang), selectedLang, getDirection(selectedLang))
+        // local pack and direction already applied
     }
 }
 

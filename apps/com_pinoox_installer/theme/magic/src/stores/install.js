@@ -41,10 +41,10 @@ export const useInstallStore = defineStore('install', {
         },
     }),
     actions: {
-        setLang(translations, selectedLang, direction) {
+        setLang(translations, selectedLang) {
             this.LANG = resolveLangPayload(translations, selectedLang)
 
-            const resolvedDirection = direction ?? getDirection(selectedLang)
+            const resolvedDirection = getDirection(selectedLang)
 
             this.OPTIONS = {
                 ...this.OPTIONS,

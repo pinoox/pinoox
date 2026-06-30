@@ -24,6 +24,14 @@ class LangHelper
 
     public static function direction(?string $locale = null): string
     {
+        if ($locale === 'fa') {
+            return 'rtl';
+        }
+
+        if ($locale === 'en') {
+            return 'ltr';
+        }
+
         $language = t('language', [], $locale);
         $direction = is_array($language) ? ($language['direction'] ?? 'ltr') : 'ltr';
 
