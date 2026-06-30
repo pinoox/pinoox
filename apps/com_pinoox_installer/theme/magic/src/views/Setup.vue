@@ -1,8 +1,8 @@
 <template>
     <div id="page">
         <header class="page-header animate__animated animate__zoomInDown">
-            <h1 class="title">{{ LANG.install.main_title }}</h1>
-            <p class="description">{{ LANG.install.main_description }}</p>
+            <h1 class="title">{{ install.main_title }}</h1>
+            <p class="description">{{ install.main_description }}</p>
         </header>
         <div class="container">
             <div class="row">
@@ -17,8 +17,8 @@
                             @keydown.space.prevent="navigate"
                         >
                             <img class="icon" src="@/assets/images/logo/logo-256.png" alt="Pinoox">
-                            <span class="app-name">{{ LANG.install.install_pinoox }}</span>
-                            <span class="app-version">{{ LANG.install.version }} <b class="app-version__value" dir="ltr">{{ OPTIONS.version }}</b></span>
+                            <span class="app-name">{{ install.install_pinoox }}</span>
+                            <span class="app-version">{{ install.version }} <b class="app-version__value" dir="ltr">{{ OPTIONS.version }}</b></span>
                         </span>
                     </router-link>
                 </div>
@@ -28,9 +28,7 @@
 </template>
 
 <script setup>
-import {storeToRefs} from 'pinia'
-import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 
-const store = useInstallStore()
-const {LANG, OPTIONS} = storeToRefs(store)
+const {install, OPTIONS} = useInstallerLang()
 </script>

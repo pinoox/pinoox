@@ -4,8 +4,8 @@
             <div class="col-md-12">
                 <div id="page">
                     <header class="page-header">
-                        <h1 class="title">{{ LANG.install.db_info }}</h1>
-                        <p class="description">{{ LANG.install.db_info_description }}</p>
+                        <h1 class="title">{{ install.db_info }}</h1>
+                        <p class="description">{{ install.db_info_description }}</p>
                     </header>
                     <div class="page-panel">
                         <div v-if="isSuccess" class="page-alert page-alert--success" role="status">
@@ -19,7 +19,7 @@
                         <div class="form form--scroll">
                             <div @keypress.enter="next()">
                                 <div class="install-field">
-                                    <label for="db-host">{{ LANG.install.db_host }}</label>
+                                    <label for="db-host">{{ install.db_host }}</label>
                                     <input
                                         id="db-host"
                                         v-model="params.host"
@@ -32,7 +32,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="db-name">{{ LANG.install.db_name }}</label>
+                                    <label for="db-name">{{ install.db_name }}</label>
                                     <input
                                         id="db-name"
                                         v-model="params.database"
@@ -45,7 +45,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="db-user">{{ LANG.install.db_username }}</label>
+                                    <label for="db-user">{{ install.db_username }}</label>
                                     <input
                                         id="db-user"
                                         v-model="params.username"
@@ -58,7 +58,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="db-pass">{{ LANG.install.db_password }}</label>
+                                    <label for="db-pass">{{ install.db_password }}</label>
                                     <PasswordInput
                                         id="db-pass"
                                         v-model="params.password"
@@ -82,7 +82,7 @@
 
                                     <div v-show="showAdvanced" class="db-advanced__panel">
                                         <div class="install-field">
-                                            <label for="db-connection">{{ LANG.install.db_connection }}</label>
+                                            <label for="db-connection">{{ install.db_connection }}</label>
                                             <select
                                                 id="db-connection"
                                                 v-model="params.connection"
@@ -107,7 +107,7 @@
                                             </p>
                                         </div>
                                         <div class="install-field">
-                                            <label for="db-port">{{ LANG.install.db_port }}</label>
+                                            <label for="db-port">{{ install.db_port }}</label>
                                             <input
                                                 id="db-port"
                                                 v-model="params.port"
@@ -121,7 +121,7 @@
                                             >
                                         </div>
                                         <div class="install-field">
-                                            <label for="db-prefix">{{ LANG.install.db_prefix }}</label>
+                                            <label for="db-prefix">{{ install.db_prefix }}</label>
                                             <input
                                                 id="db-prefix"
                                                 v-model="params.prefix"
@@ -134,7 +134,7 @@
                                             >
                                         </div>
                                         <div class="install-field">
-                                            <label for="db-timezone">{{ LANG.install.db_timezone }}</label>
+                                            <label for="db-timezone">{{ install.db_timezone }}</label>
                                             <input
                                                 id="db-timezone"
                                                 v-model="params.timezone"
@@ -153,7 +153,7 @@
                     </div>
                     <div class="page-actions">
                         <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
-                            {{ LANG.install.back }}
+                            {{ install.back }}
                         </button>
                         <button
                             v-if="!isTesting"
@@ -163,7 +163,7 @@
                             @click="testConnection()"
                         >
                             <Icon name="database"/>
-                            {{ LANG.install.db_test }}
+                            {{ install.db_test }}
                         </button>
                         <span
                             v-else
@@ -179,7 +179,7 @@
                             :disabled="isTesting"
                             @click="next()"
                         >
-                            {{ LANG.install.continue }}
+                            {{ install.continue }}
                         </button>
                         <span v-else class="btn btn-light pin-btn pin-loading" aria-busy="true">
                             <Icon name="spinner" spin/>
@@ -198,6 +198,7 @@ import {storeToRefs} from 'pinia'
 import {installAPI} from '@api/install.js'
 import {readApiErrorMessage} from '@/utils/apiEnvelope.js'
 import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import Icon from '@/components/icons/Icon.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
 
@@ -212,7 +213,8 @@ const emit = defineEmits(['update:steps'])
 
 const router = useRouter()
 const store = useInstallStore()
-const {LANG, db, availableDbConnections} = storeToRefs(store)
+const {db, availableDbConnections} = storeToRefs(store)
+const {install} = useInstallerLang()
 
 const connectionCatalog = [
     {value: 'mysql', labelKey: 'db_connection_mysql'},
@@ -232,8 +234,8 @@ const isSuccess = computed(() => successMsg.value !== null && !!successMsg.value
 
 const advancedToggleLabel = computed(() => (
     showAdvanced.value
-        ? LANG.value?.install?.db_advanced_hide
-        : LANG.value?.install?.db_advanced_show
+        ? install.value?.db_advanced_hide
+        : install.value?.db_advanced_show
 ) ?? (showAdvanced.value ? 'Hide advanced options' : 'Show advanced options'))
 
 const params = computed({
@@ -251,13 +253,13 @@ const defaultPorts = {
 }
 
 const connectionOptions = computed(() => {
-    const install = LANG.value?.install ?? {}
+    const labels = install.value ?? {}
     const available = availableDbConnections.value ?? []
     const hasAvailability = available.length > 0
 
     return connectionCatalog.map((entry) => ({
         value: entry.value,
-        label: install[entry.labelKey] ?? entry.value,
+        label: labels[entry.labelKey] ?? entry.value,
         disabled: hasAvailability && !available.includes(entry.value),
     }))
 })
@@ -266,7 +268,7 @@ const connectionHint = computed(() => {
     const available = availableDbConnections.value ?? []
 
     if (available.length === 0) {
-        return LANG.value?.install?.db_connection_prerequisites_pending ?? null
+        return install.value?.db_connection_prerequisites_pending ?? null
     }
 
     const labels = connectionOptions.value
@@ -277,7 +279,7 @@ const connectionHint = computed(() => {
         return null
     }
 
-    const template = LANG.value?.install?.db_connection_available_hint ?? 'Available on this server: :list'
+    const template = install.value?.db_connection_available_hint ?? 'Available on this server: :list'
 
     return template.replace(':list', labels.join(', '))
 })
@@ -343,10 +345,10 @@ function testConnection() {
 
     installAPI.checkDB(params.value).then(() => {
         isTesting.value = false
-        successMsg.value = LANG.value?.install?.connect_to_database ?? 'Database connection successful.'
+        successMsg.value = install.value?.connect_to_database ?? 'Database connection successful.'
     }).catch((error) => {
         isTesting.value = false
-        err.value = readApiErrorMessage(error, LANG.value?.install?.err_connect_to_database)
+        err.value = readApiErrorMessage(error, install.value?.err_connect_to_database)
     })
 }
 
@@ -359,7 +361,7 @@ function next() {
         router.replace({name: 'user'})
     }).catch((error) => {
         isLoading.value = false
-        err.value = readApiErrorMessage(error, LANG.value?.install?.err_connect_to_database)
+        err.value = readApiErrorMessage(error, install.value?.err_connect_to_database)
     })
 }
 

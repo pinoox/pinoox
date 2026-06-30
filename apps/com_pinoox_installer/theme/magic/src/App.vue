@@ -4,10 +4,10 @@
         <div class="steps" v-if="$route.name !== 'lang' && $route.name !== 'setup' && $route.name !== 'bootstrap'">
             <ul>
                 <li class="done" v-show="false"></li>
-                <li :class="stepClass(0)"><span>{{ LANG?.install?.agreement }}</span></li>
-                <li :class="stepClass(1)"><span>{{ LANG?.install?.prerequisites }}</span></li>
-                <li :class="stepClass(2)"><span>{{ LANG?.install?.db_info }}</span></li>
-                <li :class="stepClass(3)"><span>{{ LANG?.user?.info_admin }}</span></li>
+                <li :class="stepClass(0)"><span>{{ install.agreement }}</span></li>
+                <li :class="stepClass(1)"><span>{{ install.prerequisites }}</span></li>
+                <li :class="stepClass(2)"><span>{{ install.db_info }}</span></li>
+                <li :class="stepClass(3)"><span>{{ user.info_admin }}</span></li>
             </ul>
         </div>
         <router-view v-slot="{ Component, route: activeRoute }">
@@ -51,12 +51,14 @@ import {computed, onMounted, ref} from 'vue'
 import {useRoute, useRouter} from 'vue-router'
 import {storeToRefs} from 'pinia'
 import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import Icon from '@/components/icons/Icon.vue'
 
 const route = useRoute()
 const router = useRouter()
 const store = useInstallStore()
-const {LANG, OPTIONS, isLoading, preflightLoading} = storeToRefs(store)
+const {install, user, OPTIONS} = useInstallerLang()
+const {isLoading, preflightLoading} = storeToRefs(store)
 const steps = ref([])
 
 const stepRoutes = ['rules', 'prerequisites', 'db', 'user']

@@ -71,6 +71,65 @@ export function resolveInitialLocale() {
     return DEFAULT_LOCALE
 }
 
+function isPlainObject(value) {
+    return typeof value === 'object' && value !== null && !Array.isArray(value)
+}
+
+export function isUsableLangPack(lang) {
+    const install = lang?.install
+
+    return isPlainObject(install)
+        && typeof install.select_lang === 'string'
+        && install.select_lang.length > 0
+}
+
+export function extractLangCandidate(source) {
+    if (!isPlainObject(source)) {
+        return null
+    }
+
+    if (isUsableLangPack(source)) {
+        return source
+    }
+
+    if (isUsableLangPack(source.lang)) {
+        return source.lang
+    }
+
+    return null
+}
+
+export function mergeLangPack(candidate, locale) {
+    const fallback = getLangPack(locale)
+    const server = extractLangCandidate(candidate)
+
+    if (!server) {
+        return fallback
+    }
+
+    return {
+        install: isPlainObject(server.install)
+            ? {...fallback.install, ...server.install}
+            : fallback.install,
+        user: isPlainObject(server.user)
+            ? {...fallback.user, ...server.user}
+            : fallback.user,
+        language: isPlainObject(server.language)
+            ? {...fallback.language, ...server.language}
+            : fallback.language,
+        agreement: server.agreement ?? fallback.agreement,
+        bootstrap: server.bootstrap ?? fallback.bootstrap,
+    }
+}
+
+export function resolveLangPayload(payload, locale) {
+    if (isUsableLangPack(payload)) {
+        return mergeLangPack(payload, locale)
+    }
+
+    return mergeLangPack(extractLangCandidate(payload), locale)
+}
+
 export function createInitialLangState() {
     const locale = resolveInitialLocale()
 
@@ -78,5 +137,27 @@ export function createInitialLangState() {
         locale,
         direction: getDirection(locale),
         pack: getLangPack(locale),
+    }
+}
+
+export function resolveLangState(boot = getBoot()) {
+    const locale = hasLocale(boot.locale) ? boot.locale : resolveInitialLocale()
+
+    return {
+        locale,
+        direction: boot.direction ?? getDirection(locale),
+        pack: mergeLangPack(boot.lang, locale),
+    }
+}
+
+export function persistLocale(locale) {
+    if (!hasLocale(locale)) {
+        return
+    }
+
+    try {
+        localStorage.setItem(LOCALE_STORAGE_KEY, locale)
+    } catch {
+        // ignore storage errors
     }
 }

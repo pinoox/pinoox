@@ -4,14 +4,14 @@
             <div class="col-md-12">
                 <div id="page" class="prerequisites-page">
                     <header class="prerequisites-header page-header">
-                        <h1 class="title">{{ LANG.install.prerequisites }}</h1>
-                        <p class="description">{{ LANG.install.prerequisites_description }}</p>
+                        <h1 class="title">{{ install.prerequisites }}</h1>
+                        <p class="description">{{ install.prerequisites_description }}</p>
                     </header>
 
                     <InstallConnectionAlert
                         v-if="connectionError"
                         :error="connectionError"
-                        :retry-label="LANG.install.err_connection_retry"
+                        :retry-label="install.err_connection_retry"
                         @retry="loadPrerequisites"
                     />
 
@@ -48,7 +48,7 @@
                             class="prerequisites-alert"
                         >
                             <Icon name="info"/>
-                            <span>{{ LANG.install.err_prerequisites }}</span>
+                            <span>{{ install.err_prerequisites }}</span>
                         </div>
 
                         <div class="prerequisite-grid">
@@ -71,7 +71,7 @@
                                 </div>
                                 <div class="prerequisite-card__body">
                                     <div class="prerequisite-card__head">
-                                        <h3>{{ LANG.install[item.labelKey] }}</h3>
+                                        <h3>{{ install[item.labelKey] }}</h3>
                                         <span class="prerequisite-badge">{{ statusLabel(item.key) }}</span>
                                     </div>
 
@@ -91,8 +91,8 @@
                                                 class="prerequisite-card__tip-btn"
                                                 :class="{ 'is-open': openTips[item.key] }"
                                                 :aria-expanded="openTips[item.key] ? 'true' : 'false'"
-                                                :aria-label="LANG.install.prerequisites_tip_label"
-                                                :title="LANG.install.prerequisites_tip_label"
+                                                :aria-label="install.prerequisites_tip_label"
+                                                :title="install.prerequisites_tip_label"
                                                 @click="toggleTip(item.key)"
                                             >
                                                 <Icon name="help"/>
@@ -122,7 +122,7 @@
 
                     <div class="page-actions">
                         <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
-                            {{ LANG.install.back }}
+                            {{ install.back }}
                         </button>
                         <button
                             type="button"
@@ -130,7 +130,7 @@
                             :disabled="!canContinue || isChecking"
                             @click="next()"
                         >
-                            {{ LANG.install.continue }}
+                            {{ install.continue }}
                         </button>
                     </div>
                 </div>
@@ -142,9 +142,9 @@
 <script setup>
 import {computed, onMounted, reactive, ref} from 'vue'
 import {useRouter} from 'vue-router'
-import {storeToRefs} from 'pinia'
 import {installAPI} from '@api/install.js'
 import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import Icon from '@/components/icons/Icon.vue'
 import InstallConnectionAlert from '@/components/InstallConnectionAlert.vue'
 import {
@@ -166,7 +166,7 @@ const PROGRESS_CIRCUMFERENCE = 2 * Math.PI * 18
 
 const router = useRouter()
 const store = useInstallStore()
-const {LANG} = storeToRefs(store)
+const {install, LANG} = useInstallerLang()
 
 const prerequisiteItems = [
     {key: 'free_space', labelKey: 'prerequisites_required_space', icon: 'hdd'},
@@ -243,39 +243,39 @@ const overviewClass = computed(() => {
 })
 
 const overviewTitle = computed(() => {
-    const install = LANG.value.install
+    const labels = install.value
 
     if (isChecking.value) {
-        return install.prerequisites_overview_checking
+        return labels.prerequisites_overview_checking
     }
 
     if (connectionError.value || stats.value.fail > 0) {
-        return install.prerequisites_overview_issues
+        return labels.prerequisites_overview_issues
     }
 
     if (stats.value.unknown > 0) {
-        return install.prerequisites_overview_manual_check
+        return labels.prerequisites_overview_manual_check
     }
 
-    return install.prerequisites_overview_ready
+    return labels.prerequisites_overview_ready
 })
 
 const overviewSubtitle = computed(() => {
-    const install = LANG.value.install
+    const labels = install.value
 
     if (isChecking.value) {
-        return install.prerequisites_description
+        return labels.prerequisites_description
     }
 
     if (stats.value.fail > 0) {
-        return install.err_prerequisites
+        return labels.err_prerequisites
     }
 
     if (stats.value.unknown > 0) {
-        return install.prerequisites_overview_unknown_rewrite
+        return labels.prerequisites_overview_unknown_rewrite
     }
 
-    return install.prerequisites_description
+    return labels.prerequisites_description
 })
 
 const canContinue = computed(() => {
@@ -354,7 +354,7 @@ async function verifyApiRouting() {
         }
 
         const rewrite = prerequisites.mod_rewrite
-        const install = LANG.value.install
+        const labels = install.value
 
         if (rewrite.state === 'pass') {
             return
@@ -364,7 +364,7 @@ async function verifyApiRouting() {
             return
         }
 
-        const apiOk = install.prerequisites_current_api_ok
+        const apiOk = labels.prerequisites_current_api_ok
         const nextCurrent = rewrite.server
             ? `${rewrite.server} — ${apiOk}`
             : apiOk
@@ -468,14 +468,14 @@ function getIcon(type) {
 
 function statusLabel(type) {
     const state = prerequisites[type]?.state
-    const install = LANG.value.install
+    const labels = install.value
 
-    if (state === 'loading') return install.prerequisites_status_checking
-    if (state === 'fail') return install.prerequisites_status_fail
-    if (state === 'unknown') return install.prerequisites_status_unknown
-    if (state === 'pass') return install.prerequisites_status_pass
+    if (state === 'loading') return labels.prerequisites_status_checking
+    if (state === 'fail') return labels.prerequisites_status_fail
+    if (state === 'unknown') return labels.prerequisites_status_unknown
+    if (state === 'pass') return labels.prerequisites_status_pass
 
-    return install.prerequisites_status_checking
+    return labels.prerequisites_status_checking
 }
 
 function currentLabel(type) {
@@ -486,19 +486,19 @@ function currentLabel(type) {
         database: 'prerequisites_current_database',
     }
 
-    return LANG.value.install[map[type]] ?? ''
+    return install.value[map[type]] ?? ''
 }
 
 function currentValue(type) {
     const item = prerequisites[type]
-    const install = LANG.value.install
+    const labels = install.value
 
     if (!item || item.state === 'loading') {
-        return install.prerequisites_current_checking
+        return labels.prerequisites_current_checking
     }
 
     if (type === 'mod_rewrite') {
-        const htaccessLabel = rewriteHtaccessValue(item, install)
+        const htaccessLabel = rewriteHtaccessValue(item, labels)
 
         if (htaccessLabel) {
             if (item.server && item.state !== 'pass') {
@@ -510,47 +510,47 @@ function currentValue(type) {
 
         if (item.routingActive && item.state === 'unknown') {
             if (item.server) {
-                return `${item.server} — ${install.prerequisites_current_api_ok}`
+                return `${item.server} — ${labels.prerequisites_current_api_ok}`
             }
 
-            return install.prerequisites_current_api_ok
+            return labels.prerequisites_current_api_ok
         }
 
         if (item.state === 'unknown' && (item.current === 'manual_verify' || item.detail === 'manual_verify')) {
             if (item.server) {
-                return `${item.server} — ${install.prerequisites_current_manual_verify}`
+                return `${item.server} — ${labels.prerequisites_current_manual_verify}`
             }
 
-            return install.prerequisites_current_manual_verify
+            return labels.prerequisites_current_manual_verify
         }
 
         if (item.state === 'unknown' && !item.server && item.serverDetected === false) {
-            return install.prerequisites_current_server_unknown
+            return labels.prerequisites_current_server_unknown
         }
     }
 
     if (type === 'free_space' && item.state === 'unknown') {
         if (item.detail === 'shared_hosting') {
-            return install.prerequisites_current_cannot_detect_space
+            return labels.prerequisites_current_cannot_detect_space
         }
     }
 
     const raw = item.current ?? item.detail
 
     if (!raw || raw === 'none') {
-        return install.prerequisites_current_none
+        return labels.prerequisites_current_none
     }
 
     if (raw === 'disabled') {
-        return install.prerequisites_current_rewrite_off
+        return labels.prerequisites_current_rewrite_off
     }
 
     if (raw === 'routing active') {
-        return install.prerequisites_current_routing_active
+        return labels.prerequisites_current_routing_active
     }
 
     if (type === 'mod_rewrite') {
-        const mapped = rewriteDetailLabel(raw, install)
+        const mapped = rewriteDetailLabel(raw, labels)
 
         if (mapped) {
             return mapped
@@ -558,35 +558,35 @@ function currentValue(type) {
     }
 
     if (item.state === 'unknown' && type === 'mod_rewrite' && item.detail) {
-        return rewriteDetailLabel(item.detail, install) ?? item.detail
+        return rewriteDetailLabel(item.detail, labels) ?? item.detail
     }
 
     return raw
 }
 
-function rewriteDetailLabel(key, install) {
+function rewriteDetailLabel(key, texts) {
     const map = {
-        htaccess_missing: install.prerequisites_current_htaccess_missing,
-        htaccess_empty: install.prerequisites_current_htaccess_empty,
-        htaccess_no_pinoox: install.prerequisites_current_htaccess_no_pinoox,
-        htaccess_ok: install.prerequisites_current_htaccess_ok,
-        rewrite_htaccess_ok: install.prerequisites_current_rewrite_htaccess_ok,
-        rewrite_htaccess_active: install.prerequisites_current_rewrite_htaccess_active,
+        htaccess_missing: texts.prerequisites_current_htaccess_missing,
+        htaccess_empty: texts.prerequisites_current_htaccess_empty,
+        htaccess_no_pinoox: texts.prerequisites_current_htaccess_no_pinoox,
+        htaccess_ok: texts.prerequisites_current_htaccess_ok,
+        rewrite_htaccess_ok: texts.prerequisites_current_rewrite_htaccess_ok,
+        rewrite_htaccess_active: texts.prerequisites_current_rewrite_htaccess_active,
     }
 
     return map[key] ?? null
 }
 
-function rewriteHtaccessValue(item, install) {
+function rewriteHtaccessValue(item, texts) {
     if (!item.htaccessRequired || !item.htaccess) {
         return null
     }
 
     if (item.htaccess.ok) {
-        return install.prerequisites_current_htaccess_ok
+        return texts.prerequisites_current_htaccess_ok
     }
 
-    return rewriteDetailLabel(item.htaccess.detail, install)
+    return rewriteDetailLabel(item.htaccess.detail, texts)
 }
 
 function guideText(type) {
@@ -597,23 +597,23 @@ function guideText(type) {
         database: 'prerequisites_tip_database',
     }
 
-    return LANG.value.install[map[type]] ?? ''
+    return install.value[map[type]] ?? ''
 }
 
 function helpText(type) {
     const item = prerequisites[type]
-    const install = LANG.value.install
+    const labels = install.value
 
     if (!item || item.state === 'loading') {
         return ''
     }
 
     if (type === 'free_space' && item.state === 'unknown') {
-        return install.prerequisites_help_space_unknown
+        return labels.prerequisites_help_space_unknown
     }
 
     if (type === 'mod_rewrite' && (item.state === 'unknown' || item.state === 'fail')) {
-        return install.prerequisites_status_unknown
+        return labels.prerequisites_status_unknown
     }
 
     if (item.state === 'pass') {
@@ -626,7 +626,7 @@ function helpText(type) {
         database: 'prerequisites_help_database_fail',
     }
 
-    return install[map[type]] ?? ''
+    return labels[map[type]] ?? ''
 }
 
 function next() {

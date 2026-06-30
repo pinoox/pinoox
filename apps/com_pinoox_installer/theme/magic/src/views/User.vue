@@ -5,8 +5,8 @@
                 <div class="col-md-12">
                     <div id="page">
                     <header class="page-header">
-                        <h1 class="title">{{ LANG.user.info_admin }}</h1>
-                        <p class="description">{{ LANG.user.info_admin_description }}</p>
+                        <h1 class="title">{{ userLang.info_admin }}</h1>
+                        <p class="description">{{ userLang.info_admin_description }}</p>
                     </header>
                     <div class="page-panel">
                         <div v-if="isErr" class="page-alert page-alert--error" role="alert">
@@ -16,7 +16,7 @@
                         <div class="form form--scroll">
                             <div @keypress.enter="next()">
                                 <div class="install-field">
-                                    <label for="user-fname">{{ LANG.user.name }}</label>
+                                    <label for="user-fname">{{ userLang.name }}</label>
                                     <input
                                         id="user-fname"
                                         v-model="user.fname"
@@ -28,7 +28,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="user-lname">{{ LANG.user.family_name }}</label>
+                                    <label for="user-lname">{{ userLang.family_name }}</label>
                                     <input
                                         id="user-lname"
                                         v-model="user.lname"
@@ -40,7 +40,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="user-email">{{ LANG.user.email }}</label>
+                                    <label for="user-email">{{ userLang.email }}</label>
                                     <input
                                         id="user-email"
                                         v-model="user.email"
@@ -52,7 +52,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="user-username">{{ LANG.user.username }}</label>
+                                    <label for="user-username">{{ userLang.username }}</label>
                                     <input
                                         id="user-username"
                                         v-model="user.username"
@@ -64,7 +64,7 @@
                                     >
                                 </div>
                                 <div class="install-field">
-                                    <label for="user-password">{{ LANG.user.password }}</label>
+                                    <label for="user-password">{{ userLang.password }}</label>
                                     <PasswordInput
                                         id="user-password"
                                         v-model="user.password"
@@ -79,7 +79,7 @@
 
                     <div class="page-actions">
                         <button type="button" class="btn btn-outline-light pin-btn" @click="prev()">
-                            {{ LANG.install.back }}
+                            {{ install.back }}
                         </button>
                         <button
                             type="button"
@@ -87,7 +87,7 @@
                             :disabled="isLoading"
                             @click="next()"
                         >
-                            {{ LANG.install.setup }}
+                            {{ install.setup }}
                         </button>
                     </div>
                     </div>
@@ -113,6 +113,7 @@ import {useInstallStore} from '@/stores/install.js'
 import Icon from '@/components/icons/Icon.vue'
 import PasswordInput from '@/components/PasswordInput.vue'
 import InstallProgressModal from '@/components/InstallProgressModal.vue'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import {useInstaller} from '@/composables/useInstaller.js'
 import {getUrl} from '@/boot.js'
 
@@ -127,7 +128,8 @@ const emit = defineEmits(['update:steps'])
 
 const router = useRouter()
 const store = useInstallStore()
-const {LANG, db, user} = storeToRefs(store)
+const {db, user} = storeToRefs(store)
+const {install, user: userLang} = useInstallerLang()
 const {redirect} = useInstaller()
 
 const isLoading = ref(false)
@@ -160,7 +162,7 @@ function next() {
         progressOpen.value = false
         isLoading.value = false
         installDone.value = false
-        err.value = readApiErrorMessage(error, LANG.value?.install?.err_insert_tables)
+        err.value = readApiErrorMessage(error, install.value?.err_insert_tables)
     })
 }
 

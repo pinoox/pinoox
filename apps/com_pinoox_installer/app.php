@@ -12,8 +12,8 @@ return [
     'description' => '@manifest.description',
     'developer' => 'Pinoox Team',
     'theme' => 'magic',
-    'version-name' => '2.1.0',
-    'version-code' => 8,
+    'version-name' => '2.1.3',
+    'version-code' => 11,
     'lang' => 'en',
     'minpin' => 2,
     'transport' => [

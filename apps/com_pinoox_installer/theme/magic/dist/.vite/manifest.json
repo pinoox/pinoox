@@ -720,12 +720,12 @@
     "src": "src/assets/images/logo/logo-256.png"
   },
   "src/main.js": {
-    "file": "assets/main-TbCCx0Sv.js",
+    "file": "assets/main-DCbSNDJx.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "css": [
-      "assets/main-CrGTMGH2.css"
+      "assets/main-6CCcVNxb.css"
     ],
     "assets": [
       "assets/logo-256-9UY93egM.png",
