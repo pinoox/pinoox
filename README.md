@@ -46,6 +46,45 @@ composer install
 
 Point your web server at the project root (or use your usual MAMP / Apache / nginx setup), then open the site in the browser. The installer app guides first-time setup.
 
+### Pinoox DevDB
+
+For local app development, Pinoox can run without MySQL, PostgreSQL, or SQLite:
+
+```bash
+APP_ENV=local
+DB_CONNECTION=auto
+pinx migrate
+```
+
+When no real database is available, local projects fall back to **Pinoox DevDB** and store migration-derived schema plus JSON data under `storage/devdb/`. Developers still write normal migrations and use normal models or `DB::app()->table(...)`.
+
+Useful DevDB commands:
+
+```bash
+pinx migrate --devdb
+pinx migrate --devdb --preview
+pinx devdb:status
+pinx devdb:inspect posts
+pinx devdb:export storage/devdb-export.json
+pinx devdb:seed
+pinx devdb:clear --force
+```
+
+DevDB writes:
+
+- `storage/devdb/schema.json`
+- `storage/devdb/data/{table}.json`
+- `storage/devdb/meta/migrations.json`
+- `storage/devdb/meta/sequences.json`
+- `storage/devdb/meta/indexes.json`
+- `storage/devdb/devdb.sqlite` when the SQLite DevDB engine is available
+
+DevDB is development-only. Production never silently falls back to DevDB; configure MySQL, PostgreSQL, or SQLite before deploying.
+
+By default, DevDB uses an internal SQLite database automatically when `pdo_sqlite` is available. That gives local developers better SQL compatibility, including raw SQL and real SQLite transactions, without installing a separate database server. If SQLite is not available, or if you set `DEVDB_ENGINE=json`, DevDB falls back to the JSON engine.
+
+The JSON engine supports common CRUD, pagination, simple model relations (`belongsTo`, `hasOne`, `hasMany`), seeders, factories, nested `where` / `orWhere` queries, simple `innerJoin` / `leftJoin`, common aggregates (`count`, `sum`, `avg`, `min`, `max`), simple `groupBy` / `having`, and lightweight JSON transaction snapshots. Lock hints such as `lockForUpdate()` are accepted as development no-ops. Raw SQL on the JSON engine still fails with a clear error suggesting SQLite, MySQL, or PostgreSQL.
+
 **Next steps (documentation):**
 
 - [Installation](https://github.com/pinoox/docs/blob/master/en/start/installing-pinoox.md)
