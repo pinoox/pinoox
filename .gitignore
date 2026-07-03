@@ -30,8 +30,10 @@
 sample-dev-app.pinx
 
 
-# Cursor editor (local rules; see global gitignore)
-.cursor/
+# Cursor (keep shared agent rules)
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 
 # Node Js
 node_modules
@@ -70,7 +72,9 @@ package-lock.json
 *.code-workspace
 
 # Cursor (keep shared agent rules)
-.cursor/
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
 .editorconfig
 .zed/
 .nova/
