@@ -1,5 +1,89 @@
 # Release Notes
-## [Unreleased](https://github.com/pinoox/pinoox/compare/1.2.1b3...master)
+## [Unreleased](https://github.com/pinoox/pinoox/compare/3.1-beta...master)
+
+## Added
+
+- Document the recommended Pinx single-app development workflow, from first app setup through build and release.
+- Add local development guidance for Pinoox DevDB as the default zero-setup database workflow.
+- Add clearer development setup notes for Composer-based Pincore and Pinx package workflows.
+
+## Changed
+
+- Improve console bootstrap behavior for UTF-8 output in Pinoox CLI contexts.
+- Refine the single-app development experience around local environment defaults and development-only tooling.
+
+## Fixed
+
+- Fix Persian/UTF-8 CLI output initialization for terminal commands.
+
+## [v3.1-beta (2026-06-09)](https://github.com/pinoox/pinoox/releases/tag/3.1-beta)
+
+## Added
+
+- Introduce the new Pinoox platform generation with a clear split between the platform project and Pincore 3.
+- Move the framework engine into the Composer package `pinoox/pincore`.
+- Add root-level platform configuration for apps, domains, app routing, and deployment settings.
+- Add path aliases such as `~project` and `~pincore` for predictable project and core paths.
+- Add guided setup behavior when Composer dependencies are missing.
+- Add stronger developer tooling for frontend assets, dependency management, testing, app creation, version checks, and Pinker cache rebuilds.
+- Add smarter multi-app routing with domain-first matching, longest path-prefix matching, wildcard subdomains, shared URL bases, and query-route mode.
+- Add per-app baked runtime cache under `pinker/apps/{package}/cache/`.
+
+## Changed
+
+- Replace the embedded core layout with a Composer-managed Pincore layer.
+- Separate platform versioning from kernel versioning.
+- Modernize the Manager, Installer, and Welcome frontends for the new platform structure.
+- Improve deployment and hosting clarity by keeping project files under `config/`, `apps/`, and `storage/`.
+
+## Notes
+
+- This is a beta release with breaking changes from Pinoox 2.1.0.
+- Requires PHP 8.1+, Composer 2.x, and Node.js for Vite theme development/build workflows.
+
+## [v2.1.0 (2026-02-24)](https://github.com/pinoox/pinoox/releases/tag/2.1.0)
+
+## Added
+
+- Upgrade Pinoox Manager to Vue 3 with Vite 6, Tailwind CSS 4, SCSS, and BEM-based frontend structure.
+
+## Changed
+
+- Migrate the Manager frontend from Vue 2 to Vue 3.
+- Redesign the Manager interface with a cleaner, more minimal UI.
+- Improve API-related components for better speed and maintainability.
+- Improve app management user experience.
+
+## Fixed
+
+- Fix known issues in app management modules.
+
+## [v2.0.1 (2025-05-29)](https://github.com/pinoox/pinoox/releases/tag/2.0.1)
+
+## Changed
+
+- Update installer compatibility checks to require PHP 8.1.0 or newer.
+- Update the Pinoox Twig template with the latest compatibility and maintenance changes.
+
+## [v2.0.0 (2025-05-28)](https://github.com/pinoox/pinoox/releases/tag/2.0.0)
+
+## Added
+
+- Introduce a rewritten Pinoox 2 foundation.
+- Add a container manager for dependency lifecycle handling.
+- Add dependency injection support.
+- Add Composer-based package management.
+- Add the Pinoox CLI for common development workflows.
+- Add ORM support for database records.
+- Add Portal facades for expressive access to framework services.
+- Add database migrations.
+- Add an event manager.
+- Add Flow as a middleware-like request lifecycle system.
+
+## Changed
+
+- Improve service management flexibility.
+- Modernize core architecture for a more developer-friendly framework foundation.
 
 ## [v1.6.8 (2021-11-16)](https://github.com/pinoox/pinoox/compare/1.6.8...master)  
 
