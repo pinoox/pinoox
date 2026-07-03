@@ -26,8 +26,9 @@
 .env.*
 !.env.example
 
-# Local MAMP / PHP error dumps inside apps
-**/MAMP_php_error_log*
+# Local dev sample packages (not for commit)
+sample-dev-app.pinx
+
 
 # Cursor editor (local rules; see global gitignore)
 .cursor/
@@ -83,10 +84,32 @@ Homestead.yaml
 # Project — OS & misc
 # =============================================================================
 
+**/.DS_Store
 .DS_Store
 Thumbs.db
 *.log
 
+
 # Generated test fixtures (keep directory markers)
 tests/Fixtures/**/*
 !tests/Fixtures/**/.gitkeep
+
+# =============================================================================
+# Apps — bundled system apps only (installer, manager, welcome)
+# =============================================================================
+
+/apps/*
+!/apps/com_pinoox_installer/
+!/apps/com_pinoox_installer/**
+!/apps/com_pinoox_manager/
+!/apps/com_pinoox_manager/**
+!/apps/com_pinoox_welcome/
+!/apps/com_pinoox_welcome/**
+
+# macOS metadata inside whitelisted apps (must come after un-ignore rules)
+**/.DS_Store
+.DS_Store
+
+# Local platform overrides (never pushed)
+/platform/*.local.php
+/platform/**/*.local.php
