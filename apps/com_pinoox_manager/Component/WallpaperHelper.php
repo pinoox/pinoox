@@ -20,7 +20,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WallpaperHelper
 {
-    private const FOLDER = 'system/wallpapers';
+    private const FOLDER = 'manager/wallpapers';
+
+    private const LEGACY_APP_FOLDER = 'system/wallpapers';
+
+    private const LEGACY_STORAGE_FOLDER = 'system/wallpapers';
 
     private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -129,6 +133,8 @@ class WallpaperHelper
 
     public static function upload(UploadedFile $file): ?array
     {
+        self::migrateLegacyStorageFolder();
+
         $result = File::upload($file)
             ->to(self::FOLDER)
             ->access('public')
@@ -200,6 +206,8 @@ class WallpaperHelper
      */
     private static function listStorageFiles(): array
     {
+        self::migrateLegacyStorageFolder();
+
         $disk = self::storage();
 
         if (!$disk->exists(self::FOLDER)) {
@@ -243,13 +251,41 @@ class WallpaperHelper
 
     private static function legacyFolder(): string
     {
-        $dir = path(self::FOLDER);
+        $dir = path(self::LEGACY_APP_FOLDER);
 
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
         return $dir;
+    }
+
+    private static function migrateLegacyStorageFolder(): void
+    {
+        $disk = self::storage();
+        if (!$disk->exists(self::LEGACY_STORAGE_FOLDER)) {
+            return;
+        }
+
+        if (!$disk->exists(self::FOLDER)) {
+            $disk->makeDirectory(self::FOLDER);
+        }
+
+        foreach ($disk->files(self::LEGACY_STORAGE_FOLDER) as $key) {
+            $basename = basename($key);
+            $target = self::FOLDER . '/' . $basename;
+
+            if ($disk->exists($target)) {
+                $disk->delete($key);
+                continue;
+            }
+
+            $disk->move($key, $target);
+        }
+
+        if ($disk->exists(self::LEGACY_STORAGE_FOLDER)) {
+            $disk->deleteDirectory(self::LEGACY_STORAGE_FOLDER);
+        }
     }
 
     private static function normalizeId(string $name): string

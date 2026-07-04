@@ -15,8 +15,8 @@ class PinionController extends ApiController
         return [
             'destination' => PackagePaths::MANUAL,
             'extensions' => ['pinx'],
-            'mode' => 'local',
-            'storage' => false,
+            'mode' => 'storage',
+            'storage' => true,
             'record' => false,
         ];
     }

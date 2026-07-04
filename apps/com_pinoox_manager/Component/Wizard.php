@@ -387,11 +387,11 @@ class Wizard
 
     private static function appDownloadPath(string $package_name): string
     {
-        return path(PackagePaths::APPS . $package_name . self::PACKAGE_EXT);
+        return PackagePaths::appsFile($package_name);
     }
 
     private static function templateDownloadPath(string $uid): string
     {
-        return path(PackagePaths::TEMPLATES . $uid . self::PACKAGE_EXT);
+        return PackagePaths::templatesFile($uid);
     }
 }

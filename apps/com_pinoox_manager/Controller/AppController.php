@@ -17,7 +17,6 @@ use App\com_pinoox_manager\Component\AppHelper;
 use App\com_pinoox_manager\Component\AppIconPack;
 use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
-use Pinoox\Component\File as FileHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
@@ -169,11 +168,7 @@ class AppController extends ApiController
 
     public function files()
     {
-        $path = PackagePaths::manualDir();
-        if (!is_dir($path))
-            return [];
-
-        $files = FileHelper::get_files_by_pattern($path, '*.pinx');
+        $files = PackagePaths::listManualFiles();
         $files = array_map(function ($file) {
             try {
                 $data = Wizard::pullPackageMeta($file);
