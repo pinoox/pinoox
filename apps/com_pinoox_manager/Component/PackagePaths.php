@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Staged .pinx packages under the manager app storage disk (~storage/apps/com_pinoox_manager/).
+ * Staged .pinx packages under project storage (~storage/packages/).
  */
 namespace App\com_pinoox_manager\Component;
 
@@ -10,11 +10,11 @@ use Pinoox\Portal\File as FilePortal;
 
 final class PackagePaths
 {
-    public const MANUAL = 'manager/packages/manual';
+    public const MANUAL = 'packages/manual';
 
-    public const APPS = 'manager/packages/apps';
+    public const APPS = 'packages/apps';
 
-    public const TEMPLATES = 'manager/packages/templates';
+    public const TEMPLATES = 'packages/templates';
 
     private const LEGACY_MANUAL = '~/downloads/packages/manual/';
 
@@ -22,9 +22,13 @@ final class PackagePaths
 
     private const LEGACY_TEMPLATES = '~/downloads/templates/';
 
+    private const LEGACY_STORAGE_MANUAL = 'downloads/packages/manual';
+
+    private const APP_SCOPED_PREFIX = 'manager/packages';
+
     public static function storage(): FilesystemAdapter
     {
-        return FilePortal::storage();
+        return ManagerStorage::disk();
     }
 
     public static function manualDir(): string
@@ -98,7 +102,7 @@ final class PackagePaths
     public static function ensureManualDir(): string
     {
         self::ensureDir(self::MANUAL);
-        self::migrateLegacyDir(self::LEGACY_MANUAL, self::MANUAL);
+        self::migrateLegacySources(self::MANUAL);
 
         return self::storage()->path(self::MANUAL);
     }
@@ -106,7 +110,7 @@ final class PackagePaths
     public static function ensureAppsDir(): string
     {
         self::ensureDir(self::APPS);
-        self::migrateLegacyDir(self::LEGACY_APPS, self::APPS);
+        self::migrateLegacySources(self::APPS);
 
         return self::storage()->path(self::APPS);
     }
@@ -114,7 +118,7 @@ final class PackagePaths
     public static function ensureTemplatesDir(): string
     {
         self::ensureDir(self::TEMPLATES);
-        self::migrateLegacyDir(self::LEGACY_TEMPLATES, self::TEMPLATES);
+        self::migrateLegacySources(self::TEMPLATES);
 
         return self::storage()->path(self::TEMPLATES);
     }
@@ -151,48 +155,29 @@ final class PackagePaths
 
     private static function ensureDir(string $key): void
     {
-        $disk = self::storage();
-        if (!$disk->exists($key)) {
-            $disk->makeDirectory($key);
-        }
+        ManagerStorage::ensureDir($key);
     }
 
-    private static function migrateLegacyDir(string $legacyPath, string $storageKey): void
+    private static function migrateLegacySources(string $targetKey): void
     {
-        $legacyDir = path($legacyPath);
-        if (!is_dir($legacyDir)) {
-            return;
+        $legacyMap = [
+            self::MANUAL => [
+                path(self::LEGACY_MANUAL),
+                path('~storage/' . self::LEGACY_STORAGE_MANUAL),
+            ],
+            self::APPS => [
+                path(self::LEGACY_APPS),
+            ],
+            self::TEMPLATES => [
+                path(self::LEGACY_TEMPLATES),
+            ],
+        ];
+
+        foreach ($legacyMap[$targetKey] ?? [] as $legacyDir) {
+            ManagerStorage::migrateFromDir($legacyDir, $targetKey);
         }
 
-        $disk = self::storage();
-        self::ensureDir($storageKey);
-
-        foreach (scandir($legacyDir) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
-                continue;
-            }
-
-            $source = $legacyDir . DIRECTORY_SEPARATOR . $item;
-            if (!is_file($source)) {
-                continue;
-            }
-
-            $targetKey = $storageKey . '/' . $item;
-            if ($disk->exists($targetKey)) {
-                @unlink($source);
-                continue;
-            }
-
-            $targetPath = $disk->path($targetKey);
-            if (@rename($source, $targetPath)) {
-                continue;
-            }
-
-            if (@copy($source, $targetPath)) {
-                @unlink($source);
-            }
-        }
-
-        @rmdir($legacyDir);
+        $appDisk = FilePortal::storage();
+        ManagerStorage::migrateFromDisk($appDisk, self::APP_SCOPED_PREFIX . '/' . basename($targetKey), $targetKey);
     }
 }

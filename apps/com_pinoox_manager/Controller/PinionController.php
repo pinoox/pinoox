@@ -2,7 +2,6 @@
 
 namespace App\com_pinoox_manager\Controller;
 
-use App\com_pinoox_manager\Component\PackagePaths;
 use Pinoox\Component\Pinion\Concerns\PinionUploadActions;
 use Pinoox\Component\Kernel\Controller\ApiController;
 
@@ -13,10 +12,10 @@ class PinionController extends ApiController
     protected function pinionDefaults(): array
     {
         return [
-            'destination' => PackagePaths::MANUAL,
+            'destination' => '~storage/packages/manual',
             'extensions' => ['pinx'],
-            'mode' => 'storage',
-            'storage' => true,
+            'mode' => 'local',
+            'storage' => false,
             'record' => false,
         ];
     }

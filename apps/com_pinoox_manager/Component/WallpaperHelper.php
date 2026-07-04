@@ -20,11 +20,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WallpaperHelper
 {
-    private const FOLDER = 'manager/wallpapers';
+    private const FOLDER = 'wallpapers';
 
     private const LEGACY_APP_FOLDER = 'system/wallpapers';
 
-    private const LEGACY_STORAGE_FOLDER = 'system/wallpapers';
+    private const APP_SCOPED_FOLDERS = [
+        'manager/wallpapers',
+        'system/wallpapers',
+    ];
 
     private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -47,6 +50,11 @@ class WallpaperHelper
         ksort($files, SORT_NATURAL);
 
         return array_values($files);
+    }
+
+    private static function maxUploadBytes(): int
+    {
+        return 5 * 1024 * 1024;
     }
 
     public static function defaultId(): string
@@ -135,19 +143,35 @@ class WallpaperHelper
     {
         self::migrateLegacyStorageFolder();
 
-        $result = File::upload($file)
-            ->to(self::FOLDER)
-            ->access('public')
-            ->diskOnly()
-            ->extensions(implode(',', self::EXTENSIONS))
-            ->maxSize(self::MAX_SIZE)
-            ->save();
-
-        if (!$result->success || empty($result->path)) {
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, self::EXTENSIONS, true)) {
             return null;
         }
 
-        return self::itemFromStorageKey((string) $result->path);
+        if ($file->getSize() > self::maxUploadBytes()) {
+            return null;
+        }
+
+        $disk = self::storage();
+        ManagerStorage::ensureDir(self::FOLDER);
+
+        $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $base = preg_replace('/[^a-zA-Z0-9_-]+/', '-', (string) $base) ?: 'wallpaper';
+        $base = trim($base, '-');
+        $filename = $base . '.' . $ext;
+        $counter = 1;
+
+        while ($disk->exists(self::FOLDER . '/' . $filename)) {
+            $filename = $base . '-' . $counter . '.' . $ext;
+            $counter++;
+        }
+
+        $stored = $disk->putFileAs(self::FOLDER, $file, $filename);
+        if ($stored === false) {
+            return null;
+        }
+
+        return self::itemFromStorageKey(self::FOLDER . '/' . $filename);
     }
 
     public static function delete(string $name): bool
@@ -198,7 +222,7 @@ class WallpaperHelper
 
     private static function storage(): FilesystemAdapter
     {
-        return File::storage();
+        return ManagerStorage::disk();
     }
 
     /**
@@ -262,29 +286,10 @@ class WallpaperHelper
 
     private static function migrateLegacyStorageFolder(): void
     {
-        $disk = self::storage();
-        if (!$disk->exists(self::LEGACY_STORAGE_FOLDER)) {
-            return;
-        }
+        $appDisk = File::storage();
 
-        if (!$disk->exists(self::FOLDER)) {
-            $disk->makeDirectory(self::FOLDER);
-        }
-
-        foreach ($disk->files(self::LEGACY_STORAGE_FOLDER) as $key) {
-            $basename = basename($key);
-            $target = self::FOLDER . '/' . $basename;
-
-            if ($disk->exists($target)) {
-                $disk->delete($key);
-                continue;
-            }
-
-            $disk->move($key, $target);
-        }
-
-        if ($disk->exists(self::LEGACY_STORAGE_FOLDER)) {
-            $disk->deleteDirectory(self::LEGACY_STORAGE_FOLDER);
+        foreach (self::APP_SCOPED_FOLDERS as $folder) {
+            ManagerStorage::migrateFromDisk($appDisk, $folder, self::FOLDER);
         }
     }
 
