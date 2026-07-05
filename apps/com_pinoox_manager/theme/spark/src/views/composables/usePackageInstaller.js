@@ -6,6 +6,7 @@ import {installStepLabel, sleep} from '@utils/packageInstall.js';
 import {readApiErrorMessage} from '@utils/apiEnvelope.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {useAppStore} from '@/stores/modules/app.js';
+import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 import {toast} from '@global';
 
 function unwrapPayload(response) {
@@ -19,6 +20,7 @@ function errorMessage(error) {
 export function usePackageInstaller() {
     const store = usePackageInstallerStore();
     const appStore = useAppStore();
+    const {pushAppManager} = useControlPanelNavigation();
 
     async function uploadSelectedFile(file) {
         if (!file || !String(file.name).toLowerCase().endsWith('.pinx')) {
@@ -268,6 +270,8 @@ export function usePackageInstaller() {
             return;
         }
 
+        store.routeSaving = true;
+
         try {
             await routerAPI.save({
                 path,
@@ -278,6 +282,20 @@ export function usePackageInstaller() {
             toast({title: 'آدرس با موفقیت ثبت شد', type: 'success'});
         } catch (error) {
             store.setError(errorMessage(error));
+        } finally {
+            store.routeSaving = false;
+        }
+    }
+
+    function openAppSettings() {
+        const packageName = store.installResult?.package_name
+            || store.routePrompt.packageName
+            || store.meta?.package_name;
+
+        store.dismiss();
+
+        if (packageName) {
+            void pushAppManager(packageName, 'config');
         }
     }
 
@@ -353,6 +371,7 @@ export function usePackageInstaller() {
         testDatabaseConnection,
         assignRoute,
         skipRoutePrompt,
+        openAppSettings,
         installStepLabel,
         toggleAdvanced,
     };

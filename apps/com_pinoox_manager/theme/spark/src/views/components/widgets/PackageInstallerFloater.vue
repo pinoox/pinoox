@@ -192,35 +192,28 @@
         </template>
 
         <template v-else-if="store.phase === 'installing'">
-          <div v-if="store.meta" class="packageInstaller__statusHead">
-            <AppIcon v-bind="packageIconProps" size="sm"/>
-            <p class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
-          </div>
-          <p v-else class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
-          <p class="packageInstaller__waitHint">تا پایان نصب صبر کنید و پنجره را نبندید.</p>
-          <div class="packageInstaller__progressTrack">
-            <div class="packageInstaller__progressBar" :style="{ width: `${store.progress}%` }"/>
-          </div>
-          <p class="packageInstaller__statusMeta">{{ store.progress }}%</p>
+          <div class="packageInstaller__installProgress">
+            <div v-if="store.meta" class="packageInstaller__statusHead">
+              <AppIcon v-bind="packageIconProps" size="sm"/>
+              <p class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
+            </div>
+            <p v-else class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
 
-          <div v-if="displaySteps.length" class="packageInstaller__steps">
-            <p class="packageInstaller__stepsTitle">مراحل نصب</p>
-            <ul>
-              <li
-                  v-for="(step, index) in displaySteps"
-                  :key="`${step.step}-${index}`"
-                  class="packageInstaller__step"
-                  :class="`is-${step.status}`"
-              >
-                <span class="packageInstaller__stepIcon">{{ stepIcon(step.status) }}</span>
-                <span class="packageInstaller__stepText">
-                  <strong>{{ installStepLabel(step.step) }}</strong>
-                  <small>{{ step.message }}</small>
-                </span>
-              </li>
-            </ul>
+            <div class="packageInstaller__installHero">
+              <WidgetLoading/>
+            </div>
+
+            <p class="packageInstaller__installStatus" role="status" aria-live="polite">
+              <span class="packageInstaller__installStatusDot"/>
+              {{ currentInstallMessage }}
+            </p>
+
+            <p class="packageInstaller__waitHint">تا پایان نصب صبر کنید و پنجره را نبندید.</p>
+            <div class="packageInstaller__progressTrack">
+              <div class="packageInstaller__progressBar" :style="{ width: `${store.progress}%` }"/>
+            </div>
+            <p class="packageInstaller__statusMeta">{{ store.progress }}%</p>
           </div>
-          <WidgetLoading v-else/>
         </template>
 
         <template v-else-if="store.phase === 'route'">
@@ -237,8 +230,13 @@
             />
           </div>
           <div class="packageInstaller__foot">
-            <Button label="بعداً" variant="dark" @click="skipRoutePrompt"/>
-            <Button label="تخصیص آدرس" variant="primary" @click="assignRoute"/>
+            <Button label="بعداً" variant="dark" :is-disabled="store.routeSaving" @click="skipRoutePrompt"/>
+            <Button
+                label="تخصیص آدرس"
+                variant="primary"
+                :is-loading="store.routeSaving"
+                @click="assignRoute"
+            />
           </div>
         </template>
 
@@ -249,8 +247,8 @@
           </div>
           <p v-else class="packageInstaller__success">{{ store.actionLabel }} با موفقیت انجام شد.</p>
           <div class="packageInstaller__foot">
-            <Button label="بستن" variant="primary" @click="store.dismiss()"/>
-            <Button label="بسته دیگر" variant="dark" outline @click="store.reset()"/>
+            <Button label="بستن" variant="dark" @click="store.dismiss()"/>
+            <Button label="تنظیمات اپلیکیشن" variant="primary" @click="openAppSettings"/>
           </div>
         </template>
 
@@ -312,6 +310,7 @@ const {
     testDatabaseConnection,
     assignRoute,
     skipRoutePrompt,
+    openAppSettings,
     installStepLabel,
     toggleAdvanced,
 } = usePackageInstaller();
@@ -393,7 +392,22 @@ const installButtonLabel = computed(() => {
     return 'نصب';
 });
 
-const displaySteps = computed(() => store.steps);
+const currentInstallMessage = computed(() => {
+    const steps = store.steps;
+
+    if (!steps.length) {
+        return 'آماده‌سازی فرآیند نصب…';
+    }
+
+    const last = steps[steps.length - 1];
+    const message = String(last.message || '').trim();
+
+    if (message) {
+        return message;
+    }
+
+    return `${installStepLabel(last.step)}…`;
+});
 
 const prefixHint = computed(() => {
     if (store.prefixLoading) {

@@ -21,6 +21,7 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         prefixLoading: false,
         connectionTesting: false,
         connectionVerifiedFingerprint: null,
+        routeSaving: false,
         meta: null,
         filename: null,
         error: null,
@@ -136,6 +137,7 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.prefixLoading = false;
             this.connectionTesting = false;
             this.connectionVerifiedFingerprint = null;
+            this.routeSaving = false;
             this.showAdvanced = false;
             this.useCustomDatabase = false;
             this.prefixStatus = null;
