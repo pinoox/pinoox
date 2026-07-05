@@ -173,8 +173,17 @@ class AppController extends ApiController
         $database = $options['database'] ?? null;
 
         if (is_array($database) && PackageDatabase::hasCustomConnectionOptions($database)) {
-            if (!PackageDatabase::testConnection($database)) {
-                return $this->deny('manager.database_connection_failed');
+            $connectionResult = PackageDatabase::testConnectionResult($database);
+
+            if (!$connectionResult['ok']) {
+                $message = $connectionResult['message'] ?? 'manager.database_connection_failed';
+
+                return $this->fail(
+                    'DATABASE_CONNECTION_FAILED',
+                    $message,
+                    status: 422,
+                    translate: str_starts_with($message, 'manager.'),
+                );
             }
         }
 
@@ -246,13 +255,20 @@ class AppController extends ApiController
     public function testDatabaseConnection(Request $request)
     {
         $input = $request->payloadMany('connection,host,database,username,password,prefix,port', '', false);
-        $connected = PackageDatabase::testConnection($input);
+        $result = PackageDatabase::testConnectionResult($input);
 
-        if ($connected) {
+        if ($result['ok']) {
             return $this->message('manager.database_connection_ok');
         }
 
-        return $this->deny('manager.database_connection_failed');
+        $message = $result['message'] ?? 'manager.database_connection_failed';
+
+        return $this->fail(
+            'DATABASE_CONNECTION_FAILED',
+            $message,
+            status: 422,
+            translate: str_starts_with($message, 'manager.'),
+        );
     }
 
     public function databaseDefaults()

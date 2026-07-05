@@ -3,6 +3,7 @@
 namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Component\Database\AppDatabaseResolver;
+use Pinoox\Component\Database\DatabaseConfig;
 use Pinoox\Component\Database\DatabaseManager;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Portal\App\AppEngine;
@@ -123,6 +124,44 @@ final class PackageDatabase
 
     public static function testConnection(array $input): bool
     {
+        return self::testConnectionResult($input)['ok'];
+    }
+
+    /**
+     * @return array{ok: bool, message: ?string}
+     */
+    public static function testConnectionResult(array $input): array
+    {
+        $config = self::buildTestConnectionConfig($input);
+
+        if ($config === null) {
+            return [
+                'ok' => false,
+                'message' => 'نام دیتابیس را وارد کنید.',
+            ];
+        }
+
+        $connectionName = '__manager_install_test';
+
+        try {
+            DB::addConnection($config, $connectionName);
+            DB::bootEloquent();
+            DB::connection($connectionName)->getPdo();
+
+            return ['ok' => true, 'message' => null];
+        } catch (\Throwable $e) {
+            return [
+                'ok' => false,
+                'message' => self::formatConnectionError($e),
+            ];
+        }
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function buildTestConnectionConfig(array $input): ?array
+    {
         $connection = strtolower(trim((string) ($input['connection'] ?? 'mysql')));
         $port = (string) ($input['port'] ?? '');
 
@@ -134,31 +173,56 @@ final class PackageDatabase
             };
         }
 
-        $config = [
-            'driver' => $connection,
+        $database = trim((string) ($input['database'] ?? ''));
+
+        if ($database === '') {
+            return null;
+        }
+
+        $shared = [
             'host' => (string) ($input['host'] ?? '127.0.0.1'),
             'port' => $port,
-            'database' => (string) ($input['database'] ?? ''),
+            'database' => $database,
             'username' => (string) ($input['username'] ?? 'root'),
             'password' => (string) ($input['password'] ?? ''),
             'prefix' => self::normalizePrefix((string) ($input['prefix'] ?? DatabaseManager::DEFAULT_CORE_TABLE_PREFIX)),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
         ];
 
-        if ($config['database'] === '') {
-            return false;
-        }
+        $config = match ($connection) {
+            'pgsql' => array_merge($shared, [
+                'driver' => 'pgsql',
+                'charset' => 'utf8',
+                'prefix_indexes' => true,
+                'search_path' => 'public',
+                'sslmode' => 'prefer',
+            ]),
+            'sqlsrv' => array_merge($shared, [
+                'driver' => 'sqlsrv',
+                'charset' => 'utf8',
+                'prefix_indexes' => true,
+            ]),
+            'sqlite' => [
+                'driver' => 'sqlite',
+                'database' => $database,
+                'prefix' => $shared['prefix'],
+            ],
+            default => array_merge($shared, [
+                'driver' => 'mysql',
+                'charset' => 'utf8mb4',
+                'collation' => 'utf8mb4_unicode_ci',
+                'strict' => true,
+                'engine' => 'InnoDB',
+            ]),
+        };
 
-        try {
-            DB::addConnection($config, '__manager_install_test');
-            DB::bootEloquent();
-            DB::connection('__manager_install_test')->getPdo();
+        return DatabaseConfig::normalizeConnectionDriver($config);
+    }
 
-            return true;
-        } catch (\Throwable) {
-            return false;
-        }
+    private static function formatConnectionError(\Throwable $error): string
+    {
+        $message = trim($error->getMessage());
+
+        return $message !== '' ? $message : 'اتصال به دیتابیس برقرار نشد.';
     }
 
     public static function prefixTablesExist(string $prefix): bool

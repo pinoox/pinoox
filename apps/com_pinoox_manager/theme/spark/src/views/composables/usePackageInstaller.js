@@ -3,6 +3,7 @@ import {appAPI} from '@api/app.js';
 import {routerAPI} from '@api/router.js';
 import {resolveUploadedFilename, uploadPackageFile} from '@utils/pinion.js';
 import {installStepLabel, sleep} from '@utils/packageInstall.js';
+import {readApiErrorMessage} from '@utils/apiEnvelope.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {useAppStore} from '@/stores/modules/app.js';
 import {toast} from '@global';
@@ -12,10 +13,7 @@ function unwrapPayload(response) {
 }
 
 function errorMessage(error) {
-    return error?.response?.data?.message
-        ?? error?.response?.data?.error
-        ?? error?.message
-        ?? 'خطا در پردازش بسته';
+    return readApiErrorMessage(error) || 'خطا در پردازش بسته';
 }
 
 export function usePackageInstaller() {
