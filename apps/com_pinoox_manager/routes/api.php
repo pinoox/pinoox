@@ -24,5 +24,8 @@ return routes([
         'path' => 'docs/api',
         'internal_path' => 'docs/api-internal',
     ],
-    'routes' => route_files('api'),
+    'routes' => route_files([
+        'api\public.php',
+        'api\private.php'
+    ]),
 ]);

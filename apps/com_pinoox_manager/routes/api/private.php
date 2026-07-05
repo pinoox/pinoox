@@ -16,181 +16,149 @@ use App\com_pinoox_manager\Controller\NotificationController;
 use App\com_pinoox_manager\Controller\UpdateController;
 use App\com_pinoox_manager\Controller\TemplateController;
 use App\com_pinoox_manager\Controller\PinionController;
+use function Pinoox\Router\{collect, get, group, post};
 
-return [
-    'flow' => ['manager.auth'],
-    'routes' => [
-        [
-            'prefix' => '/auth',
-            'as' => 'auth.',
-            'controller' => AuthController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/lock', 'action' => 'lock', 'name' => 'lock'],
-                [
-                    'method' => 'POST',
-                    'uri' => '/unlock',
-                    'action' => 'unlock',
-                    'name' => 'unlock',
-                    'tag' => 'Authentication',
-                    'summary' => 'Unlock screen',
-                    'description' => 'Unlock the manager session after screen lock using the account password.',
-                ],
-            ],
-        ],
-        [
-            'prefix' => '/user',
-            'as' => 'user.',
-            'controller' => UserController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/get', 'action' => 'get', 'name' => 'get'],
-                ['method' => 'GET', 'uri' => '/getOptions', 'action' => 'getOptions', 'name' => 'getOptions'],
-                ['method' => 'GET', 'uri' => '/deleteAvatar', 'action' => 'deleteAvatar', 'name' => 'deleteAvatar'],
-                ['method' => 'POST', 'uri' => '/changeAvatar', 'action' => 'changeAvatar', 'name' => 'changeAvatar'],
-                ['method' => 'POST', 'uri' => '/changeInfo', 'action' => 'changeInfo', 'name' => 'changeInfo'],
-                ['method' => 'POST', 'uri' => '/changePassword', 'action' => 'changePassword', 'name' => 'changePassword'],
-                [
-                    'method' => 'GET',
-                    'uri' => '/getUsers/{packageName}',
-                    'action' => 'getUsers',
-                    'name' => 'getUsers.packageName',
-                    'permission' => 'manager.users.view',
-                ],
-            ],
-        ],
-        [
-            'prefix' => '/options',
-            'as' => 'options.',
-            'controller' => OptionController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/get', 'action' => 'getOptions', 'name' => 'get'],
-                ['method' => 'GET', 'uri' => '/changeBackground/{name}', 'action' => 'changeBackground', 'name' => 'changeBackground.name'],
-                ['method' => 'POST', 'uri' => '/uploadWallpaper', 'action' => 'uploadWallpaper', 'name' => 'uploadWallpaper'],
-                ['method' => 'POST', 'uri' => '/deleteWallpaper/{name}', 'action' => 'deleteWallpaper', 'name' => 'deleteWallpaper.name'],
-                ['method' => 'GET', 'uri' => '/changeLockTime/{minutes}', 'action' => 'changeLockTime', 'name' => 'changeLockTime.minutes'],
-                ['method' => 'GET', 'uri' => '/toggleDockPin/{packageName}', 'action' => 'toggleDockPin', 'name' => 'toggleDockPin.packageName'],
-                ['method' => 'GET', 'uri' => '/changeAppViewMode/{mode}', 'action' => 'changeAppViewMode', 'name' => 'changeAppViewMode.mode'],
-            ],
-        ],
-        [
-            'method' => 'GET',
-            'uri' => '/changeLang/{lang}',
-            'action' => [OptionController::class, 'changeLang'],
-            'name' => 'changeLang.lang',
-        ],
-        [
-            'prefix' => '/widget',
-            'as' => 'widget.',
-            'controller' => WidgetController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/clock', 'action' => 'clock', 'name' => 'clock'],
-                ['method' => 'GET', 'uri' => '/storage', 'action' => 'storage', 'name' => 'storage'],
-                ['method' => 'GET', 'uri' => '/storageBrowse', 'action' => 'browseStorage', 'name' => 'storageBrowse'],
-                ['method' => 'GET', 'uri' => '/settings', 'action' => 'settings', 'name' => 'settings'],
-                ['method' => 'POST', 'uri' => '/saveWidgets', 'action' => 'saveWidgets', 'name' => 'saveWidgets'],
-                ['method' => 'POST', 'uri' => '/storageSettings', 'action' => 'saveStorageSettings', 'name' => 'storageSettings'],
-            ],
-        ],
-        [
-            'prefix' => '/app',
-            'as' => 'app.',
-            'controller' => AppController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/iconPack', 'action' => 'iconPack', 'name' => 'iconPack'],
-                ['method' => 'GET', 'uri' => '/getAll', 'action' => 'getAll', 'name' => 'getAll'],
-                ['method' => 'GET', 'uri' => '/get/{filter?}', 'action' => 'get', 'name' => 'get.filter'],
-                ['method' => 'GET', 'uri' => '/getConfig/{packageName}', 'action' => 'getConfig', 'name' => 'getConfig.packageName'],
-                ['method' => 'POST', 'uri' => '/setConfig/{packageName}/{key}', 'action' => 'setConfig', 'name' => 'setConfig.packageName.key'],
-                ['method' => 'POST', 'uri' => '/install', 'action' => 'install', 'name' => 'install'],
-                ['method' => 'GET', 'uri' => '/packageMeta/{filename}', 'action' => 'packageMeta', 'name' => 'packageMeta.filename'],
-                ['method' => 'GET', 'uri' => '/installPackage/{filename}', 'action' => 'installPackage', 'name' => 'installPackage.filename'],
-                ['method' => 'POST', 'uri' => '/installPackage/start', 'action' => 'installPackageStart', 'name' => 'installPackage.start'],
-                ['method' => 'GET', 'uri' => '/installPackage/status/{installId}', 'action' => 'installPackageStatus', 'name' => 'installPackage.status'],
-                ['method' => 'POST', 'uri' => '/database/checkPrefix', 'action' => 'checkDatabasePrefix', 'name' => 'database.checkPrefix'],
-                ['method' => 'POST', 'uri' => '/database/testConnection', 'action' => 'testDatabaseConnection', 'name' => 'database.testConnection'],
-                ['method' => 'GET', 'uri' => '/database/defaults', 'action' => 'databaseDefaults', 'name' => 'database.defaults'],
-                ['method' => 'GET', 'uri' => '/files', 'action' => 'files', 'name' => 'files'],
-                ['method' => 'POST', 'uri' => '/deleteFile', 'action' => 'deleteFile', 'name' => 'deleteFile'],
-                ['method' => 'POST', 'uri' => '/filesUpload', 'action' => 'filesUpload', 'name' => 'filesUpload'],
-                [
-                    'prefix' => '/pinion',
-                    'as' => 'pinion.',
-                    'controller' => PinionController::class,
-                    'routes' => [
-                        ['method' => 'GET', 'uri' => '/limits', 'action' => 'limits', 'name' => 'limits'],
-                        ['method' => 'POST', 'uri' => '/init', 'action' => 'init', 'name' => 'init'],
-                        ['method' => 'POST', 'uri' => '/upload', 'action' => 'upload', 'name' => 'upload'],
-                        ['method' => 'POST', 'uri' => '/complete', 'action' => 'complete', 'name' => 'complete'],
-                        ['method' => 'GET', 'uri' => '/status/{uploadId}', 'action' => 'status', 'name' => 'status'],
-                        ['method' => 'POST', 'uri' => '/abort/{uploadId}', 'action' => 'abort', 'name' => 'abort'],
-                    ],
-                ],
-                ['method' => 'POST', 'uri' => '/remove/{packageName}', 'action' => 'remove', 'name' => 'remove.packageName'],
-            ],
-        ],
-        [
-            'prefix' => '/router',
-            'as' => 'router.',
-            'controller' => RouterController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/getAll', 'action' => 'getAll', 'name' => 'getAll'],
-                ['method' => 'POST', 'uri' => '/remove', 'action' => 'remove', 'name' => 'remove'],
-                ['method' => 'POST', 'uri' => '/save', 'action' => 'save', 'name' => 'save'],
-            ],
-        ],
-        [
-            'prefix' => '/account',
-            'as' => 'account.',
-            'controller' => AccountController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/getConnectData', 'action' => 'getConnectData', 'name' => 'getConnectData'],
-                ['method' => 'GET', 'uri' => '/connect', 'action' => 'connect', 'name' => 'connect'],
-                ['method' => 'GET', 'uri' => '/logout', 'action' => 'logout', 'name' => 'logout'],
-            ],
-        ],
-        [
-            'prefix' => '/market',
-            'as' => 'market.',
-            'controller' => MarketController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/getDownloads', 'action' => 'getDownloads', 'name' => 'getDownloads'],
-                ['method' => 'POST', 'uri' => '/deleteDownload', 'action' => 'deleteDownload', 'name' => 'deleteDownload'],
-                ['method' => 'GET', 'uri' => '/getApps/{keyword?}', 'action' => 'getApps', 'name' => 'getApps.keyword'],
-                ['method' => 'GET', 'uri' => '/getOneApp/{package_name}', 'action' => 'getOneApp', 'name' => 'getOneApp.package_name'],
-                ['method' => 'POST', 'uri' => '/downloadRequest/{package_name}', 'action' => 'downloadRequest', 'name' => 'downloadRequest.package_name'],
-                ['method' => 'GET', 'uri' => '/getTemplates/{package_name}', 'action' => 'getTemplates', 'name' => 'getTemplates.package_name'],
-                ['method' => 'POST', 'uri' => '/downloadRequestTemplate/{uid}', 'action' => 'downloadRequestTemplate', 'name' => 'downloadRequestTemplate.uid'],
-            ],
-        ],
-        [
-            'prefix' => '/notification',
-            'as' => 'notification.',
-            'controller' => NotificationController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '', 'action' => 'index', 'name' => ''],
-                ['method' => 'POST', 'uri' => '/hide', 'action' => 'hide', 'name' => 'hide'],
-                ['method' => 'POST', 'uri' => '/seen', 'action' => 'seen', 'name' => 'seen'],
-            ],
-        ],
-        [
-            'prefix' => '/update',
-            'as' => 'update.',
-            'controller' => UpdateController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/checkVersion/{type?}', 'action' => 'checkVersion', 'name' => 'checkVersion.type'],
-                ['method' => 'GET', 'uri' => '/install', 'action' => 'install', 'name' => 'install'],
-            ],
-        ],
-        [
-            'prefix' => '/template',
-            'as' => 'template.',
-            'controller' => TemplateController::class,
-            'routes' => [
-                ['method' => 'GET', 'uri' => '/get/{packageName}', 'action' => 'get', 'name' => 'get.packageName'],
-                ['method' => 'GET', 'uri' => '/install/{uid}/{packageName}', 'action' => 'install', 'name' => 'install.uid.packageName'],
-                ['method' => 'GET', 'uri' => '/installPackage/{filename}', 'action' => 'installPackage', 'name' => 'installPackage.filename'],
-                ['method' => 'GET', 'uri' => '/set/{packageName}/{folderName}', 'action' => 'set', 'name' => 'set.packageName.folderName'],
-                ['method' => 'GET', 'uri' => '/remove/{packageName}/{folderName}', 'action' => 'remove', 'name' => 'remove.packageName.folderName'],
-            ],
-        ],
-    ],
-];
+return collect(['flow' => ['manager.auth']], function () {
+    group('/auth')
+        ->as('auth.')
+        ->controller(AuthController::class)
+        ->routes(function () {
+            get('/lock', 'lock')->name('lock');
+            post('/unlock', 'unlock')->name('unlock');
+        });
+
+    group('/user')
+        ->as('user.')
+        ->controller(UserController::class)
+        ->routes(function () {
+            get('/get', 'get')->name('get');
+            get('/getOptions', 'getOptions')->name('getOptions');
+            get('/deleteAvatar', 'deleteAvatar')->name('deleteAvatar');
+            post('/changeAvatar', 'changeAvatar')->name('changeAvatar');
+            post('/changeInfo', 'changeInfo')->name('changeInfo');
+            post('/changePassword', 'changePassword')->name('changePassword');
+            get('/getUsers/{packageName}', 'getUsers')->name('getUsers.packageName');
+        });
+
+    group('/options')
+        ->as('options.')
+        ->controller(OptionController::class)
+        ->routes(function () {
+            get('/get', 'getOptions')->name('get');
+            get('/changeBackground/{name}', 'changeBackground')->name('changeBackground.name');
+            post('/uploadWallpaper', 'uploadWallpaper')->name('uploadWallpaper');
+            post('/deleteWallpaper/{name}', 'deleteWallpaper')->name('deleteWallpaper.name');
+            get('/changeLockTime/{minutes}', 'changeLockTime')->name('changeLockTime.minutes');
+            get('/toggleDockPin/{packageName}', 'toggleDockPin')->name('toggleDockPin.packageName');
+            get('/changeAppViewMode/{mode}', 'changeAppViewMode')->name('changeAppViewMode.mode');
+        });
+
+    get('/changeLang/{lang}', [OptionController::class, 'changeLang'])->name('changeLang.lang');
+
+    group('/widget')
+        ->as('widget.')
+        ->controller(WidgetController::class)
+        ->routes(function () {
+            get('/clock', 'clock')->name('clock');
+            get('/storage', 'storage')->name('storage');
+            get('/storageBrowse', 'browseStorage')->name('storageBrowse');
+            get('/settings', 'settings')->name('settings');
+            post('/saveWidgets', 'saveWidgets')->name('saveWidgets');
+            post('/storageSettings', 'saveStorageSettings')->name('storageSettings');
+        });
+
+    group('/app')
+        ->as('app.')
+        ->controller(AppController::class)
+        ->routes(function () {
+            get('/iconPack', 'iconPack')->name('iconPack');
+            get('/getAll', 'getAll')->name('getAll');
+            get('/get/{filter?}', 'get')->name('get.filter');
+            get('/getConfig/{packageName}', 'getConfig')->name('getConfig.packageName');
+            post('/setConfig/{packageName}/{key}', 'setConfig')->name('setConfig.packageName.key');
+            post('/install', 'install')->name('install');
+            get('/packageMeta/{filename}', 'packageMeta')->name('packageMeta.filename');
+            get('/installPackage/{filename}', 'installPackage')->name('installPackage.filename');
+            post('/installPackage/start', 'installPackageStart')->name('installPackage.start');
+            get('/installPackage/status/{installId}', 'installPackageStatus')->name('installPackage.status');
+            post('/database/checkPrefix', 'checkDatabasePrefix')->name('database.checkPrefix');
+            post('/database/testConnection', 'testDatabaseConnection')->name('database.testConnection');
+            get('/database/defaults', 'databaseDefaults')->name('database.defaults');
+            get('/files', 'files')->name('files');
+            post('/deleteFile', 'deleteFile')->name('deleteFile');
+            post('/filesUpload', 'filesUpload')->name('filesUpload');
+
+            group('/pinion')
+                ->as('pinion.')
+                ->controller(PinionController::class)
+                ->routes(function () {
+                    get('/limits', 'limits')->name('limits');
+                    post('/init', 'init')->name('init');
+                    post('/upload', 'upload')->name('upload');
+                    post('/complete', 'complete')->name('complete');
+                    get('/status/{uploadId}', 'status')->name('status');
+                    post('/abort/{uploadId}', 'abort')->name('abort');
+                });
+
+            post('/remove/{packageName}', 'remove')->name('remove.packageName');
+        });
+
+    group('/router')
+        ->as('router.')
+        ->controller(RouterController::class)
+        ->routes(function () {
+            get('/getAll', 'getAll')->name('getAll');
+            post('/remove', 'remove')->name('remove');
+            post('/save', 'save')->name('save');
+        });
+
+    group('/account')
+        ->as('account.')
+        ->controller(AccountController::class)
+        ->routes(function () {
+            get('/getConnectData', 'getConnectData')->name('getConnectData');
+            get('/connect', 'connect')->name('connect');
+            get('/logout', 'logout')->name('logout');
+        });
+
+    group('/market')
+        ->as('market.')
+        ->controller(MarketController::class)
+        ->routes(function () {
+            get('/getDownloads', 'getDownloads')->name('getDownloads');
+            post('/deleteDownload', 'deleteDownload')->name('deleteDownload');
+            get('/getApps/{keyword?}', 'getApps')->name('getApps.keyword');
+            get('/getOneApp/{package_name}', 'getOneApp')->name('getOneApp.package_name');
+            post('/downloadRequest/{package_name}', 'downloadRequest')->name('downloadRequest.package_name');
+            get('/getTemplates/{package_name}', 'getTemplates')->name('getTemplates.package_name');
+            post('/downloadRequestTemplate/{uid}', 'downloadRequestTemplate')->name('downloadRequestTemplate.uid');
+        });
+
+    group('/notification')
+        ->as('notification.')
+        ->controller(NotificationController::class)
+        ->routes(function () {
+            get('', 'index')->name('');
+            post('/hide', 'hide')->name('hide');
+            post('/seen', 'seen')->name('seen');
+        });
+
+    group('/update')
+        ->as('update.')
+        ->controller(UpdateController::class)
+        ->routes(function () {
+            get('/checkVersion/{type?}', 'checkVersion')->name('checkVersion.type');
+            get('/install', 'install')->name('install');
+        });
+
+    group('/template')
+        ->as('template.')
+        ->controller(TemplateController::class)
+        ->routes(function () {
+            get('/get/{packageName}', 'get')->name('get.packageName');
+            get('/install/{uid}/{packageName}', 'install')->name('install.uid.packageName');
+            get('/installPackage/{filename}', 'installPackage')->name('installPackage.filename');
+            get('/set/{packageName}/{folderName}', 'set')->name('set.packageName.folderName');
+            get('/remove/{packageName}/{folderName}', 'remove')->name('remove.packageName.folderName');
+        });
+});
