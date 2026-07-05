@@ -115,7 +115,6 @@
                 v-if="store.meta.type === 'app'"
                 type="button"
                 class="packageInstaller__advancedToggle"
-                :disabled="store.advancedLoading"
                 @click="toggleAdvanced"
             >
               <span>{{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}</span>
@@ -123,11 +122,6 @@
             </button>
 
             <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
-              <div v-if="store.advancedLoading" class="packageInstaller__sectionLoading">
-                <WidgetLoading/>
-                <p>در حال بارگذاری تنظیمات…</p>
-              </div>
-              <template v-else>
               <Input
                   v-model="store.database.prefix"
                   label="پیشوند جداول"
@@ -171,7 +165,6 @@
                       @click="testDatabaseConnection"
                   />
                 </div>
-              </template>
               </template>
             </div>
           </div>

@@ -7,7 +7,6 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         phase: 'idle',
         progress: 0,
         loadingMessage: '',
-        advancedLoading: false,
         prefixLoading: false,
         connectionTesting: false,
         meta: null,
@@ -17,7 +16,6 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         steps: [],
         showAdvanced: false,
         useCustomDatabase: false,
-        databaseDefaultsLoaded: false,
         database: {
             connection: 'mysql',
             host: '127.0.0.1',
@@ -116,12 +114,10 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.pendingFile = null;
             this.steps = [];
             this.loadingMessage = '';
-            this.advancedLoading = false;
             this.prefixLoading = false;
             this.connectionTesting = false;
             this.showAdvanced = false;
             this.useCustomDatabase = false;
-            this.databaseDefaultsLoaded = false;
             this.prefixStatus = null;
             this.prefixBaseline = '';
             this.prefixDirty = false;

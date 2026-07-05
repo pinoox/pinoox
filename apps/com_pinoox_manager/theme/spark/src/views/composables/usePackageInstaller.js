@@ -65,42 +65,8 @@ export function usePackageInstaller() {
         }
     }
 
-    async function loadDatabaseDefaults() {
-        if (store.databaseDefaultsLoaded) {
-            return;
-        }
-
-        store.advancedLoading = true;
-
-        try {
-            const response = await appAPI.databaseDefaults();
-            const defaults = unwrapPayload(response);
-
-            if (defaults) {
-                store.database = {
-                    ...store.database,
-                    connection: defaults.connection ?? store.database.connection,
-                    host: defaults.host ?? store.database.host,
-                    port: defaults.port ?? store.database.port,
-                    database: defaults.database ?? store.database.database,
-                    username: defaults.username ?? store.database.username,
-                };
-            }
-        } catch {
-            // platform defaults are optional
-        } finally {
-            store.databaseDefaultsLoaded = true;
-            store.advancedLoading = false;
-        }
-    }
-
     async function toggleAdvanced() {
-        const next = !store.showAdvanced;
-        store.showAdvanced = next;
-
-        if (next && store.meta?.type === 'app') {
-            await loadDatabaseDefaults();
-        }
+        store.showAdvanced = !store.showAdvanced;
     }
 
     function buildInstallPayload() {
@@ -382,6 +348,5 @@ export function usePackageInstaller() {
         skipRoutePrompt,
         installStepLabel,
         toggleAdvanced,
-        loadDatabaseDefaults,
     };
 }
