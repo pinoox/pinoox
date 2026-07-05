@@ -1,5 +1,16 @@
 import {defineStore} from 'pinia';
 
+function databaseConnectionFingerprint(database) {
+    return JSON.stringify({
+        connection: database.connection ?? '',
+        host: database.host ?? '',
+        port: database.port ?? '',
+        database: database.database ?? '',
+        username: database.username ?? '',
+        password: database.password ?? '',
+    });
+}
+
 export const usePackageInstallerStore = defineStore('packageInstaller', {
     state: () => ({
         visible: false,
@@ -9,6 +20,7 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         loadingMessage: '',
         prefixLoading: false,
         connectionTesting: false,
+        connectionVerifiedFingerprint: null,
         meta: null,
         filename: null,
         error: null,
@@ -76,6 +88,13 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
                 || state.meta?.database?.needs_prefix_setup
             );
         },
+        isConnectionVerified(state) {
+            if (!state.useCustomDatabase || !state.connectionVerifiedFingerprint) {
+                return false;
+            }
+
+            return state.connectionVerifiedFingerprint === databaseConnectionFingerprint(state.database);
+        },
     },
     actions: {
         show() {
@@ -116,6 +135,7 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.loadingMessage = '';
             this.prefixLoading = false;
             this.connectionTesting = false;
+            this.connectionVerifiedFingerprint = null;
             this.showAdvanced = false;
             this.useCustomDatabase = false;
             this.prefixStatus = null;
@@ -167,12 +187,19 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.prefixBaseline = resolvedPrefix;
             this.prefixDirty = false;
             this.prefixStatus = null;
+            this.connectionVerifiedFingerprint = null;
         },
         setSteps(steps) {
             this.steps = Array.isArray(steps) ? steps : [];
         },
         setPrefixStatus(status) {
             this.prefixStatus = status;
+        },
+        markConnectionVerified() {
+            this.connectionVerifiedFingerprint = databaseConnectionFingerprint(this.database);
+        },
+        clearConnectionVerified() {
+            this.connectionVerifiedFingerprint = null;
         },
         setInstallResult(result) {
             this.installResult = result;

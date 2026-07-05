@@ -506,6 +506,39 @@
     }
   }
 
+  &__connectionStatus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    min-height: 2.25rem;
+    margin: 0;
+    padding: 0.45rem 0.75rem;
+    border-radius: 0.55rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid transparent;
+
+    &.is-ok {
+      color: #86efac;
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.28);
+    }
+  }
+
+  &__connectionStatusIcon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.15rem;
+    height: 1.15rem;
+    border-radius: 999px;
+    background: rgba(34, 197, 94, 0.22);
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+
   &__prefixStatus {
     margin: 0 0 0.55rem;
     font-size: 0.78rem;

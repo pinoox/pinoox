@@ -160,6 +160,7 @@
                 </div>
                 <div class="packageInstaller__advancedActions">
                   <Button
+                      v-if="!store.isConnectionVerified"
                       label="تست اتصال"
                       variant="primary"
                       outline
@@ -168,6 +169,10 @@
                       :is-loading="store.connectionTesting"
                       @click="testDatabaseConnection"
                   />
+                  <p v-else class="packageInstaller__connectionStatus is-ok">
+                    <span class="packageInstaller__connectionStatusIcon" aria-hidden="true">✓</span>
+                    <span>اتصال برقرار شد</span>
+                  </p>
                 </div>
                 </div>
               </template>

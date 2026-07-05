@@ -228,13 +228,12 @@ export function usePackageInstaller() {
 
         try {
             await appAPI.testDatabaseConnection({...store.database});
-
-            if (showToast) {
-                toast({title: 'اتصال به دیتابیس برقرار شد', type: 'success'});
-            }
+            store.markConnectionVerified();
 
             return true;
         } catch (error) {
+            store.clearConnectionVerified();
+
             if (showToast) {
                 toast({title: errorMessage(error), type: 'error'});
             }
@@ -252,6 +251,10 @@ export function usePackageInstaller() {
 
         if (!String(store.database.database || '').trim()) {
             throw new Error('نام دیتابیس را وارد کنید.');
+        }
+
+        if (store.isConnectionVerified) {
+            return;
         }
 
         await testDatabaseConnection(false);
@@ -306,6 +309,12 @@ export function usePackageInstaller() {
     watch(() => store.pendingFile, (file) => {
         if (file && store.visible && store.phase === 'idle') {
             consumePendingFile();
+        }
+    });
+
+    watch(() => store.useCustomDatabase, (enabled) => {
+        if (!enabled) {
+            store.clearConnectionVerified();
         }
     });
 
