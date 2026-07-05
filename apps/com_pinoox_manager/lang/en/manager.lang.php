@@ -30,6 +30,8 @@ return [
     'cannot_delete_system_app' => 'This app is part of the system and cannot be removed.',
     'app_uninstall_lead' => 'This app will be removed from your site.',
     'app_uninstall_hint' => 'All data and settings for this app will be deleted and cannot be restored. To use it again, you will need to install it again.',
+    'app_uninstall_routes_warning' => 'This app is linked to {count} addresses. Removing the app will delete these routes too:',
+    'app_uninstall_routes_single' => 'This app is linked to {path}. Removing the app will delete this route too.',
     'app_uninstall_confirm' => 'Yes, remove it',
     'app_uninstall_progress' => 'Removing app…',
     'notifications' => 'Notifications',

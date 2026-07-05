@@ -18,6 +18,18 @@
       <p class="modalAppUninstall__lead">{{ translate('app_uninstall_lead') }}</p>
       <p class="modalAppUninstall__hint">{{ translate('app_uninstall_hint') }}</p>
 
+      <div v-if="assignedRoutes.length" class="modalAppUninstall__routesWarn">
+        <Icon :is="saxIcon.routes" size="sm"/>
+        <div class="modalAppUninstall__routesWarnBody">
+          <p>{{ routesWarningText }}</p>
+          <ul>
+            <li v-for="route in assignedRoutes" :key="route.path" dir="ltr">
+              <code>{{ route.path }}</code>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <div class="modalAppUninstall__preview">
         <AppIcon v-bind="appIconProps(app)" size="md"/>
         <div class="modalAppUninstall__previewText">
@@ -54,7 +66,7 @@
 <script setup>
 defineOptions({modalGroup: 'default'});
 
-import {nextTick, ref} from 'vue';
+import {computed, nextTick, ref} from 'vue';
 import {closeModal, useModalContext} from '@kolirt/vue-modal';
 import {saxIcon} from '@/const/icons.js';
 import Button from '@/views/components/widgets/Button.vue';
@@ -63,8 +75,10 @@ import SimpleModal from '@/views/components/commons/SimpleModal.vue';
 import AppIcon from '@/views/components/widgets/AppIcon.vue';
 import {appAPI} from '@api/app.js';
 import {useAppStore} from '@/stores/modules/app.js';
+import {useRouteStore} from '@/stores/modules/route.js';
 import {appIconProps} from '@utils/helpers/appIconProps.js';
 import {translate} from '@utils/helpers/managerLang.js';
+import {normalizeAppRoutes} from '@utils/appRoutes.js';
 import {HTTP_ALERT_SILENT} from '@utils/helpers/alertHelper.js';
 import {unwrapResponse} from '@utils/helpers/apiHelper.js';
 import {resolveApiFailure} from '@utils/apiEnvelope.js';
@@ -83,9 +97,30 @@ const props = defineProps({
 
 const {confirm} = useModalContext();
 const appStore = useAppStore();
+const routeStore = useRouteStore();
 
 const isDeleting = ref(false);
 const isDone = ref(false);
+
+const assignedRoutes = computed(() => {
+    if (routeStore.isLoaded) {
+        return routeStore.fetchRoutesByPackage(props.packageName)
+            .filter((route) => route.path !== '/manager');
+    }
+
+    return normalizeAppRoutes(props.app?.routes)
+        .filter((route) => route.path !== '/manager');
+});
+
+const routesWarningText = computed(() => {
+    const routes = assignedRoutes.value;
+
+    if (routes.length === 1) {
+        return translate('app_uninstall_routes_single').replace('{path}', routes[0].path);
+    }
+
+    return translate('app_uninstall_routes_warning').replace('{count}', String(routes.length));
+});
 
 const confirmUninstall = async () => {
   if (isDeleting.value || isDone.value) {
@@ -99,6 +134,7 @@ const confirmUninstall = async () => {
     const response = await appAPI.remove(props.packageName, HTTP_ALERT_SILENT);
     unwrapResponse(response);
     appStore.deleteAppByPackage(props.packageName);
+    routeStore.deleteRoutesByPackage(props.packageName);
     isDone.value = true;
     await new Promise((resolve) => setTimeout(resolve, 420));
     confirm({uninstalled: true});

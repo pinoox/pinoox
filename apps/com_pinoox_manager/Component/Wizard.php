@@ -133,6 +133,8 @@ class Wizard
 
     public static function deleteApp($packageName)
     {
+        AppRouteCleanup::deleteForPackage($packageName);
+
         $result = Pinx::uninstallApp($packageName);
 
         if (!$result->success) {

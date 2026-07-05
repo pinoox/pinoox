@@ -377,6 +377,53 @@
     color: rgba(255, 255, 255, 0.62);
   }
 
+  .modalAppUninstall__routesWarn {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    width: 100%;
+    margin: -0.35rem 0 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.75rem;
+    border: 1px solid rgba(252, 211, 77, 0.28);
+    background: rgba(252, 211, 77, 0.08);
+    text-align: start;
+
+    .icon {
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+      color: #fcd34d;
+    }
+  }
+
+  .modalAppUninstall__routesWarnBody {
+    min-width: 0;
+
+    p {
+      margin: 0 0 0.45rem;
+      font-size: 0.78rem;
+      line-height: 1.65;
+      color: #fde68a;
+    }
+
+    ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 0.3rem;
+    }
+
+    li code {
+      display: inline-block;
+      padding: 0.12rem 0.4rem;
+      border-radius: 0.35rem;
+      background: rgba(0, 0, 0, 0.22);
+      font-size: 0.72rem;
+      color: rgba(255, 255, 255, 0.88);
+    }
+  }
+
   .modalAppUninstall__preview {
     display: flex;
     align-items: center;

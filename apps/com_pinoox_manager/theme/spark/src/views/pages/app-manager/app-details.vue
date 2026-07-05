@@ -85,6 +85,7 @@ import {resolveRouterMode} from '@utils/helpers/appRoutePolicy.js';
 import {useGlobalRouter} from '@/views/composables/useGlobalRouter.js';
 import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 import {translate} from '@utils/helpers/managerLang.js';
+import {normalizeAppRoutes} from '@utils/appRoutes.js';
 import {toastSuccess} from '@utils/helpers/toastHelper.js';
 import ModalUninstallApp from '@/views/pages/app-manager/modal-uninstall-app.vue';
 
@@ -104,11 +105,7 @@ const {pushAppManager, pushControlPath} = useControlPanelNavigation();
 
 const isSystemApp = computed(() => !!(props.app?.sys_app ?? props.app?.['sys-app']));
 
-const routes = computed(() => {
-  const list = props.app?.routes;
-
-  return Array.isArray(list) ? list : [];
-});
+const routes = computed(() => normalizeAppRoutes(props.app?.routes));
 
 const routesPreview = computed(() => routes.value.slice(0, 5));
 
