@@ -21,6 +21,7 @@ use Pinoox\Component\Package\Pinx\PinxInstallResult;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
+use Pinoox\Portal\Date;
 use Pinoox\Component\File;
 use Pinoox\Portal\FileSystem;
 use Pinoox\Portal\Lang;
@@ -534,10 +535,27 @@ class Wizard
             'has_icon' => $iconDataUri !== null,
             'icon' => $iconDataUri ?: Url::asset('resources/default.png'),
             'size' => File::print_size(File::size($pinxFile), 1),
+            ...self::fileUploadMeta($pinxFile),
             'compatibility' => PackageCompatibility::analyze($manifest),
             'database' => PackageDatabase::analyzeFromPinx($pinxFile, $manifest->package()),
             'is_routable' => AppRoutePolicy::isRoutable($routerConfig),
             'router_mode' => AppRoutePolicy::resolveMode($routerConfig),
+        ];
+    }
+
+    /**
+     * @return array{uploaded_at: int, uploaded_at_label: string}
+     */
+    private static function fileUploadMeta(string $pinxFile): array
+    {
+        $timestamp = @filemtime($pinxFile) ?: time();
+
+        return [
+            'uploaded_at' => $timestamp,
+            'uploaded_at_label' => Date::usingCalendar('jalali')->smart(
+                date('Y-m-d H:i:s', $timestamp),
+                'd F Y - H:i',
+            ),
         ];
     }
 
@@ -575,6 +593,7 @@ class Wizard
             'icon' => $iconDataUri,
             'cover' => $iconDataUri ?: Url::asset('resources/theme.jpg'),
             'size' => File::print_size(File::size($pinxFile), 1),
+            ...self::fileUploadMeta($pinxFile),
             'compatibility' => PackageCompatibility::analyze($manifest),
         ];
     }

@@ -12,11 +12,6 @@ export const controlMenuItems = [
         iconName: lucideSidebar.apps,
     },
     {
-        href: '/control/apps/manual',
-        title: 'نصب دستی',
-        iconName: lucideSidebar.upload,
-    },
-    {
         href: '/control/routes',
         title: 'مسیریابی',
         iconName: lucideSidebar.routes,

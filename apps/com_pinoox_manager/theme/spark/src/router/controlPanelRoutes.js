@@ -1,7 +1,6 @@
 import PageProfile from '@/views/pages/control/profile/profile-home.vue';
 import PageAppearanceSettings from '@/views/pages/control/settings/appearance-settings.vue';
 import PageApps from '@/views/pages/control/apps/apps-home.vue';
-import PageAppsManual from '@/views/pages/control/apps/apps-manual.vue';
 import PageRoutes from '@/views/pages/control/routes/routes-home.vue';
 import PagePincore from '@/views/pages/control/pincore/pincore-home.vue';
 import PageWidgets from '@/views/pages/control/widgets/widgets-home.vue';
@@ -66,11 +65,6 @@ export function createControlPanelChildRoutes() {
             name: 'widget-detail',
             component: PageWidgetDetail,
             props: true,
-        },
-        {
-            path: 'apps/manual',
-            name: 'apps-manual',
-            component: PageAppsManual,
         },
         {
             path: 'apps',
