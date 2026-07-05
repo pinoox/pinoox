@@ -86,7 +86,16 @@
               <AppIcon v-bind="packageIconProps" size="lg" class="packageInstaller__cardIcon"/>
               <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
               <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
-              <p v-if="store.meta.size" class="packageInstaller__size">{{ store.meta.size }}</p>
+              <div v-if="hasPackageFacts" class="packageInstaller__facts">
+                <div v-if="displayVersion" class="packageInstaller__fact">
+                  <span class="packageInstaller__factLabel">ورژن</span>
+                  <span class="packageInstaller__factValue" dir="ltr">{{ displayVersion }}</span>
+                </div>
+                <div v-if="store.meta.size" class="packageInstaller__fact">
+                  <span class="packageInstaller__factLabel">حجم</span>
+                  <span class="packageInstaller__factValue" dir="ltr">{{ store.meta.size }}</span>
+                </div>
+              </div>
             </div>
 
             <div v-if="!store.canInstall" class="packageInstaller__incompatible">
@@ -290,6 +299,18 @@ const displayName = computed(() => {
     }
 
     return store.meta.name || store.meta.template_name || store.meta.package_name || store.filename;
+});
+
+const displayVersion = computed(() => {
+    if (!store.meta?.version) {
+        return '';
+    }
+
+    return String(store.meta.version);
+});
+
+const hasPackageFacts = computed(() => {
+    return Boolean(displayVersion.value || store.meta?.size);
 });
 
 const packageIconProps = computed(() => packageMetaIconProps(store.meta, appStore));
