@@ -137,7 +137,7 @@ final class PackageDatabase
         if ($config === null) {
             return [
                 'ok' => false,
-                'message' => 'نام دیتابیس را وارد کنید.',
+                'message' => 'manager.database_error_missing_name',
             ];
         }
 
@@ -220,9 +220,72 @@ final class PackageDatabase
 
     private static function formatConnectionError(\Throwable $error): string
     {
-        $message = trim($error->getMessage());
+        return self::resolveConnectionErrorKey(trim($error->getMessage()));
+    }
 
-        return $message !== '' ? $message : 'اتصال به دیتابیس برقرار نشد.';
+    private static function resolveConnectionErrorKey(string $message): string
+    {
+        if ($message === '') {
+            return 'manager.database_connection_failed';
+        }
+
+        $lower = strtolower($message);
+        $code = self::extractSqlErrorCode($message);
+
+        if ($code === 1044 || str_contains($lower, 'to database')) {
+            return 'manager.database_error_database_access';
+        }
+
+        if ($code === 1045
+            || $code === 1698
+            || str_contains($lower, 'access denied for user')
+            || str_contains($lower, 'password authentication failed')
+            || str_contains($lower, 'authentication failed for user')) {
+            return 'manager.database_error_credentials';
+        }
+
+        if ($code === 1049
+            || preg_match('/unknown database/i', $message)
+            || preg_match('/database "[^"]+" does not exist/i', $message)) {
+            return 'manager.database_error_not_found';
+        }
+
+        if ($code === 1130 || str_contains($lower, 'is not allowed to connect')) {
+            return 'manager.database_error_host_denied';
+        }
+
+        if (preg_match('/unknown (mysql )?server host/i', $message)
+            || str_contains($lower, 'getaddrinfo failed')
+            || str_contains($lower, 'php_network_getaddresses')) {
+            return 'manager.database_error_host_invalid';
+        }
+
+        if ($code === 2002
+            || $code === 2003
+            || $code === 2006
+            || str_contains($lower, 'connection refused')
+            || str_contains($lower, 'could not connect to server')
+            || str_contains($lower, 'no connection could be made')
+            || str_contains($lower, 'connection timed out')
+            || str_contains($lower, 'server has gone away')
+            || str_contains($lower, 'actively refused')) {
+            return 'manager.database_error_server_unreachable';
+        }
+
+        if (str_contains($lower, 'unable to open database file')) {
+            return 'manager.database_error_sqlite_path';
+        }
+
+        return 'manager.database_connection_failed';
+    }
+
+    private static function extractSqlErrorCode(string $message): ?int
+    {
+        if (preg_match('/\[(\d{4,5})\]/', $message, $matches)) {
+            return (int) $matches[1];
+        }
+
+        return null;
     }
 
     public static function prefixTablesExist(string $prefix): bool

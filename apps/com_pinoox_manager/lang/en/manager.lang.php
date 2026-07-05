@@ -152,6 +152,16 @@ return [
     'storage_settings_saved_successfully' => 'storage settings saved successfully',
     'storage_settings_save_failed' => 'failed to save storage settings',
     'invalid_payload' => 'invalid payload',
+    'database_connection_ok' => 'Database connection successful.',
+    'database_connection_failed' => 'Could not connect to the database. Please check your settings.',
+    'database_error_missing_name' => 'Please enter a database name.',
+    'database_error_credentials' => 'Incorrect database username or password.',
+    'database_error_not_found' => 'No database found with this name.',
+    'database_error_database_access' => 'This user is not allowed to access the database.',
+    'database_error_host_denied' => 'The database server does not allow connections from this host.',
+    'database_error_server_unreachable' => 'Could not reach the database server. Check the host and port.',
+    'database_error_host_invalid' => 'The database host address is invalid.',
+    'database_error_sqlite_path' => 'The SQLite database file could not be opened.',
     'unlocked_successfully' => 'unlocked successfully',
 
 ];
