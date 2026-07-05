@@ -895,3 +895,44 @@
     box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 99, 102, 241), 0);
   }
 }
+
+.packageInstallerDropOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(8, 10, 18, 0.58);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  pointer-events: none;
+
+  &__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: min(100%, 18rem);
+    padding: 1.35rem 1.5rem;
+    border-radius: 1rem;
+    border: 2px dashed rgba(var(--color-primary-rgb, 99, 102, 241), 0.55);
+    background: rgba(var(--color-primary-rgb, 99, 102, 241), 0.12);
+    box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
+    color: #dbeafe;
+    text-align: center;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+  }
+
+  &__hint {
+    margin: 0;
+    font-size: 0.82rem;
+    opacity: 0.82;
+  }
+}
