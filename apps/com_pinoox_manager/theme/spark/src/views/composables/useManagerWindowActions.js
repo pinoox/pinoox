@@ -1,4 +1,8 @@
 import {useRouter} from 'vue-router';
+import {
+    leaveManagerBrowserRoute,
+    pushManagerBrowserRoute,
+} from '@/views/composables/useManagerWindowRouteSync.js';
 
 export function useManagerWindowActions(options) {
     const {
@@ -45,11 +49,13 @@ export function useManagerWindowActions(options) {
         onMinimize?.();
     }
 
-    function toggleFloat(isFloating) {
+    async function toggleFloat(isFloating) {
         if (isFloating) {
             windowStore.openFullscreen();
+            await pushManagerBrowserRoute(router, windowStore, resolvePath());
         } else {
             windowStore.enterFloating();
+            await leaveManagerBrowserRoute(router, isRouteActive);
         }
 
         onToggleFloat?.(isFloating);

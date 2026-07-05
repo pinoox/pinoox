@@ -1,5 +1,18 @@
 @use '../base/variable' as *;
 
+.marketSimple {
+  .appView__frame {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .managerPanel--embedded {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
+
 .marketPage {
   &__body {
     flex: 1;

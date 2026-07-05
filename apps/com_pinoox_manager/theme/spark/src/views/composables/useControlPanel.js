@@ -2,6 +2,7 @@ import {useRouter} from 'vue-router';
 import {CONTROL_PANEL_ID, useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
 import {syncControlPanelMemoryRouter} from '@/router/controlPanelMemoryRouter.js';
+import {pushManagerBrowserRoute} from '@/views/composables/useManagerWindowRouteSync.js';
 
 export {CONTROL_PANEL_ID};
 
@@ -22,6 +23,7 @@ export function useControlPanel() {
 
             if (controlPanelWindow.isMinimized) {
                 controlPanelWindow.restoreSession();
+                await pushManagerBrowserRoute(router, controlPanelWindow, path);
                 return;
             }
 
@@ -29,10 +31,11 @@ export function useControlPanel() {
                 controlPanelWindow.openFullscreen();
             }
 
+            await pushManagerBrowserRoute(router, controlPanelWindow, path);
             return;
         }
 
-        router.push(path);
+        await router.push(path);
     }
 
     function closeControlPanel() {

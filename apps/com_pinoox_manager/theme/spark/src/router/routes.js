@@ -49,7 +49,8 @@ export const routes = [
         name: 'market-home',
         component: MarketView,
         meta: {
-            showDock: true,
+            toolbar: false,
+            showDock: false,
         },
     },
     {

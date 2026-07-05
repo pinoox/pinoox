@@ -45,6 +45,10 @@ import {fitControlPanelRectAboveDock} from '@/stores/modules/controlPanelLayout.
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
 import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
+import {
+    leaveManagerBrowserRoute,
+    pushManagerBrowserRoute,
+} from '@/views/composables/useManagerWindowRouteSync.js';
 import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
 import PageControl from '@/views/pages/control/control-view.vue';
 
@@ -130,9 +134,11 @@ function minimizeWindow() {
 function toggleFloating() {
   if (props.overlay) {
     controlPanelWindow.openFullscreen();
+    pushManagerBrowserRoute(router, controlPanelWindow, controlPanelWindow.lastPath);
     return;
   }
 
   controlPanelWindow.enterFloating();
+  leaveManagerBrowserRoute(router, isControlRoute);
 }
 </script>

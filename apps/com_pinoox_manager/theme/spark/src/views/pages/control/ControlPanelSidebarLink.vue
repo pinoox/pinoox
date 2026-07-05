@@ -6,12 +6,8 @@
 
 <script setup>
 import {useRouter} from 'vue-router';
-import {
-    isControlPanelMemoryPath,
-    syncControlPanelMemoryRouter,
-} from '@/router/controlPanelMemoryRouter.js';
-import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
-import {isControlRoute} from '@/views/composables/useControlPanel.js';
+import {isControlPanelMemoryPath} from '@/router/controlPanelMemoryRouter.js';
+import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 import {useMarket} from '@/views/composables/useMarket.js';
 
 defineOptions({
@@ -28,7 +24,7 @@ const props = defineProps({
 const emit = defineEmits(['click']);
 
 const globalRouter = useRouter();
-const controlPanelWindow = useControlPanelWindowStore();
+const {pushControlPath} = useControlPanelNavigation();
 const {openMarket} = useMarket();
 
 async function onClick(event) {
@@ -50,11 +46,6 @@ async function onClick(event) {
         return;
     }
 
-    await syncControlPanelMemoryRouter(props.item.href);
-    controlPanelWindow.setLastPath(props.item.href);
-
-    if (isControlRoute(globalRouter.currentRoute.value)) {
-        await globalRouter.push(props.item.href);
-    }
+    await pushControlPath(props.item.href);
 }
 </script>

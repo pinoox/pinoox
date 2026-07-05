@@ -1,6 +1,7 @@
 import {useRouter} from 'vue-router';
 import {MARKET_ID, useMarketWindowStore} from '@/stores/modules/marketWindow.js';
 import {useAppViewMode} from '@/views/composables/useAppViewMode.js';
+import {pushManagerBrowserRoute} from '@/views/composables/useManagerWindowRouteSync.js';
 
 export {MARKET_ID};
 
@@ -19,6 +20,7 @@ export function useMarket() {
         if (isAdvanced.value) {
             if (marketWindow.isMinimized) {
                 marketWindow.restoreSession();
+                await pushManagerBrowserRoute(router, marketWindow, path);
                 return;
             }
 
@@ -26,6 +28,7 @@ export function useMarket() {
                 marketWindow.openFullscreen();
             }
 
+            await pushManagerBrowserRoute(router, marketWindow, path);
             return;
         }
 
