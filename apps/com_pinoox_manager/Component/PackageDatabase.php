@@ -365,12 +365,10 @@ final class PackageDatabase
                 $config = self::loadPhpReturn($contents);
                 $database = is_array($config['database'] ?? null) ? $config['database'] : null;
                 $table = is_array($config['table'] ?? null) ? $config['table'] : null;
-                $hasMigrations = $zip->hasEntry(PinxManifest::PAYLOAD_PREFIX . 'database/migrations/')
-                    || self::zipHasMigrationFiles($zip);
 
                 return [
                     'prefix' => AppDatabaseResolver::explicitPrefix($database, $table),
-                    'has_migrations' => $hasMigrations,
+                    'has_migrations' => self::zipHasMigrationFiles($zip),
                 ];
             });
         } catch (\Throwable) {
