@@ -11,7 +11,11 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use Pinoox\Component\Router\RouteManifest;
 use function Pinoox\Router\routes;
+
+$private = RouteManifest::normalizeManifest(require __DIR__ . '/api/private.php');
+
 return routes([
     'version' => 'v1',
     'prefix' => '',
@@ -24,7 +28,7 @@ return routes([
     ],
     'routes' => array_merge(
         require __DIR__ . '/api/public.php',
-        require __DIR__ . '/api/private.php',
+        $private['routes'],
     ),
 ]);
 

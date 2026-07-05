@@ -1,6 +1,8 @@
 import {watch} from 'vue';
 import {appAPI} from '@api/app.js';
+import {routerAPI} from '@api/router.js';
 import {resolveUploadedFilename, uploadPackageFile} from '@utils/pinion.js';
+import {installStepLabel, sleep} from '@utils/packageInstall.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {useAppStore} from '@/stores/modules/app.js';
 import {toast} from '@global';
@@ -39,6 +41,8 @@ export function usePackageInstaller() {
                 },
             });
 
+            store.setProgress(100);
+
             const filename = resolveUploadedFilename(uploadResult, file);
 
             if (!filename) {
@@ -59,25 +63,146 @@ export function usePackageInstaller() {
         }
     }
 
+    function buildInstallPayload() {
+        const payload = {
+            filename: store.filename,
+        };
+
+        if (store.showAdvanced || store.showDatabaseOptions) {
+            payload.database = {...store.database};
+        }
+
+        return payload;
+    }
+
+    async function pollInstallStatus(installId) {
+        while (true) {
+            const response = await appAPI.installPackageStatus(installId);
+            const session = unwrapPayload(response) ?? response?.data ?? null;
+
+            if (!session) {
+                throw new Error('وضعیت نصب در دسترس نیست.');
+            }
+
+            store.setProgress(session.progress ?? 0);
+            store.setSteps(session.steps ?? []);
+
+            if (session.status === 'done' || session.status === 'failed') {
+                return session.result ?? {
+                    success: session.status === 'done',
+                    message: session.error,
+                    steps: session.steps ?? [],
+                };
+            }
+
+            await sleep(600);
+        }
+    }
+
+    async function handleInstallResult(result) {
+        store.setProgress(100);
+        store.setSteps(result?.steps ?? []);
+        store.setInstallResult(result);
+
+        if (!result?.success) {
+            throw new Error(result?.message || 'نصب بسته انجام نشد.');
+        }
+
+        await appStore.getApps();
+        store.setRoutePrompt(result);
+        store.setPhase(store.routePrompt.visible ? 'route' : 'success');
+
+        toast({
+            title: store.actionLabel + ' با موفقیت انجام شد',
+            type: 'success',
+        });
+    }
+
     async function confirmInstall() {
         if (!store.filename) {
             return;
         }
 
+        if (!store.canInstall) {
+            store.setError('این بسته به‌دلیل مشکلات سازگاری قابل نصب نیست.');
+            return;
+        }
+
         store.setPhase('installing');
         store.error = null;
+        store.setProgress(0);
+        store.setSteps([]);
 
         try {
-            await appAPI.installPackage(store.filename);
-            await appStore.getApps();
-            store.setPhase('success');
-            toast({
-                title: store.actionLabel + ' با موفقیت انجام شد',
-                type: 'success',
-            });
+            const response = await appAPI.installPackageStart(buildInstallPayload());
+            const payload = unwrapPayload(response);
+
+            let result = payload;
+
+            if (payload?.polling && payload?.install_id) {
+                result = await pollInstallStatus(payload.install_id);
+            }
+
+            await handleInstallResult(result);
         } catch (error) {
             store.setError(errorMessage(error));
         }
+    }
+
+    async function checkPrefix() {
+        if (!store.meta?.package_name) {
+            return;
+        }
+
+        try {
+            const response = await appAPI.checkDatabasePrefix({
+                prefix: store.database.prefix,
+                package_name: store.meta.package_name,
+            });
+            const status = unwrapPayload(response);
+            store.setPrefixStatus(status);
+
+            if (status?.resolved_prefix) {
+                store.database.prefix = status.resolved_prefix;
+            }
+        } catch (error) {
+            store.setPrefixStatus({error: errorMessage(error)});
+        }
+    }
+
+    async function testDatabaseConnection() {
+        try {
+            await appAPI.testDatabaseConnection({...store.database});
+            toast({title: 'اتصال به دیتابیس برقرار شد', type: 'success'});
+        } catch (error) {
+            toast({title: errorMessage(error), type: 'error'});
+        }
+    }
+
+    async function assignRoute() {
+        const path = String(store.routePrompt.path || '').trim();
+
+        if (!path || !store.routePrompt.packageName) {
+            store.setError('آدرس مسیریابی را وارد کنید.');
+            return;
+        }
+
+        try {
+            await routerAPI.save({
+                path,
+                packageName: store.routePrompt.packageName,
+            });
+            store.routePrompt.visible = false;
+            store.setPhase('success');
+            toast({title: 'آدرس با موفقیت ثبت شد', type: 'success'});
+        } catch (error) {
+            store.setError(errorMessage(error));
+        }
+    }
+
+    function skipRoutePrompt() {
+        store.routePrompt.visible = false;
+        store.setPhase('success');
     }
 
     function openInstaller(file = null) {
@@ -132,5 +257,10 @@ export function usePackageInstaller() {
         previewStagedFile,
         confirmInstall,
         consumePendingFile,
+        checkPrefix,
+        testDatabaseConnection,
+        assignRoute,
+        skipRoutePrompt,
+        installStepLabel,
     };
 }

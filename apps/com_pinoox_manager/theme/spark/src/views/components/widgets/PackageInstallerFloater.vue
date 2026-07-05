@@ -71,7 +71,8 @@
         </template>
 
         <template v-else-if="store.phase === 'uploading'">
-          <p class="packageInstaller__statusTitle">در حال بارگذاری…</p>
+          <p class="packageInstaller__statusTitle">در حال بارگذاری بسته…</p>
+          <p class="packageInstaller__waitHint">تا اتمام بارگذاری بسته صبر کنید و صفحه را نبندید.</p>
           <div class="packageInstaller__progressTrack">
             <div class="packageInstaller__progressBar" :style="{ width: `${store.progress}%` }"/>
           </div>
@@ -90,6 +91,34 @@
               <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
             </div>
           </div>
+
+          <div v-if="compatibilityIssues.length" class="packageInstaller__alert is-error">
+            <strong>مشکلات سازگاری</strong>
+            <ul>
+              <li v-for="issue in compatibilityIssues" :key="issue">{{ issue }}</li>
+            </ul>
+          </div>
+
+          <div v-if="store.meta.compatibility" class="packageInstaller__compat">
+            <div>
+              <span>حداقل نسخه پینوکس</span>
+              <strong dir="ltr">#{{ store.meta.compatibility.minpin }}</strong>
+              <span
+                  class="packageInstaller__compatState"
+                  :class="store.meta.compatibility.minpin_ok ? 'is-ok' : 'is-bad'"
+              >
+                {{ store.meta.compatibility.minpin_ok ? 'سازگار' : 'ناسازگار' }}
+              </span>
+            </div>
+            <div v-if="store.meta.compatibility.kernel_version">
+              <span>نسخه فعلی هسته</span>
+              <strong dir="ltr">
+                {{ store.meta.compatibility.kernel_version.name || '—' }}
+                #{{ store.meta.compatibility.kernel_version.code ?? '—' }}
+              </strong>
+            </div>
+          </div>
+
           <dl class="packageInstaller__meta">
             <div v-if="store.meta.type === 'app'">
               <dt>پکیج</dt>
@@ -113,10 +142,52 @@
               <dt>توسعه‌دهنده</dt>
               <dd>{{ store.meta.developer }}</dd>
             </div>
+            <div v-if="store.meta.database?.resolved_prefix">
+              <dt>پیشوند جداول</dt>
+              <dd dir="ltr">{{ store.meta.database.resolved_prefix }}</dd>
+            </div>
           </dl>
+
+          <button
+              v-if="store.meta.type === 'app'"
+              type="button"
+              class="packageInstaller__advancedToggle"
+              @click="store.showAdvanced = !store.showAdvanced"
+          >
+            {{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}
+          </button>
+
+          <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
+            <p class="packageInstaller__advancedHint">اتصال دیتابیس و پیشوند جداول را در صورت نیاز تغییر دهید.</p>
+            <div class="packageInstaller__advancedGrid">
+              <Input v-model="store.database.host" label="میزبان" direction="ltr"/>
+              <Input v-model="store.database.port" label="پورت" direction="ltr"/>
+              <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
+              <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
+              <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
+              <Input
+                  v-model="store.database.prefix"
+                  label="پیشوند جداول"
+                  direction="ltr"
+                  @blur="checkPrefix"
+              />
+            </div>
+            <p class="packageInstaller__prefixHint">پیشوند یکتا برای جداول این اپ. اگر خالی یا تکراری باشد، خودکار اصلاح می‌شود.</p>
+            <p v-if="prefixHint" class="packageInstaller__prefixStatus" :class="prefixHintClass">{{ prefixHint }}</p>
+            <div class="packageInstaller__advancedActions">
+              <Button label="بررسی پیشوند" variant="dark" outline size="sm" @click="checkPrefix"/>
+              <Button label="تست اتصال" variant="dark" outline size="sm" @click="testDatabaseConnection"/>
+            </div>
+          </div>
+
           <div class="packageInstaller__foot">
             <Button label="لغو" variant="dark" @click="store.reset()"/>
-            <Button :label="store.actionLabel" variant="primary" @click="confirmInstall"/>
+            <Button
+                :label="store.actionLabel"
+                variant="primary"
+                :disabled="!store.canInstall"
+                @click="confirmInstall"
+            />
           </div>
         </template>
 
@@ -126,7 +197,49 @@
             <p class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
           </div>
           <p v-else class="packageInstaller__statusTitle">{{ store.actionLabel }}…</p>
-          <WidgetLoading/>
+          <p class="packageInstaller__waitHint">تا پایان نصب صبر کنید و پنجره را نبندید.</p>
+          <div class="packageInstaller__progressTrack">
+            <div class="packageInstaller__progressBar" :style="{ width: `${store.progress}%` }"/>
+          </div>
+          <p class="packageInstaller__statusMeta">{{ store.progress }}%</p>
+
+          <div v-if="displaySteps.length" class="packageInstaller__steps">
+            <p class="packageInstaller__stepsTitle">مراحل نصب</p>
+            <ul>
+              <li
+                  v-for="(step, index) in displaySteps"
+                  :key="`${step.step}-${index}`"
+                  class="packageInstaller__step"
+                  :class="`is-${step.status}`"
+              >
+                <span class="packageInstaller__stepIcon">{{ stepIcon(step.status) }}</span>
+                <span class="packageInstaller__stepText">
+                  <strong>{{ installStepLabel(step.step) }}</strong>
+                  <small>{{ step.message }}</small>
+                </span>
+              </li>
+            </ul>
+          </div>
+          <WidgetLoading v-else/>
+        </template>
+
+        <template v-else-if="store.phase === 'route'">
+          <p class="packageInstaller__success">نصب با موفقیت انجام شد.</p>
+          <div class="packageInstaller__routePrompt">
+            <h3>مسیریابی اپلیکیشن</h3>
+            <p>این اپلیکیشن قابل مسیریابی است. می‌خواهید الان یک آدرس به آن اختصاص دهید؟</p>
+            <Input
+                v-model="store.routePrompt.path"
+                label="آدرس در مرورگر"
+                direction="ltr"
+                placeholder="shop"
+                prefix="/"
+            />
+          </div>
+          <div class="packageInstaller__foot">
+            <Button label="بعداً" variant="dark" @click="skipRoutePrompt"/>
+            <Button label="تخصیص آدرس" variant="primary" @click="assignRoute"/>
+          </div>
         </template>
 
         <template v-else-if="store.phase === 'success'">
@@ -143,6 +256,21 @@
 
         <template v-else-if="store.phase === 'error'">
           <p class="packageInstaller__error">{{ store.error }}</p>
+          <div v-if="store.steps.length" class="packageInstaller__steps is-compact">
+            <ul>
+              <li
+                  v-for="(step, index) in store.steps"
+                  :key="`${step.step}-${index}`"
+                  class="packageInstaller__step"
+                  :class="`is-${step.status}`"
+              >
+                <span class="packageInstaller__stepIcon">{{ stepIcon(step.status) }}</span>
+                <span class="packageInstaller__stepText">
+                  <strong>{{ installStepLabel(step.step) }}</strong>
+                </span>
+              </li>
+            </ul>
+          </div>
           <div class="packageInstaller__foot">
             <Button label="تلاش مجدد" variant="primary" @click="store.reset()"/>
             <Button label="بستن" variant="dark" @click="store.dismiss()"/>
@@ -167,7 +295,16 @@ import {useAppStore} from '@/stores/modules/app.js';
 
 const store = usePackageInstallerStore();
 const appStore = useAppStore();
-const {uploadSelectedFile, confirmInstall, consumePendingFile} = usePackageInstaller();
+const {
+    uploadSelectedFile,
+    confirmInstall,
+    consumePendingFile,
+    checkPrefix,
+    testDatabaseConnection,
+    assignRoute,
+    skipRoutePrompt,
+    installStepLabel,
+} = usePackageInstaller();
 
 const fileUploaderRef = ref(null);
 const selectedFile = ref(null);
@@ -181,6 +318,66 @@ const displayName = computed(() => {
 });
 
 const packageIconProps = computed(() => packageMetaIconProps(store.meta, appStore));
+
+const compatibilityIssues = computed(() => store.meta?.compatibility?.issues ?? []);
+
+const displaySteps = computed(() => store.steps);
+
+const prefixHint = computed(() => {
+    const status = store.prefixStatus;
+
+    if (!status) {
+        return '';
+    }
+
+    if (status.error) {
+        return status.error;
+    }
+
+    if (status.auto_adjusted) {
+        return `پیشوند به ${status.resolved_prefix} تغییر یافت تا تداخل نداشته باشد.`;
+    }
+
+    if (status.tables_exist) {
+        return 'جداولی با این پیشوند در دیتابیس وجود دارد.';
+    }
+
+    return 'پیشوند برای استفاده مناسب است.';
+});
+
+const prefixHintClass = computed(() => {
+    const status = store.prefixStatus;
+
+    if (!status) {
+        return '';
+    }
+
+    if (status.error || status.tables_exist) {
+        return 'is-warn';
+    }
+
+    if (status.auto_adjusted) {
+        return 'is-info';
+    }
+
+    return 'is-ok';
+});
+
+function stepIcon(status) {
+    if (status === 'ok') {
+        return '✓';
+    }
+
+    if (status === 'error') {
+        return '×';
+    }
+
+    if (status === 'skipped') {
+        return '–';
+    }
+
+    return '…';
+}
 
 function onSelect(file) {
     selectedFile.value = file;

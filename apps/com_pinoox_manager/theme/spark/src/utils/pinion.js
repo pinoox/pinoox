@@ -138,6 +138,10 @@ export async function uploadWithPinion(file, {
 
     await Promise.all(workers);
 
+    if (onProgress) {
+        onProgress(100);
+    }
+
     const completeResponse = await http.post(`${BASE_URL}/complete`, {
         upload_id: session.id,
     }, {alert: false, signal});
@@ -198,7 +202,22 @@ export async function uploadPackageFile(file, options = {}) {
     }
 
     const formData = formDataHelper.fromObject({files: [file]});
-    const response = await http.postForm('/app/filesUpload', formData, {alert: false, signal: options.signal});
+    const response = await http.postForm('/app/filesUpload', formData, {
+        alert: false,
+        signal: options.signal,
+        onUploadProgress: (event) => {
+            if (!options.onProgress || !event.total) {
+                return;
+            }
+
+            options.onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+        },
+    });
+
+    if (options.onProgress) {
+        options.onProgress(100);
+    }
+
     return unwrapData(response);
 }
 

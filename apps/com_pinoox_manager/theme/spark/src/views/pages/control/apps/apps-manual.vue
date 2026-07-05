@@ -2,11 +2,14 @@
   <Page title="نصب دستی" class="pageAppsManual">
     <FileUploader ref="fileUploaderRef" @select="onSelect"/>
 
-    <div v-if="uploadProgress > 0 && uploadProgress < 100" class="mt-4">
+    <div v-if="isUploading || uploadProgress > 0" class="mt-4">
+      <p class="text-sm text-amber-200/90 mb-2">تا اتمام بارگذاری بسته صبر کنید و صفحه را نبندید.</p>
       <div class="h-2 rounded-full bg-white/10 overflow-hidden">
         <div class="h-full bg-primary transition-all" :style="{ width: `${uploadProgress}%` }"/>
       </div>
-      <p class="mt-2 text-sm opacity-70">در حال بارگذاری… {{ uploadProgress }}%</p>
+      <p class="mt-2 text-sm opacity-70">
+        {{ uploadProgress >= 100 ? 'بارگذاری کامل شد' : `در حال بارگذاری… ${uploadProgress}%` }}
+      </p>
     </div>
 
     <div class="mt-4">
@@ -14,15 +17,24 @@
     </div>
 
     <PageSection v-if="files.length" title="فایل‌های آماده نصب" class="mt-8">
+      <p class="text-sm opacity-70 mb-4">این بسته‌ها بارگذاری شده‌اند اما هنوز نصب نشده‌اند.</p>
       <div class="grid gap-3">
-        <div v-for="file in files" :key="file.filename" class="flex items-center justify-between bg-white/5 rounded-lg p-4">
-          <div>
+        <div
+            v-for="file in files"
+            :key="file.filename"
+            class="flex flex-wrap items-center justify-between gap-3 bg-white/5 rounded-lg p-4"
+        >
+          <div class="min-w-0">
             <strong>{{ file.name || file.package_name }}</strong>
-            <span class="block text-sm opacity-70">{{ file.filename }}</span>
-          </div>
-          <div v-if="file.install_mode" class="text-xs opacity-60 mt-1">
-            {{ file.type === 'theme' ? 'قالب' : 'اپ' }} ·
-            {{ file.install_mode === 'update' ? 'بروزرسانی' : 'نصب' }}
+            <span class="block text-sm opacity-70" dir="ltr">{{ file.filename }}</span>
+            <div v-if="file.install_mode" class="text-xs opacity-60 mt-1">
+              {{ file.type === 'theme' ? 'قالب' : 'اپ' }} ·
+              {{ file.install_mode === 'update' ? 'بروزرسانی' : 'نصب' }}
+              <span v-if="file.version"> · {{ file.version }}</span>
+            </div>
+            <p v-if="file.compatibility && !file.compatibility.can_install" class="text-xs text-red-300 mt-1">
+              مشکل سازگاری: {{ file.compatibility.issues?.[0] }}
+            </p>
           </div>
           <div class="flex gap-2">
             <Button label="نصب" variant="primary" size="sm" @click="installFile(file)"/>
