@@ -106,6 +106,8 @@ const controlClass = computed(() => ({
   'inputWrapper__control--glass': props.variant === 'glass',
   'inputWrapper__control--with-icon': Boolean(props.icon),
   'inputWrapper__control--with-toggle': props.showPasswordToggle && props.type === 'password',
+  'inputWrapper__control--dir-ltr': props.direction === 'ltr',
+  'inputWrapper__control--dir-rtl': props.direction === 'rtl',
   'flex-row': props.direction === 'rtl',
   'flex-row-reverse': props.direction === 'ltr',
 }));

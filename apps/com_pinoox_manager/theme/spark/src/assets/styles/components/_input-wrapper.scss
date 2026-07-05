@@ -90,14 +90,33 @@
       padding-inline-start: 0.35rem;
     }
 
-    &--with-toggle .inputWrapper__form {
-      padding-inline-end: 2.5rem;
+    &--with-toggle.inputWrapper__control--dir-ltr {
+      .inputWrapper__form {
+        padding-right: 2.5rem;
+        padding-left: 10px;
+      }
+
+      .inputWrapper__toggle {
+        right: 0;
+        left: auto;
+      }
+    }
+
+    &--with-toggle.inputWrapper__control--dir-rtl {
+      .inputWrapper__form {
+        padding-left: 2.5rem;
+        padding-right: 10px;
+      }
+
+      .inputWrapper__toggle {
+        left: 0;
+        right: auto;
+      }
     }
   }
 
   &__toggle {
     position: absolute;
-    inset-inline-end: 0;
     top: 0;
     bottom: 0;
     display: inline-flex;
