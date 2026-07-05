@@ -28,6 +28,8 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             prefix: '',
         },
         prefixStatus: null,
+        prefixBaseline: '',
+        prefixDirty: false,
         installResult: null,
         routePrompt: {
             visible: false,
@@ -121,6 +123,8 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.useCustomDatabase = false;
             this.databaseDefaultsLoaded = false;
             this.prefixStatus = null;
+            this.prefixBaseline = '';
+            this.prefixDirty = false;
             this.installResult = null;
             this.routePrompt = {
                 visible: false,
@@ -164,6 +168,9 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
                 password: '',
                 prefix: resolvedPrefix,
             };
+            this.prefixBaseline = resolvedPrefix;
+            this.prefixDirty = false;
+            this.prefixStatus = null;
         },
         setSteps(steps) {
             this.steps = Array.isArray(steps) ? steps : [];

@@ -224,16 +224,39 @@ export function usePackageInstaller() {
                 package_name: store.meta.package_name,
             });
             const status = unwrapPayload(response);
-            store.setPrefixStatus(status);
 
             if (status?.resolved_prefix) {
                 store.database.prefix = status.resolved_prefix;
+            }
+
+            if (status?.auto_adjusted) {
+                store.setPrefixStatus({available: true});
+                store.prefixBaseline = store.database.prefix;
+                store.prefixDirty = false;
+            } else if (status?.error || status?.tables_exist) {
+                store.setPrefixStatus(status);
+            } else {
+                store.setPrefixStatus({available: true});
+                store.prefixBaseline = store.database.prefix;
+                store.prefixDirty = false;
             }
         } catch (error) {
             store.setPrefixStatus({error: errorMessage(error)});
         } finally {
             store.prefixLoading = false;
         }
+    }
+
+    function onPrefixInput(value) {
+        store.prefixDirty = String(value ?? '') !== String(store.prefixBaseline ?? '');
+    }
+
+    function onPrefixBlur() {
+        if (!store.prefixDirty) {
+            return;
+        }
+
+        checkPrefix();
     }
 
     async function testDatabaseConnection(showToast = true) {
@@ -352,6 +375,8 @@ export function usePackageInstaller() {
         confirmInstall,
         consumePendingFile,
         checkPrefix,
+        onPrefixInput,
+        onPrefixBlur,
         testDatabaseConnection,
         assignRoute,
         skipRoutePrompt,

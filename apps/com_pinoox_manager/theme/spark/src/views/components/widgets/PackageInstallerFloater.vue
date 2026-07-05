@@ -134,7 +134,8 @@
                   direction="ltr"
                   placeholder="app_"
                   :disabled="store.prefixLoading"
-                  @blur="checkPrefix"
+                  @update:modelValue="onPrefixInput"
+                  @blur="onPrefixBlur"
               />
               <p v-if="prefixHint || store.prefixLoading" class="packageInstaller__prefixStatus" :class="prefixHintClass">
                 <span v-if="store.prefixLoading">در حال بررسی پیشوند…</span>
@@ -303,7 +304,8 @@ const {
     uploadSelectedFile,
     confirmInstall,
     consumePendingFile,
-    checkPrefix,
+    onPrefixInput,
+    onPrefixBlur,
     testDatabaseConnection,
     assignRoute,
     skipRoutePrompt,
@@ -361,18 +363,18 @@ const installButtonLabel = computed(() => {
 const displaySteps = computed(() => store.steps);
 
 const prefixHint = computed(() => {
+    if (store.prefixLoading) {
+        return '';
+    }
+
     const status = store.prefixStatus;
 
-    if (!status) {
-        return '';
+    if (!status || status.available) {
+        return 'پیشوند برای استفاده مناسب است.';
     }
 
     if (status.error) {
         return status.error;
-    }
-
-    if (status.auto_adjusted) {
-        return `پیشوند به ${status.resolved_prefix} تغییر یافت تا تداخل نداشته باشد.`;
     }
 
     if (status.tables_exist) {
@@ -383,18 +385,18 @@ const prefixHint = computed(() => {
 });
 
 const prefixHintClass = computed(() => {
+    if (store.prefixLoading) {
+        return '';
+    }
+
     const status = store.prefixStatus;
 
-    if (!status) {
-        return '';
+    if (!status || status.available) {
+        return 'is-ok';
     }
 
     if (status.error || status.tables_exist) {
         return 'is-warn';
-    }
-
-    if (status.auto_adjusted) {
-        return 'is-info';
     }
 
     return 'is-ok';
