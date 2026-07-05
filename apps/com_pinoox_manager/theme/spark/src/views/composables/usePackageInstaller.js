@@ -49,6 +49,8 @@ export function usePackageInstaller() {
                 throw new Error('نام فایل بسته مشخص نشد.');
             }
 
+            store.setLoading('در حال بررسی اطلاعات بسته…');
+
             const metaResponse = await appAPI.packageMeta(filename);
             const meta = unwrapPayload(metaResponse);
 
@@ -68,6 +70,8 @@ export function usePackageInstaller() {
             return;
         }
 
+        store.advancedLoading = true;
+
         try {
             const response = await appAPI.databaseDefaults();
             const defaults = unwrapPayload(response);
@@ -86,6 +90,7 @@ export function usePackageInstaller() {
             // platform defaults are optional
         } finally {
             store.databaseDefaultsLoaded = true;
+            store.advancedLoading = false;
         }
     }
 
@@ -211,6 +216,8 @@ export function usePackageInstaller() {
             return;
         }
 
+        store.prefixLoading = true;
+
         try {
             const response = await appAPI.checkDatabasePrefix({
                 prefix: store.database.prefix,
@@ -224,10 +231,14 @@ export function usePackageInstaller() {
             }
         } catch (error) {
             store.setPrefixStatus({error: errorMessage(error)});
+        } finally {
+            store.prefixLoading = false;
         }
     }
 
     async function testDatabaseConnection(showToast = true) {
+        store.connectionTesting = true;
+
         try {
             await appAPI.testDatabaseConnection({...store.database});
 
@@ -242,6 +253,8 @@ export function usePackageInstaller() {
             }
 
             throw error;
+        } finally {
+            store.connectionTesting = false;
         }
     }
 
@@ -312,6 +325,9 @@ export function usePackageInstaller() {
     async function previewStagedFile(filename) {
         store.show();
         store.error = null;
+        store.meta = null;
+        store.filename = filename;
+        store.setLoading('در حال بارگذاری اطلاعات بسته…');
 
         try {
             const metaResponse = await appAPI.packageMeta(filename);

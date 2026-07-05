@@ -71,6 +71,14 @@
           </div>
         </template>
 
+        <template v-else-if="store.phase === 'loading'">
+          <div class="packageInstaller__loading">
+            <WidgetLoading/>
+            <p class="packageInstaller__statusTitle">{{ store.loadingMessage }}</p>
+            <p class="packageInstaller__waitHint">چند لحظه صبر کنید…</p>
+          </div>
+        </template>
+
         <template v-else-if="store.phase === 'uploading'">
           <p class="packageInstaller__statusTitle">در حال بارگذاری بسته…</p>
           <p class="packageInstaller__waitHint">تا اتمام بارگذاری بسته صبر کنید و صفحه را نبندید.</p>
@@ -107,6 +115,7 @@
                 v-if="store.meta.type === 'app'"
                 type="button"
                 class="packageInstaller__advancedToggle"
+                :disabled="store.advancedLoading"
                 @click="toggleAdvanced"
             >
               <span>{{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}</span>
@@ -114,14 +123,23 @@
             </button>
 
             <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
+              <div v-if="store.advancedLoading" class="packageInstaller__sectionLoading">
+                <WidgetLoading/>
+                <p>در حال بارگذاری تنظیمات…</p>
+              </div>
+              <template v-else>
               <Input
                   v-model="store.database.prefix"
                   label="پیشوند جداول"
                   direction="ltr"
                   placeholder="app_"
+                  :disabled="store.prefixLoading"
                   @blur="checkPrefix"
               />
-              <p v-if="prefixHint" class="packageInstaller__prefixStatus" :class="prefixHintClass">{{ prefixHint }}</p>
+              <p v-if="prefixHint || store.prefixLoading" class="packageInstaller__prefixStatus" :class="prefixHintClass">
+                <span v-if="store.prefixLoading">در حال بررسی پیشوند…</span>
+                <span v-else>{{ prefixHint }}</span>
+              </p>
 
               <label class="packageInstaller__customDbToggle">
                 <input v-model="store.useCustomDatabase" type="checkbox"/>
@@ -148,9 +166,11 @@
                       outline
                       size="sm"
                       full-width
+                      :is-loading="store.connectionTesting"
                       @click="testDatabaseConnection"
                   />
                 </div>
+              </template>
               </template>
             </div>
           </div>
@@ -161,6 +181,7 @@
                 :label="installButtonLabel"
                 variant="primary"
                 :disabled="!store.canInstall"
+                :is-loading="store.connectionTesting"
                 @click="confirmInstall"
             />
           </div>

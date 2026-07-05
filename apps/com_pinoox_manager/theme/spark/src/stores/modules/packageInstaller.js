@@ -6,6 +6,10 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         minimized: false,
         phase: 'idle',
         progress: 0,
+        loadingMessage: '',
+        advancedLoading: false,
+        prefixLoading: false,
+        connectionTesting: false,
         meta: null,
         filename: null,
         error: null,
@@ -55,7 +59,9 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             return 'اپلیکیشن';
         },
         isBusy(state) {
-            return state.phase === 'uploading' || state.phase === 'installing';
+            return state.phase === 'uploading'
+                || state.phase === 'installing'
+                || state.phase === 'loading';
         },
         canInstall(state) {
             if (!state.meta?.compatibility) {
@@ -107,6 +113,10 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.error = null;
             this.pendingFile = null;
             this.steps = [];
+            this.loadingMessage = '';
+            this.advancedLoading = false;
+            this.prefixLoading = false;
+            this.connectionTesting = false;
             this.showAdvanced = false;
             this.useCustomDatabase = false;
             this.databaseDefaultsLoaded = false;
@@ -129,6 +139,11 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         },
         setPhase(phase) {
             this.phase = phase;
+        },
+        setLoading(message) {
+            this.phase = 'loading';
+            this.loadingMessage = message || 'لطفاً صبر کنید…';
+            this.error = null;
         },
         setProgress(value) {
             this.progress = Math.min(100, Math.max(0, Number(value) || 0));
