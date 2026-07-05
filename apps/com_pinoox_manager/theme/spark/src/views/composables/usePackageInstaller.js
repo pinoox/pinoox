@@ -63,13 +63,63 @@ export function usePackageInstaller() {
         }
     }
 
+    async function loadDatabaseDefaults() {
+        if (store.databaseDefaultsLoaded) {
+            return;
+        }
+
+        try {
+            const response = await appAPI.databaseDefaults();
+            const defaults = unwrapPayload(response);
+
+            if (defaults) {
+                store.database = {
+                    ...store.database,
+                    connection: defaults.connection ?? store.database.connection,
+                    host: defaults.host ?? store.database.host,
+                    port: defaults.port ?? store.database.port,
+                    database: defaults.database ?? store.database.database,
+                    username: defaults.username ?? store.database.username,
+                };
+            }
+        } catch {
+            // platform defaults are optional
+        } finally {
+            store.databaseDefaultsLoaded = true;
+        }
+    }
+
+    async function toggleAdvanced() {
+        const next = !store.showAdvanced;
+        store.showAdvanced = next;
+
+        if (next && store.meta?.type === 'app') {
+            await loadDatabaseDefaults();
+        }
+    }
+
     function buildInstallPayload() {
         const payload = {
             filename: store.filename,
         };
 
-        if (store.showAdvanced || store.showDatabaseOptions) {
-            payload.database = {...store.database};
+        if (store.meta?.type === 'app' && store.showAdvanced) {
+            const database = {
+                prefix: store.database.prefix,
+            };
+
+            if (store.useCustomDatabase) {
+                Object.assign(database, {
+                    connection: store.database.connection,
+                    host: store.database.host,
+                    port: store.database.port,
+                    database: store.database.database,
+                    username: store.database.username,
+                    password: store.database.password,
+                });
+            }
+
+            payload.database = database;
         }
 
         return payload;
@@ -262,5 +312,7 @@ export function usePackageInstaller() {
         assignRoute,
         skipRoutePrompt,
         installStepLabel,
+        toggleAdvanced,
+        loadDatabaseDefaults,
     };
 }

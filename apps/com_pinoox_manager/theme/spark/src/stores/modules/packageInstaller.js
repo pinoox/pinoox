@@ -12,6 +12,8 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
         pendingFile: null,
         steps: [],
         showAdvanced: false,
+        useCustomDatabase: false,
+        databaseDefaultsLoaded: false,
         database: {
             connection: 'mysql',
             host: '127.0.0.1',
@@ -106,6 +108,8 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.pendingFile = null;
             this.steps = [];
             this.showAdvanced = false;
+            this.useCustomDatabase = false;
+            this.databaseDefaultsLoaded = false;
             this.prefixStatus = null;
             this.installResult = null;
             this.routePrompt = {

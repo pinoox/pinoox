@@ -80,110 +80,70 @@
         </template>
 
         <template v-else-if="store.phase === 'preview' && store.meta">
-          <div class="packageInstaller__preview">
-            <AppIcon v-bind="packageIconProps" size="md"/>
-            <div class="packageInstaller__previewText">
-              <div class="packageInstaller__badges">
-                <span class="packageInstaller__badge">{{ store.typeLabel }}</span>
-                <span class="packageInstaller__badge is-accent">{{ store.actionLabel }}</span>
-              </div>
-              <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
-              <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
-            </div>
+          <div class="packageInstaller__card">
+            <AppIcon v-bind="packageIconProps" size="lg" class="packageInstaller__cardIcon"/>
+            <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
+            <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
+            <p v-if="store.meta.size" class="packageInstaller__size">{{ store.meta.size }}</p>
           </div>
 
-          <div v-if="compatibilityIssues.length" class="packageInstaller__alert is-error">
-            <strong>مشکلات سازگاری</strong>
-            <ul>
-              <li v-for="issue in compatibilityIssues" :key="issue">{{ issue }}</li>
-            </ul>
+          <div v-if="!store.canInstall" class="packageInstaller__incompatible">
+            <Icon :is="saxIcon.notifyInfo" size="sm"/>
+            <span>{{ incompatibilityMessage }}</span>
           </div>
-
-          <div v-if="store.meta.compatibility" class="packageInstaller__compat">
-            <div>
-              <span>حداقل نسخه پینوکس</span>
-              <strong dir="ltr">#{{ store.meta.compatibility.minpin }}</strong>
-              <span
-                  class="packageInstaller__compatState"
-                  :class="store.meta.compatibility.minpin_ok ? 'is-ok' : 'is-bad'"
-              >
-                {{ store.meta.compatibility.minpin_ok ? 'سازگار' : 'ناسازگار' }}
-              </span>
-            </div>
-            <div v-if="store.meta.compatibility.kernel_version">
-              <span>نسخه فعلی هسته</span>
-              <strong dir="ltr">
-                {{ store.meta.compatibility.kernel_version.name || '—' }}
-                #{{ store.meta.compatibility.kernel_version.code ?? '—' }}
-              </strong>
-            </div>
-          </div>
-
-          <dl class="packageInstaller__meta">
-            <div v-if="store.meta.type === 'app'">
-              <dt>پکیج</dt>
-              <dd dir="ltr">{{ store.meta.package_name }}</dd>
-            </div>
-            <div v-else>
-              <dt>اپ میزبان</dt>
-              <dd dir="ltr">{{ store.meta.app }}</dd>
-              <dt>نام قالب</dt>
-              <dd dir="ltr">{{ store.meta.name }}</dd>
-            </div>
-            <div>
-              <dt>نسخه</dt>
-              <dd>{{ store.meta.version }} <span dir="ltr">#{{ store.meta['version-code'] }}</span></dd>
-            </div>
-            <div v-if="store.meta.size">
-              <dt>حجم</dt>
-              <dd>{{ store.meta.size }}</dd>
-            </div>
-            <div v-if="store.meta.developer">
-              <dt>توسعه‌دهنده</dt>
-              <dd>{{ store.meta.developer }}</dd>
-            </div>
-            <div v-if="store.meta.database?.resolved_prefix">
-              <dt>پیشوند جداول</dt>
-              <dd dir="ltr">{{ store.meta.database.resolved_prefix }}</dd>
-            </div>
-          </dl>
 
           <button
               v-if="store.meta.type === 'app'"
               type="button"
               class="packageInstaller__advancedToggle"
-              @click="store.showAdvanced = !store.showAdvanced"
+              @click="toggleAdvanced"
           >
-            {{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}
+            <span>{{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}</span>
+            <span class="packageInstaller__advancedChevron" :class="{ 'is-open': store.showAdvanced }">›</span>
           </button>
 
           <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
-            <p class="packageInstaller__advancedHint">اتصال دیتابیس و پیشوند جداول را در صورت نیاز تغییر دهید.</p>
-            <div class="packageInstaller__advancedGrid">
-              <Input v-model="store.database.host" label="میزبان" direction="ltr"/>
-              <Input v-model="store.database.port" label="پورت" direction="ltr"/>
-              <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
-              <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
-              <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
-              <Input
-                  v-model="store.database.prefix"
-                  label="پیشوند جداول"
-                  direction="ltr"
-                  @blur="checkPrefix"
-              />
-            </div>
-            <p class="packageInstaller__prefixHint">پیشوند یکتا برای جداول این اپ. اگر خالی یا تکراری باشد، خودکار اصلاح می‌شود.</p>
+            <Input
+                v-model="store.database.prefix"
+                label="پیشوند جداول"
+                direction="ltr"
+                placeholder="app_"
+                @blur="checkPrefix"
+            />
             <p v-if="prefixHint" class="packageInstaller__prefixStatus" :class="prefixHintClass">{{ prefixHint }}</p>
-            <div class="packageInstaller__advancedActions">
-              <Button label="بررسی پیشوند" variant="dark" outline size="sm" @click="checkPrefix"/>
-              <Button label="تست اتصال" variant="dark" outline size="sm" @click="testDatabaseConnection"/>
-            </div>
+
+            <label class="packageInstaller__customDbToggle">
+              <input v-model="store.useCustomDatabase" type="checkbox"/>
+              <span>استفاده از دیتابیس جدا برای این اپ</span>
+            </label>
+
+            <template v-if="store.useCustomDatabase">
+              <div class="packageInstaller__field">
+                <label>درایور دیتابیس</label>
+                <select v-model="store.database.connection" class="packageInstaller__select">
+                  <option value="mysql">MySQL</option>
+                  <option value="pgsql">PostgreSQL</option>
+                  <option value="sqlite">SQLite</option>
+                  <option value="sqlsrv">SQL Server</option>
+                </select>
+              </div>
+              <div class="packageInstaller__advancedGrid">
+                <Input v-model="store.database.host" label="میزبان" direction="ltr"/>
+                <Input v-model="store.database.port" label="پورت" direction="ltr"/>
+                <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
+                <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
+                <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
+              </div>
+              <div class="packageInstaller__advancedActions">
+                <Button label="تست اتصال" variant="dark" outline size="sm" @click="testDatabaseConnection"/>
+              </div>
+            </template>
           </div>
 
           <div class="packageInstaller__foot">
             <Button label="لغو" variant="dark" @click="store.reset()"/>
             <Button
-                :label="store.actionLabel"
+                :label="installButtonLabel"
                 variant="primary"
                 :disabled="!store.canInstall"
                 @click="confirmInstall"
@@ -304,6 +264,7 @@ const {
     assignRoute,
     skipRoutePrompt,
     installStepLabel,
+    toggleAdvanced,
 } = usePackageInstaller();
 
 const fileUploaderRef = ref(null);
@@ -319,7 +280,27 @@ const displayName = computed(() => {
 
 const packageIconProps = computed(() => packageMetaIconProps(store.meta, appStore));
 
-const compatibilityIssues = computed(() => store.meta?.compatibility?.issues ?? []);
+const incompatibilityMessage = computed(() => {
+    const issues = store.meta?.compatibility?.issues ?? [];
+
+    if (issues.length) {
+        return issues[0];
+    }
+
+    return 'این بسته با نسخه فعلی پینوکس سازگار نیست.';
+});
+
+const installButtonLabel = computed(() => {
+    if (!store.canInstall) {
+        return 'غیرقابل نصب';
+    }
+
+    if (store.meta?.install_mode === 'update') {
+        return store.meta?.type === 'theme' ? 'بروزرسانی' : 'بروزرسانی';
+    }
+
+    return 'نصب';
+});
 
 const displaySteps = computed(() => store.steps);
 
