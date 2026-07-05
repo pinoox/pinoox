@@ -32,6 +32,7 @@ const http = axios.create({
     baseURL: baseUrl,
     numProcessing: 0,
     error: true,
+    withCredentials: true,
 });
 
 export const event = (event_name, func) => {

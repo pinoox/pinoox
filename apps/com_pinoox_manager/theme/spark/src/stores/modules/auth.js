@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
     const isLock = ref(false);
     const isLoggingOut = ref(false);
 
-    const isAuth = computed(() => !!token.value && auth.value);
+    const isAuth = computed(() => auth.value);
     const getUser = computed(() => user.value);
 
     const setUser = (data) => {
@@ -46,13 +46,14 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const canUserAccess = async (refresh = false) => {
-        if (!refresh) {
-            if (!!token.value && auth.value) return true;
-            if (!token.value) return false;
+        if (!refresh && auth.value) {
+            return true;
         }
 
         try {
-            const response = await userAPI.get();
+            const response = token.value
+                ? await userAPI.get()
+                : await authAPI.get();
             setUser(unwrapResponse(response));
             auth.value = true;
             return true;
