@@ -83,7 +83,9 @@ function openModalInstallApp() {
 }
 
 function openStagedModal() {
-  openModal(ModalStagedPackages).finally(loadStagedFiles);
+  void openModal(ModalStagedPackages)
+      .finally(loadStagedFiles)
+      .catch(() => {});
 }
 
 function openApp(app) {
