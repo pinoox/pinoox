@@ -103,7 +103,7 @@ export function usePackageInstaller() {
             filename: store.filename,
         };
 
-        if (store.meta?.type === 'app' && store.showAdvanced) {
+        if (store.meta?.type === 'app' && (store.showAdvanced || store.useCustomDatabase)) {
             const database = {
                 prefix: store.database.prefix,
             };
@@ -178,6 +178,13 @@ export function usePackageInstaller() {
             return;
         }
 
+        try {
+            await ensureCustomDatabaseConnection();
+        } catch (error) {
+            toast({title: errorMessage(error), type: 'error'});
+            return;
+        }
+
         store.setPhase('installing');
         store.error = null;
         store.setProgress(0);
@@ -220,13 +227,34 @@ export function usePackageInstaller() {
         }
     }
 
-    async function testDatabaseConnection() {
+    async function testDatabaseConnection(showToast = true) {
         try {
             await appAPI.testDatabaseConnection({...store.database});
-            toast({title: 'اتصال به دیتابیس برقرار شد', type: 'success'});
+
+            if (showToast) {
+                toast({title: 'اتصال به دیتابیس برقرار شد', type: 'success'});
+            }
+
+            return true;
         } catch (error) {
-            toast({title: errorMessage(error), type: 'error'});
+            if (showToast) {
+                toast({title: errorMessage(error), type: 'error'});
+            }
+
+            throw error;
         }
+    }
+
+    async function ensureCustomDatabaseConnection() {
+        if (!store.useCustomDatabase) {
+            return;
+        }
+
+        if (!String(store.database.database || '').trim()) {
+            throw new Error('نام دیتابیس را وارد کنید.');
+        }
+
+        await testDatabaseConnection(false);
     }
 
     async function assignRoute() {

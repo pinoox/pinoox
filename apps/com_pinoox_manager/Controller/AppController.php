@@ -169,6 +169,15 @@ class AppController extends ApiController
 
         $sessionId = InstallSession::create($filename);
         $options = $this->installOptionsFromRequest($request);
+
+        $database = $options['database'] ?? null;
+
+        if (is_array($database) && PackageDatabase::hasCustomConnectionOptions($database)) {
+            if (!PackageDatabase::testConnection($database)) {
+                return $this->deny('manager.database_connection_failed');
+            }
+        }
+
         $options['session_id'] = $sessionId;
 
         if (function_exists('fastcgi_finish_request')) {

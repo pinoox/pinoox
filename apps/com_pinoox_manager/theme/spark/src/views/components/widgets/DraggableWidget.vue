@@ -2,14 +2,12 @@
   <div
       ref="widget"
       class="draggable-widget"
-      @mousedown="startDrag"
-      @touchstart="startDrag"
       :style="{ left: computedPosX, top: computedPosY }"
   >
-    <div class="header">
+    <div class="header" @mousedown="startDrag" @touchstart="startDrag">
       <slot name="header"></slot>
     </div>
-    <div class="content">
+    <div class="content" @mousedown.stop @touchstart.stop>
       <slot></slot>
     </div>
   </div>
@@ -60,6 +58,10 @@ onMounted(() => {
 });
 
 const startDrag = (event) => {
+  if (event.target.closest('button, input, select, textarea, a, label')) {
+    return;
+  }
+
   event.preventDefault();
   const clientX = event.touches ? event.touches[0].clientX : event.clientX;
   const clientY = event.touches ? event.touches[0].clientY : event.clientY;

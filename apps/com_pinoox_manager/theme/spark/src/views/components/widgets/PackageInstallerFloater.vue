@@ -27,6 +27,7 @@
     <DraggableWidget
         v-if="store.visible && !store.minimized"
         class="packageInstaller"
+        :class="{ 'is-advanced-open': store.showAdvanced && store.phase === 'preview' }"
         centered
     >
       <template #header>
@@ -80,64 +81,69 @@
         </template>
 
         <template v-else-if="store.phase === 'preview' && store.meta">
-          <div class="packageInstaller__card">
-            <AppIcon v-bind="packageIconProps" size="lg" class="packageInstaller__cardIcon"/>
-            <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
-            <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
-            <p v-if="store.meta.size" class="packageInstaller__size">{{ store.meta.size }}</p>
-          </div>
+          <div class="packageInstaller__scroll">
+            <div class="packageInstaller__card">
+              <AppIcon v-bind="packageIconProps" size="lg" class="packageInstaller__cardIcon"/>
+              <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
+              <p v-if="store.meta.description" class="packageInstaller__description">{{ store.meta.description }}</p>
+              <p v-if="store.meta.size" class="packageInstaller__size">{{ store.meta.size }}</p>
+            </div>
 
-          <div v-if="!store.canInstall" class="packageInstaller__incompatible">
-            <Icon :is="saxIcon.notifyInfo" size="sm"/>
-            <span>{{ incompatibilityMessage }}</span>
-          </div>
+            <div v-if="!store.canInstall" class="packageInstaller__incompatible">
+              <Icon :is="saxIcon.notifyInfo" size="sm"/>
+              <span>{{ incompatibilityMessage }}</span>
+            </div>
 
-          <button
-              v-if="store.meta.type === 'app'"
-              type="button"
-              class="packageInstaller__advancedToggle"
-              @click="toggleAdvanced"
-          >
-            <span>{{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}</span>
-            <span class="packageInstaller__advancedChevron" :class="{ 'is-open': store.showAdvanced }">›</span>
-          </button>
+            <button
+                v-if="store.meta.type === 'app'"
+                type="button"
+                class="packageInstaller__advancedToggle"
+                @click="toggleAdvanced"
+            >
+              <span>{{ store.showAdvanced ? 'بستن تنظیمات پیشرفته' : 'تنظیمات پیشرفته' }}</span>
+              <span class="packageInstaller__advancedChevron" :class="{ 'is-open': store.showAdvanced }">›</span>
+            </button>
 
-          <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
-            <Input
-                v-model="store.database.prefix"
-                label="پیشوند جداول"
-                direction="ltr"
-                placeholder="app_"
-                @blur="checkPrefix"
-            />
-            <p v-if="prefixHint" class="packageInstaller__prefixStatus" :class="prefixHintClass">{{ prefixHint }}</p>
+            <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
+              <Input
+                  v-model="store.database.prefix"
+                  label="پیشوند جداول"
+                  direction="ltr"
+                  placeholder="app_"
+                  @blur="checkPrefix"
+              />
+              <p v-if="prefixHint" class="packageInstaller__prefixStatus" :class="prefixHintClass">{{ prefixHint }}</p>
 
-            <label class="packageInstaller__customDbToggle">
-              <input v-model="store.useCustomDatabase" type="checkbox"/>
-              <span>استفاده از دیتابیس جدا برای این اپ</span>
-            </label>
+              <label class="packageInstaller__customDbToggle">
+                <input v-model="store.useCustomDatabase" type="checkbox"/>
+                <span>استفاده از دیتابیس جدا برای این اپ</span>
+              </label>
 
-            <template v-if="store.useCustomDatabase">
-              <div class="packageInstaller__field">
-                <label>درایور دیتابیس</label>
-                <select v-model="store.database.connection" class="packageInstaller__select">
-                  <option value="mysql">MySQL</option>
-                  <option value="pgsql">PostgreSQL</option>
-                  <option value="sqlite">SQLite</option>
-                  <option value="sqlsrv">SQL Server</option>
-                </select>
-              </div>
-              <div class="packageInstaller__advancedGrid">
-                <Input v-model="store.database.host" label="میزبان" direction="ltr"/>
-                <Input v-model="store.database.port" label="پورت" direction="ltr"/>
-                <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
-                <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
-                <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
-              </div>
-              <div class="packageInstaller__advancedActions">
-                <Button label="تست اتصال" variant="dark" outline size="sm" @click="testDatabaseConnection"/>
-              </div>
-            </template>
+              <template v-if="store.useCustomDatabase">
+                <DarkSelect
+                    v-model="store.database.connection"
+                    label="درایور دیتابیس"
+                    :options="databaseDriverOptions"
+                />
+                <div class="packageInstaller__advancedGrid">
+                  <Input v-model="store.database.host" label="میزبان" direction="ltr"/>
+                  <Input v-model="store.database.port" label="پورت" direction="ltr"/>
+                  <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
+                  <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
+                  <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
+                </div>
+                <div class="packageInstaller__advancedActions">
+                  <Button
+                      label="تست اتصال"
+                      variant="primary"
+                      outline
+                      size="sm"
+                      full-width
+                      @click="testDatabaseConnection"
+                  />
+                </div>
+              </template>
+            </div>
           </div>
 
           <div class="packageInstaller__foot">
@@ -252,6 +258,14 @@ import {packageMetaIconProps} from '@utils/helpers/appIconProps.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {usePackageInstaller} from '@/views/composables/usePackageInstaller.js';
 import {useAppStore} from '@/stores/modules/app.js';
+import DarkSelect from '@/views/components/form/DarkSelect.vue';
+
+const databaseDriverOptions = [
+  {value: 'mysql', label: 'MySQL'},
+  {value: 'pgsql', label: 'PostgreSQL'},
+  {value: 'sqlite', label: 'SQLite'},
+  {value: 'sqlsrv', label: 'SQL Server'},
+];
 
 const store = usePackageInstallerStore();
 const appStore = useAppStore();

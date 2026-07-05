@@ -363,6 +363,14 @@ final class PackageDatabase
     /**
      * @param array<string, mixed> $options
      */
+    public static function hasCustomConnectionOptions(array $options): bool
+    {
+        return self::hasCustomConnection($options);
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     */
     private static function hasCustomConnection(array $options): bool
     {
         foreach (['host', 'database', 'username', 'password', 'port'] as $key) {
