@@ -120,12 +120,12 @@
   }
 
   &.is-advanced-open {
-    max-height: min(29rem, calc(100vh - 3rem));
+    max-height: min(32rem, calc(100vh - 3rem));
 
     .packageInstaller__body {
       display: flex;
       flex-direction: column;
-      max-height: min(25rem, calc(100vh - 6.5rem));
+      max-height: min(28rem, calc(100vh - 6.5rem));
       overflow: hidden;
       padding-bottom: 0.65rem;
     }
@@ -198,7 +198,7 @@
 
     .is-advanced-open & {
       flex: 1;
-      max-height: 16.5rem;
+      max-height: 19.5rem;
     }
   }
 
