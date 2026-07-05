@@ -120,6 +120,18 @@
   }
 
   &.is-advanced-open {
+    .packageInstaller__body {
+      overflow: visible;
+      max-height: none;
+    }
+
+    .packageInstaller__scroll {
+      overflow: visible;
+      max-height: none;
+    }
+  }
+
+  &.is-advanced-open.is-custom-db-open {
     max-height: min(38rem, calc(100vh - 2.5rem));
 
     .packageInstaller__body {
@@ -128,6 +140,14 @@
       max-height: min(34rem, calc(100vh - 5.5rem));
       overflow: hidden;
       padding-bottom: 0.65rem;
+    }
+
+    .packageInstaller__scroll {
+      flex: 1;
+      min-height: 0;
+      max-height: 26rem;
+      overflow-x: hidden;
+      overflow-y: auto;
     }
   }
 }
@@ -191,15 +211,10 @@
   &__scroll {
     min-height: 0;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: visible;
     overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
     padding-bottom: 0.15rem;
-
-    .is-advanced-open & {
-      flex: 1;
-      max-height: 26rem;
-    }
   }
 
   &__loading {
@@ -428,6 +443,11 @@
     border-radius: 0.75rem;
     background: rgba(255, 255, 255, 0.04);
     border: 1px solid rgba(255, 255, 255, 0.08);
+    display: grid;
+    gap: 0.65rem;
+  }
+
+  &__customDbFields {
     display: grid;
     gap: 0.65rem;
   }

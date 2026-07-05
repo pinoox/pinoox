@@ -27,7 +27,10 @@
     <DraggableWidget
         v-if="store.visible && !store.minimized"
         class="packageInstaller"
-        :class="{ 'is-advanced-open': store.showAdvanced && store.phase === 'preview' }"
+        :class="{
+          'is-advanced-open': store.showAdvanced && store.phase === 'preview',
+          'is-custom-db-open': store.showAdvanced && store.useCustomDatabase && store.phase === 'preview',
+        }"
         centered
     >
       <template #header>
@@ -89,7 +92,7 @@
         </template>
 
         <template v-else-if="store.phase === 'preview' && store.meta">
-          <div class="packageInstaller__scroll">
+          <div ref="scrollRef" class="packageInstaller__scroll">
             <div class="packageInstaller__card">
               <AppIcon v-bind="packageIconProps" size="lg" class="packageInstaller__cardIcon"/>
               <h3 class="packageInstaller__packageName">{{ displayName }}</h3>
@@ -142,6 +145,7 @@
               </label>
 
               <template v-if="store.useCustomDatabase">
+                <div ref="customDbRef" class="packageInstaller__customDbFields">
                 <DarkSelect
                     v-model="store.database.connection"
                     label="درایور دیتابیس"
@@ -164,6 +168,7 @@
                       :is-loading="store.connectionTesting"
                       @click="testDatabaseConnection"
                   />
+                </div>
                 </div>
               </template>
             </div>
@@ -272,7 +277,7 @@
 </template>
 
 <script setup>
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import DraggableWidget from '@/views/components/widgets/DraggableWidget.vue';
 import FileUploader from '@/views/components/widgets/FileUploader.vue';
 import WidgetLoading from '@/views/components/desktop-widgets/WidgetLoading.vue';
@@ -307,7 +312,37 @@ const {
 } = usePackageInstaller();
 
 const fileUploaderRef = ref(null);
+const scrollRef = ref(null);
+const customDbRef = ref(null);
 const selectedFile = ref(null);
+
+function scrollToCustomDatabaseFields() {
+    const scrollEl = scrollRef.value;
+    const targetEl = customDbRef.value;
+
+    if (!scrollEl || !targetEl) {
+        return;
+    }
+
+    const top = targetEl.getBoundingClientRect().top
+        - scrollEl.getBoundingClientRect().top
+        + scrollEl.scrollTop
+        - 12;
+
+    scrollEl.scrollTo({
+        top: Math.max(0, top),
+        behavior: 'smooth',
+    });
+}
+
+watch(() => store.useCustomDatabase, async (enabled) => {
+    if (!enabled || store.phase !== 'preview' || !store.showAdvanced) {
+        return;
+    }
+
+    await nextTick();
+    requestAnimationFrame(scrollToCustomDatabaseFields);
+});
 
 const displayName = computed(() => {
     if (!store.meta) {
