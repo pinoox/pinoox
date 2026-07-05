@@ -58,6 +58,11 @@ const MESSAGES = {
         app_stat_address_count: 'تعداد آدرس',
         app_routing_single: 'یک آدرس',
         app_routing_multiple: 'چند آدرس',
+        template_activate_button: 'فعال‌سازی',
+        template_delete_button: 'حذف قالب',
+        template_active_badge: 'قالب فعال',
+        template_active_no_delete: 'قالب فعال قابل حذف نیست.',
+        template_delete_confirm: 'آیا از حذف این قالب مطمئن هستید؟',
     },
     en: {
         unknown_app: 'Unknown app',
@@ -115,6 +120,11 @@ const MESSAGES = {
         app_stat_address_count: 'Address count',
         app_routing_single: 'Single address',
         app_routing_multiple: 'Multiple addresses',
+        template_activate_button: 'Activate',
+        template_delete_button: 'Delete template',
+        template_active_badge: 'Active theme',
+        template_active_no_delete: 'The active theme cannot be deleted.',
+        template_delete_confirm: 'Are you sure you want to delete this template?',
     },
 };
 

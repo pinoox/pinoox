@@ -152,6 +152,7 @@ return [
     'unknown_app' => 'برنامه نامشخص',
     'config_saved_successfully' => 'تنظیمات با موفقیت ذخیره شد',
     'template_activated_successfully' => 'قالب با موفقیت فعال شد',
+    'cannot_delete_active_template' => 'قالب فعال قابل حذف نیست.',
     'update_not_available' => 'نسخه جدیدی برای بروزرسانی موجود نیست',
     'widgets_saved_successfully' => 'چیدمان ویجت‌ها با موفقیت ذخیره شد',
     'storage_settings_saved_successfully' => 'تنظیمات فضای ذخیره‌سازی با موفقیت ذخیره شد',

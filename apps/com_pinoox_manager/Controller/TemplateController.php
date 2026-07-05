@@ -107,6 +107,12 @@ class TemplateController extends ApiController
 
     public function remove($packageName, $folderName)
     {
+        $current = AppEngine::config($packageName)->get('theme');
+
+        if ($current === $folderName) {
+            return $this->deny('manager.cannot_delete_active_template');
+        }
+
         Wizard::deleteTemplate($packageName, $folderName);
 
         return $this->message('manager.delete_successfully');

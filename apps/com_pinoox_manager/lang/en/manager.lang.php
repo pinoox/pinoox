@@ -149,6 +149,7 @@ return [
     'unknown_app' => 'Unknown app',
     'config_saved_successfully' => 'settings saved successfully',
     'template_activated_successfully' => 'template activated successfully',
+    'cannot_delete_active_template' => 'The active theme cannot be deleted.',
     'update_not_available' => 'no update available',
     'widgets_saved_successfully' => 'widgets layout saved successfully',
     'storage_settings_saved_successfully' => 'storage settings saved successfully',
