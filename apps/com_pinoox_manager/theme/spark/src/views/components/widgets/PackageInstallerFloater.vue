@@ -156,7 +156,7 @@
                   <Input v-model="store.database.port" label="پورت" direction="ltr"/>
                   <Input v-model="store.database.database" label="نام دیتابیس" direction="ltr"/>
                   <Input v-model="store.database.username" label="نام کاربری" direction="ltr"/>
-                  <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr"/>
+                  <Input v-model="store.database.password" label="رمز عبور" type="password" direction="ltr" show-password-toggle/>
                 </div>
                 <div class="packageInstaller__advancedActions">
                   <Button

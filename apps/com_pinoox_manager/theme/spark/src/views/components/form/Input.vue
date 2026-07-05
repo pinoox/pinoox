@@ -45,6 +45,10 @@ const props = defineProps({
     type: [Object, Function],
     default: null,
   },
+  showPasswordToggle: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Emits
