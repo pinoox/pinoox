@@ -6,7 +6,7 @@ import ControlPanelView from '@/views/pages/control/control-panel-view.vue';
 import {createControlPanelChildRoutes} from '@/router/controlPanelRoutes.js';
 import PageAppView from '@/views/pages/app-view/app-view.vue';
 
-import MarketHome from '@/views/pages/market/market-home.vue';
+import MarketView from '@/views/pages/market/market-view.vue';
 
 export const routes = [
     {
@@ -47,7 +47,7 @@ export const routes = [
     {
         path: '/market',
         name: 'market-home',
-        component: MarketHome,
+        component: MarketView,
         meta: {
             showDock: true,
         },

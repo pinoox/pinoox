@@ -12,6 +12,7 @@ import {
 } from '@/router/controlPanelMemoryRouter.js';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
+import {useMarket} from '@/views/composables/useMarket.js';
 
 defineOptions({
     inheritAttrs: false,
@@ -28,6 +29,7 @@ const emit = defineEmits(['click']);
 
 const globalRouter = useRouter();
 const controlPanelWindow = useControlPanelWindowStore();
+const {openMarket} = useMarket();
 
 async function onClick(event) {
     emit('click', event);
@@ -37,6 +39,11 @@ async function onClick(event) {
     }
 
     event.preventDefault();
+
+    if (props.item.href === '/market') {
+        await openMarket();
+        return;
+    }
 
     if (!isControlPanelMemoryPath(props.item.href)) {
         await globalRouter.push(props.item.href);

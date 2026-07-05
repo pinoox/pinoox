@@ -29,31 +29,7 @@
         +{{ routes.length - routesPreview.length }} {{ translate('app_details_more_addresses') }}
       </p>
     </section>
-
-    <section class="appDetails__actions">
-      <Button
-          :label="translate('app_run')"
-          variant="primary"
-          :icon="saxIcon.externalLink"
-          @click="openApp"
-      />
-      <Button
-          :label="translate('app_settings')"
-          variant="dark"
-          outline
-          :icon="saxIcon.setting"
-          @click="goConfig"
-      />
-      <Button
-          v-if="hasTemplates"
-          :label="translate('app_templates')"
-          variant="dark"
-          outline
-          :icon="saxIcon.appearance"
-          @click="goTemplates"
-      />
-    </section>
-
+      
     <section v-if="isSystemApp" class="appDetails__notice appDetails__notice--info">
       <Icon :is="saxIcon.notifyInfo" size="sm"/>
       <p>{{ translate('app_system_notice') }}</p>

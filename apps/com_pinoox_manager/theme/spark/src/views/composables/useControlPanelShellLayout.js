@@ -39,6 +39,11 @@ export function useControlPanelShellLayout(shellRef, isFloating) {
 
     watch([isFloating, isVisible], updateShellWidth, {immediate: true});
 
+    watch(shellRef, () => {
+        bindShellObserver();
+        updateShellWidth();
+    }, {flush: 'post'});
+
     onMounted(() => {
         layout.bindViewport();
         bindShellObserver();

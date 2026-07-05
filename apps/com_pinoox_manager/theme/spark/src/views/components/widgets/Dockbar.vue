@@ -204,9 +204,9 @@
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
                     'item--launcher-open': item.action === 'launcher' && appsPanelOpen,
-                    'item--open': item.id === CONTROL_PANEL_ID && isControlPanelOpen(),
-                    'item--minimized': item.id === CONTROL_PANEL_ID && isControlPanelMinimized(),
-                    'item--active': item.id === CONTROL_PANEL_ID && isControlPanelActive(),
+                    'item--open': (item.id === CONTROL_PANEL_ID && isControlPanelOpen()) || (item.id === MARKET_ID && isMarketOpen()),
+                    'item--minimized': (item.id === CONTROL_PANEL_ID && isControlPanelMinimized()) || (item.id === MARKET_ID && isMarketMinimized()),
+                    'item--active': (item.id === CONTROL_PANEL_ID && isControlPanelActive()) || (item.id === MARKET_ID && isMarketActive()),
                   }"
                   :style="jiggleStyle(item.id)"
                   @click="onItemClick(item)"
@@ -284,8 +284,10 @@ import { useAuthStore } from '@/stores/modules/auth.js';
 import { useNotificationStore } from '@/stores/modules/notification.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
 import { CONTROL_PANEL_ID, useControlPanelWindowStore } from '@/stores/modules/controlPanelWindow.js';
-import { isControlPanelFloatingTopmost } from '@/stores/modules/floatingWindowStack.js';
+import { MARKET_ID, useMarketWindowStore } from '@/stores/modules/marketWindow.js';
+import { isControlPanelFloatingTopmost, isMarketFloatingTopmost } from '@/stores/modules/floatingWindowStack.js';
 import { useControlPanel, isControlRoute } from '@/views/composables/useControlPanel.js';
+import { useMarket, isMarketRoute } from '@/views/composables/useMarket.js';
 import { refreshNotifications } from '@/views/composables/useSystemNotifications.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
 import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
@@ -324,7 +326,9 @@ const authStore = useAuthStore();
 const notificationStore = useNotificationStore();
 const appViewWindow = useAppViewWindowStore();
 const controlPanelWindow = useControlPanelWindowStore();
+const marketWindow = useMarketWindowStore();
 const { openControlPanel } = useControlPanel();
+const { openMarket } = useMarket();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
@@ -397,6 +401,38 @@ function isControlPanelActive() {
   }
 
   return isControlPanelFloatingTopmost();
+}
+
+function isMarketOpen() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return marketWindow.isOpen;
+}
+
+function isMarketMinimized() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return marketWindow.isMinimized;
+}
+
+function isMarketActive() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  if (!marketWindow.isActive) {
+    return false;
+  }
+
+  if (marketWindow.mode === 'fullscreen') {
+    return !appViewWindow.fullscreenPackage && !controlPanelWindow.isActive;
+  }
+
+  return isMarketFloatingTopmost();
 }
 
 function isAppMinimized(packageName) {
@@ -567,6 +603,11 @@ function open(item) {
     return;
   }
 
+  if (String(item.route).startsWith('/market')) {
+    openMarket(item.route);
+    return;
+  }
+
   router.push(item.route);
 }
 
@@ -699,6 +740,44 @@ function activateControlPanel(item) {
   openControlPanel(path);
 }
 
+function activateMarket(item) {
+  const fallbackPath = item.route ?? '/market';
+  const path = marketWindow.lastPath || fallbackPath;
+
+  if (!marketWindow.isOpen) {
+    openMarket(path);
+    return;
+  }
+
+  if (marketWindow.isMinimized) {
+    openMarket(path);
+    return;
+  }
+
+  if (marketWindow.isActive) {
+    if (
+        marketWindow.mode === 'floating'
+        && !isMarketFloatingTopmost()
+    ) {
+      marketWindow.focus();
+      return;
+    }
+
+    marketWindow.minimize(
+        marketWindow.mode === 'floating' ? 'floating' : 'fullscreen',
+        path,
+    );
+
+    if (isMarketRoute(router.currentRoute.value)) {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  openMarket(path);
+}
+
 function activateOpenApp(item) {
   const session = appViewWindow.sessions[item.id];
 
@@ -758,6 +837,11 @@ function onItemClick(item) {
 
   if (item.id === CONTROL_PANEL_ID && isAdvanced.value) {
     activateControlPanel(item);
+    return;
+  }
+
+  if (item.id === MARKET_ID && isAdvanced.value) {
+    activateMarket(item);
     return;
   }
 

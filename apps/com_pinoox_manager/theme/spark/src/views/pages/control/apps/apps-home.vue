@@ -2,7 +2,7 @@
   <Page title="اپلیکیشن‌ها" class="pageApps">
     <template #toolbar>
       <Menu @click="openModalInstallApp" :icon="saxIcon.add" label="نصب اپلکیشن"/>
-      <Menu @click="globalRouter.push('/market')" :icon="saxIcon.market" label="مارکت"/>
+      <Menu @click="openMarket()" :icon="saxIcon.market" label="مارکت"/>
     </template>
 
     <div v-if="stagedCount" class="pageApps__stagedEntry">
@@ -47,6 +47,7 @@ import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {appIconProps} from '@utils/helpers/appIconProps.js';
 import {useAppStore} from '@/stores/modules/app.js';
 import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
+import {useMarket} from '@/views/composables/useMarket.js';
 import {useGlobalRouter} from '@/views/composables/useGlobalRouter.js';
 import ModalStagedPackages from '@/views/pages/control/apps/modal-staged-packages.vue';
 
@@ -54,6 +55,7 @@ const globalRouter = useGlobalRouter();
 const appStore = useAppStore();
 const packageInstallerStore = usePackageInstallerStore();
 const {pushAppManager} = useControlPanelNavigation();
+const {openMarket} = useMarket();
 const stagedFiles = ref([]);
 
 const stagedCount = computed(() => stagedFiles.value.length);

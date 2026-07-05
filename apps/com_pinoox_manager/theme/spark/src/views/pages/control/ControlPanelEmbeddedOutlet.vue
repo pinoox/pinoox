@@ -1,11 +1,11 @@
 <template>
-  <ControlPanelRouterProvider :router="memoryRouter">
+  <ControlPanelRouterProvider v-if="isReady" :router="memoryRouter">
     <RouterView/>
   </ControlPanelRouterProvider>
 </template>
 
 <script setup>
-import {onBeforeMount, watch} from 'vue';
+import {onBeforeMount, ref, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import {
     getControlPanelMemoryRouter,
@@ -18,6 +18,7 @@ import ControlPanelRouterProvider from '@/views/pages/control/ControlPanelRouter
 const globalRoute = useRoute();
 const controlPanelWindow = useControlPanelWindowStore();
 const memoryRouter = getControlPanelMemoryRouter();
+const isReady = ref(false);
 
 function resolveMemoryPath() {
     if (isControlRoute(globalRoute)) {
@@ -31,8 +32,9 @@ async function bootstrapMemoryRouter() {
     await syncControlPanelMemoryRouter(resolveMemoryPath());
 }
 
-onBeforeMount(() => {
-    bootstrapMemoryRouter();
+onBeforeMount(async () => {
+    await bootstrapMemoryRouter();
+    isReady.value = true;
 });
 
 watch(

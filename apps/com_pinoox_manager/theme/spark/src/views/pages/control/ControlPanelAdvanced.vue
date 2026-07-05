@@ -10,7 +10,7 @@
 </template>
 
 <script setup>
-import {watch} from 'vue';
+import {onMounted, watch} from 'vue';
 import {useRoute} from 'vue-router';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
@@ -76,7 +76,26 @@ watch(
 watch(isSimple, (simple) => {
   if (simple) {
     controlPanelWindow.dismiss();
+    return;
   }
+
+  if (!isControlRoute(route)) {
+    return;
+  }
+
+  controlPanelWindow.setLastPath(route.path);
+  syncControlPanelMemoryRouter(route.path);
+  syncRouteSession();
+});
+
+onMounted(() => {
+  if (isSimple.value || !isControlRoute(route)) {
+    return;
+  }
+
+  controlPanelWindow.setLastPath(route.path);
+  syncControlPanelMemoryRouter(route.path);
+  syncRouteSession();
 });
 
 watch(

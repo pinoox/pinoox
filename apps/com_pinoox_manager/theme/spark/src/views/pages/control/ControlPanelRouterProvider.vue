@@ -1,6 +1,6 @@
 <script setup>
-import {provide} from 'vue';
-import {routeLocationKey, routerKey} from 'vue-router';
+import {provide, shallowReactive} from 'vue';
+import {routeLocationKey, routerKey, routerViewLocationKey, START_LOCATION} from 'vue-router';
 
 const props = defineProps({
     router: {
@@ -9,8 +9,18 @@ const props = defineProps({
     },
 });
 
+const reactiveRoute = {};
+
+for (const key in START_LOCATION) {
+    Object.defineProperty(reactiveRoute, key, {
+        get: () => props.router.currentRoute.value[key],
+        enumerable: true,
+    });
+}
+
 provide(routerKey, props.router);
-provide(routeLocationKey, props.router.currentRoute);
+provide(routeLocationKey, shallowReactive(reactiveRoute));
+provide(routerViewLocationKey, props.router.currentRoute);
 </script>
 
 <template>

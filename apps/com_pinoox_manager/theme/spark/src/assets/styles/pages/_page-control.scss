@@ -84,6 +84,8 @@
     min-height: 0;
     padding-top: 0;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 
     .pageControl__sidebar {
       position: absolute;
@@ -101,7 +103,10 @@
     }
 
     .pageControl__page {
-      height: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      overflow: hidden;
     }
 
     .page {
@@ -181,54 +186,17 @@
 
 .controlPanelWindow {
   &__body {
-    flex: 1;
-    min-height: 0;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
     container-type: inline-size;
     container-name: control-panel;
-
-    &.is-interacting {
-      pointer-events: none;
-    }
-  }
-
-  .appView__toolbar {
-    gap: 0.55rem;
-    flex-wrap: nowrap;
-    min-width: 0;
-  }
-
-  .controlPanelWindow__title {
-    flex: 1;
-    min-width: 0;
-    max-width: none;
   }
 
   .controlPanelMenuToggle {
     flex-shrink: 0;
   }
-
-  .appView__shell.is-compact .appView__toolbar {
-    gap: 0.4rem;
-    padding-inline: 0.6rem;
-  }
-
-  .appView__title-icon {
-    opacity: 0.92;
-  }
-
-  &.is-floating .appView__shell.is-floatingShell {
-    max-height: calc(100vh - 112px);
-  }
 }
 
 .controlPanelSimple {
-  background: transparent;
-
   .appView__frame {
-    background: transparent;
     container-type: inline-size;
     container-name: control-panel;
   }
@@ -236,22 +204,6 @@
   .pageControl--embedded {
     background: transparent;
     backdrop-filter: none;
-  }
-
-  .appView__toolbar {
-    gap: 0.55rem;
-    flex-wrap: nowrap;
-    min-width: 0;
-  }
-
-  .controlPanelSimple__title {
-    flex: 1;
-    min-width: 0;
-    max-width: none;
-  }
-
-  .controlPanelSimple__toolbar .appView__back {
-    flex-shrink: 0;
   }
 }
 
@@ -333,16 +285,5 @@
       right: $sidebar-width-collapsed;
       width: calc(100% - #{$sidebar-width-collapsed});
     }
-  }
-}
-
-@media (max-width: 768px) {
-  .controlPanelSimple .appView__back {
-    padding: 0.35rem 0.65rem;
-    font-size: 0.78rem;
-  }
-
-  .controlPanelSimple .appView__title {
-    font-size: 0.82rem;
   }
 }

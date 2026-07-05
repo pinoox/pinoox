@@ -30,6 +30,7 @@
                 <PackageInstallerFloater/>
                 <AppViewAdvanced v-if="isAdvancedAppView"/>
                 <ControlPanelAdvanced v-if="isAdvancedAppView"/>
+                <MarketAdvanced v-if="isAdvancedAppView"/>
             </div>
         </Transition>
     </template>
@@ -74,10 +75,12 @@ import PackageInstallerFloater from "@/views/components/widgets/PackageInstaller
 import PackageInstallerDropOverlay from "@/views/components/widgets/PackageInstallerDropOverlay.vue";
 import AppViewAdvanced from "@/views/pages/app-view/AppViewAdvanced.vue";
 import ControlPanelAdvanced from "@/views/pages/control/ControlPanelAdvanced.vue";
+import MarketAdvanced from "@/views/pages/market/MarketAdvanced.vue";
 import SparkNotifications from "@/views/components/widgets/SparkNotifications.vue";
 import ManagerBootLoading from "@/views/components/layouts/ManagerBootLoading.vue";
 import {useAppViewMode} from "@/views/composables/useAppViewMode.js";
 import {isControlRoute} from "@/views/composables/useControlPanel.js";
+import {isMarketRoute} from "@/views/composables/useMarket.js";
 import PageDesktop from "@/views/pages/desktop/desktop-view.vue";
 import {pushSystemNotifications} from "@/views/composables/useSystemNotifications.js";
 import {useNotificationStore} from "@/stores/modules/notification.js";
@@ -103,7 +106,7 @@ const canAcceptPackageDrop = computed(() => authStore.isAuth && !isSingle.value 
 const {isDragging: isPackageDropActive} = usePackageInstallerDrop(canAcceptPackageDrop);
 
 function resolveMainComponent(Component, route) {
-    if (isAdvancedAppView.value && isControlRoute(route)) {
+    if (isAdvancedAppView.value && (isControlRoute(route) || isMarketRoute(route))) {
         return PageDesktop;
     }
 

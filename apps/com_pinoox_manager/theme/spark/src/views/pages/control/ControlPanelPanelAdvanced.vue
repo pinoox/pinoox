@@ -1,66 +1,37 @@
 <template>
-  <section
-      class="appView controlPanelWindow"
-      :class="{
-        'is-floating': isFloating,
-        'is-overlay': isFloating,
-        'is-fullscreenPanel': isFullscreen,
-      }"
-      :style="panelStyle"
-      @mousedown="onPanelFocus"
+  <ManagerWindow
+      ref="windowRef"
+      mode="advanced"
+      :overlay="overlay"
+      :fullscreen="fullscreen"
+      :z-index="zIndex"
+      root-class="managerWindow controlPanelWindow"
+      toolbar-class="managerWindow__toolbar controlPanelWindow__toolbar"
+      title-class="managerWindow__title controlPanelWindow__title"
+      body-class="managerWindow__body controlPanelWindow__body @container"
+      :session-rect="sessionRect"
+      :shell-compact="layout.isCompact"
+      :on-rect-commit="commitRect"
+      :on-focus="focusWindow"
+      @close="closeWindow"
+      @minimize="minimizeWindow"
+      @toggle-float="toggleFloating"
   >
-    <div
-        ref="shellRef"
-        class="appView__shell"
-        :class="{
-          'is-floatingShell': isFloating,
-          'is-compact': layout.isCompact,
-          'is-interacting': interacting,
-          'is-dragging': isDragging,
-          'is-resizing': isResizing,
-        }"
-        :style="isFloating ? floatingStyle : undefined"
-        @mousedown="onPanelFocus"
-    >
-      <header
-          class="appView__toolbar controlPanelWindow__toolbar"
-          :class="{ 'is-draggable': isFloating }"
-          @mousedown="onToolbarMouseDown"
-      >
-        <AppViewWindowChrome
-            :floating="isFloating"
-            @close="closeWindow"
-            @minimize="minimizeWindow"
-            @toggle-float="toggleFloating"
-        />
-
-        <ControlPanelMenuToggle
-            v-if="layout.isCompact"
-            @click.stop
-            @mousedown.stop
-        />
-
-        <div class="appView__title controlPanelWindow__title">
-          <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
-          <span>کنترل پنل</span>
-        </div>
-      </header>
-
-      <div
-          class="controlPanelWindow__body @container"
-          :class="{ 'is-interacting': interacting }"
-      >
-        <PageControl embedded/>
-      </div>
-
-      <div
-          v-if="isFloating"
-          class="appView__resizeHandle"
-          title="تغییر اندازه"
-          @mousedown="onResizeStart"
+    <template #toolbar-before>
+      <ControlPanelMenuToggle
+          v-if="layout.isCompact"
+          @click.stop
+          @mousedown.stop
       />
-    </div>
-  </section>
+    </template>
+
+    <template #title>
+      <Icon :is="saxIcon.control" class="appView__title-icon" size="sm"/>
+      <span>کنترل پنل</span>
+    </template>
+
+    <PageControl embedded/>
+  </ManagerWindow>
 </template>
 
 <script setup>
@@ -68,13 +39,12 @@ import {computed, nextTick, onMounted, ref, watch} from 'vue';
 import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
+import ManagerWindow from '@/views/components/layouts/ManagerWindow.vue';
 import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 import {fitControlPanelRectAboveDock} from '@/stores/modules/controlPanelLayout.js';
 import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
-import {useAppViewFloating} from '@/views/composables/useAppViewFloating.js';
 import {useControlPanelShellLayout} from '@/views/composables/useControlPanelShellLayout.js';
 import {isControlRoute} from '@/views/composables/useControlPanel.js';
-import AppViewWindowChrome from '@/views/pages/app-view/AppViewWindowChrome.vue';
 import ControlPanelMenuToggle from '@/views/pages/control/ControlPanelMenuToggle.vue';
 import PageControl from '@/views/pages/control/control-view.vue';
 
@@ -96,36 +66,21 @@ const props = defineProps({
 const router = useRouter();
 const controlPanelWindow = useControlPanelWindowStore();
 const layout = useControlPanelLayoutStore();
-const shellRef = ref(null);
-
-const isFloating = computed(() => props.overlay);
-const isFullscreen = computed(() => props.fullscreen);
+const windowRef = ref(null);
+const shellRef = computed(() => windowRef.value?.shellRef ?? null);
 
 const sessionRect = computed(() => controlPanelWindow.rect);
 
-const panelStyle = computed(() => {
-  if (!isFloating.value && !isFullscreen.value) {
-    return {};
-  }
+const {updateShellWidth} = useControlPanelShellLayout(shellRef, computed(() => props.overlay));
 
-  return {zIndex: props.zIndex};
-});
+function commitRect(rect) {
+  controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect));
+  updateShellWidth();
+}
 
-const {updateShellWidth} = useControlPanelShellLayout(shellRef, isFloating);
-
-const {
-  shellStyle: floatingStyle,
-  onDragStart,
-  onResizeStart,
-  interacting,
-  isDragging,
-  isResizing,
-} = useAppViewFloating(shellRef, sessionRect, {
-  onRectCommit: (rect) => {
-    controlPanelWindow.updateRect(fitControlPanelRectAboveDock(rect));
-    updateShellWidth();
-  },
-});
+function focusWindow() {
+  controlPanelWindow.focus();
+}
 
 onMounted(async () => {
   layout.bindViewport();
@@ -145,24 +100,9 @@ watch(
     },
 );
 
-watch(isFloating, () => {
+watch(() => props.overlay, () => {
   updateShellWidth();
 });
-
-function onPanelFocus() {
-  if (isFloating.value) {
-    controlPanelWindow.focus();
-  }
-}
-
-function onToolbarMouseDown(event) {
-  if (!isFloating.value) {
-    return;
-  }
-
-  controlPanelWindow.focus();
-  onDragStart(event);
-}
 
 function closeWindow() {
   controlPanelWindow.close();
@@ -178,7 +118,7 @@ function minimizeWindow() {
       : controlPanelWindow.lastPath;
 
   controlPanelWindow.minimize(
-      isFloating.value ? 'floating' : 'fullscreen',
+      props.overlay ? 'floating' : 'fullscreen',
       path,
   );
 
@@ -188,7 +128,7 @@ function minimizeWindow() {
 }
 
 function toggleFloating() {
-  if (isFloating.value) {
+  if (props.overlay) {
     controlPanelWindow.openFullscreen();
     return;
   }
