@@ -120,12 +120,12 @@
   }
 
   &.is-advanced-open {
-    max-height: min(26rem, calc(100vh - 3rem));
+    max-height: min(29rem, calc(100vh - 3rem));
 
     .packageInstaller__body {
       display: flex;
       flex-direction: column;
-      max-height: min(22rem, calc(100vh - 6.5rem));
+      max-height: min(25rem, calc(100vh - 6.5rem));
       overflow: hidden;
       padding-bottom: 0.65rem;
     }
@@ -198,7 +198,7 @@
 
     .is-advanced-open & {
       flex: 1;
-      max-height: 13.5rem;
+      max-height: 16.5rem;
     }
   }
 
@@ -274,6 +274,37 @@
       --app-icon-size: 3.75rem;
       --app-icon-radius: 1rem;
     }
+  }
+
+  &__facts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    margin-top: 0.35rem;
+  }
+
+  &__fact {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.22rem 0.5rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  &__factLabel {
+    font-size: 0.68rem;
+    font-weight: 600;
+    opacity: 0.62;
+  }
+
+  &__factValue {
+    font-size: 0.76rem;
+    font-weight: 700;
+    opacity: 0.9;
+    unicode-bidi: plaintext;
   }
 
   &__size {
