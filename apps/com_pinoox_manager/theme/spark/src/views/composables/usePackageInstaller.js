@@ -1,11 +1,13 @@
-import {watch} from 'vue';
+import {computed, watch} from 'vue';
 import {appAPI} from '@api/app.js';
 import {routerAPI} from '@api/router.js';
 import {resolveUploadedFilename, uploadPackageFile} from '@utils/pinion.js';
 import {installStepLabel, sleep} from '@utils/packageInstall.js';
 import {readApiErrorMessage} from '@utils/apiEnvelope.js';
+import {validateRoutePath} from '@utils/routePath.js';
 import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 import {useAppStore} from '@/stores/modules/app.js';
+import {useRouteStore} from '@/stores/modules/route.js';
 import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
 import {toast} from '@global';
 
@@ -20,7 +22,22 @@ function errorMessage(error) {
 export function usePackageInstaller() {
     const store = usePackageInstallerStore();
     const appStore = useAppStore();
+    const routeStore = useRouteStore();
     const {pushAppManager} = useControlPanelNavigation();
+
+    const routePathValidation = computed(() => {
+        const trimmed = String(store.routePrompt.path || '').trim();
+
+        if (!trimmed) {
+            return {
+                valid: false,
+                message: '',
+                path: null,
+            };
+        }
+
+        return validateRoutePath(store.routePrompt.path, routeStore, appStore);
+    });
 
     async function uploadSelectedFile(file) {
         if (!file || !String(file.name).toLowerCase().endsWith('.pinx')) {
@@ -66,6 +83,10 @@ export function usePackageInstaller() {
     }
 
     async function toggleAdvanced() {
+        if (!store.showDatabaseOptions) {
+            return;
+        }
+
         store.showAdvanced = !store.showAdvanced;
     }
 
@@ -74,7 +95,7 @@ export function usePackageInstaller() {
             filename: store.filename,
         };
 
-        if (store.meta?.type === 'app' && (store.showAdvanced || store.useCustomDatabase)) {
+        if (store.showDatabaseOptions && (store.showAdvanced || store.useCustomDatabase)) {
             const database = {
                 prefix: store.database.prefix,
             };
@@ -130,6 +151,14 @@ export function usePackageInstaller() {
         }
 
         await appStore.getApps();
+
+        if (!routeStore.isLoaded) {
+            try {
+                await routeStore.getRoutes();
+            } catch {
+            }
+        }
+
         store.setRoutePrompt(result);
         store.setPhase(store.routePrompt.visible ? 'route' : 'success');
 
@@ -263,10 +292,22 @@ export function usePackageInstaller() {
     }
 
     async function assignRoute() {
-        const path = String(store.routePrompt.path || '').trim();
+        if (!store.routePrompt.packageName) {
+            toast({title: 'برنامه مقصد مشخص نیست.', type: 'error'});
+            return;
+        }
 
-        if (!path || !store.routePrompt.packageName) {
-            store.setError('آدرس مسیریابی را وارد کنید.');
+        if (!routeStore.isLoaded) {
+            try {
+                await routeStore.getRoutes();
+            } catch {
+            }
+        }
+
+        const validation = validateRoutePath(store.routePrompt.path, routeStore, appStore);
+
+        if (!validation.valid) {
+            toast({title: validation.message, type: 'error'});
             return;
         }
 
@@ -274,14 +315,15 @@ export function usePackageInstaller() {
 
         try {
             await routerAPI.save({
-                path,
+                path: validation.path,
                 packageName: store.routePrompt.packageName,
             });
+            routeStore.saveRoute(validation.path, store.routePrompt.packageName);
             store.routePrompt.visible = false;
             store.setPhase('success');
             toast({title: 'آدرس با موفقیت ثبت شد', type: 'success'});
         } catch (error) {
-            store.setError(errorMessage(error));
+            toast({title: errorMessage(error), type: 'error'});
         } finally {
             store.routeSaving = false;
         }
@@ -372,6 +414,7 @@ export function usePackageInstaller() {
         assignRoute,
         skipRoutePrompt,
         openAppSettings,
+        routePathValidation,
         installStepLabel,
         toggleAdvanced,
     };

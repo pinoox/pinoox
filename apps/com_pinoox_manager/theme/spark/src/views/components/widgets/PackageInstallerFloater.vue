@@ -28,8 +28,8 @@
         v-if="store.visible && !store.minimized"
         class="packageInstaller"
         :class="{
-          'is-advanced-open': store.showAdvanced && store.phase === 'preview',
-          'is-custom-db-open': store.showAdvanced && store.useCustomDatabase && store.phase === 'preview',
+          'is-advanced-open': store.showDatabaseOptions && store.showAdvanced && store.phase === 'preview',
+          'is-custom-db-open': store.showDatabaseOptions && store.showAdvanced && store.useCustomDatabase && store.phase === 'preview',
         }"
         centered
     >
@@ -115,7 +115,7 @@
             </div>
 
             <button
-                v-if="store.meta.type === 'app'"
+                v-if="store.showDatabaseOptions"
                 type="button"
                 class="packageInstaller__advancedToggle"
                 @click="toggleAdvanced"
@@ -124,7 +124,7 @@
               <span class="packageInstaller__advancedChevron" :class="{ 'is-open': store.showAdvanced }">›</span>
             </button>
 
-            <div v-if="store.showAdvanced && store.meta.type === 'app'" class="packageInstaller__advanced">
+            <div v-if="store.showAdvanced && store.showDatabaseOptions" class="packageInstaller__advanced">
               <Input
                   v-model="store.database.prefix"
                   label="پیشوند جداول"
@@ -228,6 +228,13 @@
                 placeholder="shop"
                 prefix="/"
             />
+            <p
+                v-if="routePathValidation.message"
+                class="packageInstaller__routeWarn"
+                role="alert"
+            >
+              {{ routePathValidation.message }}
+            </p>
           </div>
           <div class="packageInstaller__foot">
             <Button label="بعداً" variant="dark" :is-disabled="store.routeSaving" @click="skipRoutePrompt"/>
@@ -235,6 +242,7 @@
                 label="تخصیص آدرس"
                 variant="primary"
                 :is-loading="store.routeSaving"
+                :is-disabled="!routePathValidation.valid"
                 @click="assignRoute"
             />
           </div>
@@ -311,6 +319,7 @@ const {
     assignRoute,
     skipRoutePrompt,
     openAppSettings,
+    routePathValidation,
     installStepLabel,
     toggleAdvanced,
 } = usePackageInstaller();

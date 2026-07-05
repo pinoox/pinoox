@@ -734,6 +734,13 @@
     }
   }
 
+  &__routeWarn {
+    margin: 0.55rem 0 0;
+    font-size: 0.78rem;
+    line-height: 1.6;
+    color: #fcd34d;
+  }
+
   &__progressTrack {
     height: 0.45rem;
     border-radius: 999px;

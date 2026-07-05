@@ -84,10 +84,7 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             return state.meta.compatibility.can_install !== false;
         },
         showDatabaseOptions(state) {
-            return state.meta?.type === 'app' && Boolean(
-                state.meta?.database?.has_migrations
-                || state.meta?.database?.needs_prefix_setup
-            );
+            return state.meta?.type === 'app' && state.meta?.database?.has_migrations === true;
         },
         isConnectionVerified(state) {
             if (!state.useCustomDatabase || !state.connectionVerifiedFingerprint) {
@@ -190,6 +187,11 @@ export const usePackageInstallerStore = defineStore('packageInstaller', {
             this.prefixDirty = false;
             this.prefixStatus = null;
             this.connectionVerifiedFingerprint = null;
+
+            if (!meta?.database?.has_migrations) {
+                this.showAdvanced = false;
+                this.useCustomDatabase = false;
+            }
         },
         setSteps(steps) {
             this.steps = Array.isArray(steps) ? steps : [];
