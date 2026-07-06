@@ -1,26 +1,33 @@
+import pinooxHot, { pinooxDevAssets, pinooxServer, pinooxVueTemplateOptions } from './vite.pinoox.mjs';
 import { fileURLToPath, URL } from 'node:url';
-
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import commonjs from 'vite-plugin-commonjs';
 import { babel } from '@rollup/plugin-babel';
 
-export default defineConfig({
-    base: './',
-    build: {
-        manifest: true,
-        rollupOptions: {
-            input: 'src/main.js',
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+
+    return {
+        base: './',
+        build: {
+            manifest: true,
+            rollupOptions: {
+                input: 'src/main.js',
+            },
         },
-    },
-    plugins: [
-        vue(),
-        commonjs(),
-        babel(),
-    ],
-    resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
+        plugins: [
+            pinooxHot({ env }),
+            pinooxDevAssets(env),
+            vue(pinooxVueTemplateOptions()),
+            commonjs(),
+            babel({ babelHelpers: 'bundled' }),
+        ],
+        resolve: {
+            alias: {
+                '@': fileURLToPath(new URL('./src', import.meta.url)),
+            },
         },
-    },
+        server: pinooxServer(env),
+    };
 });

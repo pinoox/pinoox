@@ -56,8 +56,8 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {useRouter} from "vue-router";
+import { ref } from "vue";
+import {useRoute, useRouter} from "vue-router";
 import {authAPI} from "@api/auth.js";
 import {useAuthStore} from "@/stores/modules/auth.js";
 import {unwrapResponse} from "@utils/helpers/apiHelper.js";
@@ -65,6 +65,7 @@ import {saxIcon} from "@/const/icons.js";
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 const isLoading = ref(false);
 const params = ref({
     username: null,
@@ -78,6 +79,14 @@ const handleLogin = () => {
         authStore.login(login_key);
     }).then(async () => {
         await authStore.canUserAccess(true);
+
+        const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '';
+
+        if (redirect !== '' && redirect.startsWith('/') && !redirect.startsWith('//')) {
+            window.location.assign(redirect);
+            return;
+        }
+
         await router.push({name: 'desktop'});
     }).finally(() => isLoading.value = false);
 };

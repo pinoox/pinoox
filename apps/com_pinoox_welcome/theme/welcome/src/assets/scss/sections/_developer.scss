@@ -1,23 +1,40 @@
 .section__developer {
   position: relative;
   padding-block: var(--space-section);
-  border-start-start-radius: var(--radius-xl);
-  border-start-end-radius: var(--radius-xl);
-  background: linear-gradient(0deg, var(--color-developer-bg-start) 0%, var(--color-developer-bg-end) 100%);
+  background: linear-gradient(
+    180deg,
+    #0a2240 0%,
+    #071a2e 35%,
+    #04101c 70%,
+    #00060d 100%
+  );
+  border-top: 1px solid rgba(0, 138, 243, 0.14);
   overflow: hidden;
 
   &-eyebrow {
     margin: 0 0 2rem;
     text-align: center;
-    font-size: clamp(2.5rem, 8vw, 5rem);
-    font-weight: 800;
-    letter-spacing: clamp(0.5rem, 4vw, 2rem);
+    font-family: var(--font-brand);
+    font-size: clamp(2rem, 6vw, 4.25rem);
+    font-weight: 700;
+    letter-spacing: 0.28em;
     text-transform: uppercase;
-    background: linear-gradient(180deg, rgba(217, 217, 217, 0.18), rgba(255, 255, 255, 0.04));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: rgba(0, 138, 243, 0.22);
     user-select: none;
+    unicode-bidi: isolate;
+
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      background: linear-gradient(
+        180deg,
+        rgba(142, 200, 255, 0.45) 0%,
+        rgba(0, 138, 243, 0.28) 55%,
+        rgba(255, 255, 255, 0.06) 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
   }
 
   &-grid {
@@ -53,13 +70,17 @@
   }
 
   &-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
     text-align: start;
     padding-inline-start: clamp(0rem, 3vw, 2rem);
   }
 
   &-text {
-    color: var(--color-text-muted);
-    font-weight: 300;
+    color: rgba(255, 255, 255, 0.62);
+    font-weight: 400;
     line-height: 1.8;
     font-size: clamp(1rem, 2vw, 1.1rem);
     max-width: 34rem;
@@ -73,6 +94,7 @@
   }
 
   .section__developer-content {
+    align-items: center;
     text-align: center;
     padding-inline: 0;
     order: 1;
@@ -112,6 +134,6 @@
   }
 
   .section__developer-eyebrow {
-    letter-spacing: 0.35rem;
+    letter-spacing: 0.18em;
   }
 }

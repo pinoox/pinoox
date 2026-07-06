@@ -1,25 +1,28 @@
-@mixin btn-gradient($start-color, $middle-color, $end-color) {
-  background: linear-gradient(270deg, $start-color, $middle-color, $end-color);
-  background-size: 200% 200%;
-}
-
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.9rem 1.75rem;
+  gap: 0.45rem;
+  padding: 0.8rem 1.35rem;
   cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  min-width: min(100%, 280px);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.2;
+  min-width: auto;
   text-align: center;
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   text-decoration: none;
-  transition: transform 0.2s ease, box-shadow 0.2s ease, background-position 0.3s ease, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  border: 1px solid transparent;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 
   &:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
   &:focus-visible {
@@ -30,6 +33,7 @@
 
 .btn__icon {
   display: inline-block;
+  font-size: 1rem;
   transition: transform 0.2s ease;
 }
 
@@ -38,51 +42,51 @@
 }
 
 .btn:hover .btn__icon {
-  transform: translateX(4px);
+  transform: translateX(3px);
 }
 
 [dir="rtl"] .btn:hover .btn__icon {
-  transform: scaleX(-1) translateX(4px);
+  transform: scaleX(-1) translateX(3px);
 }
 
 .btn-primary {
-  border: 2px solid rgba(255, 255, 255, 0.28);
   color: #fff;
-  box-shadow: 0 12px 32px rgba(245, 64, 134, 0.25);
-  @include btn-gradient(#FF9C32, #F54086, #FF9C32);
+  background: var(--color-primary);
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 6px 20px rgba(0, 138, 243, 0.28);
 
   &:hover {
-    background-position: 100% 50%;
+    background: #0078d4;
+    box-shadow: 0 8px 24px rgba(0, 138, 243, 0.38);
   }
 }
 
-.btn-primary-outline {
-  color: var(--color-accent);
-  background: transparent;
-  border: 2px solid var(--color-accent);
+.btn-outline {
+  color: var(--color-primary);
+  background: rgba(0, 138, 243, 0.04);
+  border-color: rgba(0, 138, 243, 0.35);
 
   &:hover {
-    background: var(--color-accent);
     color: #fff;
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 20px rgba(0, 138, 243, 0.25);
   }
 }
 
 .btn-ghost {
-  color: var(--color-text);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.12);
-    border-color: rgba(255, 255, 255, 0.3);
-  }
-}
-
-.section__market .btn-primary-outline {
-  color: var(--color-accent);
-  border-color: var(--color-accent);
+  color: rgba(255, 255, 255, 0.88);
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.2);
 
   &:hover {
     color: #fff;
+    background: rgba(0, 138, 243, 0.12);
+    border-color: rgba(0, 138, 243, 0.4);
   }
+}
+
+// Legacy alias
+.btn-primary-outline {
+  @extend .btn-outline;
 }

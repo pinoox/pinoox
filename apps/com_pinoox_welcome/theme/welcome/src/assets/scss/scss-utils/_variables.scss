@@ -6,6 +6,8 @@ $font: 'Vazirmatn', 'Montserrat', system-ui, sans-serif;
 $fontBrand: 'Montserrat', system-ui, sans-serif;
 
 $primary-color: #008AF3;
+$primary-dark: #005bb5;
+$primary-light: #3db4ff;
 $text-color: #F2F2F2;
 $text-gray-color: #AFAFAF;
 $text-dark-color: #444444;
@@ -13,30 +15,32 @@ $text-dark-color: #444444;
 $red: #F54086;
 $orange: #FF9C32;
 
-$radius-sm: 0.75rem;
-$radius-md: 1.25rem;
-$radius-lg: 2rem;
-$radius-xl: 3rem;
+$radius-sm: 0.375rem;
+$radius-md: 0.5rem;
+$radius-lg: 0.625rem;
 
 $shadow-soft: 0 8px 32px rgba(15, 23, 42, 0.08);
 $shadow-glow: 0 -5px 50px 3px rgba(255, 255, 255, 0.08);
 
 :root {
   --color-primary: #{$primary-color};
-  --color-accent: #{$red};
+  --color-primary-dark: #{$primary-dark};
+  --color-primary-light: #{$primary-light};
+  --color-accent: #{$primary-color};
   --color-accent-alt: #{$orange};
   --color-text: #{$text-color};
   --color-text-muted: #{$text-gray-color};
   --color-text-dark: #{$text-dark-color};
   --color-surface: #ffffff;
   --color-surface-muted: #e8edf5;
-  --color-hero-bg: #000a11;
-  --color-developer-bg-start: #241c34;
-  --color-developer-bg-end: #282b4e;
+  --color-hero-bg: #00060d;
+  --color-section-dark: #04101c;
+  --color-section-dark-end: #0a2240;
+  --color-developer-bg-start: #04101c;
+  --color-developer-bg-end: #071a2e;
   --radius-sm: #{$radius-sm};
   --radius-md: #{$radius-md};
   --radius-lg: #{$radius-lg};
-  --radius-xl: #{$radius-xl};
   --shadow-soft: #{$shadow-soft};
   --shadow-glow: #{$shadow-glow};
   --space-section: clamp(4rem, 10vw, 8rem);

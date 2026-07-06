@@ -3,11 +3,10 @@
         <div class="container">
             <div class="section__market-grid">
                 <div class="section__market-content">
-                    <span class="section__audience section__audience--light">{{ $t('marketAudience') }}</span>
-                    <h2 id="market-title" class="section__market-title gradient-text">{{ $t('downloadApp') }}</h2>
+                    <h2 id="market-title" class="section__market-title title-gradient title-gradient--on-light">{{ $t('downloadApp') }}</h2>
                     <p class="section__market-text">{{ $t('marketDescription') }}</p>
 
-                    <a target="_blank" rel="noopener noreferrer" class="btn btn-primary-outline" href="https://pinoox.com/market">
+                    <a target="_blank" rel="noopener noreferrer" class="btn btn-primary" href="https://pinoox.com/market">
                         <span>{{ $t('goToMarket') }}</span>
                         <span class="btn__icon" aria-hidden="true">→</span>
                     </a>

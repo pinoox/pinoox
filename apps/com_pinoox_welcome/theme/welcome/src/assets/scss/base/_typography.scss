@@ -17,24 +17,126 @@
   margin: 0 0 0.75rem;
 }
 
-.gradient-text {
-  font-size: clamp(2.25rem, 6vw, 3.75rem);
+.title-gradient {
+  margin: 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 5vw, 3.25rem);
   font-weight: 700;
-  line-height: 1.15;
-  color: #fff;
-  background: linear-gradient(270deg, #4F5BD5, #D62976, #FA7E1E);
-  background-size: 200% 200%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
+  line-height: 1.25;
+  letter-spacing: 0;
+  color: var(--color-primary);
+
+  &--hero {
+    font-size: clamp(2.25rem, 6vw, 3.75rem);
+    max-width: 16ch;
+    color: #8ec8ff;
+
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      background: linear-gradient(
+        135deg,
+        #f0f7ff 0%,
+        #a8d4ff 25%,
+        #008af3 55%,
+        #3db4ff 75%,
+        #0066cc 100%
+      );
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-animation 6s ease-in-out infinite;
+    }
+  }
+
+  &--on-light {
+    color: var(--color-primary-dark);
+
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      background: linear-gradient(
+        135deg,
+        #003d73 0%,
+        #005bb5 30%,
+        #008af3 58%,
+        #3db4ff 82%,
+        #0066cc 100%
+      );
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-animation 6s ease-in-out infinite;
+    }
+  }
+
+  &--on-dark {
+    color: #8ec8ff;
+
+    @supports ((-webkit-background-clip: text) or (background-clip: text)) {
+      background: linear-gradient(
+        135deg,
+        #f0f7ff 0%,
+        #a8d4ff 25%,
+        #008af3 55%,
+        #3db4ff 75%,
+        #0066cc 100%
+      );
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      -webkit-text-fill-color: transparent;
+      animation: gradient-animation 6s ease-in-out infinite;
+    }
+  }
+}
+
+.gradient-text {
+  margin: 0;
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  font-family: var(--font-body);
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--color-primary-dark);
 }
 
 .gradientAnim {
-  animation: gradient-animation 5s ease-in-out infinite;
+  animation: gradient-animation 6s ease-in-out infinite;
 }
 
-.section__hero-title.gradient-text,
-.section__market-title.gradient-text,
-.section__developer-title.gradient-text {
+.section__hero-title.title-gradient,
+.section__market-title.title-gradient,
+.section__developer-title.title-gradient {
   margin: 0;
+}
+
+[dir="rtl"] .title-gradient--hero {
+  max-width: none;
+  line-height: 1.35;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .title-gradient--hero,
+  .title-gradient--on-light,
+  .title-gradient--on-dark {
+    animation: none !important;
+    background: none !important;
+    -webkit-text-fill-color: currentColor !important;
+  }
+
+  .title-gradient--hero,
+  .title-gradient--on-dark {
+    color: #8ec8ff;
+  }
+
+  .title-gradient--on-light {
+    color: var(--color-primary-dark);
+  }
 }

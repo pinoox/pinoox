@@ -1,3 +1,4 @@
+import pinooxHot, { pinooxServer } from './vite.pinoox.mjs';
 import {fileURLToPath, URL} from 'node:url'
 
 import {defineConfig, loadEnv} from 'vite'
@@ -22,6 +23,7 @@ export default defineConfig(({mode}) => {
             devSourcemap: true,
         },
         plugins: [
+            pinooxHot(),
             vue(),
             commonjs(),
         ],
@@ -34,11 +36,6 @@ export default defineConfig(({mode}) => {
                 '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
             },
         },
-        server: {
-            proxy: {
-                [`/?${QUERY_ROUTE_PARAM}=`]: env.VITE_SERVER_URL || 'http://localhost',
-                '/api/v1': env.VITE_SERVER_URL || 'http://localhost',
-            },
-        },
+        server: pinooxServer(env),
     }
 })
