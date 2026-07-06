@@ -2309,6 +2309,9 @@ body.ltr {
           max-height: 18px;
           object-fit: contain;
           display: block;
+          filter: brightness(0) invert(1);
+          opacity: 0.63;
+          transition: opacity 0.2s;
         }
 
         .icon-svg {
@@ -2321,6 +2324,10 @@ body.ltr {
           color: #fff;
           transform: scale(1.2);
           text-decoration: none;
+
+          img {
+            opacity: 1;
+          }
         }
       }
     }

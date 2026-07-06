@@ -297,11 +297,8 @@
   }
 
   &__toolIcon {
-    width: 1rem;
-    height: 1rem;
-
     &.is-spinning {
-      animation: appViewSpin 0.85s linear infinite;
+      animation: none;
     }
   }
 
@@ -324,10 +321,6 @@
   }
 
   &__icon {
-    width: 1.65rem;
-    height: 1.65rem;
-    border-radius: 0.45rem;
-    object-fit: contain;
     flex-shrink: 0;
   }
 

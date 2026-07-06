@@ -1,5 +1,15 @@
+.code-ltr,
+.section__developer-code-panel {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
 .codeBlock {
-  font-size: 1.1em;
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+  font-size: clamp(0.85rem, 2vw, 1.05rem);
   font-weight: 300;
   line-height: 1.5;
   border-radius: 20px !important;
@@ -7,15 +17,20 @@
 }
 
 .v-code-block {
+  direction: ltr;
+  text-align: left;
 
   &--label {
     border: 1px solid rgba(255, 255, 255, 0.05);
-    background: linear-gradient(45deg, #241c34 0%, #282b4e 50%)!important;
+    background: linear-gradient(45deg, #241c34 0%, #282b4e 50%) !important;
     position: relative;
     bottom: -2px;
     left: 40px;
+    right: auto;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
     padding: 4px 20px;
     text-align: center;
     color: #fff;
@@ -23,10 +38,18 @@
 }
 
 .language-php {
+  direction: ltr;
+  text-align: left;
   box-shadow: -5px 15px 30px rgba(31, 42, 65, 0.35);
-  background: linear-gradient(45deg, #1c2434 0%, #1e2044 50%, #292948 100%)
-  center!important;
+  background: linear-gradient(45deg, #1c2434 0%, #1e2044 50%, #292948 100%) center !important;
   background-size: 100% 100% !important;
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 20px;
+
+  code,
+  pre {
+    direction: ltr;
+    text-align: left;
+    unicode-bidi: isolate;
+  }
 }

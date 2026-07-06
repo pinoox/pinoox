@@ -20,7 +20,14 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class WallpaperHelper
 {
-    private const FOLDER = 'system/wallpapers';
+    private const FOLDER = 'wallpapers';
+
+    private const LEGACY_APP_FOLDER = 'system/wallpapers';
+
+    private const APP_SCOPED_FOLDERS = [
+        'manager/wallpapers',
+        'system/wallpapers',
+    ];
 
     private const EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
@@ -43,6 +50,11 @@ class WallpaperHelper
         ksort($files, SORT_NATURAL);
 
         return array_values($files);
+    }
+
+    private static function maxUploadBytes(): int
+    {
+        return 5 * 1024 * 1024;
     }
 
     public static function defaultId(): string
@@ -129,19 +141,37 @@ class WallpaperHelper
 
     public static function upload(UploadedFile $file): ?array
     {
-        $result = File::upload($file)
-            ->to(self::FOLDER)
-            ->access('public')
-            ->diskOnly()
-            ->extensions(implode(',', self::EXTENSIONS))
-            ->maxSize(self::MAX_SIZE)
-            ->save();
+        self::migrateLegacyStorageFolder();
 
-        if (!$result->success || empty($result->path)) {
+        $ext = strtolower($file->getClientOriginalExtension());
+        if (!in_array($ext, self::EXTENSIONS, true)) {
             return null;
         }
 
-        return self::itemFromStorageKey((string) $result->path);
+        if ($file->getSize() > self::maxUploadBytes()) {
+            return null;
+        }
+
+        $disk = self::storage();
+        ManagerStorage::ensureDir(self::FOLDER);
+
+        $base = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $base = preg_replace('/[^a-zA-Z0-9_-]+/', '-', (string) $base) ?: 'wallpaper';
+        $base = trim($base, '-');
+        $filename = $base . '.' . $ext;
+        $counter = 1;
+
+        while ($disk->exists(self::FOLDER . '/' . $filename)) {
+            $filename = $base . '-' . $counter . '.' . $ext;
+            $counter++;
+        }
+
+        $stored = $disk->putFileAs(self::FOLDER, $file, $filename);
+        if ($stored === false) {
+            return null;
+        }
+
+        return self::itemFromStorageKey(self::FOLDER . '/' . $filename);
     }
 
     public static function delete(string $name): bool
@@ -164,7 +194,7 @@ class WallpaperHelper
 
     public static function url(string $fileName): string
     {
-        return Url::to('api/v1/wallpapers/' . rawurlencode(basename($fileName)));
+        return Url::to('api/v1/wallpapers/' . rawurlencode(self::normalizeId($fileName)));
     }
 
     public static function mimeType(string $name): string
@@ -192,7 +222,7 @@ class WallpaperHelper
 
     private static function storage(): FilesystemAdapter
     {
-        return File::storage();
+        return ManagerStorage::disk();
     }
 
     /**
@@ -200,6 +230,8 @@ class WallpaperHelper
      */
     private static function listStorageFiles(): array
     {
+        self::migrateLegacyStorageFolder();
+
         $disk = self::storage();
 
         if (!$disk->exists(self::FOLDER)) {
@@ -243,13 +275,22 @@ class WallpaperHelper
 
     private static function legacyFolder(): string
     {
-        $dir = path(self::FOLDER);
+        $dir = path(self::LEGACY_APP_FOLDER);
 
         if (!is_dir($dir)) {
             mkdir($dir, 0755, true);
         }
 
         return $dir;
+    }
+
+    private static function migrateLegacyStorageFolder(): void
+    {
+        $appDisk = File::storage();
+
+        foreach (self::APP_SCOPED_FOLDERS as $folder) {
+            ManagerStorage::migrateFromDisk($appDisk, $folder, self::FOLDER);
+        }
     }
 
     private static function normalizeId(string $name): string

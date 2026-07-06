@@ -716,24 +716,19 @@
     "src": "src/assets/images/cloudwash.png"
   },
   "src/assets/images/logo/logo-256.png": {
-    "file": "assets/logo-256-DHctcKAY.png",
+    "file": "assets/logo-256-9UY93egM.png",
     "src": "src/assets/images/logo/logo-256.png"
   },
-  "src/assets/images/pin-icon.png": {
-    "file": "assets/pin-icon-DOmClQak.png",
-    "src": "src/assets/images/pin-icon.png"
-  },
   "src/main.js": {
-    "file": "assets/main-Dg1x4467.js",
+    "file": "assets/main-Dqlwd5HI.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
     "css": [
-      "assets/main-CrGTMGH2.css"
+      "assets/main-6CCcVNxb.css"
     ],
     "assets": [
-      "assets/pin-icon-DOmClQak.png",
-      "assets/logo-256-DHctcKAY.png",
+      "assets/logo-256-9UY93egM.png",
       "assets/ad-uwrigl9X.svg",
       "assets/ad-BLNJJBny.svg",
       "assets/af-CdYEwOeK.svg",

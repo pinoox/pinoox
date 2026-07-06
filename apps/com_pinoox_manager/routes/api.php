@@ -11,7 +11,9 @@
  * @license  https://opensource.org/licenses/MIT MIT License
  */
 
+use function Pinoox\Router\route_files;
 use function Pinoox\Router\routes;
+
 return routes([
     'version' => 'v1',
     'prefix' => '',
@@ -22,9 +24,8 @@ return routes([
         'path' => 'docs/api',
         'internal_path' => 'docs/api-internal',
     ],
-    'routes' => array_merge(
-        require __DIR__ . '/api/public.php',
-        require __DIR__ . '/api/private.php',
-    ),
+    'routes' => route_files([
+        'api\public.php',
+        'api\private.php'
+    ]),
 ]);
-

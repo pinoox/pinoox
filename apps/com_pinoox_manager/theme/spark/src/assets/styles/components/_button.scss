@@ -39,18 +39,6 @@
   }
 }
 
-/* Define RGB values for colors */
-:root {
-  --color-primary-rgb: 169, 73, 46;
-  --color-secondary-rgb: 58, 29, 33;
-  --color-success-rgb: 31, 146, 84;
-  --color-danger-rgb: 211, 47, 47;
-  --color-warning-rgb: 255, 193, 7;
-  --color-accent-rgb: 22, 120, 143;
-  --color-light-rgb: 166, 191, 202;
-  --color-dark-rgb: 19, 13, 11;
-}
-
 /* Generate button variants */
 @include button-variant('primary', 'color-primary');
 @include button-variant('secondary', 'color-secondary');

@@ -205,6 +205,7 @@ final class SetupService
 
             return (bool) UserModel::withoutGlobalScopes()->create([
                 'app' => 'platform',
+                'group_key' => 'admin',
                 'fname' => $userInput['fname'],
                 'lname' => $userInput['lname'],
                 'username' => $username,

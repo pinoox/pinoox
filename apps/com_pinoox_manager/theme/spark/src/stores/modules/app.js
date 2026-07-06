@@ -50,7 +50,11 @@ export const useAppStore = defineStore('app', {
             return this.apps[packageName] || null;
         },
         fetchAppsLikeName(name) {
-            return Object.values(this.apps).filter(app => app.name.toLowerCase().includes(name.toLowerCase()));
+            const query = (name || '').toLowerCase();
+            return Object.values(this.apps).filter((app) => {
+                const title = (app?.name || app?.package_name || '').toLowerCase();
+                return title.includes(query);
+            });
         }
     },
 });

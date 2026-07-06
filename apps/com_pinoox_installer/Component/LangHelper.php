@@ -15,8 +15,23 @@ namespace App\com_pinoox_installer\Component;
 
 class LangHelper
 {
+    private static function langGroup(string $key, ?string $locale = null): array
+    {
+        $value = t($key, [], $locale);
+
+        return is_array($value) ? $value : [];
+    }
+
     public static function direction(?string $locale = null): string
     {
+        if ($locale === 'fa') {
+            return 'rtl';
+        }
+
+        if ($locale === 'en') {
+            return 'ltr';
+        }
+
         $language = t('language', [], $locale);
         $direction = is_array($language) ? ($language['direction'] ?? 'ltr') : 'ltr';
 
@@ -39,8 +54,8 @@ class LangHelper
     public static function forFrontend(?string $locale = null): array
     {
         return [
-            'install' => t('install', [], $locale),
-            'user' => t('user', [], $locale),
+            'install' => self::langGroup('install', $locale),
+            'user' => self::langGroup('user', $locale),
             'language' => self::languageNames($locale),
         ];
     }

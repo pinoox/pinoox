@@ -1,95 +1,24 @@
 @use '../base/variable' as *;
 
-.marketPage {
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-  width: calc(100% - 1rem);
-  height: 100vh;
-  min-height: 0;
-  margin: 0 0.5rem 0.5rem;
-  padding-top: $toolbar-height;
-  border: 1px solid $color-border;
-  border-radius: 0.75rem;
-  background: rgba(0, 0, 0, 0.28);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  overflow: hidden;
-
-  &__head {
-    flex-shrink: 0;
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.65rem 0.85rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.22);
-  }
-
-  &__back {
-    justify-self: start;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.42rem 0.75rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0.55rem;
-    background: rgba(255, 255, 255, 0.06);
-    color: rgba(255, 255, 255, 0.88);
-    font-size: 0.8125rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: rgba(255, 255, 255, 0.22);
-    }
-
-    &:active {
-      transform: scale(0.98);
-    }
-  }
-
-  &__back-icon {
-    width: 1rem;
-    height: 1rem;
-  }
-
-  &__head-center {
+.marketSimple {
+  .appView__frame {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    min-width: 0;
+    flex-direction: column;
+    min-height: 0;
   }
 
-  &__head-icon {
-    width: 1.15rem;
-    height: 1.15rem;
-    color: var(--color-primary);
-    flex-shrink: 0;
+  .managerPanel--embedded {
+    flex: 1 1 auto;
+    min-height: 0;
   }
+}
 
-  &__head-title {
-    margin: 0;
-    font-size: 0.9375rem;
-    font-weight: 700;
-    color: $color-title;
-    white-space: nowrap;
-  }
-
-  &__head-spacer {
-    justify-self: end;
-    width: 5.5rem;
-  }
-
+.marketPage {
   &__body {
     flex: 1;
     min-height: 0;
     overflow-y: auto;
-    padding: 1.25rem 1rem calc(1.5rem + 4.5rem);
+    padding: 1.25rem 1rem 1.5rem;
   }
 }
 
@@ -176,8 +105,6 @@
   }
 
   &__icon {
-    width: 2.1rem;
-    height: 2.1rem;
     color: rgba(255, 255, 255, 0.95);
   }
 
@@ -311,32 +238,8 @@
 }
 
 @media (max-width: 640px) {
-  .marketPage {
-    width: calc(100% - 0.7rem);
-    margin: 0 0.35rem 0.35rem;
-
-    &__head {
-      grid-template-columns: 1fr;
-      justify-items: stretch;
-      gap: 0.55rem;
-      padding: 0.55rem 0.65rem;
-    }
-
-    &__back {
-      width: fit-content;
-    }
-
-    &__head-center {
-      order: -1;
-    }
-
-    &__head-spacer {
-      display: none;
-    }
-
-    &__body {
-      padding: 0.85rem 0.65rem 1rem;
-    }
+  .marketPage__body {
+    padding: 0.85rem 0.65rem 1rem;
   }
 
   .marketSoon {

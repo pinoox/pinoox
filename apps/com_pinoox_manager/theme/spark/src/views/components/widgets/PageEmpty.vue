@@ -1,17 +1,14 @@
 <template>
   <div class="empty-state flex flex-col items-center justify-center text-center">
-    <component
-        v-if="icon"
-        :is="icon"
-        class="mb-4 opacity-70 text-gray-300"
-        :style="{ width: '4rem', height: '4rem' }"
-    />
+    <Icon v-if="icon" :is="icon" class="pageEmpty__icon mb-4"/>
     <h2 class="text-lg font-semibold text-gray-300">{{ title || "موردی یافت نشد" }}</h2>
     <p v-if="description" class="text-sm text-gray-300 mt-2">{{ description }}</p>
   </div>
 </template>
 
 <script setup>
+import Icon from '@/views/components/widgets/Icon.vue';
+
 const props = defineProps({
   title: {
     type: String,

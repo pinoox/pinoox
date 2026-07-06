@@ -6,15 +6,14 @@ $planet-data: (
                 (earth, 60px, 360px, 30s),
                 (mars, 78px, 460px, 14s)
 );
-// Variables
+
 $solar-system-width: 555px;
 $solar-system-height: 555px;
 
-// Mixins
 @mixin planet($size, $orbitSize) {
   height: $size;
   width: $size;
-  margin-top: (math.div($orbitSize, 2)) - ( math.div($size, 2));
+  margin-top: (math.div($orbitSize, 2)) - (math.div($size, 2));
   border-radius: 50%;
 
   img {
@@ -22,20 +21,17 @@ $solar-system-height: 555px;
   }
 }
 
-// Solar System
 .solar-system {
   position: relative;
-  width: $solar-system-width;
-  height: $solar-system-height;
-  margin: auto;
+  width: min($solar-system-width, 100%);
+  height: min($solar-system-height, 80vw);
+  margin-inline: auto;
   overflow: hidden;
 
-  // Orbit
   .orbit {
-    border: 1px dashed rgba(206, 206, 206, 1);
+    border: 1px dashed rgba(206, 206, 206, 0.8);
   }
 
-  // Objects
   #pinoox,
   .orbit,
   .orbit + div,
@@ -70,9 +66,7 @@ $solar-system-height: 555px;
     left: 50%;
   }
 
-  // Generate Planets
   @each $planet in $planet-data {
-    $index: index($planet-data, $planet);
     $planet-name: nth($planet, 1);
     $planet-size: nth($planet, 2);
     $orbit-size: nth($planet, 3);
@@ -87,7 +81,6 @@ $solar-system-height: 555px;
     }
   }
 
-  // Generate Orbits
   $planet-orbits: ();
 
   @each $planet in $planet-data {
@@ -106,8 +99,6 @@ $solar-system-height: 555px;
     }
   }
 
-
-  // Spinning animations
   @keyframes spin-right {
     100% {
       transform: rotate(360deg);
@@ -115,35 +106,14 @@ $solar-system-height: 555px;
   }
 }
 
-/* Mobile */
+@media (max-width: 768px) {
+  .solar-system {
+    height: min(420px, 72vw);
+  }
+}
+
 @media (max-width: 480px) {
   .solar-system {
-    width: 100%;
-    height: 400px;
-  }
-  .section__market-content .gradient-text {
-    font-size: 3em!important;
-  }
-}
-
-/* Small tablets */
-@media (max-width: 768px) {
-  .section__market {
-    grid-template-columns: 1fr !important;
-    text-align: center;
-  }
-  .solar-system {
-    width: 100%;
-  }
-}
-
-/* Large tablets/laptops */
-@media (min-width: 992px) and (max-width: 1199px) {
-  .solar-system {
-    width: 515px;
-    height: 515px;
-  }
-  .section__market-content .gradient-text {
-    font-size: 4em !important;
+    height: 360px;
   }
 }

@@ -1,6 +1,7 @@
 import axios from "axios";
 import { getUrl } from '@/boot.js';
 import {readApiErrorMessage} from "@utils/apiEnvelope.js";
+import {showSuccessAlert, showErrorAlert} from '@utils/helpers/alertHelper.js';
 
 const baseUrl = getUrl().API || import.meta.env.VITE_API_PATH;
 
@@ -31,6 +32,7 @@ const http = axios.create({
     baseURL: baseUrl,
     numProcessing: 0,
     error: true,
+    withCredentials: true,
 });
 
 export const event = (event_name, func) => {
@@ -58,6 +60,9 @@ http.interceptors.request.use((request) => {
 });
 
 http.interceptors.response.use((response) => {
+    if (response.config?.alert !== false) {
+        showSuccessAlert(response);
+    }
     callActions(actions.response, response);
 
     response.config.numProcessing--;
@@ -68,17 +73,31 @@ http.interceptors.response.use((response) => {
 
     return response;
 }, function (error) {
-    error.config.numProcessing--;
+    if (error.config) {
+        error.config.numProcessing--;
+    }
 
+    if (error.config?.alert !== false) {
+        showErrorAlert(error);
+    }
     callActions(actions.error_response, error);
     callActions(actions.error, error);
 
-    if (!error.config.error)
-        return Promise.reject(error);
-
-    return Promise.reject(readApiErrorMessage(error));
+    return Promise.reject(error);
 });
 
 http.token = getTokenAuth();
+
+http.postForm = (url, data, config = {}) => {
+    const formData = data instanceof FormData ? data : data;
+    return http.post(url, formData, {
+        ...config,
+        headers: {
+            ...(config.headers || {}),
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+};
+
 window.$http = http;
 export default http;

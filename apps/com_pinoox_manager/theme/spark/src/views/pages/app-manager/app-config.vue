@@ -7,7 +7,7 @@
           <p class="text-sm opacity-70">امکان تعریف چند مسیر برای این اپ</p>
         </div>
         <label class="switch">
-          <input type="checkbox" :checked="config.router === 'multiple'" @change="toggle('router')"/>
+          <input type="checkbox" :checked="routerMode === 'multiple'" @change="toggle"/>
         </label>
       </div>
     </div>
@@ -15,23 +15,26 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { appAPI } from "@api/app.js";
 import { unwrapResponse } from "@utils/helpers/apiHelper.js";
+import { resolveRouterMode } from "@utils/helpers/appRoutePolicy.js";
 
 const props = defineProps({
   packageName: String,
 });
 
-const config = ref({ router: 'single' });
+const config = ref({ router: { type: 'multiple' } });
+
+const routerMode = computed(() => resolveRouterMode(config.value));
 
 onMounted(async () => {
   const response = await appAPI.getConfig(props.packageName);
   config.value = unwrapResponse(response) ?? {};
 });
 
-const toggle = async (key) => {
-  await appAPI.setConfig(props.packageName, key, config.value[key]);
+const toggle = async () => {
+  await appAPI.setConfig(props.packageName, 'router', routerMode.value);
   const response = await appAPI.getConfig(props.packageName);
   config.value = unwrapResponse(response) ?? {};
 };

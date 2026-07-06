@@ -51,7 +51,10 @@ return [
         'summary' => 'Get wallpaper',
         'description' => 'Serve a manager wallpaper image by file name.',
         'params' => [
-            ['name' => 'name', 'in' => 'path', 'type' => 'string', 'required' => true, 'description' => 'Wallpaper file name'],
+            ['name' => 'name', 'in' => 'path', 'type' => 'string', 'required' => true, 'description' => 'Wallpaper id (without extension)'],
+        ],
+        'filters' => [
+            'name' => '[^/.]+',
         ],
     ],
 ];

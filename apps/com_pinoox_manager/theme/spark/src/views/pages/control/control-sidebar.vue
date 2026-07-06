@@ -1,124 +1,85 @@
 <template>
   <sidebar-menu
+      v-if="showSidebar"
       class="sidebar"
       :menu="menuItems"
-      :collapsed="sidebar.isCollapsed"
+      :collapsed="isMenuCollapsed"
       :rtl="true"
+      :relative="true"
+      :disable-hover="true"
       width="300px"
-      :show-toggle="true"
+      width-collapsed="72px"
+      :hide-toggle="layout.isCompact"
+      :link-component-name="embedded ? ControlPanelSidebarLink : undefined"
       @update:collapsed="onToggleCollapse"
+      @item-click="onItemClick"
   >
+    <template #header>
+      <div v-if="!isMenuCollapsed" class="sidebar__header">
+        <span class="sidebar__header-title">کنترل پنل</span>
+      </div>
+    </template>
+
     <template v-slot:toggle-icon>
-      <Icon :is="sidebar.isCollapsed ? saxIcon.arrowLeft : saxIcon.arrowRight"/>
+      <LucideIcon :name="isMenuCollapsed ? lucideSidebar.chevronLeft : lucideSidebar.chevronRight" size="sm"/>
     </template>
 
     <template #icon>
-      <Icon :is="saxIcon.arrowLeft"/>
+      <LucideIcon :name="lucideSidebar.chevronLeft" size="sm"/>
     </template>
-
   </sidebar-menu>
 </template>
 
 <script setup>
-import {ref} from 'vue';
+import {computed, ref} from 'vue';
 import {SidebarMenu} from 'vue-sidebar-menu';
 import 'vue-sidebar-menu/dist/vue-sidebar-menu.css';
-import {saxIcon as icons, saxIcon} from "../../../const/icons.js";
-import Icon from "../../components/widgets/Icon.vue";
-import {useSidebarStore} from "../../composables/useSidebar.js";
+import {lucideSidebar} from '../../../const/icons.js';
+import LucideIcon from '../../components/widgets/LucideIcon.vue';
+import {useSidebarStore} from '../../composables/useSidebar.js';
+import {useControlPanelLayoutStore} from '@/stores/modules/controlPanelLayout.js';
+import {toSidebarMenuItems} from '@/views/pages/control/controlMenuItems.js';
+import ControlPanelSidebarLink from '@/views/pages/control/ControlPanelSidebarLink.vue';
+import {isControlPanelMemoryPath} from '@/router/controlPanelMemoryRouter.js';
+import {useControlPanelNavigation} from '@/views/composables/useControlPanelNavigation.js';
+
+const props = defineProps({
+  embedded: {
+    type: Boolean,
+    default: false,
+  },
+});
 
 const sidebar = useSidebarStore();
+const layout = useControlPanelLayoutStore();
+const {pushControlPath} = useControlPanelNavigation();
+
+const menuItems = ref(toSidebarMenuItems(LucideIcon));
+
+const isMenuCollapsed = computed(() => sidebar.isCollapsed && !layout.isCompact);
+const showSidebar = computed(() => !layout.isCompact || layout.mobileSidebarOpen);
 
 const onToggleCollapse = (collapsed) => {
+  if (layout.isCompact) {
+    return;
+  }
+
   sidebar.setCollapsed(collapsed);
 };
 
-const menuItems = ref([
-  {
-    header: 'کنترل پنل',
-    hiddenOnCollapse: true,
-  },
-  {
-    href: '/',
-    title: 'برگشت',
-    class: 'back',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.back },
-    },
-  },
-  {
-    href: '/control/widgets',
-    title: 'ویجت‌ها',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.widgets },
-    },
-  },
-  {
-    href: '/control/apps',
-    title: 'اپلیکیشن‌ها',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.apps },
-    },
-  },
-  {
-    href: '/control/apps/manual',
-    title: 'نصب دستی',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.upload },
-    },
-  },
-  {
-    href: '/control/routes',
-    title: 'مسیریابی',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.routes },
-    },
-  },
-  {
-    title: 'تنظیمات',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.setting },
-    },
-    child: [
-      {
-        href: '/control/settings/appearance',
-        title: 'ظاهر و زمینه',
-      },
-      {
-        href: '/control/settings/application',
-        title: 'تنظیمات اپلیکیشن',
-      },
-    ],
-  },
-  {
-    href: '/control/profile',
-    title: 'حساب کاربری',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.profile },
-    },
-  },
-  {
-    href: '/control/pincore',
-    title: 'پینوکس',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.pincore },
-    },
-  },
-  {
-    href: '/market',
-    title: 'مارکت',
-    icon: {
-      element: Icon,
-      attributes: { is: icons.market },
-    },
-  },
-]);
+const onItemClick = async (event, item) => {
+  if (props.embedded && item?.href && isControlPanelMemoryPath(item.href)) {
+    await pushControlPath(item.href);
+  }
+
+  if (!layout.isCompact) {
+    return;
+  }
+
+  if (item?.child?.length) {
+    return;
+  }
+
+  layout.closeMobileSidebar();
+};
 </script>

@@ -25,4 +25,11 @@ return [
     'login_account' => 'login to account',
     'account' => 'account',
     'connect_to_pinoox' => 'Connect to Pinoox',
+    'already_logged_in' => 'you are already logged in',
+    'password_is_wrong' => 'password is wrong',
+    'profile_updated_successfully' => 'profile updated successfully',
+    'avatar_changed_successfully' => 'avatar updated successfully',
+    'avatar_deleted_successfully' => 'avatar removed successfully',
+    'avatar_delete_failed' => 'failed to remove avatar',
+    'password_changed_successfully' => 'password changed successfully',
 ];

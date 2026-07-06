@@ -1,5 +1,5 @@
 import httpAxios, {event} from './http/http.js';
-import {notify} from "@kyvg/vue3-notification";
+import {toast} from '@utils/helpers/toastHelper.js';
 
 export const http = httpAxios;
 export const httpEvent = event;
@@ -15,7 +15,7 @@ export const delay = (() => {
     };
 })();
 
-export const toast = notify;
+export {toast};
 
 export default {
     http,

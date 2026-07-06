@@ -47,9 +47,8 @@
 
 <script setup>
 import {computed, onBeforeUnmount, ref, watch} from 'vue'
-import {storeToRefs} from 'pinia'
 import Icon from '@/components/icons/Icon.vue'
-import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 
 const STEP_KEYS = [
     'setup_progress_save_settings',
@@ -74,8 +73,7 @@ const props = defineProps({
 
 const emit = defineEmits(['complete'])
 
-const store = useInstallStore()
-const {LANG} = storeToRefs(store)
+const {install} = useInstallerLang()
 
 const activeStep = ref(0)
 const progress = ref(0)
@@ -83,22 +81,22 @@ const isSuccess = ref(false)
 let stepTimer = null
 
 const steps = computed(() => {
-    const install = LANG.value?.install ?? {}
+    const labels = install.value ?? {}
 
     return STEP_KEYS.map((key) => ({
         key,
-        label: install[key] ?? key,
+        label: labels[key] ?? key,
     }))
 })
 
 const title = computed(() => {
-    const install = LANG.value?.install ?? {}
+    const labels = install.value ?? {}
 
     if (isSuccess.value) {
-        return install.setup_progress_success ?? 'Installation complete'
+        return labels.setup_progress_success ?? 'Installation complete'
     }
 
-    return install.setup_progress_title ?? 'Installing Pinoox'
+    return labels.setup_progress_title ?? 'Installing Pinoox'
 })
 
 const subtitle = computed(() => {
@@ -110,8 +108,8 @@ const subtitle = computed(() => {
 })
 
 const percentLabel = computed(() => {
-    const install = LANG.value?.install ?? {}
-    const template = install.setup_progress_percent ?? ':percent% complete'
+    const labels = install.value ?? {}
+    const template = labels.setup_progress_percent ?? ':percent% complete'
     const rounded = Math.round(progress.value)
 
     return template.replace(':percent', String(rounded))

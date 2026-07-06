@@ -1,4 +1,5 @@
 import {defineStore} from 'pinia';
+import {bumpSharedFloatingZIndex} from '@/stores/modules/floatingWindowStack.js';
 
 function defaultRect(index = 0) {
     const vw = window.innerWidth;
@@ -145,8 +146,9 @@ export const useAppViewWindowStore = defineStore('appViewWindow', {
             }
 
             this.selectedPackage = packageName;
-            this.topZ += 1;
-            this.sessions[packageName].zIndex = this.topZ;
+
+            const nextZ = bumpSharedFloatingZIndex();
+            this.sessions[packageName].zIndex = nextZ;
         },
         focusFloating(packageName) {
             this.ensureSession(packageName);

@@ -6,7 +6,7 @@
 
     <div v-if="app" class="max-w-2xl space-y-4">
       <div class="flex items-center gap-4">
-        <img :src="app.icon" :alt="app.name" class="w-20 h-20 rounded-xl"/>
+        <AppIcon v-bind="appIconProps(app)" size="xl"/>
         <div>
           <h2 class="text-2xl font-bold">{{ app.name }}</h2>
           <p class="opacity-70">{{ app.developer }}</p>
@@ -40,6 +40,7 @@ import { appAPI } from "@api/app.js";
 import { accountAPI } from "@api/account.js";
 import { saxIcon } from "@/const/icons.js";
 import { useAppStore } from "@/stores/modules/app.js";
+import { appIconProps } from "@utils/helpers/appIconProps.js";
 import { unwrapResponse } from "@utils/helpers/apiHelper.js";
 
 const route = useRoute();
@@ -75,7 +76,7 @@ const download = async () => {
 const install = async () => {
   isInstalling.value = true;
   try {
-    await appAPI.installPackage(`${route.params.package_name}.pin`);
+    await appAPI.installPackage(`${route.params.package_name}.pinx`);
     await appStore.getApps();
     router.push('/control/apps');
   } finally {

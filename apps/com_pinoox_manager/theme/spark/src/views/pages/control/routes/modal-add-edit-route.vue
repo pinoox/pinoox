@@ -1,49 +1,138 @@
 <template>
-    <SimpleModal :title="title" size="sm" class="modalRoutes">
+    <SimpleModal
+        :title="title"
+        size="sm"
+        :class="['modalRoutes', { 'modalRoutes--saving': isSaving || isDone }]"
+    >
+        <div v-if="!props.hasSelectApp" class="modalRoutes__steps" aria-hidden="true">
+            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 1, 'is-done': currentStep > 1 || isSaving || isDone }">۱. آدرس</span>
+            <span class="modalRoutes__stepLine"/>
+            <span class="modalRoutes__step" :class="{ 'is-active': currentStep === 2, 'is-done': isSaving || isDone }">۲. برنامه</span>
+        </div>
+
         <div v-if="currentStep === 1" class="form">
+            <p class="modalRoutes__hint">آدرسی را بنویسید که می‌خواهید در مرورگر باز شود.</p>
             <Input
                     type="text"
                     v-model="params.path"
-                    label="آدرس مسیر"
+                    label="آدرس"
                     direction="ltr"
-                    placeholder="نام مسیر"
-                    :prefix="domain + '/'"
+                    placeholder="shop"
+                    :prefix="addressPrefix"
             />
-            <div class="flex justify-end mt-4">
+            <p v-if="isDuplicatePath" class="modalRoutes__pathWarn" role="alert">
+                {{ duplicatePathMessage }}
+            </p>
+            <div class="flex justify-end mt-4 gap-2">
                 <Button @click="closeModal" label="بستن" variant="dark"/>
-                <Button @click="goToNextStep" :disabled="!params.path" label="ادامه" variant="primary"/>
+                <Button @click="goToNextStep" :is-disabled="!canProceedStep1" label="انتخاب برنامه" variant="primary"/>
             </div>
         </div>
 
-        <div v-else class="form">
-            <Input
-                    type="text"
-                    v-model="searchQuery"
-                    label="جستجو..."
-                    placeholder="نام اپلیکیشن را بنویسید"
-            />
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-12">
-                <div
-                        v-for="app in filteredApps"
-                        :key="app.package_name"
-                        @click="selectPackage(app)"
-                        class="flex flex-col items-center justify-center space-y-2 cursor-pointer transition-transform duration-300 ease-in-out hover:scale-110"
-                        :class="{
-            'opacity-100': app.package_name === params.packageName,
-            'opacity-40': app.package_name !== params.packageName && params.packageName
+        <div v-else class="modalRoutes__stepPanel">
+            <Transition name="modalRoutesSave" mode="out-in">
+                <div v-if="!isSaving && !isDone" key="picker" class="form">
+                    <p class="modalRoutes__hint">
+                        <span v-if="props.hasSelectApp">وقتی کسی آدرس اصلی سایت را باز می‌کند، کدام برنامه نمایش داده شود؟</span>
+                        <span v-else>با باز کردن <code>{{ routePreview }}</code> کدام برنامه نمایش داده شود؟</span>
+                    </p>
+                    <Input
+                            type="text"
+                            v-model="searchQuery"
+                            label="جستجو"
+                            placeholder="نام برنامه را بنویسید"
+                    />
+                    <p v-if="!filteredApps.length" class="modalRoutes__emptyApps">برنامه‌ای برای انتخاب پیدا نشد.</p>
+                    <div v-else class="modal-app-picker grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6 mt-8">
+                        <button
+                                type="button"
+                                v-for="app in filteredApps"
+                                :key="app.package_name"
+                                @click="selectPackage(app)"
+                                class="modalRoutes__appOption"
+                                :class="{
+            'is-selected': app.package_name === params.packageName,
+            'is-dimmed': appOptionDimmed(app),
+            'is-disabled': !isAppSelectable(app),
           }"
-                >
-                    <div class="w-16 h-16 md:w-20 md:h-20 rounded-2xl flex items-center justify-center shadow-lg">
-                        <img :src="app.icon" :alt="app.name" class="w-16 h-16 md:w-20 md:h-20"/>
+                                :disabled="!isAppSelectable(app)"
+                                :title="appOptionTitle(app)"
+                        >
+                            <AppBrandIcon
+                                v-if="isManagerBrandApp(app)"
+                                v-bind="managerBrandIconProps(app)"
+                                size="lg"
+                            />
+                            <AppIcon v-else v-bind="resolveRouteAppIconProps(app)" size="lg"/>
+                            <span class="text-sm text-gray-400">{{ resolveAppDisplayLabel(app) }}</span>
+                        </button>
                     </div>
-                    <span class="text-sm text-gray-400">{{ app.name }}</span>
+                    <div class="flex justify-between mt-4 gap-2">
+                        <Button v-if="!props.hasSelectApp" @click="goToPreviousStep" label="بازگشت" variant="dark"/>
+                        <Button v-else @click="closeModal" label="بستن" variant="dark"/>
+                        <Button
+                            type="button"
+                            :is-disabled="!canSave"
+                            label="ذخیره"
+                            variant="primary"
+                            @click="save"
+                        />
+                    </div>
                 </div>
-            </div>
-            <div class="flex justify-between mt-4">
-                <Button v-if="!props.hasSelectApp" @click="goToPreviousStep" label="بازگشت" variant="dark"/>
-                <Button v-else @click="closeModal" label="بستن" variant="dark"/>
-                <Button @click="save" :disabled="!params.packageName" label="ذخیره" variant="primary"/>
-            </div>
+
+                <div
+                    v-else
+                    key="save"
+                    class="modalRoutesSave"
+                    :class="{
+                        'is-saving': isSaving,
+                        'is-done': isDone,
+                    }"
+                >
+                    <div class="modalRoutesSave__body">
+                        <div class="modalRoutesSave__hero" aria-hidden="true">
+                            <span class="modalRoutesSave__iconRing"/>
+                            <span class="modalRoutesSave__iconRing modalRoutesSave__iconRing--delayed"/>
+                            <span class="modalRoutesSave__iconWrap">
+                                <Icon
+                                    :is="isDone ? saxIcon.notifySuccess : saxIcon.routes"
+                                    class="modalRoutesSave__icon"
+                                />
+                            </span>
+                        </div>
+
+                        <p class="modalRoutesSave__lead">
+                            {{ isDone ? saveSuccessMessage : saveProgressMessage }}
+                        </p>
+
+                        <div class="modalRoutesSave__preview" dir="ltr">
+                            <div class="modalRoutesSave__url">
+                                <span class="modalRoutesSave__url-origin">{{ siteOriginDisplay }}</span>
+                                <span class="modalRoutesSave__url-path">{{ routePathSuffix(params.path) }}</span>
+                            </div>
+                            <div class="modalRoutesSave__arrow" aria-hidden="true">→</div>
+                            <div class="modalRoutesSave__app">
+                                <AppBrandIcon
+                                    v-if="isManagerBrandApp(selectedApp, params.packageName)"
+                                    v-bind="managerBrandIconProps(selectedApp, params.packageName)"
+                                    size="xs"
+                                />
+                                <AppIcon
+                                    v-else
+                                    v-bind="resolveRouteAppIconProps(selectedApp, params.packageName)"
+                                    size="xs"
+                                />
+                                <span class="modalRoutesSave__app-name">{{ selectedAppLabel }}</span>
+                            </div>
+                        </div>
+
+                        <p v-if="isSaving" class="modalRoutesSave__status" role="status" aria-live="polite">
+                            <span class="modalRoutesSave__statusDot"/>
+                            {{ saveProgressMessage }}
+                        </p>
+                    </div>
+                </div>
+            </Transition>
         </div>
     </SimpleModal>
 </template>
@@ -51,11 +140,22 @@
 <script setup>
 defineOptions({modalGroup: 'default'});
 
-import {ref, computed, watch} from 'vue';
-import {closeModal} from '@kolirt/vue-modal';
+import {ref, computed, watch, onMounted, nextTick} from 'vue';
+import {closeModal, useModalContext} from '@kolirt/vue-modal';
+import {saxIcon} from '@/const/icons.js';
+import Button from '@/views/components/widgets/Button.vue';
 import {useAppStore} from "@/stores/modules/app.js";
 import {useRouteStore} from "@/stores/modules/route.js";
+import {resolveRouteAppIconProps} from "@utils/helpers/appIconProps.js";
+import {resolveAppDisplayLabel, isManagerBrandApp, managerBrandIconProps} from "@utils/helpers/appDisplayLabel.js";
+import {canAssignAnotherRoute, resolveRouterMode} from "@utils/helpers/appRoutePolicy.js";
+import {translate} from "@utils/helpers/managerLang.js";
 import {routerAPI} from "@api/router.js";
+import {unwrapResponse} from "@utils/helpers/apiHelper.js";
+import {resolveApiFailure} from "@utils/apiEnvelope.js";
+import {toastError} from "@utils/helpers/toastHelper.js";
+import { getUrl } from '@/boot.js';
+import {formatSiteOriginForDisplay, formatSiteOriginPrefix} from '@utils/helpers/siteUrlHelper.js';
 
 const props = defineProps({
     payload: {
@@ -68,34 +168,157 @@ const props = defineProps({
     },
 });
 
+const {confirm} = useModalContext();
 const appStore = useAppStore();
 const routeStore = useRouteStore();
 
-const domain = computed(()=> window.location.hostname);
+const siteUrl = getUrl().SITE;
+const siteOriginDisplay = formatSiteOriginForDisplay(siteUrl);
+
+const addressPrefix = computed(() => formatSiteOriginPrefix(siteUrl));
 
 const params = ref({
     path: '',
     packageName: null,
-    oldPath: null,
+    oldPath: '',
 });
 
 const searchQuery = ref('');
 const currentStep = ref(1);
+const isSaving = ref(false);
+const isDone = ref(false);
 
+const isEditingRoute = computed(() => Boolean(props.payload?.path) && !props.hasSelectApp);
+
+const isEditingHomeRoute = computed(() => props.hasSelectApp || props.payload?.path === '/');
+
+const selectedApp = computed(() => appStore.fetchAppByPackage(params.value.packageName));
+
+const selectedAppLabel = computed(() => resolveAppDisplayLabel(selectedApp.value, params.value.packageName));
 
 const filteredApps = computed(() => {
-    return appStore.fetchAppsLikeName(searchQuery.value);
+    const routes = routeStore.routeList;
+    const editingPackage = props.payload?.package ?? null;
+
+    return appStore.fetchAppsLikeName(searchQuery.value).filter((app) => {
+        if ((isEditingRoute.value || isEditingHomeRoute.value) && app.package_name === editingPackage) {
+            return true;
+        }
+
+        return canAssignAnotherRoute(app, routes);
+    });
 });
 
-const selectPackage = (app) => {
+function isAppSelectable(app) {
+    const activePackage = props.payload?.package ?? params.value.packageName;
 
-    if (app.package_name === params.value.packageName)
-        params.value.packageName = null;
-    else
-        params.value.packageName = app.package_name;
+    if ((isEditingRoute.value || isEditingHomeRoute.value) && app.package_name === activePackage) {
+        return true;
+    }
+
+    return canAssignAnotherRoute(app, routeStore.routeList);
+}
+
+function appOptionDimmed(app) {
+    if (app.package_name === params.value.packageName) {
+        return false;
+    }
+
+    if (params.value.packageName) {
+        return true;
+    }
+
+    return !isAppSelectable(app);
+}
+
+function appOptionTitle(app) {
+    if (isAppSelectable(app)) {
+        return resolveAppDisplayLabel(app);
+    }
+
+    if (resolveRouterMode(app) === 'single') {
+        return translate('app_single_route_only');
+    }
+
+    return resolveAppDisplayLabel(app);
+}
+
+const canGoNext = computed(() => {
+    return String(params.value.path ?? '').trim().length > 0;
+});
+
+const duplicateRoute = computed(() => {
+    const path = normalizePath(params.value.path);
+    const oldPath = normalizePath(params.value.oldPath);
+
+    if (isEditingHomeRoute.value && path === '/') {
+        return null;
+    }
+
+    if (isEditingRoute.value && path === oldPath) {
+        return null;
+    }
+
+    if (!props.hasSelectApp && !String(params.value.path ?? '').trim()) {
+        return null;
+    }
+
+    return routeStore.fetchRouteByPath(path);
+});
+
+const isDuplicatePath = computed(() => duplicateRoute.value != null);
+
+const duplicatePathMessage = computed(() => {
+    if (!duplicateRoute.value) {
+        return '';
+    }
+
+    const app = appStore.fetchAppByPackage(duplicateRoute.value.package);
+    const appName = resolveAppDisplayLabel(app, duplicateRoute.value.package);
+
+    return translate('route_path_duplicate').replace('{app}', appName);
+});
+
+const canProceedStep1 = computed(() => canGoNext.value && !isDuplicatePath.value);
+
+const canSave = computed(() => {
+    return Boolean(params.value.packageName) && (props.hasSelectApp || canGoNext.value);
+});
+
+const routePreview = computed(() => {
+    const path = String(params.value.path ?? '').trim();
+    const base = siteOriginDisplay;
+    if (!path || path === '/') return `${base}/`;
+    const normalized = path.startsWith('/') ? path : `/${path}`;
+    return `${base}${normalized}`;
+});
+
+function routePathSuffix(path) {
+    const normalized = normalizePath(path);
+    if (normalized === '/') return '/';
+    return normalized;
+}
+
+const selectPackage = (app) => {
+    if (!isAppSelectable(app)) {
+        toastError(translate('app_single_route_only'));
+        return;
+    }
+
+    params.value.packageName = app.package_name;
 };
 
 const goToNextStep = () => {
+    if (!canGoNext.value) {
+        toastError('لطفاً آدرس را وارد کنید.');
+        return;
+    }
+
+    if (isDuplicatePath.value) {
+        toastError(duplicatePathMessage.value);
+        return;
+    }
+
     currentStep.value = 2;
 };
 
@@ -103,31 +326,132 @@ const goToPreviousStep = () => {
     currentStep.value = 1;
 };
 
-watch(() => props.payload, (data) => {
+const resetForm = (data = null) => {
+    const homePath = data?.path === '/' ? '/' : (data?.path ?? '');
 
     params.value = {
-        path: data?.path,
-        packageName: data?.package,
-        oldPath: data?.path,
+        path: homePath,
+        packageName: data?.package ?? null,
+        oldPath: data?.is_implicit ? '' : homePath,
+    };
+    searchQuery.value = '';
+    isSaving.value = false;
+    isDone.value = false;
+    currentStep.value = props.hasSelectApp ? 2 : 1;
+};
+
+watch(
+    () => [props.payload, props.hasSelectApp],
+    ([data]) => {
+        resetForm(data);
+    },
+    {immediate: true},
+);
+
+onMounted(async () => {
+    if (!appStore.isLoaded) {
+        await appStore.getApps();
     }
-}, {
-    immediate: true,
 });
 
-watch(() => props.hasSelectApp, (status) => {
-    currentStep.value = status ? 2 : 1;
-}, {
-    immediate: true,
-});
+function normalizePath(rawPath) {
+    const value = String(rawPath ?? '').trim();
+    if (!value || value === '/') {
+        return '/';
+    }
+    return value.startsWith('/') ? value : `/${value}`;
+}
 
-const save = () => {
-    routerAPI.save(params.value).then(() => {
-        routeStore.saveRoute(params.value.path, params.value.packageName, params.value.oldPath);
-        closeModal();
-    })
+function buildSavePayload() {
+    const path = normalizePath(params.value.path);
+    const packageName = params.value.packageName;
 
+    if (!props.hasSelectApp && !String(params.value.path ?? '').trim()) {
+        throw new Error('لطفاً آدرس را وارد کنید.');
+    }
+
+    if (!packageName) {
+        throw new Error('لطفاً یک برنامه انتخاب کنید.');
+    }
+
+    return {
+        path,
+        packageName,
+        oldPath: params.value.oldPath ?? '',
+    };
+}
+
+function resolveErrorMessage(error) {
+    return resolveApiFailure(error);
+}
+
+const save = async () => {
+    if (isSaving.value || isDone.value) {
+        return;
+    }
+
+    let payload;
+
+    try {
+        payload = buildSavePayload();
+    } catch (validationError) {
+        toastError(validationError.message);
+        return;
+    }
+
+    if (isDuplicatePath.value) {
+        toastError(duplicatePathMessage.value);
+        currentStep.value = 1;
+        return;
+    }
+
+    isSaving.value = true;
+    isDone.value = false;
+    await nextTick();
+
+    try {
+        const response = await routerAPI.save(payload);
+        unwrapResponse(response);
+        routeStore.saveRoute(payload.path, payload.packageName, payload.oldPath || null);
+        isSaving.value = false;
+        isDone.value = true;
+        await new Promise((resolve) => setTimeout(resolve, 520));
+        confirm();
+    } catch (error) {
+        toastError(resolveErrorMessage(error));
+        isSaving.value = false;
+        isDone.value = false;
+    }
 };
 
 const isEdit = computed(() => (!!props.payload));
-const title = computed(() => (isEdit.value ? 'ویرایش' : 'افزودن مسیر جدید'));
+
+const saveProgressMessage = computed(() => {
+    if (props.hasSelectApp) {
+        return translate('route_save_progress_home');
+    }
+
+    if (isEdit.value) {
+        return translate('route_save_progress_edit');
+    }
+
+    return translate('route_save_progress_create');
+});
+
+const saveSuccessMessage = computed(() => {
+    if (props.hasSelectApp) {
+        return translate('route_save_success_home');
+    }
+
+    if (isEdit.value) {
+        return translate('route_save_success_edit');
+    }
+
+    return translate('route_save_success_create');
+});
+
+const title = computed(() => {
+    if (props.hasSelectApp) return 'برنامهٔ صفحه اصلی';
+    return isEdit.value ? 'ویرایش آدرس' : 'افزودن آدرس جدید';
+});
 </script>

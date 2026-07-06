@@ -1,0 +1,119 @@
+@use '../base/variable' as *;
+
+.icon {
+  &--xs {
+    --icon-size: #{$icon-size-xs};
+  }
+
+  &--sm {
+    --icon-size: #{$icon-size-sm};
+  }
+
+  &--md {
+    --icon-size: #{$icon-size-md};
+  }
+
+  &--lg {
+    --icon-size: #{$icon-size-lg};
+  }
+
+  &--xl {
+    --icon-size: #{$icon-size-xl};
+  }
+
+  &--2xl {
+    --icon-size: #{$icon-size-2xl};
+  }
+}
+
+.toolbarMenu__icon {
+  --icon-size: 1.125rem;
+}
+
+.item-icon {
+  --icon-size: 1.35rem;
+}
+
+.appView__toolIcon,
+.appView__reload-icon,
+.appView__addressInfoIcon {
+  --icon-size: 1rem;
+}
+
+.marketPage__back-icon {
+  --icon-size: 1rem;
+}
+
+.marketPage__head-icon {
+  --icon-size: 1.15rem;
+}
+
+.marketSoon__icon.icon {
+  --icon-size: 2.1rem;
+}
+
+.marketSoon__feature-icon .icon {
+  --icon-size: 1.35rem;
+}
+
+.pageRoutes__action-icon {
+  --icon-size: 1.125rem;
+}
+
+.spark-notification__icon .icon {
+  --icon-size: 1.2rem;
+}
+
+.spark-notification__close .icon {
+  --icon-size: 1rem;
+}
+
+.inputWrapper__icon .icon {
+  --icon-size: 1.15rem;
+}
+
+.wallpaper-manage-btn .icon {
+  --icon-size: 1.1rem;
+}
+
+.v-sidebar-menu {
+  .vsm--icon .icon {
+    --icon-size: 1.2rem;
+  }
+
+  .vsm--toggle-btn .icon {
+    --icon-size: 1.05rem;
+  }
+
+  .vsm--link_level-1 .vsm--icon {
+    margin-inline: 0.15rem 0.55rem;
+  }
+
+  &.vsm_collapsed .vsm--link_level-1 .vsm--icon {
+    margin-inline: 0;
+  }
+}
+
+.pageEmpty__icon {
+  --icon-size: 3.25rem;
+  opacity: 0.72;
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.is-spinning.icon svg,
+.is-spinning .icon svg,
+.appView__toolIcon.is-spinning svg,
+.appView__reload-icon.is-spinning svg {
+  animation: iconSpin 0.85s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes iconSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

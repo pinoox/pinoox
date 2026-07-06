@@ -18,10 +18,12 @@ html {
 body {
   padding: 0;
   margin: 0;
-  font-family: $font;
-  background: rgb(245 236 248);
+  font-family: var(--font-body);
+  background: var(--color-surface-muted);
   background: linear-gradient(90deg, rgba(225, 231, 244, 1) 0%, rgba(225, 231, 244, 0.27) 100%);
   overflow-x: hidden;
+  color: var(--color-text-dark);
+  -webkit-font-smoothing: antialiased;
 
   &.rtl {
     direction: rtl;
@@ -34,8 +36,25 @@ body {
   }
 }
 
+.page {
+  overflow-x: hidden;
+}
+
+.section {
+  position: relative;
+}
+
 h1, h2, h3, h4, h5, h6 {
   margin: 0;
+}
+
+a {
+  color: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }
 
 input:-webkit-autofill,
@@ -53,8 +72,6 @@ input::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
-

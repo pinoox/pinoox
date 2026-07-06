@@ -1,6 +1,6 @@
 <template>
   <div class="toolbarMenu">
-    <Icon :is="icon" class="toolbarMenu__icon"/>
+    <Icon :is="icon" class="toolbarMenu__icon" size="sm"/>
     <span class="toolbarMenu__label">{{ label }}</span>
   </div>
 </template>

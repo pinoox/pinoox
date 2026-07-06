@@ -1,32 +1,122 @@
-.vue-notification-group {
+@use '../base/variable' as *;
+
+.vue-notification-group.spark-notifications {
   z-index: 9999999 !important;
-}
+  padding:
+    max(1rem, calc(#{$toolbar-height} + 0.85rem))
+    max(1rem, env(safe-area-inset-right, 0px))
+    0
+    1rem !important;
+  max-width: min(24rem, calc(100vw - 2rem));
+  pointer-events: none;
+  display: block !important;
 
-.notification {
-  margin: 1rem;
-
-  .vue-notification {
-    margin-bottom: 0.5rem;
-    padding: 1.5rem;
-    border-radius: 0.5rem;
-    box-shadow: 0 5px 10px rgba(#222, 0.1);
-    border-left: initial;
-    border-right: 5px solid;
-
-    &.error {
-      background: var(--color-primary) !important;
-      border-color: var(--color-primary);
-    }
-
-    &.success {
-      background: var(--color-success) !important;
-      border-color: var(--color-success);
-    }
+  .vue-notification-wrapper {
+    overflow: visible;
+    pointer-events: auto;
+    margin-bottom: 0.65rem;
   }
 
-  &-title {
-    font-size: 1rem;
-    text-align: right;
-    line-height: normal;
+  .vn-fade-enter-active,
+  .vn-fade-leave-active {
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+
+  .vn-fade-enter-from,
+  .vn-fade-leave-to {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+}
+
+.spark-notifications .spark-notification {
+  position: relative;
+  margin: 0 !important;
+  padding: 0.85rem 1rem !important;
+  border-radius: 0.85rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: $color-title !important;
+  background: rgba(19, 13, 11, 0.55) !important;
+  backdrop-filter: blur(22px) saturate(1.35);
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  direction: rtl;
+  text-align: right;
+  font-size: 0.875rem !important;
+  overflow: hidden;
+
+  .notification-title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--spark-notification-title, $color-title);
+    word-break: break-word;
+  }
+
+  .notification-content {
+    margin: 0.25rem 0 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: var(--spark-notification-text, $color-text);
+    word-break: break-word;
+  }
+
+  &.success {
+    --spark-notification-title: #e8fff1;
+    --spark-notification-text: rgba(232, 255, 241, 0.88);
+    background: linear-gradient(
+      135deg,
+      rgba(31, 146, 84, 0.32) 0%,
+      rgba(19, 13, 11, 0.62) 100%
+    ) !important;
+    border-color: rgba(31, 146, 84, 0.42) !important;
+    box-shadow:
+      0 16px 36px rgba(31, 146, 84, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  &.error {
+    --spark-notification-title: #ffecec;
+    --spark-notification-text: rgba(255, 236, 236, 0.88);
+    background: linear-gradient(
+      135deg,
+      rgba(211, 47, 47, 0.34) 0%,
+      rgba(19, 13, 11, 0.62) 100%
+    ) !important;
+    border-color: rgba(211, 47, 47, 0.44) !important;
+    box-shadow:
+      0 16px 36px rgba(211, 47, 47, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  &.warn {
+    --spark-notification-title: #fff4e8;
+    --spark-notification-text: rgba(255, 244, 232, 0.88);
+    background: linear-gradient(
+      135deg,
+      rgba(255, 139, 7, 0.34) 0%,
+      rgba(19, 13, 11, 0.62) 100%
+    ) !important;
+    border-color: rgba(255, 139, 7, 0.44) !important;
+    box-shadow:
+      0 16px 36px rgba(255, 139, 7, 0.22),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  }
+
+  &.info {
+    --spark-notification-title: #e8f7fb;
+    --spark-notification-text: rgba(232, 247, 251, 0.88);
+    background: linear-gradient(
+      135deg,
+      rgba(22, 120, 143, 0.3) 0%,
+      rgba(19, 13, 11, 0.62) 100%
+    ) !important;
+    border-color: rgba(22, 120, 143, 0.4) !important;
+    box-shadow:
+      0 16px 36px rgba(22, 120, 143, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.14);
   }
 }

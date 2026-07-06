@@ -1,31 +1,55 @@
 <template>
   <div
-      class="relative flex items-center w-full border border-gray-300 rounded-md overflow-hidden"
-      :class="{ 'flex-row': direction === 'rtl', 'flex-row-reverse': direction === 'ltr' }"
+      class="inputWrapper__control"
+      :class="controlClass"
   >
-   <span
-       v-if="prefix"
-       :class="{ 'rtl': direction === 'rtl', 'ltr': direction === 'ltr' }"
-       class="inputWrapper__prefix bg-gray-900 px-3 py-3 text-gray-300 text-sm"
-   >
+    <span
+        v-if="icon"
+        class="inputWrapper__icon"
+        aria-hidden="true"
+    >
+      <Icon :is="icon" size="sm"/>
+    </span>
+
+    <span
+        v-if="prefix"
+        :class="{ 'rtl': direction === 'rtl', 'ltr': direction === 'ltr' }"
+        class="inputWrapper__prefix"
+    >
       {{ prefix }}
     </span>
 
-    <!-- Input Field -->
     <input
-        class="inputWrapper__form flex-1 px-2 py-2"
-        :type="type"
+        class="inputWrapper__form"
+        :type="inputType"
         :placeholder="placeholder"
         :required="required"
         :disabled="disabled"
         :value="modelValue"
+        :autocomplete="autocomplete"
         :class="{ 'text-left': direction === 'ltr', 'text-right': direction === 'rtl' }"
         @input="emit('update:modelValue', $event.target.value)"
     />
+
+    <button
+        v-if="showPasswordToggle && type === 'password'"
+        type="button"
+        class="inputWrapper__toggle"
+        :aria-label="passwordVisible ? 'مخفی‌کردن رمز عبور' : 'نمایش رمز عبور'"
+        :aria-pressed="passwordVisible"
+        tabindex="-1"
+        @click="passwordVisible = !passwordVisible"
+    >
+      <Icon :is="passwordVisible ? saxIcon.eyeOff : saxIcon.eye" size="sm"/>
+    </button>
   </div>
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue';
+import Icon from '@/views/components/widgets/Icon.vue';
+import { saxIcon } from '@/const/icons.js';
+
 const props = defineProps({
   modelValue: [String, Number],
   type: {
@@ -42,7 +66,49 @@ const props = defineProps({
     validator: (value) => ["ltr", "rtl"].includes(value),
   },
   prefix: String,
+  autocomplete: {
+    type: String,
+    default: undefined,
+  },
+  variant: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'glass'].includes(value),
+  },
+  icon: {
+    type: [Object, Function],
+    default: null,
+  },
+  showPasswordToggle: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const emit = defineEmits(["update:modelValue"]);
+
+const passwordVisible = ref(false);
+
+watch(() => props.type, () => {
+  passwordVisible.value = false;
+});
+
+const inputType = computed(() => {
+  if (props.type === 'password' && props.showPasswordToggle && passwordVisible.value) {
+    return 'text';
+  }
+
+  return props.type;
+});
+
+const controlClass = computed(() => ({
+  'inputWrapper__control--default': props.variant === 'default',
+  'inputWrapper__control--glass': props.variant === 'glass',
+  'inputWrapper__control--with-icon': Boolean(props.icon),
+  'inputWrapper__control--with-toggle': props.showPasswordToggle && props.type === 'password',
+  'inputWrapper__control--dir-ltr': props.direction === 'ltr',
+  'inputWrapper__control--dir-rtl': props.direction === 'rtl',
+  'flex-row': props.direction === 'rtl',
+  'flex-row-reverse': props.direction === 'ltr',
+}));
 </script>

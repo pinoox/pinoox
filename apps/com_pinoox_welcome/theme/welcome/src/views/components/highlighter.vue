@@ -1,19 +1,22 @@
 <template>
-  <CodeBlock
-    class="codeBlock"
-    :code="code"
-    label="panda"
-    dir="ltr"
-    theme="base16-onedark"
-    highlightjs
-    lang="php"
-  />
+  <div class="code-ltr" dir="ltr">
+    <CodeBlock
+      class="codeBlock"
+      :code="code"
+      label="app.php"
+      dir="ltr"
+      :theme="false"
+      highlightjs
+      lang="php"
+    />
+  </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
 import hljs from "highlight.js/lib/core";
 import langPhp from "highlight.js/lib/languages/php";
+import "highlight.js/styles/base16/onedark.min.css";
 
 hljs.registerLanguage("php", langPhp);
 

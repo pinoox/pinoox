@@ -1,7 +1,7 @@
 <template>
     <div id="page">
         <header class="page-header">
-            <h1 class="title">{{ LANG.install.select_lang }}</h1>
+            <h1 class="title">{{ install.select_lang }}</h1>
         </header>
         <div class="container">
             <div class="row">
@@ -25,7 +25,7 @@
             </div>
             <div class="page-actions page-actions--center">
                 <button type="button" class="btn btn-light pin-btn pin-next" @click="continueInstall">
-                    {{ LANG.install.continue }}
+                    {{ install.continue }}
                 </button>
             </div>
         </div>
@@ -33,15 +33,19 @@
 </template>
 
 <script setup>
-import {storeToRefs} from 'pinia'
+import {onMounted} from 'vue'
 import {useRouter} from 'vue-router'
 import {installAPI} from '@api/install.js'
-import {useInstallStore} from '@/stores/install.js'
+import {getLangPack} from '@/lang/index.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 import {shouldShowBootstrapError} from '@/utils/resolveInstallerApi.js'
 
 const router = useRouter()
-const store = useInstallStore()
-const {LANG, OPTIONS} = storeToRefs(store)
+const {install, language, OPTIONS, store} = useInstallerLang()
+
+onMounted(() => {
+    store.ensureLang()
+})
 
 const items = [
     {label: 'English - EN', lang: 'en', icon: 'flag-icon-gb'},
@@ -49,17 +53,18 @@ const items = [
 ]
 
 async function selectLang(selectedLang) {
+    store.setLang(getLangPack(selectedLang), selectedLang)
+
     try {
         const data = await installAPI.changeLang(selectedLang)
-        const translations = data.lang ?? data
-        store.setLang(translations, selectedLang, data.direction)
+        store.setLang(data, selectedLang)
     } catch {
-        store.OPTIONS = {...store.OPTIONS, lang: selectedLang}
+        // local pack and direction already applied
     }
 }
 
 function getLabel(item) {
-    return LANG.value?.language?.[item.lang] ?? item.label
+    return language.value?.[item.lang] ?? item.label
 }
 
 function continueInstall() {

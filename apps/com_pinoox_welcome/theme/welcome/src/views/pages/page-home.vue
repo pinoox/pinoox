@@ -1,13 +1,9 @@
 <template>
-  <div class="page">
-
+  <main class="page">
     <Hero></Hero>
-
     <Market></Market>
-
     <Developer></Developer>
-
-  </div>
+  </main>
 </template>
 
 <script>

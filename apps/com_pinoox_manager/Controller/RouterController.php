@@ -14,26 +14,52 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
+use App\com_pinoox_manager\Component\AppRoutePolicy;
 use Pinoox\Component\Helpers\Str;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
+use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppRouter;
 
-class RouterController extends Api
+class RouterController extends ApiController
 {
     public function getAll()
     {
+        $routeMap = AppRouter::routes();
+        $routes = [];
 
-        $routes = AppRouter::get();
-        if (!empty($routes)) {
-            foreach ($routes as $path => $packageName) {
-                $routes[$path] = [
-                    'path' => $path,
-                    'package' => $packageName,
-                    'is_lock' => ($path === '/manager'),
-                ];
-            }
+        foreach ($routeMap as $path => $packageName) {
+            $routes[$path] = $this->formatRouteEntry($path, $packageName);
         }
+
+        if (!isset($routes['/'])) {
+            $routes['/'] = $this->formatRouteEntry(
+                '/',
+                AppRouter::find('/')->getPackageName(),
+                isImplicit: true,
+            );
+        }
+
         return $routes;
+    }
+
+    /**
+     * @return array{path: string, package: string, is_lock: bool, is_home: bool, is_implicit?: bool}
+     */
+    private function formatRouteEntry(string $path, string $packageName, bool $isImplicit = false): array
+    {
+        $entry = [
+            'path' => $path,
+            'package' => $packageName,
+            'is_lock' => $path === '/manager',
+            'is_home' => $path === '/',
+        ];
+
+        if ($isImplicit) {
+            $entry['is_implicit'] = true;
+        }
+
+        return $entry;
     }
 
     public function remove(Request $request)
@@ -62,23 +88,52 @@ class RouterController extends Api
             return $this->error('manager.request_not_valid');
 
         $package = AppHelper::getOne($data['packageName']);
-        if (empty($package) || empty($package['router']))
+        $routerConfig = AppEngine::config($data['packageName'])->get('router');
+
+        if (empty($package) || !AppRoutePolicy::isRoutable($routerConfig))
             return $this->error('setting/router.no_can_route_package');
 
-        $routerMode = is_array($package['router'])
-            ? ($package['router']['type'] ?? 'single')
-            : $package['router'];
+        if (!AppRoutePolicy::allowsMultiple($routerConfig)) {
+            $existingPaths = array_keys(AppRouter::getByPackage($data['packageName']));
 
-        if ($routerMode !== 'multiple' && AppRouter::existByPackage($data['packageName']))
-            return $this->error('setting/router.no_multiple_package');
+            if (!$isEdit && count($existingPaths) > 0) {
+                return $this->error('setting/router.no_multiple_package');
+            }
 
-        if ($data['path'] !== $data['oldPath'] && AppRouter::exists($data['path']))
+            if ($isEdit) {
+                $oldPackage = AppRouter::get($data['oldPath']);
+
+                if ($oldPackage !== $data['packageName'] && count($existingPaths) > 0) {
+                    return $this->error('setting/router.no_multiple_package');
+                }
+            }
+        }
+
+        if (!$this->isRoutePathAvailable($data['path'], $data['oldPath'] ?? ''))
             return $this->error('setting/router.this_url_exists_before');
 
-        if ($isEdit) {
+        if ($isEdit && !empty($data['oldPath']) && $data['oldPath'] !== $data['path']) {
             AppRouter::delete($data['oldPath']);
         }
+
         AppRouter::set($data['path'], $data['packageName']);
         return $this->message($isEdit ? 'manager.edited_successfully' : 'manager.added_successfully');
+    }
+
+    private function isRoutePathAvailable(string $path, string $oldPath): bool
+    {
+        if (!AppRouter::exists($path)) {
+            return true;
+        }
+
+        if ($path === $oldPath) {
+            return true;
+        }
+
+        if ($path === '/' && $oldPath === '') {
+            return true;
+        }
+
+        return false;
     }
 }

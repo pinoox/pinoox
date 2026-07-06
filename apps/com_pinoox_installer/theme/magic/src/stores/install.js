@@ -1,18 +1,20 @@
 import {defineStore} from 'pinia'
 import {getBoot, hasBoot} from '@/boot.js'
+import {getDirection, getLangPack, persistLocale, resolveLangPayload, resolveLangState} from '@/lang/index.js'
 import {applyDirection} from '@/utils/direction.js'
 import {syncBootstrapQueryRoute} from '@/utils/resolveInstallerApi.js'
 
 const boot = getBoot()
+const langState = resolveLangState(boot)
 
 syncBootstrapQueryRoute(!hasBoot())
 
 export const useInstallStore = defineStore('install', {
     state: () => ({
-        LANG: boot.lang ?? {},
+        LANG: langState.pack,
         OPTIONS: {
-            lang: boot.locale ?? 'en',
-            direction: boot.direction ?? 'ltr',
+            lang: langState.locale,
+            direction: langState.direction,
             version: boot.version ?? '',
         },
         bootstrapError: !hasBoot(),
@@ -39,12 +41,10 @@ export const useInstallStore = defineStore('install', {
         },
     }),
     actions: {
-        setLang(translations, selectedLang, direction) {
-            if (translations?.install) {
-                this.LANG = translations
-            }
+        setLang(translations, selectedLang) {
+            this.LANG = resolveLangPayload(translations, selectedLang)
 
-            const resolvedDirection = direction ?? this.OPTIONS.direction
+            const resolvedDirection = getDirection(selectedLang)
 
             this.OPTIONS = {
                 ...this.OPTIONS,
@@ -52,7 +52,20 @@ export const useInstallStore = defineStore('install', {
                 direction: resolvedDirection,
             }
 
+            persistLocale(selectedLang)
             applyDirection(resolvedDirection, selectedLang)
+        },
+
+        ensureLang() {
+            const state = resolveLangState(getBoot())
+
+            this.LANG = state.pack
+            this.OPTIONS = {
+                ...this.OPTIONS,
+                lang: state.locale,
+                direction: state.direction,
+            }
+            applyDirection(state.direction, state.locale)
         },
 
         syncDirection() {

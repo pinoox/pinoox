@@ -14,16 +14,18 @@
 namespace App\com_pinoox_manager\Controller;
 
 use App\com_pinoox_manager\Component\AppHelper;
+use App\com_pinoox_manager\Component\AppIconPack;
+use App\com_pinoox_manager\Component\InstallSession;
+use App\com_pinoox_manager\Component\PackageDatabase;
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Http\JsonResponse;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
-use Pinoox\Portal\File;
-use Pinoox\Portal\Wizard\AppWizard;
 
-class AppController extends Api
+class AppController extends ApiController
 {
-    const manualPath = 'downloads/packages/manual/';
-
     public function get($filter = null)
     {
         switch ($filter) {
@@ -57,17 +59,26 @@ class AppController extends Api
 
         if ($key == 'dock')
             $config = !$config;
-        if ($key == 'router')
-            $config = $config === 'multiple' ? 'single' : 'multiple';
+        if ($key == 'router') {
+            $routerConfig = AppEngine::config($packageName)->get('router');
+
+            if (!is_array($routerConfig)) {
+                $routerConfig = ['routes' => []];
+            }
+
+            $routerConfig['type'] = $config === 'multiple' ? 'single' : 'multiple';
+            $config = $routerConfig;
+        }
 
         if (!is_null($config)) {
             AppEngine::config($packageName)
                 ->set($key, $config)
                 ->save();
-            return $this->message($config);
-        } else {
-            return $this->message(null, false);
+
+            return $this->message('manager.config_saved_successfully');
         }
+
+        return $this->deny('manager.invalid_request');
     }
 
     public function install(Request $request)
@@ -76,39 +87,32 @@ class AppController extends Api
             'file' => [
                 'file',
                 function ($attribute, $value, $fail) {
-                    if ($value->getClientOriginalExtension() !== 'pin') {
-                        $fail('آپلود فایل با پسوند .pin �
-جاز است!');
+                    if (strtolower($value->getClientOriginalExtension()) !== 'pinx') {
+                        $fail('آپلود فایل با پسوند .pinx مجاز است!');
                     }
                 }
             ],
         ]);
 
-        $result = File::upload('file')
-            ->to('uploads/apps')
-            ->diskOnly()
-            ->save();
+        PackagePaths::ensureManualDir();
 
-        if (!$result->success || empty($result->path)) {
+        $upload = $request->files->get('file');
+        $filename = $upload->getClientOriginalName();
+        $upload->move(PackagePaths::manualDir(), $filename);
+
+        $pinxFile = PackagePaths::manualFile($filename);
+
+        if (Wizard::installFromManual($pinxFile)['success']) {
+            return $this->message('manager.installed_successfully');
+        }
+
+        $message = Wizard::getMessage();
+
+        if (empty($message)) {
             return $this->error('manager.error_happened');
         }
 
-        $pin = $result->path;
-
-        try {
-            $wizard = AppWizard::open($pin);
-            $wizard->migration(true);
-            if (!$wizard->isInstalled())
-                $wizard->install();
-            else
-                return $this->error('manager.error_happened');
-
-        } catch (\Exception $e) {
-            return $this->error($e->getMessage());
-        }
-
-        return $this->message('manager.installed_successfully');
-
+        return $this->deny($message);
     }
 
     public function getAll(Request $request)
@@ -116,41 +120,224 @@ class AppController extends Api
         return AppHelper::getAll();
     }
 
+    public function iconPack()
+    {
+        return [
+            'provider' => AppIconPack::info(),
+            'defaults' => AppIconPack::systemDefaults(),
+            'usage' => AppIconPack::usage(),
+        ];
+    }
+
     public function installPackage($filename)
     {
         if (empty($filename))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
+            return $this->deny('manager.request_install_app_not_valid');
 
-        $pinFile = path(self::manualPath . $filename);
-        if (!is_file($pinFile))
-            return $this->message(t('manager.request_install_app_not_valid'), false);
-        if (Wizard::installApp($pinFile)) {
-            return $this->message(t('manager.done_successfully'), true);
-        } else {
-            $message = Wizard::getMessage();
-            if (empty($message))
-                return $this->message(t('manager.request_install_app_not_valid'), false);
-            else
-                return $this->message($message, false);
+        $filename = basename($filename);
+        $pinxFile = PackagePaths::manualFile($filename);
+        if (!is_file($pinxFile))
+            return $this->deny('manager.request_install_app_not_valid');
+
+        $result = Wizard::installFromManual($pinxFile);
+
+        if (!empty($result['success'])) {
+            return $this->message('manager.installed_successfully', $result);
+        }
+
+        $message = Wizard::getMessage() ?: ($result['message'] ?? null);
+
+        if (empty($message))
+            return $this->deny('manager.request_install_app_not_valid');
+
+        return $this->deny($message);
+    }
+
+    public function installPackageStart(Request $request)
+    {
+        $filename = basename((string) $request->payload('filename', ''));
+
+        if ($filename === '') {
+            return $this->deny('manager.request_install_app_not_valid');
+        }
+
+        $pinxFile = PackagePaths::manualFile($filename);
+
+        if (!is_file($pinxFile)) {
+            return $this->deny('manager.request_install_app_not_valid');
+        }
+
+        $sessionId = InstallSession::create($filename);
+        $options = $this->installOptionsFromRequest($request);
+
+        $database = $options['database'] ?? null;
+
+        if (is_array($database) && PackageDatabase::hasCustomConnectionOptions($database)) {
+            $connectionResult = PackageDatabase::testConnectionResult($database);
+
+            if (!$connectionResult['ok']) {
+                $message = $connectionResult['message'] ?? 'manager.database_connection_failed';
+
+                return $this->fail(
+                    'DATABASE_CONNECTION_FAILED',
+                    $message,
+                    status: 422,
+                    translate: str_starts_with($message, 'manager.'),
+                );
+            }
+        }
+
+        $options['session_id'] = $sessionId;
+
+        if (function_exists('fastcgi_finish_request')) {
+            $this->sendEarlyJson($this->ok([
+                'install_id' => $sessionId,
+                'polling' => true,
+            ]));
+            @session_write_close();
+
+            try {
+                $result = Wizard::installFromManual($pinxFile, $options);
+                InstallSession::complete($sessionId, $result);
+            } catch (\Throwable $e) {
+                InstallSession::complete($sessionId, [
+                    'success' => false,
+                    'message' => $e->getMessage(),
+                    'steps' => [],
+                ]);
+            }
+
+            exit;
+        }
+
+        $result = Wizard::installFromManual($pinxFile, $options);
+        InstallSession::complete($sessionId, $result);
+
+        if (!empty($result['success'])) {
+            return $this->message('manager.installed_successfully', $result);
+        }
+
+        $message = Wizard::getMessage() ?: ($result['message'] ?? null);
+
+        if (empty($message)) {
+            return $this->deny('manager.request_install_app_not_valid');
+        }
+
+        return $this->deny($message);
+    }
+
+    public function installPackageStatus($installId)
+    {
+        $session = InstallSession::get((string) $installId);
+
+        if ($session === null) {
+            return $this->deny('manager.error_happened');
+        }
+
+        return $session;
+    }
+
+    public function checkDatabasePrefix(Request $request)
+    {
+        $prefix = PackageDatabase::formatPrefix((string) $request->payload('prefix', ''));
+        $package = (string) $request->payload('package_name', '');
+        $resolved = PackageDatabase::resolvePrefix($package, $prefix);
+
+        return [
+            'prefix' => $prefix,
+            'resolved_prefix' => $resolved,
+            'auto_adjusted' => $resolved !== $prefix,
+            'tables_exist' => PackageDatabase::prefixTablesExist($prefix),
+            'tables_exist_resolved' => PackageDatabase::prefixTablesExist($resolved),
+        ];
+    }
+
+    public function testDatabaseConnection(Request $request)
+    {
+        $input = $request->payloadMany('connection,host,database,username,password,prefix,port', '', false);
+        $result = PackageDatabase::testConnectionResult($input);
+
+        if ($result['ok']) {
+            return $this->message('manager.database_connection_ok');
+        }
+
+        $message = $result['message'] ?? 'manager.database_connection_failed';
+
+        return $this->fail(
+            'DATABASE_CONNECTION_FAILED',
+            $message,
+            status: 422,
+            translate: str_starts_with($message, 'manager.'),
+        );
+    }
+
+    public function databaseDefaults()
+    {
+        return PackageDatabase::platformDefaults();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private function installOptionsFromRequest(Request $request): array
+    {
+        $database = $request->payload('database');
+
+        if (!is_array($database) || $database === []) {
+            return [];
+        }
+
+        return ['database' => $database];
+    }
+
+    private function sendEarlyJson(JsonResponse $response): void
+    {
+        $response->send();
+
+        if (function_exists('fastcgi_finish_request')) {
+            fastcgi_finish_request();
+        }
+    }
+
+    public function packageMeta($filename)
+    {
+        if (empty($filename))
+            return $this->deny('manager.error_happened');
+
+        $filename = basename($filename);
+        $pinxFile = PackagePaths::manualFile($filename);
+
+        if (!is_file($pinxFile))
+            return $this->deny('manager.error_happened');
+
+        try {
+            return Wizard::pullPackageMeta($pinxFile);
+        } catch (\Throwable $e) {
+            return $this->error($e->getMessage());
         }
     }
 
     public function files()
     {
-        $path = path(self::manualPath);
-        if (!is_dir($path))
-            return [];
-
-        $files = File::get_files_by_pattern($path, '*.pin');
+        $files = PackagePaths::listManualFiles();
         $files = array_map(function ($file) {
-            $data = Wizard::pullDataPackage($file);
-            if (!Wizard::isValidNamePackage($data['package_name'])) {
-                $data = Wizard::pullTemplateMeta($file);
-                if (!Wizard::isValidNamePackage($data['app'])) {
-                    Wizard::deletePackageFile($file);
-                    return false;
-                }
+            try {
+                $data = Wizard::pullPackageMeta($file);
+            } catch (\Throwable) {
+                Wizard::deletePackageFile($file);
+                return false;
             }
+
+            if ($data['type'] === 'app' && !Wizard::isValidNamePackage($data['package_name'])) {
+                Wizard::deletePackageFile($file);
+                return false;
+            }
+
+            if ($data['type'] === 'theme' && !Wizard::isValidNamePackage($data['app'])) {
+                Wizard::deletePackageFile($file);
+                return false;
+            }
+
             return $data;
         }, $files);
 
@@ -162,24 +349,23 @@ class AppController extends Api
         $filename = $request->payload('filename');
 
         if (empty($filename))
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
-        $pinFile = path(self::manualPath . $filename);
-        if (!is_file($pinFile))
-            return $this->message(t('manager.error_happened'), false);
+        $pinxFile = PackagePaths::manualFile($filename);
+        if (!is_file($pinxFile))
+            return $this->deny('manager.error_happened');
 
-        Wizard::deletePackageFile($pinFile);
-        return $this->message(t('manager.delete_successfully'));
+        Wizard::deletePackageFile($pinxFile);
+
+        return $this->message('manager.delete_successfully');
     }
 
     public function filesUpload(Request $request)
     {
         if (!$request->files->has('files'))
-            return $this->message(t('manager.invalid_request'), false);
+            return $this->deny('manager.invalid_request');
 
-        $path = path(self::manualPath);
-        if (!is_dir($path))
-            mkdir($path, 0755, true);
+        $path = PackagePaths::ensureManualDir();
 
         $files = $request->files->all('files');
         if (!is_array($files))
@@ -187,24 +373,44 @@ class AppController extends Api
 
         $uploaded = 0;
         foreach ($files as $file) {
-            if ($file->getClientOriginalExtension() !== 'pin')
+            if (strtolower($file->getClientOriginalExtension()) !== 'pinx')
                 continue;
             $file->move($path, $file->getClientOriginalName());
             $uploaded++;
         }
 
         if ($uploaded === 0)
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
-        return $this->message($uploaded === 1 ? t('manager.file_uploaded_correctly') : t('manager.files_uploaded_correctly'));
+        return $this->message(
+            $uploaded === 1 ? 'manager.file_uploaded_correctly' : 'manager.files_uploaded_correctly'
+        );
     }
 
     public function remove($packageName)
     {
         if (empty($packageName))
-            return $this->message(t('manager.request_not_valid'), false);
+            return $this->deny('manager.request_not_valid');
 
-        Wizard::deleteApp($packageName);
-        return $this->message(t('manager.done_successfully'));
+        if (!AppEngine::exists($packageName))
+            return $this->deny('manager.request_not_valid');
+
+        $config = AppEngine::config($packageName);
+
+        if ($config->get('sys-app')) {
+            return $this->deny('manager.cannot_delete_system_app');
+        }
+
+        if (!Wizard::deleteApp($packageName)) {
+            $message = Wizard::getMessage();
+
+            if (empty($message)) {
+                return $this->deny('manager.error_happened');
+            }
+
+            return $this->deny($message);
+        }
+
+        return $this->message('manager.delete_successfully');
     }
 }

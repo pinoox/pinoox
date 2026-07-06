@@ -1,0 +1,68 @@
+@use '../base/variable' as *;
+
+.appBrandIcon {
+  --app-brand-logo-size: 4rem;
+  --app-brand-badge-size: 1.05rem;
+  --app-brand-badge-offset-x: -0.24rem;
+  --app-brand-badge-offset-y: -0.55rem;
+
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--app-brand-logo-size);
+  height: var(--app-brand-logo-size);
+  line-height: 0;
+
+  &__logo {
+    display: block;
+    width: 84%;
+    height: 84%;
+    object-fit: contain;
+    border-radius: 22%;
+    filter:
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  &__badge {
+    position: absolute;
+    right: var(--app-brand-badge-offset-x);
+    bottom: var(--app-brand-badge-offset-y);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+
+    .appIcon {
+      --app-icon-size: var(--app-brand-badge-size);
+      --app-icon-radius: calc(var(--app-brand-badge-size) * 0.28);
+      --app-icon-padding: 0.1rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.32);
+    }
+  }
+
+  &--sm {
+    --app-brand-logo-size: 1.75rem;
+    --app-brand-badge-size: 0.82rem;
+    --app-brand-badge-offset-x: -0.2rem;
+    --app-brand-badge-offset-y: -0.42rem;
+  }
+
+  &--md {
+    --app-brand-logo-size: 4rem;
+    --app-brand-badge-size: 1.05rem;
+    --app-brand-badge-offset-x: -0.24rem;
+    --app-brand-badge-offset-y: -0.55rem;
+  }
+
+  &--lg {
+    --app-brand-logo-size: 5rem;
+    --app-brand-badge-size: 1.22rem;
+    --app-brand-badge-offset-x: -0.28rem;
+    --app-brand-badge-offset-y: -0.64rem;
+  }
+}

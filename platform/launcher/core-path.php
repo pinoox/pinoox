@@ -5,6 +5,23 @@ function pinoox_normalize_path(string $path): string
     return rtrim(str_replace('\\', '/', $path), '/');
 }
 
+function pinoox_bootstrap_console_utf8(): void
+{
+    if (PHP_SAPI !== 'cli') {
+        return;
+    }
+
+    ini_set('default_charset', 'UTF-8');
+
+    if (function_exists('mb_internal_encoding')) {
+        mb_internal_encoding('UTF-8');
+    }
+
+    if (PHP_OS_FAMILY === 'Windows' && function_exists('sapi_windows_cp_set')) {
+        @sapi_windows_cp_set(65001);
+    }
+}
+
 function pinoox_is_valid_core_path(string $path): bool
 {
     $path = pinoox_normalize_path($path);
@@ -65,3 +82,5 @@ function pinoox_resolve_configured_core_path(string $basePath): string
 
 defined('PINOOX_BASE_PATH') || define('PINOOX_BASE_PATH', pinoox_normalize_path(dirname(__DIR__, 2)));
 defined('PINOOX_CORE_PATH') || define('PINOOX_CORE_PATH', pinoox_resolve_configured_core_path(PINOOX_BASE_PATH) . '/');
+
+pinoox_bootstrap_console_utf8();

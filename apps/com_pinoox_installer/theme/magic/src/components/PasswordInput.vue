@@ -23,9 +23,8 @@
 
 <script setup>
 import {computed, ref} from 'vue'
-import {storeToRefs} from 'pinia'
 import Icon from '@/components/icons/Icon.vue'
-import {useInstallStore} from '@/stores/install.js'
+import {useInstallerLang} from '@/composables/useInstallerLang.js'
 
 defineProps({
     id: {
@@ -52,18 +51,15 @@ defineProps({
 
 const model = defineModel({type: String, default: ''})
 
-const store = useInstallStore()
-const {LANG} = storeToRefs(store)
+const {install} = useInstallerLang()
 
 const visible = ref(false)
 
 const inputType = computed(() => (visible.value ? 'text' : 'password'))
 
 const toggleLabel = computed(() => {
-    const install = LANG.value?.install ?? {}
-
     return visible.value
-        ? (install.hide_password ?? 'Hide password')
-        : (install.show_password ?? 'Show password')
+        ? (install.value.hide_password ?? 'Hide password')
+        : (install.value.show_password ?? 'Show password')
 })
 </script>

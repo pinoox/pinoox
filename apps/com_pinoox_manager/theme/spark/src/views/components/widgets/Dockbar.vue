@@ -8,6 +8,14 @@
     <Teleport to="body">
       <transition name="dock-fade">
         <div
+            v-if="appsPanelOpen && !editOpen"
+            class="dockbar__backdrop dockbar__backdrop--start"
+            @click="closeAppsPanel"
+        />
+      </transition>
+
+      <transition name="dock-fade">
+        <div
             v-if="editOpen"
             class="dockbar__backdrop"
             @click="closeEdit"
@@ -16,7 +24,7 @@
 
       <transition name="dock-tooltip">
         <div
-            v-if="tooltip && !editOpen"
+            v-if="tooltip && !editOpen && !appsPanelOpen"
             ref="tooltipEl"
             class="dockbar__tooltip"
             :style="tooltipStyle"
@@ -30,6 +38,112 @@
 
     <transition name="slide-up" appear>
       <div class="dockbar__inner">
+        <transition name="start-menu">
+          <div
+              v-if="appsPanelOpen && !editOpen"
+              class="dockbar__start-menu"
+              role="dialog"
+              aria-label="اپلیکیشن‌ها"
+          >
+            <header class="dockbar__start-head">
+              <div class="dockbar__start-title-row">
+                <div class="dockbar__start-title-wrap">
+                  <Icon :is="saxIcon.apps" class="dockbar__start-title-icon" size="sm"/>
+                  <h2 class="dockbar__start-title">اپ‌ها</h2>
+                </div>
+                <span v-if="filteredApps.length" class="dockbar__start-count">
+                  {{ filteredApps.length }} اپ
+                </span>
+              </div>
+              <div class="dockbar__start-search">
+                <Icon :is="saxIcon.search" class="dockbar__start-search-icon" size="xs"/>
+                <input
+                    ref="appsSearchInput"
+                    v-model="appsSearch"
+                    type="search"
+                    placeholder="جستجو در اپ‌ها..."
+                    autocomplete="off"
+                    @keydown.escape.stop="closeAppsPanel"
+                />
+              </div>
+            </header>
+            <section v-if="panelNotifications.length" class="dockbar__start-notices">
+              <div class="dockbar__start-notices-head">
+                <Icon :is="saxIcon.notifyInfo" size="xs"/>
+                <span>اعلان‌ها</span>
+                <span v-if="notificationStore.unreadCount" class="dockbar__start-notices-badge">
+                  {{ notificationStore.unreadCount }}
+                </span>
+              </div>
+              <ul class="dockbar__start-notices-list">
+                <li
+                    v-for="item in panelNotifications"
+                    :key="item.ntf_id"
+                    class="dockbar__start-notice"
+                    :class="{ 'is-unread': item.status === 'send' }"
+                >
+                  <div class="dockbar__start-notice-body">
+                    <strong class="dockbar__start-notice-title">{{ item.title }}</strong>
+                    <p v-if="item.message" class="dockbar__start-notice-text">{{ item.message }}</p>
+                    <span v-if="item.insert_jDate" class="dockbar__start-notice-date">{{ item.insert_jDate }}</span>
+                  </div>
+                  <button
+                      type="button"
+                      class="dockbar__start-notice-dismiss"
+                      aria-label="بستن"
+                      @click="dismissNotification(item.ntf_id)"
+                  >
+                    <Icon :is="saxIcon.notifyClose" size="xs"/>
+                  </button>
+                </li>
+              </ul>
+            </section>
+            <div class="dockbar__start-body">
+              <div v-if="filteredApps.length" class="dockbar__start-grid">
+                <button
+                    v-for="app in filteredApps"
+                    :key="app.package_name"
+                    type="button"
+                    class="dockbar__start-tile"
+                    @click="openAppFromPanel(app)"
+                >
+                  <span class="dockbar__start-tile-icon-wrap">
+                    <AppIcon v-bind="appIconProps(app)" size="tray" class="dockbar__start-tile-icon"/>
+                  </span>
+                  <span class="dockbar__start-tile-name">{{ app.name }}</span>
+                </button>
+              </div>
+              <p v-else class="dockbar__start-empty">
+                اپی یافت نشد
+              </p>
+            </div>
+            <footer class="dockbar__start-foot">
+              <div class="dockbar__start-foot-end">
+                <button type="button" class="dockbar__start-user" @click="openUserProfile">
+                  <img
+                      :src="userAvatarSrc(authStore.user)"
+                      :alt="userLabel"
+                      class="dockbar__start-user-avatar"
+                  />
+                  <span class="dockbar__start-user-name">{{ userLabel }}</span>
+                </button>
+                <button type="button" class="dockbar__start-foot-btn" @click="openPackageInstaller">
+                  <Icon :is="saxIcon.upload" size="sm"/>
+                  <span>نصب بسته</span>
+                </button>
+                <button type="button" class="dockbar__start-foot-btn" @click="openControlPanelFromMenu">
+                  <Icon :is="saxIcon.control" size="sm"/>
+                  <span>کنترل پنل</span>
+                </button>
+              </div>
+              <button type="button" class="dockbar__start-foot-logout" @click="logoutFromPanel">
+                <Icon :is="saxIcon.logout" size="sm"/>
+                <span>خروج</span>
+              </button>
+            </footer>
+          </div>
+        </transition>
+
         <transition name="dock-slide">
           <button
               v-if="editOpen"
@@ -55,7 +169,7 @@
                   class="dockbar__tray-item"
                   @click="pinApp(app.package_name)"
               >
-                <img :src="app.icon" :alt="app.name" class="dockbar__tray-icon">
+                <AppIcon v-bind="appIconProps(app)" size="tray" class="dockbar__tray-icon"/>
                 <span class="dockbar__tray-name">{{ app.name }}</span>
               </button>
             </div>
@@ -84,11 +198,15 @@
                 :key="item.id"
             >
               <div
-                  class="item"
+                  class="item item--system"
                   :class="{
                     'item--jiggle': editOpen,
                     'item--app': !!item.image,
                     'item--glyph': !item.image,
+                    'item--launcher-open': item.action === 'launcher' && appsPanelOpen,
+                    'item--open': (item.id === CONTROL_PANEL_ID && isControlPanelOpen()) || (item.id === MARKET_ID && isMarketOpen()),
+                    'item--minimized': (item.id === CONTROL_PANEL_ID && isControlPanelMinimized()) || (item.id === MARKET_ID && isMarketMinimized()),
+                    'item--active': (item.id === CONTROL_PANEL_ID && isControlPanelActive()) || (item.id === MARKET_ID && isMarketActive()),
                   }"
                   :style="jiggleStyle(item.id)"
                   @click="onItemClick(item)"
@@ -100,18 +218,16 @@
               </div>
             </dock-item>
 
-            <dock-separator v-if="apps.length > 0 || (editOpen && unpinnedApps.length)"></dock-separator>
+            <dock-separator v-if="dockAppsWithMinimized.length > 0"></dock-separator>
 
             <dock-item
                 v-for="item in dockAppsWithMinimized"
                 :key="item.id"
             >
               <div
-                  class="item"
+                  class="item item--app"
                   :class="{
                     'item--jiggle': editOpen,
-                    'item--app': !!item.image,
-                    'item--glyph': !item.image,
                     'item--open': isAppOpen(item.id),
                     'item--minimized': isAppMinimized(item.id),
                     'item--active': isAppActive(item.id),
@@ -121,7 +237,13 @@
                   @mouseenter="onItemHover(item, $event)"
                   @mousemove="onItemMove(item, $event)"
               >
-                <img v-if="item.image" :src="item.image" :alt="item.name" class="item-image"/>
+                <AppIcon
+                    v-if="dockItemIconProps(item)"
+                    v-bind="dockItemIconProps(item)"
+                    size="dock"
+                    variant="dock"
+                    class="item-image"
+                />
                 <Icon v-else-if="item.icon" class="item-icon" :is="item.icon"/>
                 <button
                     v-if="editOpen"
@@ -156,10 +278,22 @@ import { computed, ref, onMounted, onBeforeUnmount, nextTick } from 'vue';
 import { useRouter } from 'vue-router';
 import { useBackground } from '@/views/composables/useBackground.js';
 import { useDockBackdropTone } from '@/views/composables/useDockBackdropTone.js';
-import { systemDockApps, useDockApps } from '@/views/composables/useDockApps.js';
+import { systemDockApps, useDockApps, resolveAppRoute } from '@/views/composables/useDockApps.js';
 import { useAppStore } from '@/stores/modules/app.js';
+import { useAuthStore } from '@/stores/modules/auth.js';
+import { useNotificationStore } from '@/stores/modules/notification.js';
 import { useAppViewWindowStore } from '@/stores/modules/appViewWindow.js';
+import { CONTROL_PANEL_ID, useControlPanelWindowStore } from '@/stores/modules/controlPanelWindow.js';
+import { MARKET_ID, useMarketWindowStore } from '@/stores/modules/marketWindow.js';
+import { isControlPanelFloatingTopmost, isMarketFloatingTopmost } from '@/stores/modules/floatingWindowStack.js';
+import { useControlPanel, isControlRoute } from '@/views/composables/useControlPanel.js';
+import { useMarket, isMarketRoute } from '@/views/composables/useMarket.js';
+import { refreshNotifications } from '@/views/composables/useSystemNotifications.js';
 import { useAppViewMode } from '@/views/composables/useAppViewMode.js';
+import { appIconProps, appIconPropsForPackage } from '@utils/helpers/appIconProps.js';
+import { userAvatarSrc, userDisplayName } from '@utils/helpers/userAvatar.js';
+import { saxIcon } from '@/const/icons.js';
+import { usePackageInstallerStore } from '@/stores/modules/packageInstaller.js';
 
 const props = defineProps({
   size: { type: Number, default: 52 },
@@ -188,10 +322,17 @@ const TOOLTIP_GAP = 14;
 
 const router = useRouter();
 const appStore = useAppStore();
+const authStore = useAuthStore();
+const notificationStore = useNotificationStore();
 const appViewWindow = useAppViewWindowStore();
+const controlPanelWindow = useControlPanelWindowStore();
+const marketWindow = useMarketWindowStore();
+const { openControlPanel } = useControlPanel();
+const { openMarket } = useMarket();
 const { isAdvanced } = useAppViewMode();
 const { selectedBackground } = useBackground();
 const { unpinnedApps, toggleDockPin } = useDockApps();
+const packageInstallerStore = usePackageInstallerStore();
 
 const dockAppsWithMinimized = computed(() => {
   const list = [...props.apps];
@@ -210,16 +351,89 @@ const dockAppsWithMinimized = computed(() => {
         ? appViewWindow.minimized
         : null;
 
+    if (app) {
+      list.push({
+        id: packageName,
+        name: app.name,
+        route: {name: 'app-view', params: {package_name: packageName}},
+      });
+      continue;
+    }
+
     list.push({
       id: packageName,
-      name: snapshot?.appName ?? app?.name ?? packageName,
-      image: snapshot?.icon ?? app?.icon,
+      name: snapshot?.appName ?? packageName,
+      image: snapshot?.icon ?? null,
       route: {name: 'app-view', params: {package_name: packageName}},
     });
   }
 
   return list;
 });
+
+function isControlPanelOpen() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return controlPanelWindow.isOpen;
+}
+
+function isControlPanelMinimized() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return controlPanelWindow.isMinimized;
+}
+
+function isControlPanelActive() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  if (!controlPanelWindow.isActive) {
+    return false;
+  }
+
+  if (controlPanelWindow.mode === 'fullscreen') {
+    return !appViewWindow.fullscreenPackage;
+  }
+
+  return isControlPanelFloatingTopmost();
+}
+
+function isMarketOpen() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return marketWindow.isOpen;
+}
+
+function isMarketMinimized() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  return marketWindow.isMinimized;
+}
+
+function isMarketActive() {
+  if (!isAdvanced.value) {
+    return false;
+  }
+
+  if (!marketWindow.isActive) {
+    return false;
+  }
+
+  if (marketWindow.mode === 'fullscreen') {
+    return !appViewWindow.fullscreenPackage && !controlPanelWindow.isActive;
+  }
+
+  return isMarketFloatingTopmost();
+}
 
 function isAppMinimized(packageName) {
   if (!isAdvanced.value) {
@@ -257,6 +471,9 @@ function isAppActive(packageName) {
 const isShow = ref(false);
 const size = ref(props.size);
 const editOpen = ref(false);
+const appsPanelOpen = ref(false);
+const appsSearch = ref('');
+const appsSearchInput = ref(null);
 const tooltip = ref(null);
 const tooltipEl = ref(null);
 const dockRoot = ref(null);
@@ -264,6 +481,30 @@ const dockRoot = ref(null);
 const { tone, remeasure } = useDockBackdropTone(selectedBackground, dockRoot);
 
 const toneClass = computed(() => `dockbar--tone-${tone.value}`);
+
+const userLabel = computed(() => userDisplayName(authStore.user));
+
+const panelNotifications = computed(() =>
+    notificationStore.items
+        .filter((item) => item?.status === 'send' || item?.status === 'seen')
+        .slice(0, 5),
+);
+
+const filteredApps = computed(() => {
+  const list = appStore.appList ?? [];
+  const query = appsSearch.value.trim().toLowerCase();
+
+  if (!query) {
+    return list;
+  }
+
+  return list.filter((app) => {
+    const name = String(app.name ?? '').toLowerCase();
+    const packageName = String(app.package_name ?? '').toLowerCase();
+
+    return name.includes(query) || packageName.includes(query);
+  });
+});
 
 let hideTooltipTimer = null;
 let showTooltipTimer = null;
@@ -348,7 +589,96 @@ function jiggleStyle(id) {
 }
 
 function open(item) {
+  if (!item?.route) {
+    return;
+  }
+
+  if (typeof item.route === 'object') {
+    router.push(item.route);
+    return;
+  }
+
+  if (String(item.route).startsWith('/control')) {
+    openControlPanel(item.route);
+    return;
+  }
+
+  if (String(item.route).startsWith('/market')) {
+    openMarket(item.route);
+    return;
+  }
+
   router.push(item.route);
+}
+
+function closeAppsPanel() {
+  appsPanelOpen.value = false;
+  appsSearch.value = '';
+}
+
+function toggleAppsPanel() {
+  appsPanelOpen.value = !appsPanelOpen.value;
+
+  if (appsPanelOpen.value) {
+    appsSearch.value = '';
+    clearTooltipTimers();
+    tooltip.value = null;
+
+    refreshNotifications().then(() => {
+      const unreadIds = notificationStore.unreadItems.map((item) => item.ntf_id);
+
+      if (unreadIds.length) {
+        notificationStore.markSeen(unreadIds);
+      }
+    });
+
+    nextTick(() => {
+      appsSearchInput.value?.focus();
+    });
+  }
+}
+
+function openAppFromPanel(app) {
+  closeAppsPanel();
+  router.push(resolveAppRoute(app));
+}
+
+function openPackageInstaller() {
+  closeAppsPanel();
+  packageInstallerStore.show();
+}
+
+function openControlPanelFromMenu() {
+  closeAppsPanel();
+  openControlPanel('/control/apps');
+}
+
+function openUserProfile() {
+  closeAppsPanel();
+  openControlPanel('/control/profile');
+}
+
+async function logoutFromPanel() {
+  closeAppsPanel();
+
+  try {
+    await authStore.logout();
+    await router.replace({ name: 'login' });
+  } finally {
+    authStore.finishLogout();
+  }
+}
+
+async function dismissNotification(ntfId) {
+  try {
+    await notificationStore.hide(ntfId);
+  } catch {
+    notificationStore.items = notificationStore.items.filter((item) => item.ntf_id !== ntfId);
+  }
+}
+
+function dockItemIconProps(item) {
+  return appIconPropsForPackage(appStore, item.id, item);
 }
 
 function resolveAppSnapshot(item) {
@@ -356,8 +686,8 @@ function resolveAppSnapshot(item) {
 
   return {
     package_name: item.id,
-    appName: item.name ?? app?.name ?? item.id,
-    icon: item.image ?? app?.icon ?? '',
+    appName: app?.name ?? item.name ?? item.id,
+    icon: app?.icon_source === 'custom' ? (app?.icon ?? '') : '',
   };
 }
 
@@ -370,6 +700,82 @@ function minimizeOpenApp(item, session) {
   if (router.currentRoute.value.name === 'app-view') {
     router.replace({name: 'desktop'});
   }
+}
+
+function activateControlPanel(item) {
+  const fallbackPath = item.route ?? '/control/apps';
+  const path = controlPanelWindow.lastPath || fallbackPath;
+
+  if (!controlPanelWindow.isOpen) {
+    openControlPanel(path);
+    return;
+  }
+
+  if (controlPanelWindow.isMinimized) {
+    openControlPanel(path);
+    return;
+  }
+
+  if (controlPanelWindow.isActive) {
+    if (
+        controlPanelWindow.mode === 'floating'
+        && !isControlPanelFloatingTopmost()
+    ) {
+      controlPanelWindow.focus();
+      return;
+    }
+
+    controlPanelWindow.minimize(
+        controlPanelWindow.mode === 'floating' ? 'floating' : 'fullscreen',
+        path,
+    );
+
+    if (isControlRoute(router.currentRoute.value)) {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  openControlPanel(path);
+}
+
+function activateMarket(item) {
+  const fallbackPath = item.route ?? '/market';
+  const path = marketWindow.lastPath || fallbackPath;
+
+  if (!marketWindow.isOpen) {
+    openMarket(path);
+    return;
+  }
+
+  if (marketWindow.isMinimized) {
+    openMarket(path);
+    return;
+  }
+
+  if (marketWindow.isActive) {
+    if (
+        marketWindow.mode === 'floating'
+        && !isMarketFloatingTopmost()
+    ) {
+      marketWindow.focus();
+      return;
+    }
+
+    marketWindow.minimize(
+        marketWindow.mode === 'floating' ? 'floating' : 'fullscreen',
+        path,
+    );
+
+    if (isMarketRoute(router.currentRoute.value)) {
+      router.replace({name: 'desktop'});
+    }
+
+    return;
+  }
+
+  openMarket(path);
 }
 
 function activateOpenApp(item) {
@@ -422,6 +828,23 @@ function onItemClick(item) {
   if (editOpen.value)
     return;
 
+  if (item.action === 'launcher') {
+    toggleAppsPanel();
+    return;
+  }
+
+  closeAppsPanel();
+
+  if (item.id === CONTROL_PANEL_ID && isAdvanced.value) {
+    activateControlPanel(item);
+    return;
+  }
+
+  if (item.id === MARKET_ID && isAdvanced.value) {
+    activateMarket(item);
+    return;
+  }
+
   if (isAdvanced.value && isAppOpen(item.id)) {
     activateOpenApp(item);
     return;
@@ -431,7 +854,7 @@ function onItemClick(item) {
 }
 
 function onItemHover(item, event) {
-  if (editOpen.value)
+  if (editOpen.value || appsPanelOpen.value)
     return;
 
   clearTooltipTimers();
@@ -478,6 +901,7 @@ function onDockLeave(event) {
 }
 
 function enterEdit() {
+  closeAppsPanel();
   editOpen.value = true;
   clearTooltipTimers();
   tooltip.value = null;
@@ -551,8 +975,18 @@ async function unpinApp(packageName) {
 }
 
 function onKeyDown(event) {
-  if (event.key === 'Escape' && editOpen.value)
+  if (event.key !== 'Escape') {
+    return;
+  }
+
+  if (appsPanelOpen.value) {
+    closeAppsPanel();
+    return;
+  }
+
+  if (editOpen.value) {
     closeEdit();
+  }
 }
 
 onBeforeUnmount(() => {
