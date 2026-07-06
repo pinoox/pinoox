@@ -32,7 +32,7 @@
     justify-content: center;
     width: 44px;
     height: 44px;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-sm);
     background: rgba(255, 255, 255, 0.95);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 

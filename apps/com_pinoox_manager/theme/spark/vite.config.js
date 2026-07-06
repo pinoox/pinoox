@@ -1,3 +1,4 @@
+import pinooxHot, { pinooxDevAssets, pinooxServer, pinooxVueTemplateOptions } from './vite.pinoox.mjs';
 import {fileURLToPath, URL} from 'node:url'
 
 import {defineConfig, loadEnv} from 'vite'
@@ -28,12 +29,16 @@ export default defineConfig(({command, mode}) => {
             },
         },
         plugins: [
+            pinooxHot(),
+            pinooxDevAssets(env),
             vue({
-                template: {
-                    compilerOptions: {
-                        isCustomElement: (tag) => tag.startsWith('dock-'),
+                ...pinooxVueTemplateOptions({
+                    template: {
+                        compilerOptions: {
+                            isCustomElement: (tag) => tag.startsWith('dock-'),
+                        },
                     },
-                },
+                }),
             }),
             commonjs(),
             babel({babelHelpers: 'bundled'}),
@@ -54,10 +59,6 @@ export default defineConfig(({command, mode}) => {
                 '@utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
             }
         },
-        server: {
-            proxy: {
-              '/api': env.VITE_SERVER_URL,
-            },
-        },
+        server: pinooxServer(env),
     }
 });
