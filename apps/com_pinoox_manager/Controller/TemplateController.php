@@ -13,24 +13,23 @@
 
 namespace App\com_pinoox_manager\Controller;
 
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\File;
 use Pinoox\Component\Template\Theme\ThemeManifest;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Lang;
 use Pinoox\Portal\Url;
 
-class TemplateController extends Api
+class TemplateController extends ApiController
 {
-    const manualPath = 'downloads/packages/manual/';
-
     public function get($packageName)
     {
         $themePath = path('~apps/' . $packageName . '/theme/');
         if (!is_dir($themePath))
-            return $this->message(null, false);
+            return $this->deny('manager.there_is_no_app');
 
-        $folders = File::get_dir_folders($themePath);
         $templates = [];
         $current = AppEngine::config($packageName)->get('theme');
 
@@ -63,38 +62,38 @@ class TemplateController extends Api
     public function install($uid, $packageName)
     {
         if (empty($packageName))
-            return $this->message(t('manager.request_install_template_not_valid'), false);
+            return $this->deny('manager.request_install_template_not_valid');
 
         if (!Wizard::isInstalled($packageName))
-            return $this->message(t('manager.there_is_no_app'), false);
+            return $this->deny('manager.there_is_no_app');
 
         $file = Wizard::getDownloadedTemplate($uid);
         $meta = Wizard::pullTemplateMeta($file);
 
         if (Wizard::installTemplate($file, $packageName, $meta))
-            return $this->message(t('manager.done_successfully'));
+            return $this->message('manager.installed_successfully');
 
-        return $this->message(Wizard::getMessage() ?: t('manager.request_install_template_not_valid'), false);
+        return $this->deny(Wizard::getMessage() ?: 'manager.request_install_template_not_valid');
     }
 
     public function installPackage($filename)
     {
         if (empty($filename))
-            return $this->message(t('manager.request_install_template_not_valid'), false);
+            return $this->deny('manager.request_install_template_not_valid');
 
-        $pinFile = path(self::manualPath . $filename);
+        $pinFile = PackagePaths::manualFile($filename);
         if (!is_file($pinFile))
-            return $this->message(t('manager.request_install_template_not_valid'), false);
+            return $this->deny('manager.request_install_template_not_valid');
 
         $meta = Wizard::pullTemplateMeta($pinFile);
 
         if (!Wizard::isInstalled($meta['app']))
-            return $this->message(t('manager.there_is_no_app'), false);
+            return $this->deny('manager.there_is_no_app');
 
         if (Wizard::installTemplate($pinFile, $meta['app'], $meta))
-            return $this->message(t('manager.done_successfully'));
+            return $this->message('manager.installed_successfully');
 
-        return $this->message(Wizard::getMessage() ?: t('manager.request_install_template_not_valid'), false);
+        return $this->deny(Wizard::getMessage() ?: 'manager.request_install_template_not_valid');
     }
 
     public function set($packageName, $folderName)
@@ -103,13 +102,19 @@ class TemplateController extends Api
             ->set('theme', $folderName)
             ->save();
 
-        return $this->message($folderName);
+        return $this->message('manager.template_activated_successfully');
     }
 
     public function remove($packageName, $folderName)
     {
+        $current = AppEngine::config($packageName)->get('theme');
+
+        if ($current === $folderName) {
+            return $this->deny('manager.cannot_delete_active_template');
+        }
+
         Wizard::deleteTemplate($packageName, $folderName);
-        return $this->message(t('manager.done_successfully'));
+
+        return $this->message('manager.delete_successfully');
     }
 }
-

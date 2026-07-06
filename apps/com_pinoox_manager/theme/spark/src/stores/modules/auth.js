@@ -11,8 +11,9 @@ export const useAuthStore = defineStore('auth', () => {
     const user = ref({});
     const token = ref(localStorage.getItem(tokenKey) || null);
     const isLock = ref(false);
+    const isLoggingOut = ref(false);
 
-    const isAuth = computed(() => !!token.value && auth.value);
+    const isAuth = computed(() => auth.value);
     const getUser = computed(() => user.value);
 
     const setUser = (data) => {
@@ -21,6 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const logout = async () => {
+        isLoggingOut.value = true;
+
         try {
             await authAPI.logout();
         } catch (error) {
@@ -33,19 +36,24 @@ export const useAuthStore = defineStore('auth', () => {
         }
     };
 
+    const finishLogout = () => {
+        isLoggingOut.value = false;
+    };
+
     const login = (login_key) => {
         token.value = login_key;
         auth.value = true;
     };
 
     const canUserAccess = async (refresh = false) => {
-        if (!refresh) {
-            if (!!token.value && auth.value) return true;
-            if (!token.value) return false;
+        if (!refresh && auth.value) {
+            return true;
         }
 
         try {
-            const response = await userAPI.get();
+            const response = token.value
+                ? await userAPI.get()
+                : await authAPI.get();
             setUser(unwrapResponse(response));
             auth.value = true;
             return true;
@@ -67,9 +75,11 @@ export const useAuthStore = defineStore('auth', () => {
         user,
         isAuth,
         isLock,
+        isLoggingOut,
         getUser,
         login,
         logout,
+        finishLogout,
         setUser,
         canUserAccess,
         token,

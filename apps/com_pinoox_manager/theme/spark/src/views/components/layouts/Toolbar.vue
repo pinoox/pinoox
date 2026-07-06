@@ -1,7 +1,9 @@
 <template>
   <div class="toolbar fixed top-0 left-0 w-full flex items-center px-4">
     <div class="toolbar__brand">
-      <a @click="navigate" class="cursor-pointer">PINOOX</a>
+      <button type="button" class="toolbar__action" @click="navigate" aria-label="Pinoox">
+        <img src="@/assets/media/pinoox/logo.png" alt="Pinoox" class="toolbar__logo" width="28" height="28">
+      </button>
     </div>
 
     <div class="toolbar__datetime">
@@ -9,7 +11,9 @@
       <div class="toolbar__datetime-date">{{ formattedDate }}</div>
     </div>
     <div class="toolbar__account">
-      <span @click="logout">خروج</span>
+      <button type="button" class="toolbar__action" @click="logout" aria-label="خروج">
+        <Icon :is="saxIcon.logout" size="sm"/>
+      </button>
     </div>
   </div>
 </template>
@@ -17,7 +21,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import {useAuthStore} from "@/stores/modules/auth.js";
+import { useAuthStore } from "@/stores/modules/auth.js";
+import { saxIcon } from "@/const/icons.js";
+import { formatClockTime } from "@/views/composables/useServerClock.js";
 
 const authStore = useAuthStore();
 const formattedTime = ref("");
@@ -27,7 +33,7 @@ const router = useRouter();
 
 const updateTime = () => {
   const now = new Date();
-  formattedTime.value = now.toLocaleTimeString("fa-IR", { hour: "2-digit", minute: "2-digit" });
+  formattedTime.value = formatClockTime(now);
   formattedDate.value = now.toLocaleDateString("fa-IR");
 };
 
@@ -39,10 +45,13 @@ const navigate = () => {
   }
 };
 
-const logout = () => {
-  authStore.logout().then(() => {
-    router.replace({name: 'login'});
-  });
+const logout = async () => {
+  try {
+    await authStore.logout();
+    await router.replace({name: 'login'});
+  } finally {
+    authStore.finishLogout();
+  }
 };
 
 onMounted(() => {

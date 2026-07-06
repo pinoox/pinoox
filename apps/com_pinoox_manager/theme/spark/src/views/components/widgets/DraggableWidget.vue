@@ -2,14 +2,12 @@
   <div
       ref="widget"
       class="draggable-widget"
-      @mousedown="startDrag"
-      @touchstart="startDrag"
       :style="{ left: computedPosX, top: computedPosY }"
   >
-    <div class="header">
+    <div class="header" @mousedown="startDrag" @touchstart="startDrag">
       <slot name="header"></slot>
     </div>
-    <div class="content">
+    <div class="content" @mousedown.stop @touchstart.stop>
       <slot></slot>
     </div>
   </div>
@@ -20,7 +18,8 @@ import {ref, onMounted, computed} from 'vue';
 
 const props = defineProps({
   initialX: {type: [Number, String], default: "100px"},
-  initialY: {type: [Number, String], default: "100px"}
+  initialY: {type: [Number, String], default: "100px"},
+  centered: {type: Boolean, default: false},
 });
 
 const widget = ref(null);
@@ -31,14 +30,38 @@ const posY = ref(props.initialY);
 const computedPosX = computed(() => typeof posX.value === 'string' ? posX.value : `${posX.value}px`);
 const computedPosY = computed(() => typeof posY.value === 'string' ? posY.value : `${posY.value}px`);
 
-onMounted(() => {
-  if (widget.value) {
-    widget.value.style.left = computedPosX.value;
-    widget.value.style.top = computedPosY.value;
+function centerInViewport() {
+  if (!widget.value) {
+    return;
   }
+
+  const rect = widget.value.getBoundingClientRect();
+  const x = Math.max(0, (window.innerWidth - rect.width) / 2);
+  const y = Math.max(0, (window.innerHeight - rect.height) / 2);
+
+  posX.value = `${x}px`;
+  posY.value = `${y}px`;
+}
+
+onMounted(() => {
+  if (!widget.value) {
+    return;
+  }
+
+  if (props.centered) {
+    centerInViewport();
+    return;
+  }
+
+  widget.value.style.left = computedPosX.value;
+  widget.value.style.top = computedPosY.value;
 });
 
 const startDrag = (event) => {
+  if (event.target.closest('button, input, select, textarea, a, label')) {
+    return;
+  }
+
   event.preventDefault();
   const clientX = event.touches ? event.touches[0].clientX : event.clientX;
   const clientY = event.touches ? event.touches[0].clientY : event.clientY;

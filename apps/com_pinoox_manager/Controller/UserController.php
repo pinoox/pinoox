@@ -14,10 +14,11 @@
 namespace App\com_pinoox_manager\Controller;
 
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Auth;
 
-class UserController extends Api
+class UserController extends ApiController
 {
     public function get()
     {
@@ -42,16 +43,16 @@ class UserController extends Api
         $profile = Auth::removeAvatar(Auth::id());
 
         if ($profile === null) {
-            return $this->message(null, false);
+            return $this->deny('user.avatar_delete_failed');
         }
 
-        return $this->message($profile);
+        return $this->message('user.avatar_deleted_successfully', $profile);
     }
 
     public function changeAvatar(Request $request)
     {
         if (!$request->files->has('avatar')) {
-            return $this->message(t('manager.invalid_request'), false);
+            return $this->deny('manager.invalid_request');
         }
 
         $this->validated($request, [
@@ -61,10 +62,10 @@ class UserController extends Api
         $result = Auth::changeAvatar(Auth::id(), $request->files->get('avatar'));
 
         if ($result === false) {
-            return $this->message(t('manager.invalid_request'), false);
+            return $this->deny('manager.invalid_request');
         }
 
-        return $this->message($result);
+        return $this->message('user.avatar_changed_successfully', $result);
     }
 
     public function changeInfo(Request $request)
@@ -73,7 +74,7 @@ class UserController extends Api
 
         Auth::updateProfile(Auth::id(), $input);
 
-        return $this->message(null);
+        return $this->message('user.profile_updated_successfully');
     }
 
     public function changePassword(Request $request)
@@ -83,10 +84,12 @@ class UserController extends Api
         $result = Auth::changePassword(Auth::id(), $inputs['old_password'], $inputs['new_password']);
 
         if ($result !== true) {
-            return $this->message(is_string($result) ? $result : t('user.err_old_password'), false);
+            $message = is_string($result) ? $result : 'user.err_old_password';
+
+            return $this->deny($message);
         }
 
-        return $this->message(null);
+        return $this->message('user.password_changed_successfully');
     }
 
     public static function getDataUser()
@@ -94,4 +97,3 @@ class UserController extends Api
         return Auth::profile();
     }
 }
-

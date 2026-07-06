@@ -9,7 +9,7 @@
             :disabled="isBusy"
             @click="toggleManageWallpapers"
         >
-          <Icon :is="isManagingWallpapers ? saxIcon.close : saxIcon.setting" size="1.1rem"/>
+          <Icon :is="isManagingWallpapers ? saxIcon.close : saxIcon.setting" size="sm"/>
           <span>{{ isManagingWallpapers ? 'اتمام' : 'مدیریت' }}</span>
         </button>
       </template>

@@ -4,29 +4,28 @@
 
 .title {
   font-weight: 500;
-  font-size: 4em;
-  color: $text-color;
-  padding: 10px;
+  font-size: clamp(2rem, 5vw, 4rem);
+  color: var(--color-text);
 }
 
 .headline {
-  color: $primary-color;
-  font-size: 1.2em;
-  font-weight: 400;
-
+  color: var(--color-primary);
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin: 0 0 0.75rem;
 }
 
 .gradient-text {
-  padding: 10px 0;
-  font-size: 5em;
-  font-weight: 600;
-  color: white;
-  background: linear-gradient(270deg,
-          #4F5BD5,
-          #D62976,
-          #FA7E1E);
+  font-size: clamp(2.25rem, 6vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+  background: linear-gradient(270deg, #4F5BD5, #D62976, #FA7E1E);
   background-size: 200% 200%;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -34,18 +33,8 @@
   animation: gradient-animation 5s ease-in-out infinite;
 }
 
-
-@keyframes gradient-animation {
-  0% {
-    background-position: 0% 25%;
-  }
-  25% {
-    background-position: 75% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+.section__hero-title.gradient-text,
+.section__market-title.gradient-text,
+.section__developer-title.gradient-text {
+  margin: 0;
 }

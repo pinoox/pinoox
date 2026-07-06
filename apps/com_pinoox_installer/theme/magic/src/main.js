@@ -31,6 +31,7 @@ async function boot() {
 
     const store = useInstallStore(pinia)
 
+    store.ensureLang()
     store.syncDirection()
 
     httpEvent('start', () => {

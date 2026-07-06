@@ -5,9 +5,8 @@
  * Kept in launcher/ so pre-install checks work without pincore or vendor.
  */
 return [
-    'php' => '8.1.0',
+    'php' => '8.2.0',
     'extensions' => [
-        'mysqli' => '*',
         'zip' => '*',
     ],
 ];

@@ -19,11 +19,12 @@ use App\com_pinoox_manager\Component\WidgetHelper;
 use App\com_pinoox_manager\Component\WallpaperHelper;
 use Pinoox\Component\Http\Request;
 use Pinoox\Component\Http\Response;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\App;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Lang;
 
-class OptionController extends Api
+class OptionController extends ApiController
 {
     private function syncBackgroundOption(array $options): string
     {
@@ -37,24 +38,14 @@ class OptionController extends Api
         return $background;
     }
 
-    private function defaultDockPins(): array
-    {
-        $pins = [];
-        foreach (AppHelper::getAll() as $app) {
-            if (!empty($app['dock']))
-                $pins[] = $app['package_name'];
-        }
-        return $pins;
-    }
-
     public function toggleDockPin(string $packageName)
     {
         if (!AppHelper::getOne($packageName))
-            return $this->message(null, false);
+            return $this->deny('manager.app_not_found');
         $options = Config::name('options')->get() ?? [];
         $pins = $options['dock_pins'] ?? null;
         if (!is_array($pins))
-            $pins = $this->defaultDockPins();
+            $pins = [];
         $wasPinned = in_array($packageName, $pins, true);
         if ($wasPinned) {
             $pins = array_values(array_filter($pins, fn($pkg) => $pkg !== $packageName));
@@ -64,10 +55,11 @@ class OptionController extends Api
         Config::name('options')
             ->set('dock_pins', $pins)
             ->save();
-        return [
+
+        return $this->ok([
             'dock_pins' => $pins,
             'pinned' => !$wasPinned,
-        ];
+        ]);
     }
 
     private function normalizeAppViewMode(mixed $mode): string
@@ -98,9 +90,11 @@ class OptionController extends Api
             Config::name('options')
                 ->set('background', $name)
                 ->save();
-            return $this->message($name);
+
+            return $this->message('manager.background_changed_successfully');
         }
-        return $this->message($name, false);
+
+        return $this->deny('manager.background_change_failed');
     }
 
     public function wallpaper(string $name): Response
@@ -121,35 +115,36 @@ class OptionController extends Api
     public function uploadWallpaper(Request $request)
     {
         if (!$request->files->has('wallpaper'))
-            return self::error(t('manager.invalid_request'));
+            return $this->error('manager.invalid_request');
         $this->validated($request, [
             'wallpaper' => 'required|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
         $wallpaper = WallpaperHelper::upload($request->files->get('wallpaper'));
         if (!$wallpaper)
-            return self::error(t('manager.error_happened'));
-        return [
+            return $this->error('manager.error_happened');
+
+        return $this->message('manager.wallpaper_uploaded_successfully', [
             'wallpaper' => $wallpaper,
             'wallpapers' => WallpaperHelper::all(),
-        ];
+        ]);
     }
 
     public function deleteWallpaper(string $name)
     {
         $id = pathinfo(basename($name), PATHINFO_FILENAME);
         if (!WallpaperHelper::delete($name))
-            return self::error(t('manager.error_happened'));
+            return $this->error('manager.error_happened');
         $options = Config::name('options')->get() ?? [];
         if ((string) ($options['background'] ?? '') === $id) {
             Config::name('options')
                 ->set('background', WallpaperHelper::defaultId())
                 ->save();
         }
-        return [
+        return $this->message('manager.wallpaper_deleted_successfully', [
             'wallpapers' => WallpaperHelper::all(),
             'defaultBackground' => WallpaperHelper::defaultId(),
             'background' => $this->syncBackgroundOption(Config::name('options')->get() ?? []),
-        ];
+        ]);
     }
 
     public function changeLockTime($minutes = 0)
@@ -160,9 +155,11 @@ class OptionController extends Api
             Config::name('options')
                 ->set('lock_time', $minutes)
                 ->save();
-            return $this->message($minutes);
+
+            return $this->message('manager.lock_time_changed_successfully');
         }
-        return $this->message($minutes, false);
+
+        return $this->deny('manager.lock_time_change_failed');
     }
 
     public function changeLang($lang)
@@ -181,14 +178,14 @@ class OptionController extends Api
         $current = $this->normalizeAppViewMode(Config::name('options')->get('app_view_mode'));
 
         if ($current === $mode) {
-            return $this->message(null, false);
+            return $this->deny('manager.app_view_mode_unchanged');
         }
 
         Config::name('options')
             ->set('app_view_mode', $mode)
             ->save();
 
-        return $this->message(null, $mode);
+        return $this->message('manager.saved_successfully', $mode);
     }
 }
 

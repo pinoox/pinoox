@@ -1,9 +1,28 @@
 import { ref, watch, provide, inject, computed } from "vue";
 import { useOptionsStore } from "@/stores/modules/options.js";
 
-import { wallpaperUrl } from "@utils/helpers/backgroundHelper.js";
+import { wallpaperUrl, normalizeWallpaperUrl } from "@utils/helpers/backgroundHelper.js";
 
+const WALLPAPER_CACHE_KEY = 'manager_wallpaper_url';
 
+function readCachedWallpaper() {
+    try {
+        return localStorage.getItem(WALLPAPER_CACHE_KEY) || null;
+    } catch {
+        return null;
+    }
+}
+
+function writeCachedWallpaper(url) {
+    if (!url)
+        return;
+
+    try {
+        localStorage.setItem(WALLPAPER_CACHE_KEY, url);
+    } catch {
+        // ignore quota / private mode
+    }
+}
 
 function preloadImage(url) {
 
@@ -61,7 +80,13 @@ export function useBackground() {
 
     const syncBackground = () => {
 
-        selectedBackground.value = optionsStore.backgroundUrl || null;
+        const url = normalizeWallpaperUrl(optionsStore.backgroundUrl || readCachedWallpaper() || null);
+
+        selectedBackground.value = url;
+
+        if (url)
+
+            writeCachedWallpaper(url);
 
     };
 
@@ -78,6 +103,14 @@ export function useBackground() {
     watch(() => optionsStore.background, syncBackground);
 
     watch(() => optionsStore.wallpapers, syncBackground, { deep: true });
+
+    watch(selectedBackground, (url) => {
+
+        if (url)
+
+            writeCachedWallpaper(url);
+
+    });
 
 
 

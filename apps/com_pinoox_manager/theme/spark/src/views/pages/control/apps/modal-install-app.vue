@@ -1,11 +1,11 @@
 <template>
   <SimpleModal title=" نصب اپلیکیشن" size="sm">
-
-    <FileUploader ref="fileUploaderRef" @select="selectFile"/>
-
+    <p class="text-sm opacity-80 leading-7">
+      نصب بسته از پنجره سراسری انجام می‌شود. برای فایل‌های بزرگ، آپلود Pinion فعال است.
+    </p>
     <template #footer>
-      <Button @click="closeModal" label="لغو" variant="dark"></Button>
-      <Button :is-loading="isLoading" @click="install()" label="نصب" variant="primary"></Button>
+      <Button @click="closeModal" label="لغو" variant="dark"/>
+      <Button @click="openGlobalInstaller" label="باز کردن نصب‌کننده" variant="primary"/>
     </template>
   </SimpleModal>
 </template>
@@ -13,49 +13,13 @@
 <script setup>
 defineOptions({modalGroup: 'default'});
 
-import {closeModal, useModalContext} from '@kolirt/vue-modal'
-import {ref} from "vue";
-import {appAPI} from "@api/app.js";
-import {toast} from "@global";
+import {closeModal} from '@kolirt/vue-modal';
+import {usePackageInstallerStore} from '@/stores/modules/packageInstaller.js';
 
-const {confirm} = useModalContext();
+const packageInstallerStore = usePackageInstallerStore();
 
-const fileUploaderRef = ref(null);
-const file = ref(null);
-const isLoading = ref(false);
-
-const selectFile = (selectedFile) => {
-  file.value = selectedFile;
-};
-
-const install = () => {
-
-  if (!file.value) {
-    toast({
-      title: 'لطفاً یک فایل انتخاب کنید',
-      type: 'error',
-    });
-    return;
-  }
-
-  isLoading.value = true;
-
-  appAPI.install({
-    file: file.value
-  }).then((response) => {
-    fileUploaderRef.value.resetFile();
-    toast({
-      title: 'با موفقیت نصب شد',
-      type: 'success',
-    });
-    confirm();
-  }).catch((error) => {
-    console.error("خطا در ارسال فایل:", error);
-    toast({
-      title: 'خطا در ارسال فایل',
-      type: 'error',
-    });
-  }).finally(() => isLoading.value = false)
-};
-
+function openGlobalInstaller() {
+  packageInstallerStore.show();
+  closeModal();
+}
 </script>

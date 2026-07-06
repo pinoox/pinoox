@@ -1,117 +1,117 @@
 .section__developer {
   position: relative;
-  padding: 80px 0;
-  border-top-left-radius: 3rem;
-  border-top-right-radius: 3rem;
-  background: linear-gradient(0deg, #241c34 0%, #282b4e 100%);
+  padding-block: var(--space-section);
+  border-start-start-radius: var(--radius-xl);
+  border-start-end-radius: var(--radius-xl);
+  background: linear-gradient(0deg, var(--color-developer-bg-start) 0%, var(--color-developer-bg-end) 100%);
+  overflow: hidden;
 
-  &-title {
+  &-eyebrow {
+    margin: 0 0 2rem;
     text-align: center;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 800;
+    letter-spacing: clamp(0.5rem, 4vw, 2rem);
+    text-transform: uppercase;
+    background: linear-gradient(180deg, rgba(217, 217, 217, 0.18), rgba(255, 255, 255, 0.04));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    user-select: none;
+  }
 
-    h2 {
-      margin: 0;
-      padding: 0;
-      background: -webkit-linear-gradient(rgb(217, 217, 217), #ffffff);
-      opacity: 0.1;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      letter-spacing: 2rem;
-      font-size: 4em;
-      position: relative;
-      z-index: 2;
-      text-align: center;
-
-      &:before {
-        content: '';
-        display: inline-block;
-        height: 120%;
-        width: 100%;
-        background: linear-gradient(0deg, rgba(32, 22, 79, 0.62), rgba(255, 255, 255, 0));
-        position: absolute;
-        left: 0;
-        top: -10px;
-      }
-    }
-
-
+  &-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: clamp(2rem, 5vw, 4rem);
   }
 
   &-code {
-    margin-top: 100px;
     position: relative;
+    margin-block-start: 1rem;
+    direction: ltr;
+    text-align: left;
 
     &--highlighter {
-
+      width: 100%;
     }
 
     &--image {
       position: absolute;
-      top: 20%;
-      right: 5%;
+      inset-block-start: 18%;
+      inset-inline-end: 5%;
+      width: min(220px, 38%);
+      opacity: 0.85;
+      filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.35));
+      pointer-events: none;
+
+      &-mock {
+        opacity: 1;
+      }
     }
   }
 
   &-content {
-    margin-right: 60px;
-    margin-top: 160px;
-
-    .gradient-text {
-      padding: 20px 0;
-      margin-bottom: 20px;
-    }
-
-    .text {
-      position: relative;
-      color: $text-gray-color;
-      font-weight: 300;
-      line-height: 1.7;
-      font-size: 1.1em;
-      max-width: 700px;
-      padding: 10px 0;
-      margin: 0 auto 40px auto;
-      z-index: 2;
-    }
+    text-align: start;
+    padding-inline-start: clamp(0rem, 3vw, 2rem);
   }
 
-}
-
-
-/* Mobile */
-@media (max-width: 480px) {
-  .section__developer-code--image{
-    display: none;
+  &-text {
+    color: var(--color-text-muted);
+    font-weight: 300;
+    line-height: 1.8;
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    max-width: 34rem;
+    margin: 0 0 2rem;
   }
 }
 
-/* Small tablets */
-@media (max-width: 768px) {
-  .section__developer-title h2 {
-    font-size: 2em;
+@media (max-width: 992px) {
+  .section__developer-grid {
+    grid-template-columns: 1fr;
   }
+
   .section__developer-content {
     text-align: center;
-    margin-right: 10px;
-    padding: 20px;
-
-    .gradient-text {
-      font-size: 3em;
-    }
+    padding-inline: 0;
+    order: 1;
   }
-  .codeBlock{
-    font-size: 1em!important;
+
+  .section__developer-code {
+    order: 2;
+    margin-block-start: 2rem;
+  }
+
+  .section__developer-text {
+    margin-inline: auto;
+  }
+
+  .section__developer-content .btn {
+    width: 100%;
+    max-width: 320px;
   }
 }
 
-/* Large tablets/laptops */
-@media (max-width: 992px) {
-  .section__developer-code--image{
-    width: 150px;
-    opacity: 0.2;
+@media (max-width: 768px) {
+  .section__developer-code--image,
+  .section__developer-code--image-mock {
+    width: 140px;
+    opacity: 0.35;
+  }
+
+  .section__developer-code--image-mock {
+    opacity: 0.9;
   }
 }
-@media (max-width: 1400px) {
-  .section__developer-code--image{
-    width: 190px;
-    opacity: 0.2;
+
+@media (max-width: 480px) {
+  .section__developer-code--image,
+  .section__developer-code--image-mock {
+    display: none;
+  }
+
+  .section__developer-eyebrow {
+    letter-spacing: 0.35rem;
   }
 }

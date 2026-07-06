@@ -1,0 +1,448 @@
+@use '../base/variable' as *;
+
+.appIcon {
+  --app-icon-size: 2.5rem;
+  --app-icon-radius: 0.65rem;
+  --app-icon-padding: 0.18rem;
+  --app-icon-bg: rgba(255, 255, 255, 0.94);
+  --app-icon-border: rgba(255, 255, 255, 0.38);
+  --app-icon-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--app-icon-size);
+  height: var(--app-icon-size);
+  padding: var(--app-icon-padding);
+  border-radius: var(--app-icon-radius);
+  background: var(--app-icon-bg);
+  border: 1px solid var(--app-icon-border);
+  box-shadow:
+    var(--app-icon-shadow),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  line-height: 0;
+  vertical-align: middle;
+
+  &__image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: calc(var(--app-icon-radius) - 2px);
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  &--custom-image {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+    --app-icon-image-scale: 84%;
+    --app-icon-image-shadow:
+      drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5))
+      drop-shadow(0 4px 10px rgba(0, 0, 0, 0.28));
+
+    .appIcon__image {
+      width: var(--app-icon-image-scale);
+      height: var(--app-icon-image-scale);
+      border-radius: 22%;
+      filter: var(--app-icon-image-shadow);
+    }
+  }
+
+  &--custom-image.appIcon--xs .appIcon__image {
+    border-radius: 28%;
+  }
+
+  &--custom-image.appIcon--sm .appIcon__image {
+    border-radius: 26%;
+  }
+
+  &--custom-image.appIcon--md,
+  &--custom-image.appIcon--lg,
+  &--custom-image.appIcon--xl,
+  &--custom-image.appIcon--tray {
+    .appIcon__image {
+      border-radius: 22%;
+    }
+  }
+
+  &--custom-image.appIcon--dock {
+    --app-icon-padding: 0;
+    --app-icon-image-scale: 92%;
+    flex: 0 0 88%;
+    align-self: center;
+
+    .appIcon__image {
+      border-radius: 22%;
+      margin: auto;
+      object-fit: contain;
+      object-position: center center;
+    }
+  }
+
+  &__fallback,
+  &__glyph,
+  &__lucide {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+
+  &--has-lucide {
+    --app-icon-lucide-scale: 0.56;
+    padding: 0;
+    position: relative;
+    isolation: isolate;
+  }
+
+  &--lucide-gradient {
+    --icon-c0: #3399FF;
+    --icon-c1: #0066FF;
+    --icon-c2: #003B8E;
+    --app-icon-bg: linear-gradient(152deg, var(--icon-c0) 0%, var(--icon-c1) 54%, var(--icon-c2) 100%);
+    --app-icon-border: rgba(255, 255, 255, 0.28);
+    --app-icon-shadow:
+      0 10px 24px rgba(0, 0, 0, 0.26),
+      0 2px 6px rgba(0, 0, 0, 0.14);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.42),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.14);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.34) 0%,
+        rgba(255, 255, 255, 0.08) 38%,
+        transparent 68%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+  }
+
+  &--lucide-crystal {
+    --app-icon-bg: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.48) 0%,
+      rgba(255, 255, 255, 0.14) 42%,
+      rgba(255, 255, 255, 0.06) 100%
+    );
+    --app-icon-border: rgba(255, 255, 255, 0.52);
+    --app-icon-shadow:
+      0 0 0 1px rgba(169, 73, 46, 0.14),
+      0 8px 22px rgba(0, 0, 0, 0.2),
+      0 1px 0 rgba(255, 255, 255, 0.55) inset,
+      0 -1px 0 rgba(0, 0, 0, 0.06) inset;
+    backdrop-filter: blur(14px) saturate(1.65);
+    -webkit-backdrop-filter: blur(14px) saturate(1.65);
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset: 1px;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.62),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.42) 0%,
+        rgba(255, 255, 255, 0.1) 36%,
+        transparent 66%
+      );
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .appIcon__lucide {
+      color: rgba(255, 255, 255, 0.96);
+      filter:
+        drop-shadow(0 0 1px rgba(0, 0, 0, 0.45))
+        drop-shadow(0 1px 3px rgba(0, 0, 0, 0.35));
+    }
+  }
+
+  &--has-lucide.appIcon--xs {
+    --app-icon-lucide-scale: 0.58;
+    --app-icon-radius: 28%;
+  }
+
+  &--has-lucide.appIcon--sm {
+    --app-icon-lucide-scale: 0.57;
+    --app-icon-radius: 26%;
+  }
+
+  &--has-lucide.appIcon--md,
+  &--has-lucide.appIcon--lg,
+  &--has-lucide.appIcon--xl {
+    --app-icon-lucide-scale: 0.54;
+    --app-icon-radius: 22%;
+  }
+
+  &--has-lucide.appIcon--tray {
+    --app-icon-lucide-scale: 0.55;
+    --app-icon-radius: 22%;
+  }
+
+  &--has-lucide.appIcon--dock {
+    --app-icon-size: 100%;
+    --app-icon-lucide-scale: 0.52;
+    --app-icon-radius: 22%;
+  }
+
+  &--lucide-gradient.appIcon--dock {
+    --app-icon-bg: linear-gradient(152deg, var(--icon-c0) 0%, var(--icon-c1) 54%, var(--icon-c2) 100%);
+    --app-icon-border: rgba(255, 255, 255, 0.26);
+    --app-icon-shadow:
+      0 6px 16px rgba(0, 0, 0, 0.22),
+      0 1px 4px rgba(0, 0, 0, 0.12);
+  }
+
+  &--lucide-crystal.appIcon--dock {
+    --app-icon-shadow:
+      0 0 0 1px rgba(169, 73, 46, 0.12),
+      0 6px 16px rgba(0, 0, 0, 0.18),
+      0 1px 0 rgba(255, 255, 255, 0.48) inset;
+  }
+
+  &__lucide {
+    position: relative;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    svg {
+      display: block;
+      width: calc(var(--app-icon-size) * var(--app-icon-lucide-scale)) !important;
+      height: calc(var(--app-icon-size) * var(--app-icon-lucide-scale)) !important;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+
+  &--lucide-gradient &__lucide {
+    filter:
+      drop-shadow(0 1px 1px rgba(0, 0, 0, 0.28))
+      drop-shadow(0 2px 6px rgba(0, 0, 0, 0.16));
+  }
+
+  &__fallback {
+    color: rgba(19, 13, 11, 0.45);
+  }
+
+  &__glyph {
+    color: var(--app-icon-glyph-color, var(--color-primary));
+  }
+
+  &--has-glyph.appIcon--dock {
+    --app-icon-padding: 0.2rem;
+  }
+
+  &--xs {
+    --app-icon-size: 1.25rem;
+    --app-icon-radius: 0.35rem;
+    --app-icon-padding: 0.1rem;
+  }
+
+  &--sm {
+    --app-icon-size: 1.75rem;
+    --app-icon-radius: 0.45rem;
+    --app-icon-padding: 0.14rem;
+  }
+
+  &--md {
+    --app-icon-size: 4rem;
+    --app-icon-radius: 0.85rem;
+    --app-icon-padding: 0.28rem;
+  }
+
+  &--lg {
+    --app-icon-size: 5rem;
+    --app-icon-radius: 1rem;
+    --app-icon-padding: 0.34rem;
+  }
+
+  &--xl {
+    --app-icon-size: 5.5rem;
+    --app-icon-radius: 1.1rem;
+    --app-icon-padding: 0.38rem;
+  }
+
+  &--tray {
+    --app-icon-size: 3.25rem;
+    --app-icon-radius: 0.85rem;
+    --app-icon-padding: 0.22rem;
+  }
+
+  &--dock {
+    width: 88%;
+    height: 88%;
+    --app-icon-radius: 22%;
+    --app-icon-padding: 0.12rem;
+  }
+
+  &--dock:not(.appIcon--has-lucide):not(.appIcon--custom-image) {
+    --app-icon-bg: rgba(255, 255, 255, 0.9);
+  }
+
+  &--soft {
+    --app-icon-bg: rgba(255, 255, 255, 0.12);
+    --app-icon-border: rgba(255, 255, 255, 0.16);
+    --app-icon-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  }
+
+  &--dock.appIcon--soft:not(.appIcon--has-lucide):not(.appIcon--custom-image),
+  &--dock:not(.appIcon--has-lucide):not(.appIcon--custom-image) {
+    --app-icon-bg: rgba(255, 255, 255, 0.92);
+    --app-icon-border: rgba(255, 255, 255, 0.28);
+  }
+}
+
+.pageApps {
+  .appIcon-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .appIcon--has-lucide {
+    transition: transform 0.22s ease;
+  }
+
+  .appIcon--md {
+    @media (min-width: 768px) {
+      --app-icon-size: 5rem;
+      --app-icon-radius: 1rem;
+      --app-icon-padding: 0.34rem;
+    }
+  }
+}
+
+.pageControl,
+.modalRoutes,
+.modal-app-picker,
+.pageAppManager {
+  .appIcon:not(.appIcon--custom-image) {
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    overflow: visible;
+  }
+
+  .appIcon--lucide-crystal,
+  .appIcon--lucide-gradient {
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+
+  .appIcon--has-lucide.appIcon--xs {
+    --app-icon-lucide-scale: 0.78;
+  }
+
+  .appIcon--has-lucide.appIcon--sm {
+    --app-icon-lucide-scale: 0.76;
+  }
+
+  .appIcon--has-lucide.appIcon--md,
+  .appIcon--has-lucide.appIcon--lg,
+  .appIcon--has-lucide.appIcon--xl {
+    --app-icon-lucide-scale: 0.74;
+  }
+
+  .appIcon--lucide-crystal .appIcon__lucide,
+  .appIcon--lucide-gradient .appIcon__lucide {
+    color: rgba(255, 255, 255, 0.95);
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.4));
+  }
+
+  .appIcon-wrap:hover .appIcon--has-lucide,
+  tr:hover .appIcon--has-lucide {
+    transform: translateY(-2px) scale(1.04);
+  }
+}
+
+.pageMarketDetails {
+  .appIcon:not(.appIcon--custom-image) {
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.24),
+      inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  }
+}
+
+.appView__title .appIcon:not(.appIcon--custom-image) {
+  --app-icon-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+.dockbar {
+  .item-image.appIcon,
+  .appIcon.item-image {
+    transition: opacity 0.28s ease, filter 0.28s ease, transform 0.28s ease;
+  }
+
+  .item--app .appIcon--custom-image.item-image {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+  }
+
+  .appIcon--has-lucide.item-image {
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.2));
+  }
+
+  .appIcon--lucide-crystal.item-image {
+    filter: drop-shadow(0 3px 10px rgba(0, 0, 0, 0.16));
+  }
+
+  &__tray-item:hover .appIcon {
+    transform: scale(1.04);
+  }
+}
+
+.modal-app-picker {
+  .appIcon {
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  [role='button']:hover .appIcon,
+  .cursor-pointer:hover .appIcon {
+    transform: scale(1.05);
+  }
+}

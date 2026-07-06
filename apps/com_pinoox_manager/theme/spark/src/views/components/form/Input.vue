@@ -5,6 +5,8 @@
     <InputBase
         v-bind="props"
         :prefix="prefix"
+        :variant="variant"
+        :icon="icon"
         @update:modelValue="emit('update:modelValue', $event)"
     />
 
@@ -32,7 +34,21 @@ const props = defineProps({
     default: "rtl",
     validator: (value) => ["ltr", "rtl"].includes(value),
   },
-  prefix: String, 
+  prefix: String,
+  autocomplete: String,
+  variant: {
+    type: String,
+    default: 'default',
+    validator: (value) => ['default', 'glass'].includes(value),
+  },
+  icon: {
+    type: [Object, Function],
+    default: null,
+  },
+  showPasswordToggle: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 // Emits

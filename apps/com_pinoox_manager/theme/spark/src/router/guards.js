@@ -6,7 +6,7 @@ export async function authGuard(to, from, next) {
     const store = useAuthStore();
     if (!isFirstSession) {
         isFirstSession = true;
-        await store.canUserAccess();
+        await store.canUserAccess(true);
     }
     const isAuth = store.isAuth;
 

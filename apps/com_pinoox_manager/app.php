@@ -8,14 +8,17 @@ return [
     'enable' => true,
     'sys-app' => true,
     'theme' => 'spark',
+    'hidden' => true,
     'name' => 'manager',
-    'description' => 'Manager',
-    'icon' => 'icon.png',
-    'version-name' => '2.2.0',
-    'version-code' => 4,
+    'title' => '@manifest.title',
+    'description' => '@manifest.description',
+    'icon' => '@layout-dashboard',
+    'version-name' => '2.4.50',
+    'version-code' => 73,
     'developer' => 'Pinoox Team',
     'minpin' => 2,
     'lang' => 'fa',
+    'date' => 'jalali',
     'transport' => [
         'user' => 'platform',
     ],
@@ -32,9 +35,9 @@ return [
         'lifetime_unit' => 'day',
     ],
     'access' => [
+        'super_roles' => ['admin'],
         'groups' => [
             'admin' => ['*'],
-            'manager' => ['manager.*'],
         ],
     ],
     'flow' => [

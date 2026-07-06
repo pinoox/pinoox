@@ -6,25 +6,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
 import { widgetAPI } from '@api/widget.js';
 import { unwrapResponse } from '@utils/helpers/apiHelper.js';
+import { useServerClock } from '@/views/composables/useServerClock.js';
 import WidgetPreviewShell from './WidgetPreviewShell.vue';
 
-const loading = ref(true);
-const clock = ref({ date: '', moment: '' });
+async function fetchClockData() {
+  const response = await widgetAPI.clock();
+  return unwrapResponse(response) ?? response?.data ?? {};
+}
 
-onMounted(async () => {
-  try {
-    const response = await widgetAPI.clock();
-    const data = unwrapResponse(response) ?? response?.data ?? {};
-
-    clock.value = {
-      date: data.date ?? '',
-      moment: data.moment ?? '',
-    };
-  } finally {
-    loading.value = false;
-  }
-});
+const { loading, clock } = useServerClock(fetchClockData);
 </script>

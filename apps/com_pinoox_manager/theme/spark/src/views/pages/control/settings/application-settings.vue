@@ -31,9 +31,11 @@
 import {computed, onMounted, ref} from 'vue';
 import {useOptionsStore} from '@/stores/modules/options.js';
 import {useAppViewWindowStore} from '@/stores/modules/appViewWindow.js';
+import {useControlPanelWindowStore} from '@/stores/modules/controlPanelWindow.js';
 
 const optionsStore = useOptionsStore();
 const appViewWindow = useAppViewWindowStore();
+const controlPanelWindow = useControlPanelWindowStore();
 const saving = ref(false);
 
 const isAdvanced = computed(() => optionsStore.appViewMode === 'advanced');
@@ -62,6 +64,7 @@ async function onToggleMode(enabled) {
 
     if (nextMode === 'simple') {
       appViewWindow.dismissAll();
+      controlPanelWindow.dismiss();
     }
   } finally {
     saving.value = false;

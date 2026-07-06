@@ -13,14 +13,16 @@
 
 namespace App\com_pinoox_manager\Controller;
 
+use App\com_pinoox_manager\Component\PackagePaths;
 use App\com_pinoox_manager\Component\Wizard;
 use Pinoox\Component\Http\Http;
 use Pinoox\Component\Http\Request;
+use Pinoox\Component\Kernel\Controller\ApiController;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Url;
 
-class MarketController extends Api
+class MarketController extends ApiController
 {
     public function getDownloads()
     {
@@ -43,16 +45,16 @@ class MarketController extends Api
         $package_name = $request->payload('package_name');
 
         if (empty($package_name))
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         $pinFile = Wizard::getDownloaded($package_name);
         if (!is_file($pinFile))
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         Wizard::deletePackageFile($pinFile);
         Config::name('market')->remove($package_name)->save();
 
-        return $this->message(t('manager.delete_successfully'));
+        return $this->message('manager.delete_successfully');
     }
 
     private function getAuthParams(array $auth): array
@@ -78,7 +80,7 @@ class MarketController extends Api
     {
         $response = Http::get("https://www.pinoox.com/api/manager/v1/market/getApp/" . $package_name);
         if (!$response)
-            return $this->message(null, false);
+            return $this->deny('manager.error_happened');
 
         $arr = json_decode($response->getContent(), true) ?? [];
         $arr['state'] = Wizard::app_state($package_name);
@@ -89,7 +91,7 @@ class MarketController extends Api
     public function downloadRequest(Request $request, $package_name)
     {
         if (AppEngine::exists($package_name))
-            return $this->message(t('manager.currently_installed'), false);
+            return $this->deny('manager.currently_installed');
 
         $auth = $request->payload('auth', []);
         $params = $this->getAuthParams($auth);
@@ -99,20 +101,33 @@ class MarketController extends Api
         ]);
 
         if (!$response)
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         $data = json_decode($response->getContent(), true);
         if (empty($data['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/apps/' . $package_name . '.pin');
-        $download = Http::get('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash']);
-        if ($download)
-            file_put_contents($path, $download->getContent());
+        PackagePaths::ensureAppsDir();
+        $path = PackagePaths::appsFile($package_name);
+        if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/download/' . $data['result']['hash'], $path)) {
+            Config::name('market')->set($package_name, $data['result'])->save();
 
-        Config::name('market')->set($package_name, $data['result'])->save();
+            return $this->message('manager.download_completed');
+        }
 
-        return $this->message(t('manager.download_completed'));
+        return $this->deny('manager.error_happened');
+    }
+
+    private function downloadToFile(string $url, string $targetPath): bool
+    {
+        $dir = dirname($targetPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+
+        $response = Http::get($url, ['sink' => $targetPath]);
+
+        return $response !== null && is_file($targetPath) && filesize($targetPath) > 0;
     }
 
     public function getTemplates($package_name)
@@ -139,25 +154,25 @@ class MarketController extends Api
         $params = $this->getAuthParams($data['auth'] ?? []);
 
         if (empty($data['package_name']) || !Wizard::isInstalled($data['package_name']))
-            return $this->message(t('manager.there_is_no_app'), false);
+            return $this->deny('manager.there_is_no_app');
 
         $response = Http::post('https://www.pinoox.com/api/manager/v1/market/downloadRequestTemplate/' . $uid, [
             'json' => $params,
         ]);
 
         if (!$response)
-            return $this->message(t('manager.error_happened'), false);
+            return $this->deny('manager.error_happened');
 
         $result = json_decode($response->getContent(), true);
         if (empty($result['status']))
             return response($response->getContent(), $response->getStatusCode(), ['Content-Type' => 'application/json']);
 
-        $path = path('downloads/templates/' . $uid . '.pin');
-        $download = Http::get('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash']);
-        if ($download)
-            file_put_contents($path, $download->getContent());
+        PackagePaths::ensureTemplatesDir();
+        $path = PackagePaths::templatesFile($uid);
+        if ($this->downloadToFile('https://www.pinoox.com/api/manager/v1/market/downloadTemplate/' . $result['result']['hash'], $path)) {
+            return $this->message('manager.download_completed');
+        }
 
-        return $this->message(t('manager.download_completed'));
+        return $this->deny('manager.error_happened');
     }
 }
-

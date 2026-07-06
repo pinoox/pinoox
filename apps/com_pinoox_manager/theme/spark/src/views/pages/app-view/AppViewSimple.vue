@@ -1,12 +1,17 @@
 <template>
   <section class="appView appView--simple">
     <div class="appView__toolbar">
-      <button type="button" class="appView__back" @click="goBack">
-        ← بازگشت
+      <button
+          type="button"
+          class="appView__back"
+          aria-label="بستن"
+          @click="closePreview"
+      >
+        بستن
       </button>
 
       <div v-if="app" class="appView__title">
-        <img v-if="app.icon" :src="app.icon" :alt="app.name" class="appView__icon">
+        <AppIcon v-if="app.icon_lucide || app.icon" v-bind="appIconProps(app)" size="sm"/>
         <span>{{ app.name }}</span>
       </div>
 
@@ -17,7 +22,7 @@
           title="بازآوری صفحه"
           @click="reload"
       >
-        <Icon :is="saxIcon.refresh" class="appView__reload-icon" :class="{ 'is-spinning': loading }"/>
+        <Icon :is="saxIcon.refresh" class="appView__reload-icon" size="sm" :class="{ 'is-spinning': loading }"/>
         <span>بازآوری</span>
       </button>
     </div>
@@ -51,6 +56,7 @@ import {useRouter} from 'vue-router';
 import {saxIcon} from '@/const/icons.js';
 import Icon from '@/views/components/widgets/Icon.vue';
 import {useAppStore} from '@/stores/modules/app.js';
+import {appIconProps} from '@utils/helpers/appIconProps.js';
 import {buildSecretViewEmbedUrl} from '@/views/composables/useSecretView.js';
 import {isAppViewCloseMessage} from '@/views/composables/useAppViewBridge.js';
 import {useAppViewFrameLoading} from '@/views/composables/useAppViewFrameLoading.js';
@@ -84,11 +90,8 @@ const app = computed(() =>
 
 const embedUrl = computed(() => buildSecretViewEmbedUrl(props.package_name));
 
-function goBack() {
-  if (window.history.length > 1)
-    router.back();
-  else
-    router.push({name: 'desktop'});
+function closePreview() {
+  router.push({name: 'desktop'});
 }
 
 function reload() {
@@ -98,10 +101,6 @@ function reload() {
 
 function handleFrameLoad() {
   onFrameLoad(frameRef.value);
-}
-
-function closePreview() {
-  router.push({name: 'desktop'});
 }
 
 function onFrameMessage(event) {

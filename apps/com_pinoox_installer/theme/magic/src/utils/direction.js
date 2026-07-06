@@ -1,10 +1,9 @@
 export function applyDirection(direction, lang) {
-    if (direction) {
-        document.documentElement.dir = direction
-        document.body.className = direction
-    }
+    const resolved = direction === 'rtl' ? 'rtl' : 'ltr'
 
-    if (lang) {
-        document.documentElement.lang = lang
-    }
+    document.documentElement.dir = resolved
+    document.documentElement.lang = lang || document.documentElement.lang
+
+    document.body.classList.remove('ltr', 'rtl')
+    document.body.classList.add(resolved)
 }

@@ -1,30 +1,55 @@
 .section__market {
-  padding: 200px 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  padding-block: var(--space-section);
+
+  &-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: clamp(2rem, 6vw, 5rem);
+  }
 
   &-content {
-    .gradient-text {
-      font-weight: 500;
-      font-size: 4.5em;
-    }
-
-    .text-dark {
-      color: $text-dark-color;
-      line-height: 1.7;
-      font-size: 1.1em;
-      margin: 30px 0;
-    }
-
-    .btn {
-      margin: 30px 0;
-    }
+    text-align: start;
+    max-width: 34rem;
   }
 
-
-  &-solar {
-
-
+  &-title {
+    margin-block: 0.5rem 1rem;
   }
 
+  &-text {
+    color: var(--color-text-dark);
+    line-height: 1.8;
+    font-size: clamp(1rem, 2vw, 1.1rem);
+    margin: 0 0 2rem;
+  }
+
+  &-visual {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
+
+@media (max-width: 992px) {
+  .section__market-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .section__market-content {
+    text-align: center;
+    margin-inline: auto;
+    order: 1;
+  }
+
+  .section__market-visual {
+    order: 2;
+  }
+}
+
+@media (max-width: 480px) {
+  .section__market-content .btn {
+    width: 100%;
+  }
 }

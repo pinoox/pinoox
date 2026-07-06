@@ -3,7 +3,7 @@
     <PageSection title="تصویر پروفایل">
       <div class="flex items-center gap-6">
         <img
-            :src="authStore.user.avatar_thumb || url.AVATAR"
+            :src="profileAvatar"
             class="w-24 h-24 rounded-full object-cover cursor-pointer border-2 border-white/30"
             @click="avatarInput.click()"
             alt="avatar"
@@ -17,7 +17,7 @@
     </PageSection>
 
     <PageSection title="اطلاعات حساب" @keyup.enter="saveInfo">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div class="grid grid-cols-1 @md:grid-cols-2 gap-4 max-w-2xl">
         <Input v-model="params.fname" label="نام" placeholder="نام"/>
         <Input v-model="params.lname" label="نام خانوادگی" placeholder="نام خانوادگی"/>
         <Input v-model="params.username" label="نام کاربری" placeholder="نام کاربری"/>
@@ -29,7 +29,7 @@
     </PageSection>
 
     <PageSection title="رمز عبور" @keyup.enter="savePassword">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl">
+      <div class="grid grid-cols-1 @md:grid-cols-2 gap-4 max-w-2xl">
         <Input v-model="params.old_password" type="password" label="رمز فعلی" placeholder="رمز فعلی"/>
         <Input v-model="params.new_password" type="password" label="رمز جدید" placeholder="رمز جدید"/>
         <Input v-model="params.valid_password" type="password" label="تکرار رمز جدید" placeholder="تکرار رمز جدید"/>
@@ -42,14 +42,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue';
-import { getUrl } from '@/boot.js';
+import { computed, onMounted, ref } from 'vue';
 import { userAPI } from "@api/user.js";
 import { useAuthStore } from "@/stores/modules/auth.js";
 import { unwrapResponse } from "@utils/helpers/apiHelper.js";
+import { userAvatarSrc } from "@utils/helpers/userAvatar.js";
 
-const url = getUrl();
 const authStore = useAuthStore();
+const profileAvatar = computed(() => userAvatarSrc(authStore.user));
 const avatarInput = ref(null);
 const isLoadingInfo = ref(false);
 const isLoadingPass = ref(false);

@@ -2,7 +2,7 @@
 
 return [
     'opt_router' => 'router',
-    'opt_router_text' => 'if enabled, it is possible to assign multiple URLs to the app',
+    'opt_router_text' => 'Multiple URLs are allowed by default; turn off to restrict this app to one URL',
     'opt_dock' => 'dock',
     'opt_dock_text' => 'app visibility in dock',
 

@@ -1,5 +1,6 @@
 import * as sax from '@placetopay/iconsax-vue/outline';
 import * as m from '@mdi/js';
+import { Copy, ExternalLink, Eye, EyeOff, Home, LogOut } from 'lucide-vue-next';
 
 // Define an object of icons
 export const saxIcon = {
@@ -8,9 +9,11 @@ export const saxIcon = {
     appearance: sax.EmojiHappyIcon,
     profile: sax.ProfileCircleIcon,
     routes: sax.Hierarchy2Icon,
+    home: Home,
     arrowLeft: sax.ArrowLeft2Icon,
     arrowRight: sax.ArrowRight3Icon,
     apps: sax.BoxTickIcon,
+    manager: sax.CategoryIcon,
     pincore: sax.CodeIcon,
     back: sax.ArrowCircleRightIcon,
     add: sax.AddIcon,
@@ -22,10 +25,39 @@ export const saxIcon = {
     remove: sax.TrashIcon,
     upload: sax.DocumentUploadIcon,
     market: sax.ShopIcon,
+    search: sax.SearchNormalIcon,
     widgets: sax.Element3Icon,
     refresh: sax.Refresh2Icon,
+    lock: sax.LockIcon,
+    copy: Copy,
+    externalLink: ExternalLink,
+    logout: LogOut,
+    user: sax.UserIcon,
+    notifySuccess: sax.TickCircleIcon,
+    notifyError: sax.DangerIcon,
+    notifyWarn: sax.Warning2Icon,
+    notifyInfo: sax.InfoCircleIcon,
+    notifyClose: sax.CloseSquareIcon,
+    eye: Eye,
+    eyeOff: EyeOff,
 };
 
 export const mdiIcon ={
     autoScroll: m.mdiGestureSwipeVertical,
 }
+
+/** Lucide names for control panel sidebar menu. */
+export const lucideSidebar = {
+    close: 'x',
+    widgets: 'layout-grid',
+    apps: 'boxes',
+    upload: 'upload',
+    routes: 'route',
+    setting: 'settings',
+    profile: 'user',
+    pincore: 'code',
+    market: 'store',
+    chevronLeft: 'chevron-left',
+    chevronRight: 'chevron-right',
+    menu: 'menu',
+};
