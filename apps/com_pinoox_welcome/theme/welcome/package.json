@@ -28,7 +28,7 @@
     "vue3-click-away": "^1.2.4"
   },
   "devDependencies": {
-    "@pinooxhq/vite-plugin": "^1.8.0",
+    "@pinooxhq/vite-plugin": "file:../../../../packages/vite-plugin",
     "@rollup/plugin-babel": "^7.1.0",
     "@rushstack/eslint-patch": "^1.16.1",
     "@vitejs/plugin-vue": "^6.0.7",

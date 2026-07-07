@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 .env
 .package-lock.json
+.pinoox/
