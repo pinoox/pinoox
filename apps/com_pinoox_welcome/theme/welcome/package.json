@@ -7,9 +7,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fluentui/svg-icons": "^1.1.330",
     "@fontsource/montserrat": "^5.2.8",
     "@fontsource/vazirmatn": "^5.2.8",
-    "@fluentui/svg-icons": "^1.1.330",
     "@jamescoyle/vue-icon": "^0.1.2",
     "@mdi/js": "^7.4.47",
     "@wdns/vue-code-block": "^2.3.5",
@@ -28,6 +28,7 @@
     "vue3-click-away": "^1.2.4"
   },
   "devDependencies": {
+    "@pinooxhq/vite-plugin": "^1.8.0",
     "@rollup/plugin-babel": "^7.1.0",
     "@rushstack/eslint-patch": "^1.16.1",
     "@vitejs/plugin-vue": "^6.0.7",

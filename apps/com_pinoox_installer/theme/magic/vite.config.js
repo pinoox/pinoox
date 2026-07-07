@@ -1,4 +1,4 @@
-import pinooxHot, { pinooxServer } from './vite.pinoox.mjs';
+import pinooxHot, { pinooxRefresh, pinooxServer } from '@pinooxhq/vite-plugin';
 import {fileURLToPath, URL} from 'node:url'
 
 import {defineConfig, loadEnv} from 'vite'
@@ -23,7 +23,8 @@ export default defineConfig(({mode}) => {
             devSourcemap: true,
         },
         plugins: [
-            pinooxHot(),
+            pinooxHot({ env }),
+            pinooxRefresh(true, env),
             vue(),
             commonjs(),
         ],
