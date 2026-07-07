@@ -117,3 +117,6 @@ tests/Fixtures/**/*
 # Local platform overrides (never pushed)
 /platform/*.local.php
 /platform/**/*.local.php
+
+# Themes
+/themes/*/.pinoox/

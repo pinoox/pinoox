@@ -2,7 +2,6 @@
 node_modules/
 npm-debug.log
 package-lock.json
-.pinoox/
 
 # Ignore Yarn's lock file (if using Yarn)
 yarn.lock

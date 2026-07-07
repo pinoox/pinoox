@@ -31,7 +31,8 @@
     "nikic/php-parser": "^5.4",
     "nunomaduro/collision": "^8.5",
     "pestphp/pest": "^2.36",
-    "pinoox/devdb": "^1.4"
+    "pinoox/devdb": "^1.4",
+    "pinoox/pinx-inspector": "^1.0"
   },
   "scripts": {
     "check-platform": "@php platform/launcher/check.php",
