@@ -32,7 +32,7 @@
     "vue-svg-inline-plugin": "^2.2.3"
   },
   "devDependencies": {
-    "@pinooxhq/vite-plugin": "file:../../../../packages/vite-plugin",
+    "@pinooxhq/vite-plugin": "^1.9.2",
     "@rushstack/eslint-patch": "^1.16.1",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/eslint-config-prettier": "^10.2.0",
