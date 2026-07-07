@@ -17,7 +17,7 @@
   ],
   "require": {
     "php": "^8.2",
-    "pinoox/pincore": "^3.0"
+    "pinoox/pincore": "^3.4"
   },
   "autoload": {
     "psr-4": {
@@ -28,9 +28,10 @@
     "pinoox"
   ],
   "require-dev": {
-    "nikic/php-parser": "^v4.19.4",
-    "pestphp/pest": "^v1.23.1",
-    "nunomaduro/collision": "^v6.4.0"
+    "nikic/php-parser": "^5.4",
+    "nunomaduro/collision": "^8.5",
+    "pestphp/pest": "^2.36",
+    "pinoox/devdb": "^1.4"
   },
   "scripts": {
     "check-platform": "@php platform/launcher/check.php",
