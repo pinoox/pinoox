@@ -26,7 +26,6 @@
     "@pinooxhq/vite-plugin": "^1.9.2",
     "@vitejs/plugin-vue": "^5.2.4",
     "sass": "^1.89.0",
-    "vite": "^6.3.5",
-    "vite-plugin-commonjs": "^0.10.4"
+    "vite": "^6.3.5"
   }
 }

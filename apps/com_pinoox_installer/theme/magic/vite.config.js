@@ -1,42 +1,19 @@
-import pinooxHot, { pinooxRefresh, pinooxServer } from '@pinooxhq/vite-plugin';
-import {fileURLToPath, URL} from 'node:url'
+import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import pinoox from '@pinooxhq/vite-plugin';
+import { pinooxVueTemplateOptions } from '@pinooxhq/vite-plugin/vue';
 
-import {defineConfig, loadEnv} from 'vite'
-import vue from '@vitejs/plugin-vue'
-import commonjs from 'vite-plugin-commonjs'
-
-const QUERY_ROUTE_PARAM = '_pnx'
-
-export default defineConfig(({mode}) => {
-    const env = loadEnv(mode, process.cwd(), '')
-
-    return {
-        base: './',
-        build: {
-            manifest: true,
-            emptyOutDir: false,
-            rollupOptions: {
-                input: 'src/main.js',
-            },
+export default defineConfig({
+    plugins: [
+        pinoox(['src/main.js']),
+        vue(pinooxVueTemplateOptions()),
+    ],
+    resolve: {
+        alias: {
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
+            '@global': fileURLToPath(new URL('./src/utils/global.js', import.meta.url)),
         },
-        css: {
-            devSourcemap: true,
-        },
-        plugins: [
-            pinooxHot({ env }),
-            pinooxRefresh(true, env),
-            vue(),
-            commonjs(),
-        ],
-        resolve: {
-            alias: {
-                '@': fileURLToPath(new URL('./src', import.meta.url)),
-                '@api': fileURLToPath(new URL('./src/api', import.meta.url)),
-                '@global': fileURLToPath(new URL('./src/utils/global.js', import.meta.url)),
-                '@img': fileURLToPath(new URL('./src/assets/images', import.meta.url)),
-                '@assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
-            },
-        },
-        server: pinooxServer(env),
-    }
-})
+    },
+});
