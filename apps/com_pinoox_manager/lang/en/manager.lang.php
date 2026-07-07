@@ -72,6 +72,7 @@ return [
     'download_successfully' => 'download successfully',
     'currently_installed' => 'it is already installed',
     'request_install_app_not_valid' => 'app install request is invalid',
+    'package_name_invalid' => 'Package name "{name}" is invalid. Expected format: {hint}',
     'request_installtheme_not_valid' => 'theme install request is invalid',
     'request_not_valid' => 'request is invalid',
     'description' => 'description',

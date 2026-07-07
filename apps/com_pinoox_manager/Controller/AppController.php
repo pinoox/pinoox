@@ -325,16 +325,7 @@ class AppController extends ApiController
                 $data = Wizard::pullPackageMeta($file);
             } catch (\Throwable) {
                 Wizard::deletePackageFile($file);
-                return false;
-            }
 
-            if ($data['type'] === 'app' && !Wizard::isValidNamePackage($data['package_name'])) {
-                Wizard::deletePackageFile($file);
-                return false;
-            }
-
-            if ($data['type'] === 'theme' && !Wizard::isValidNamePackage($data['app'])) {
-                Wizard::deletePackageFile($file);
                 return false;
             }
 

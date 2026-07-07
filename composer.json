@@ -7,7 +7,6 @@
     "pinoox"
   ],
   "type": "project",
-  "version": "3.1.2-beta",
   "homepage": "http://www.pinoox.com/",
   "license": "MIT",
   "authors": [
@@ -35,6 +34,7 @@
   },
   "scripts": {
     "check-platform": "@php platform/launcher/check.php",
+    "dev": "@php pinoox dev",
     "test": "@php pinoox test platform",
     "test:core": "@php pinoox test platform",
     "test:apps": "@php pinoox test all"
