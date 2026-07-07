@@ -1,4 +1,5 @@
 import {getBoot} from '@/boot.js'
+import {normalizePhpRequirements} from '@/utils/requirementTokens.js'
 
 import enInstall from './en/install.js'
 import enUser from './en/user.js'
@@ -23,6 +24,7 @@ const packs = {
         language: enLanguage,
         agreement: enAgreement,
         bootstrap: enBootstrap,
+        requirements: {php: normalizePhpRequirements()},
     },
     fa: {
         install: faInstall,
@@ -30,6 +32,7 @@ const packs = {
         language: faLanguage,
         agreement: faAgreement,
         bootstrap: faBootstrap,
+        requirements: {php: normalizePhpRequirements()},
     },
 }
 
@@ -119,6 +122,9 @@ export function mergeLangPack(candidate, locale) {
             : fallback.language,
         agreement: server.agreement ?? fallback.agreement,
         bootstrap: server.bootstrap ?? fallback.bootstrap,
+        requirements: isPlainObject(server.requirements)
+            ? {...fallback.requirements, ...server.requirements}
+            : fallback.requirements,
     }
 }
 

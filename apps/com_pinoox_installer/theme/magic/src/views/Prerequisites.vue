@@ -71,7 +71,7 @@
                                 </div>
                                 <div class="prerequisite-card__body">
                                     <div class="prerequisite-card__head">
-                                        <h3>{{ install[item.labelKey] }}</h3>
+                                        <h3>{{ itemLabel(item) }}</h3>
                                         <span class="prerequisite-badge">{{ statusLabel(item.key) }}</span>
                                     </div>
 
@@ -152,6 +152,10 @@ import {
     diagnoseBootstrapError,
     isPinooxLoaded,
 } from '@/utils/installDiagnostics.js'
+import {
+    normalizePhpRequirements,
+    replaceRequirementTokens,
+} from '@/utils/requirementTokens.js'
 
 defineProps({
     steps: {
@@ -197,6 +201,7 @@ const prerequisites = reactive({
 const connectionError = ref(null)
 const isChecking = ref(true)
 const openTips = reactive({})
+const phpRequirements = ref(normalizePhpRequirements(LANG.value?.requirements))
 
 const stats = computed(() => {
     const items = Object.values(prerequisites)
@@ -409,6 +414,10 @@ async function loadPrerequisites() {
         const data = await installAPI.checkPrerequisites()
         const items = data.items ?? data
 
+        if (data.requirements) {
+            phpRequirements.value = normalizePhpRequirements(data.requirements)
+        }
+
         for (const [type, result] of Object.entries(items)) {
             if (prerequisites[type]) {
                 prerequisites[type] = {
@@ -589,6 +598,18 @@ function rewriteHtaccessValue(item, texts) {
     return rewriteDetailLabel(item.htaccess.detail, texts)
 }
 
+function localizedInstall(key) {
+    return replaceRequirementTokens(install.value[key] ?? '', phpRequirements.value)
+}
+
+function itemLabel(item) {
+    if (item.key === 'php') {
+        return localizedInstall(item.labelKey)
+    }
+
+    return install.value[item.labelKey] ?? ''
+}
+
 function guideText(type) {
     const map = {
         free_space: 'prerequisites_tip_space',
@@ -597,7 +618,9 @@ function guideText(type) {
         database: 'prerequisites_tip_database',
     }
 
-    return install.value[map[type]] ?? ''
+    return type === 'php'
+        ? localizedInstall(map[type])
+        : (install.value[map[type]] ?? '')
 }
 
 function helpText(type) {
@@ -626,7 +649,9 @@ function helpText(type) {
         database: 'prerequisites_help_database_fail',
     }
 
-    return labels[map[type]] ?? ''
+    return type === 'php'
+        ? localizedInstall(map[type])
+        : (labels[map[type]] ?? '')
 }
 
 function next() {

@@ -51,6 +51,7 @@ class PrerequisitesChecker
         return [
             'items' => $items,
             'canContinue' => $this->canContinue($items),
+            'requirements' => LangHelper::platformRequirements(),
         ];
     }
 

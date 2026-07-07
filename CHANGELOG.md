@@ -39,7 +39,7 @@
 ## Notes
 
 - This is a beta release with breaking changes from Pinoox 2.1.0.
-- Requires PHP 8.1+, Composer 2.x, and Node.js for Vite theme development/build workflows.
+- Requires PHP 8.2+, Composer 2.x, and Node.js for Vite theme development/build workflows.
 
 ## [v2.1.0 (2026-02-24)](https://github.com/pinoox/pinoox/releases/tag/2.1.0)
 
@@ -62,7 +62,7 @@
 
 ## Changed
 
-- Update installer compatibility checks to require PHP 8.1.0 or newer.
+- Update installer compatibility checks to require PHP 8.2.0 or newer.
 - Update the Pinoox Twig template with the latest compatibility and maintenance changes.
 
 ## [v2.0.0 (2025-05-28)](https://github.com/pinoox/pinoox/releases/tag/2.0.0)

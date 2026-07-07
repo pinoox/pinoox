@@ -83,6 +83,16 @@ function pinoox_composer_requirements(): array
     $defaults = pinoox_requirement_defaults();
 
     $require = [];
+    $php = null;
+    $rootFile = pinoox_base_path() . '/composer.json';
+
+    if (is_file($rootFile)) {
+        $rootJson = json_decode((string) file_get_contents($rootFile), true);
+
+        if (is_array($rootJson) && isset($rootJson['require']['php'])) {
+            $php = pinoox_normalize_php_constraint((string) $rootJson['require']['php']);
+        }
+    }
 
     foreach (pinoox_composer_json_files() as $file) {
         if (!is_file($file)) {
@@ -98,10 +108,13 @@ function pinoox_composer_requirements(): array
         $require = array_merge($require, is_array($json['require'] ?? null) ? $json['require'] : []);
     }
 
-    if ($require === []) {
+    if ($require === [] && $php === null) {
         return $cache = $defaults;
     }
-    $php = pinoox_normalize_php_constraint((string) ($require['php'] ?? '8.2.0'));
+
+    if ($php === null) {
+        $php = pinoox_normalize_php_constraint((string) ($require['php'] ?? '8.2.0'));
+    }
 
     $extensions = [];
 
@@ -162,6 +175,48 @@ function pinoox_composer_php_constraint(): string
     $require = is_array($json['require'] ?? null) ? $json['require'] : [];
 
     return (string) ($require['php'] ?? '^8.2');
+}
+
+function pinoox_php_short_version(?string $minimum = null): string
+{
+    $minimum = $minimum ?? pinoox_min_php_version();
+
+    if (preg_match('/^(\d+\.\d+)/', $minimum, $matches) === 1) {
+        return $matches[1];
+    }
+
+    return $minimum;
+}
+
+/**
+ * @return array{required: string, constraint: string, php_short: string}
+ */
+function pinoox_php_requirement_tokens(): array
+{
+    static $cache = null;
+
+    if (is_array($cache)) {
+        return $cache;
+    }
+
+    $minimum = pinoox_min_php_version();
+
+    return $cache = [
+        'required' => $minimum,
+        'constraint' => pinoox_composer_php_constraint(),
+        'php_short' => pinoox_php_short_version($minimum),
+    ];
+}
+
+function pinoox_replace_requirement_tokens(string $text, ?array $tokens = null): string
+{
+    $tokens = $tokens ?? pinoox_php_requirement_tokens();
+
+    foreach ($tokens as $key => $value) {
+        $text = str_replace('{' . $key . '}', (string) $value, $text);
+    }
+
+    return $text;
 }
 
 function pinoox_php_version_ok(?string $minimum = null): bool
