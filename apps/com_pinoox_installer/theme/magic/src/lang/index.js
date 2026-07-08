@@ -15,7 +15,6 @@ import faBootstrap from './fa/bootstrap.js'
 
 export const SUPPORTED_LOCALES = ['en', 'fa']
 export const DEFAULT_LOCALE = 'en'
-export const LOCALE_STORAGE_KEY = 'installer_locale'
 
 const packs = {
     en: {
@@ -51,24 +50,8 @@ export function getLangPack(locale) {
 export function resolveInitialLocale() {
     const boot = getBoot()
 
-    try {
-        const stored = localStorage.getItem(LOCALE_STORAGE_KEY)
-
-        if (stored && hasLocale(stored)) {
-            return stored
-        }
-    } catch {
-        // ignore storage errors
-    }
-
     if (boot.locale && hasLocale(boot.locale)) {
         return boot.locale
-    }
-
-    const browser = navigator.language?.slice(0, 2)?.toLowerCase()
-
-    if (browser && hasLocale(browser)) {
-        return browser
     }
 
     return DEFAULT_LOCALE
@@ -156,14 +139,3 @@ export function resolveLangState(boot = getBoot()) {
     }
 }
 
-export function persistLocale(locale) {
-    if (!hasLocale(locale)) {
-        return
-    }
-
-    try {
-        localStorage.setItem(LOCALE_STORAGE_KEY, locale)
-    } catch {
-        // ignore storage errors
-    }
-}

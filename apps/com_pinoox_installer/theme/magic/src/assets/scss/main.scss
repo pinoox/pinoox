@@ -935,7 +935,10 @@ body.ltr {
   right: 0;
   bottom: 0;
   min-height: 100vh;
-  overflow: hidden;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   width: 100%;
 }
 
@@ -2352,6 +2355,17 @@ body.ltr {
   }
 }
 
+@media (max-height: 900px) {
+  #page {
+    min-height: auto;
+    padding-bottom: calc(3.75rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  .page-actions {
+    padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  }
+}
+
 @media (max-width: 768px) {
   html {
     -webkit-text-size-adjust: 100%;
@@ -2359,14 +2373,6 @@ body.ltr {
 
   body {
     overflow-x: hidden;
-  }
-
-  .art-cloud {
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    min-height: 100vh;
-    min-height: 100dvh;
   }
 
   .steps {

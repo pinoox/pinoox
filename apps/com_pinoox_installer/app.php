@@ -12,8 +12,8 @@ return [
     'description' => 'Pinoox web installer for first-time project setup, database validation, and environment checks.',
     'developer' => 'Pinoox Team',
     'theme' => 'magic',
-    'version-name' => '2.1.8',
-    'version-code' => 16,
+    'version-name' => '2.1.9',
+    'version-code' => 17,
     'lang' => 'en',
     'minpin' => 2,
     'transport' => [

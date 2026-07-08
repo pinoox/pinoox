@@ -32,7 +32,7 @@ class BootFlow extends Flow
     {
         $lang = App::get('lang');
 
-        $direction = LangHelper::direction();
+        $direction = LangHelper::direction($lang);
 
         View::set('_direction', $direction);
         View::set('currentLang', $lang);
@@ -40,7 +40,7 @@ class BootFlow extends Flow
             'locale' => $lang,
             'direction' => $direction,
             'version' => PlatformVersion::label(),
-            'lang' => LangHelper::forFrontend(),
+            'lang' => LangHelper::forFrontend($lang),
         ]));
     }
 }
