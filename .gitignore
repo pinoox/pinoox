@@ -68,6 +68,8 @@ package-lock.json
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+MAMP_php_error_log_MAMP
+MAMP_*
 
 # Cursor (keep shared agent rules)
 .cursor/*

@@ -1,6 +1,6 @@
 import {defineStore} from 'pinia'
 import {getBoot, hasBoot} from '@/boot.js'
-import {getDirection, getLangPack, persistLocale, resolveLangPayload, resolveLangState} from '@/lang/index.js'
+import {getDirection, getLangPack, resolveLangPayload, resolveLangState} from '@/lang/index.js'
 import {applyDirection} from '@/utils/direction.js'
 import {syncBootstrapQueryRoute} from '@/utils/resolveInstallerApi.js'
 
@@ -52,7 +52,6 @@ export const useInstallStore = defineStore('install', {
                 direction: resolvedDirection,
             }
 
-            persistLocale(selectedLang)
             applyDirection(resolvedDirection, selectedLang)
         },
 
