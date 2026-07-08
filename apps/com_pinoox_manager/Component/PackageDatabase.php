@@ -5,6 +5,7 @@ namespace App\com_pinoox_manager\Component;
 use Pinoox\Component\Database\AppDatabaseResolver;
 use Pinoox\Component\Database\DatabaseConfig;
 use Pinoox\Component\Database\DatabaseManager;
+use Pinoox\Component\Package\PackageName;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Database\DB;
@@ -24,19 +25,22 @@ final class PackageDatabase
 
         $packagedPrefix = $packaged['prefix'] ?? null;
         $normalizedPackaged = $packagedPrefix ? self::formatPrefix((string) $packagedPrefix) : null;
+        $usesExplicitPrefix = $normalizedPackaged !== null && !self::isGenericPrefix($normalizedPackaged);
         $packagedConflict = $normalizedPackaged
             ? self::hasPrefixConflict($normalizedPackaged, $package, $used)
             : false;
 
         return [
             'packaged_prefix' => $packaged['prefix'],
+            'explicit_prefix' => $normalizedPackaged,
+            'uses_explicit_prefix' => $usesExplicitPrefix,
             'suggested_prefix' => $suggested,
             'resolved_prefix' => $resolved,
             'used_prefixes' => $used,
             'conflict' => $packagedConflict,
             'needs_prefix_setup' => $packagedConflict
-                || $normalizedPackaged === null
-                || $resolved !== $normalizedPackaged,
+                || ($normalizedPackaged === null && $packaged['has_migrations'])
+                || ($usesExplicitPrefix && $resolved !== $normalizedPackaged),
             'tables_exist' => self::prefixTablesExist($resolved),
             'has_migrations' => $packaged['has_migrations'],
             'connection' => self::platformDefaults(),
@@ -313,11 +317,15 @@ final class PackageDatabase
 
     public static function suggestPrefix(string $package): string
     {
-        $parts = array_values(array_filter(explode('_', $package)));
-        $name = end($parts) ?: $package;
-        $name = preg_replace('/[^A-Za-z0-9_]+/', '_', strtolower((string) $name));
+        $slug = PackageName::suggestedTablePrefix($package);
+        $slug = preg_replace('/[^a-z0-9_]+/', '_', $slug) ?? $slug;
+        $slug = trim($slug, '_');
 
-        return self::normalizePrefix(trim((string) $name, '_') . '_');
+        if ($slug === '') {
+            $slug = PackageName::canonical($package);
+        }
+
+        return self::normalizePrefix($slug);
     }
 
     public static function resolvePrefix(string $package, ?string $packagedPrefix = null): string
@@ -328,23 +336,23 @@ final class PackageDatabase
 
         $suggested = self::suggestPrefix($package);
         $used = self::collectUsedPrefixes($package);
-        $generic = [
+
+        if ($packagedPrefix !== null && !self::isGenericPrefix($packagedPrefix)) {
+            return self::ensureUniquePrefix($packagedPrefix, $package, $used, allowPackageFallbacks: false);
+        }
+
+        return self::ensureUniquePrefix($suggested, $package, $used);
+    }
+
+    private static function isGenericPrefix(string $prefix): bool
+    {
+        $prefix = self::normalizePrefix($prefix);
+
+        return in_array($prefix, [
             self::normalizePrefix(DatabaseManager::DEFAULT_CORE_TABLE_PREFIX),
             'pinoox_',
             'pin_',
-        ];
-
-        $candidate = $packagedPrefix ?? $suggested;
-
-        if ($packagedPrefix === null || in_array($packagedPrefix, $generic, true)) {
-            $candidate = $suggested;
-        }
-
-        if (self::hasPrefixConflict($candidate, $package, $used)) {
-            $candidate = $suggested;
-        }
-
-        return self::ensureUniquePrefix($candidate, $package, $used);
+        ], true);
     }
 
     /**
@@ -402,7 +410,7 @@ final class PackageDatabase
 
             $package = $app->package();
 
-            if ($excludePackage !== null && $package === $excludePackage) {
+            if ($excludePackage !== null && PackageName::equals($package, $excludePackage)) {
                 continue;
             }
 
@@ -432,7 +440,7 @@ final class PackageDatabase
         $prefix = self::normalizePrefix($prefix);
 
         foreach ($used as $owner => $existing) {
-            if ($owner === $package) {
+            if (PackageName::equals($owner, $package)) {
                 continue;
             }
 
@@ -447,14 +455,29 @@ final class PackageDatabase
     /**
      * @param array<string, string> $used
      */
-    private static function ensureUniquePrefix(string $prefix, string $package, array $used): string
-    {
+    private static function ensureUniquePrefix(
+        string $prefix,
+        string $package,
+        array $used,
+        bool $allowPackageFallbacks = true,
+    ): string {
         $prefix = self::normalizePrefix($prefix);
-        $base = rtrim($prefix, '_');
 
         if (!self::hasPrefixConflict($prefix, $package, $used)) {
             return $prefix;
         }
+
+        if ($allowPackageFallbacks) {
+            foreach (PackageName::tablePrefixFallbacks($package) as $fallback) {
+                $candidate = self::normalizePrefix($fallback);
+
+                if ($candidate !== $prefix && !self::hasPrefixConflict($candidate, $package, $used)) {
+                    return $candidate;
+                }
+            }
+        }
+
+        $base = rtrim($prefix, '_');
 
         for ($i = 2; $i <= 99; $i++) {
             $candidate = self::normalizePrefix($base . '_' . $i);
@@ -464,7 +487,7 @@ final class PackageDatabase
             }
         }
 
-        return self::normalizePrefix(self::suggestPrefix($package));
+        return self::normalizePrefix(PackageName::suggestedTablePrefix($package));
     }
 
     public static function formatPrefix(string $prefix): string

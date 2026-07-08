@@ -3,6 +3,7 @@
 namespace App\com_pinoox_manager\Component;
 
 use Pinoox\Component\Package\AppDependency;
+use Pinoox\Component\Package\PackageName;
 use Pinoox\Component\Package\Pinx\PinxManifest;
 use Pinoox\Component\Package\Pinx\PinxVersion;
 use Pinoox\Portal\App\AppEngine;
@@ -20,8 +21,13 @@ final class PackageCompatibility
 
         $depends = self::dependsStatus($manifest);
         $versionOk = self::versionStatus($manifest);
+        $packageNameOk = self::packageNameStatus($manifest);
 
         $issues = [];
+
+        if (!$packageNameOk['ok']) {
+            $issues[] = (string) $packageNameOk['message'];
+        }
 
         if (!$minpinOk) {
             $issues[] = PinxVersion::minpinError($minpin);
@@ -52,8 +58,31 @@ final class PackageCompatibility
             'depends_ok' => $depends['ok'],
             'version_ok' => $versionOk['ok'],
             'version_message' => $versionOk['message'],
+            'package_name_ok' => $packageNameOk['ok'],
+            'package_name_message' => $packageNameOk['message'],
             'can_install' => $issues === [],
             'issues' => $issues,
+        ];
+    }
+
+    /**
+     * @return array{ok: bool, message: ?string}
+     */
+    private static function packageNameStatus(PinxManifest $manifest): array
+    {
+        $name = $manifest->isTheme() ? $manifest->targetApp() : $manifest->package();
+        $error = PackageName::validationError($name);
+
+        if ($error === null) {
+            return ['ok' => true, 'message' => null];
+        }
+
+        return [
+            'ok' => false,
+            'message' => t('manager.package_name_invalid', [
+                'name' => $name,
+                'hint' => PackageName::formatHint(),
+            ]),
         ];
     }
 

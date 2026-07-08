@@ -10,6 +10,7 @@ yarn.lock
 .env.local
 .env.*.local
 .env.*.production
+.pinoox/
 
 # Ignore logs and debugging files
 *.log

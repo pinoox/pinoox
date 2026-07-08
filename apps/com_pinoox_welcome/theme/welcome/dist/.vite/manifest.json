@@ -300,7 +300,7 @@
     "src": "node_modules/@fontsource/vazirmatn/files/vazirmatn-latin-ext-700-normal.woff2"
   },
   "node_modules/highlight.js/es/index.js": {
-    "file": "assets/es-DdFtSRLP.js",
+    "file": "assets/es-CQcEkswa.js",
     "name": "es",
     "src": "node_modules/highlight.js/es/index.js",
     "isDynamicEntry": true,
@@ -318,10 +318,6 @@
       "_rolldown-runtime-BgaNhQyE.js"
     ]
   },
-  "src/assets/media/hero.jpg": {
-    "file": "assets/hero-BV0OP4SE.jpg",
-    "src": "src/assets/media/hero.jpg"
-  },
   "src/assets/media/logo.png": {
     "file": "assets/logo-9UY93egM.png",
     "src": "src/assets/media/logo.png"
@@ -331,7 +327,7 @@
     "src": "src/assets/media/mock.png"
   },
   "src/main.js": {
-    "file": "assets/main-D1Cm0pCN.js",
+    "file": "assets/main-Dv_VNn7Y.js",
     "name": "main",
     "src": "src/main.js",
     "isEntry": true,
@@ -343,7 +339,7 @@
       "node_modules/prismjs/prism.js"
     ],
     "css": [
-      "assets/main-REX_OiRq.css"
+      "assets/main-DQ2a49EQ.css"
     ],
     "assets": [
       "assets/logo-9UY93egM.png",
@@ -421,8 +417,7 @@
       "assets/montserrat-latin-ext-800-normal-BBvmbyWk.woff2",
       "assets/montserrat-latin-ext-800-normal-Wjq_OapB.woff",
       "assets/montserrat-latin-800-normal-axpkC1rd.woff2",
-      "assets/montserrat-latin-800-normal-C3dfDxXV.woff",
-      "assets/hero-BV0OP4SE.jpg"
+      "assets/montserrat-latin-800-normal-C3dfDxXV.woff"
     ]
   }
 }

@@ -19,6 +19,7 @@ use Pinoox\Component\Database\Patch\PatchToolkit;
 use Pinoox\Component\Migration\Migrator;
 use Pinoox\Component\Package\Pinx\PinxInstallResult;
 use Pinoox\Component\Package\Pinx\PinxManifest;
+use Pinoox\Component\Package\PackageName;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\Config;
 use Pinoox\Portal\Date;
@@ -53,7 +54,19 @@ class Wizard
 
     public static function isValidNamePackage($packageName)
     {
-        return AppEngine::checkName($packageName);
+        return PackageName::isValid((string) $packageName);
+    }
+
+    public static function packageNameError(?string $packageName): ?string
+    {
+        if (PackageName::isValid((string) $packageName)) {
+            return null;
+        }
+
+        return t('manager.package_name_invalid', [
+            'name' => (string) ($packageName ?? ''),
+            'hint' => PackageName::formatHint(),
+        ]);
     }
 
     public static function checkVersion($data)
@@ -97,7 +110,8 @@ class Wizard
         $data = self::pullDataPackage($pinxFile);
 
         if (!self::isValidNamePackage($data['package_name'])) {
-            self::deletePackageFile($pinxFile);
+            self::$message = self::packageNameError($data['package_name']);
+
             return false;
         }
 
@@ -277,8 +291,10 @@ class Wizard
             $meta = self::pullPackageMeta($pinxFile);
 
             if ($meta['type'] === 'theme') {
-                if (!self::isValidNamePackage($meta['app'])) {
-                    self::$message = t('manager.request_install_app_not_valid');
+                $packageError = self::packageNameError($meta['app'] ?? null);
+
+                if ($packageError !== null) {
+                    self::$message = $packageError;
 
                     return self::installResponse(false, [], $meta);
                 }
@@ -292,8 +308,10 @@ class Wizard
                 return self::installResponse(true, [], $meta);
             }
 
-            if (!self::isValidNamePackage($meta['package_name'])) {
-                self::$message = t('manager.request_install_app_not_valid');
+            $packageError = self::packageNameError($meta['package_name'] ?? null);
+
+            if ($packageError !== null) {
+                self::$message = $packageError;
 
                 return self::installResponse(false, [], $meta);
             }
