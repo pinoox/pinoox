@@ -29,16 +29,14 @@
 # Local dev sample packages (not for commit)
 sample-dev-app.pinx
 
+# Project pinx workspace (signing keys + export artifacts)
+/pinx/
+/pinx/keys/
+/pinx/export/
+/apps/*/pinx/
+/apps/*/export/
 
-# Cursor (keep shared agent rules)
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
 
-# Node Js
-node_modules
-package-lock.json
-=======
 # =============================================================================
 # Project — PHP & Composer
 # =============================================================================
@@ -73,8 +71,6 @@ package-lock.json
 
 # Cursor (keep shared agent rules)
 .cursor/*
-!.cursor/rules/
-!.cursor/rules/**
 .editorconfig
 .zed/
 .nova/
