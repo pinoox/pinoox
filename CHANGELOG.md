@@ -1,20 +1,45 @@
 # Release Notes
-## [Unreleased](https://github.com/pinoox/pinoox/compare/3.1-beta...master)
+
+## [Unreleased](https://github.com/pinoox/pinoox/compare/3.3.6...master)
+
+## [v3.3.6 (2026-07-08)](https://github.com/pinoox/pinoox/releases/tag/3.3.6)
 
 ## Added
 
+- Add **Pinx Inspector** for local development at `/~inspector` — database browser, routes, migrations, health, logs, and a floating in-app widget (requires `pinoox/pinx-inspector` as `require-dev`).
+- Add **`php pinoox dev platform`** — one shared PHP serve (platform router) plus Vite HMR for every routed app with a frontend theme.
+- Add **Pinoox Vite HMR** via `@pinooxhq/vite-plugin`: auto `pinooxDevState` / `pinooxServer` wiring, `.pinoox/dev.json`, and Twig `vite_tags()` refresh during dev.
+- Add **DevDB** as a platform `require-dev` dependency with development defaults in `.env.example` (zero-setup local SQLite/JSON workflow).
+- Add global **Pinx drag-and-drop** to open the package installer from the Manager desktop.
 - Document the recommended Pinx single-app development workflow, from first app setup through build and release.
 - Add local development guidance for Pinoox DevDB as the default zero-setup database workflow.
 - Add clearer development setup notes for Composer-based Pincore and Pinx package workflows.
 
 ## Changed
 
+- Improve **`php pinoox dev`** terminal output: defer links until Vite is ready, platform-style URL table, compact Inspector indicator, cleaner single-app serve-lock banner.
+- Improve **Inspector platform mode**: app selector respects `?package=`, serve-lock hides multi-app picker when one app is bound, route list uses AppRouter.
+- Improve **Inspector widget**: Shadow DOM style isolation (always on top, independent of app CSS), panel collapse, and full hide with restore tab.
+- Improve **Manager**: cached users/themes tabs, safer theme delete, market panel shell aligned with shared window styles, DB prefix from route slug with conflict resolution.
+- Refresh **Welcome** theme UI and development docs for the Vite HMR workflow.
 - Improve console bootstrap behavior for UTF-8 output in Pinoox CLI contexts.
 - Refine the single-app development experience around local environment defaults and development-only tooling.
+- Prefer local `pincore/` classmap over `vendor` when booting the CLI in a linked workspace.
 
 ## Fixed
 
+- Fix Inspector package/CLI resolution for `php pinoox dev {app}` (no more `unknown` package or missing `bin/pinx` on platform installs).
+- Fix Inspector not reloading data when switching apps in platform multi-app mode.
+- Fix `php pinoox dev platform` being parsed as a theme name instead of starting platform dev.
 - Fix Persian/UTF-8 CLI output initialization for terminal commands.
+- Fix Installer PHP minimum version check to read from root `composer.json`.
+- Fix Market panel surface opacity in simple mode (`MarketPanelShell`).
+
+## Notes
+
+- Platform distribution **3.3.6** (`platform/pinoox.config.php`). Kernel ships via **`pinoox/pincore` ^3.4** (3.5.x recommended for latest dev/Inspector fixes).
+- Optional dev tools: `pinoox/pinx-inspector` ^1.3, `pinoox/devdb` ^1.4.
+- Inspector and the dev widget are **local-only**; disable with `--no-inspector` on `serve` / `dev`.
 
 ## [v3.1-beta (2026-06-09)](https://github.com/pinoox/pinoox/releases/tag/3.1-beta)
 
