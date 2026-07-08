@@ -1,0 +1,118 @@
+name: Platform release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-platform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: zip, mbstring, xml, ctype, json, tokenizer, fileinfo
+          coverage: none
+          tools: composer:v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Composer dependencies (all composer.json in source)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t composer_files < <(
+            find . -name composer.json \
+              -not -path '*/vendor/*' \
+              -not -path '*/node_modules/*' \
+              -not -path '*/storage/.platform-build/*' \
+              | sort
+          )
+
+          if [ "${#composer_files[@]}" -eq 0 ]; then
+            echo "No composer.json files found in source." >&2
+            exit 1
+          fi
+
+          for composer_file in "${composer_files[@]}"; do
+            dir=$(dirname "$composer_file")
+            echo "::group::composer install in ${dir}"
+            (
+              cd "$dir"
+              composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+            )
+            echo "::endgroup::"
+          done
+
+      - name: Install Node dependencies (all package.json in source)
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -t package_files < <(
+            find . -name package.json \
+              -not -path '*/vendor/*' \
+              -not -path '*/node_modules/*' \
+              | sort
+          )
+
+          if [ "${#package_files[@]}" -eq 0 ]; then
+            echo "No package.json files found in source; skipping npm install."
+            exit 0
+          fi
+
+          for package_file in "${package_files[@]}"; do
+            dir=$(dirname "$package_file")
+            echo "::group::npm install in ${dir}"
+            (
+              cd "$dir"
+              if [ -f package-lock.json ]; then
+                npm ci --no-audit --no-fund
+              else
+                npm install --no-audit --no-fund
+              fi
+            )
+            echo "::endgroup::"
+          done
+
+      - name: Resolve platform version
+        id: version
+        run: |
+          VERSION=$(php -r '$config = include "platform/pinoox.config.php"; echo trim((string) ($config["version_name"] ?? ""));')
+          if [ -z "$VERSION" ]; then
+            echo "version_name is missing in platform/pinoox.config.php" >&2
+            exit 1
+          fi
+          echo "name=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "asset=pinoox v${VERSION}.zip" >> "$GITHUB_OUTPUT"
+          echo "Building platform archive for version ${VERSION}"
+
+      - name: Build platform archive
+        run: php pinoox build platform --yes --output="${{ steps.version.outputs.asset }}"
+
+      - name: Upload release asset
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.version.outputs.asset }}
+
+      - name: Upload workflow artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.version.outputs.asset }}
+          path: ${{ steps.version.outputs.asset }}
+          if-no-files-found: error

@@ -1,10 +1,8 @@
 # App
-uploads
-setting/config
-dist
+/uploads
+/setting/config
 
 # Pinoox
-pinker
 .env
 *.env
 
