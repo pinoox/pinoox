@@ -36,6 +36,9 @@ sample-dev-app.pinx
 /apps/*/pinx/
 /apps/*/export/
 
+# Pinroll project config
+/pinroll/
+
 
 # =============================================================================
 # Project — PHP & Composer

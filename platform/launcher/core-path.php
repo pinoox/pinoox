@@ -68,7 +68,11 @@ function pinoox_resolve_configured_core_path(string $basePath): string
     }
 
     if (!empty($configuredPath)) {
-        return pinoox_resolve_relative_core_path($basePath, $configuredPath);
+        $resolved = pinoox_resolve_relative_core_path($basePath, $configuredPath);
+        if (pinoox_is_valid_core_path($resolved)) {
+            return $resolved;
+        }
+        // Local .pincore (e.g. ../pincore3) must not break production vendor installs.
     }
 
     $localCore = pinoox_detect_local_core_path($basePath);
