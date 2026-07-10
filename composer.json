@@ -32,7 +32,7 @@
     "nunomaduro/collision": "^8.5",
     "pestphp/pest": "^2.36",
     "pinoox/devdb": "^1.4",
-    "pinoox/pinroll": "^1.0.5",
+    "pinoox/pinroll": "^1.1.0",
     "pinoox/pinx-inspector": "^1.3"
   },
   "scripts": {
