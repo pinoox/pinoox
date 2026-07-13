@@ -1,15 +1,14 @@
 import { defineStore } from 'pinia';
-import { authAPI } from "@api/auth.js";
-import { userAPI } from "@api/user.js";
-import { unwrapResponse } from "@utils/helpers/apiHelper.js";
-import { computed, ref, watch } from "vue";
-
-const tokenKey = 'manager_pinoox';
+import { authAPI } from '@api/auth.js';
+import { userAPI } from '@api/user.js';
+import { unwrapResponse } from '@utils/helpers/apiHelper.js';
+import { computed, ref, watch } from 'vue';
+import { auth as pinooxAuth } from '@/lib/auth/client.js';
 
 export const useAuthStore = defineStore('auth', () => {
     const auth = ref(false);
     const user = ref({});
-    const token = ref(localStorage.getItem(tokenKey) || null);
+    const token = ref(pinooxAuth.getToken());
     const isLock = ref(false);
     const isLoggingOut = ref(false);
 
@@ -19,6 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     const setUser = (data) => {
         user.value = data || {};
         isLock.value = !!data?.isLock;
+        pinooxAuth.user = user.value;
     };
 
     const logout = async () => {
@@ -27,8 +27,9 @@ export const useAuthStore = defineStore('auth', () => {
         try {
             await authAPI.logout();
         } catch (error) {
-            console.error("Logout failed:", error);
+            console.error('Logout failed:', error);
         } finally {
+            pinooxAuth.clearToken();
             token.value = null;
             auth.value = false;
             user.value = {};
@@ -41,6 +42,8 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     const login = (login_key) => {
+        pinooxAuth.setToken(login_key);
+        pinooxAuth.isAuthenticated = true;
         token.value = login_key;
         auth.value = true;
     };
@@ -56,6 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
                 : await authAPI.get();
             setUser(unwrapResponse(response));
             auth.value = true;
+            pinooxAuth.isAuthenticated = true;
             return true;
         } catch (error) {
             auth.value = false;
@@ -64,10 +68,9 @@ export const useAuthStore = defineStore('auth', () => {
     };
 
     watch(token, (newToken) => {
-        if (newToken)
-            localStorage.setItem(tokenKey, newToken);
-        else
-            localStorage.removeItem(tokenKey);
+        if (newToken !== pinooxAuth.getToken()) {
+            pinooxAuth.setToken(newToken);
+        }
     });
 
     return {

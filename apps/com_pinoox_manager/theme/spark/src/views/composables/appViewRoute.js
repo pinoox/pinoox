@@ -1,4 +1,5 @@
 import {getUrl} from '@/boot.js';
+import { auth } from '@/lib/auth/client.js';
 
 export const MANAGER_TOKEN_PARAM = '__manager_token';
 
@@ -54,7 +55,7 @@ export function appendManagerToken(cleanUrl) {
 
     try {
         const url = new URL(cleanUrl, window.location.origin);
-        const token = localStorage.getItem('manager_pinoox');
+        const token = auth.getToken();
 
         if (token) {
             url.searchParams.set(MANAGER_TOKEN_PARAM, token);
@@ -88,7 +89,7 @@ export function buildAppViewNavigateUrl(packageName, routeInput) {
     }
 
     const suffix = pathPart === '/' ? '' : pathPart;
-    const token = localStorage.getItem('manager_pinoox');
+    const token = auth.getToken();
     let search = query;
 
     if (token) {

@@ -33,6 +33,7 @@ return [
         'key' => 'manager_pinoox',
         'lifetime' => 30,
         'lifetime_unit' => 'day',
+        'client' => true,
     ],
     'access' => [
         'super_roles' => ['admin'],

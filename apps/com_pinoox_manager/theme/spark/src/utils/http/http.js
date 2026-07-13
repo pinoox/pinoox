@@ -1,16 +1,14 @@
 import axios from "axios";
 import { getUrl } from '@/boot.js';
+import { auth } from '@/lib/auth/client.js';
 import {readApiErrorMessage} from "@utils/apiEnvelope.js";
 import {showSuccessAlert, showErrorAlert} from '@utils/helpers/alertHelper.js';
 
 const baseUrl = getUrl().API || import.meta.env.VITE_API_PATH;
 
 function getTokenAuth() {
-    let token = localStorage.manager_pinoox;
-    if (!!token) {
-        return `${token}`;
-    }
-    return null;
+    // Prefer Bearer for JWT; fall back to raw token for legacy callers
+    return auth.getAuthHeader() || auth.getToken();
 }
 
 const actions = {
