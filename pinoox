@@ -1,7 +1,8 @@
+#!/usr/bin/env php
 <?php
 /**
  *
- * This file doesn't do anything but load essential files.
+ * Pinoox platform CLI entry (multi-app HMVC).
  *
  */
 
