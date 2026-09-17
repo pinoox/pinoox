@@ -79,6 +79,7 @@ MAMP_*
 .editorconfig
 .zed/
 .nova/
+.agents/
 .phpactor.json
 .codex/
 Homestead.json
