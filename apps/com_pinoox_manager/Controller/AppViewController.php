@@ -22,6 +22,7 @@ use Pinoox\Portal\App\App;
 use Pinoox\Portal\App\AppEngine;
 use Pinoox\Portal\App\AppProvider;
 use Pinoox\Portal\Lang;
+use Pinoox\Portal\SubApp;
 use Pinoox\Portal\Url;
 use Pinoox\Portal\View;
 
@@ -52,24 +53,14 @@ class AppViewController
             );
         }
 
-        $hostPackage = App::package();
-
-        if (!TransportConfig::sharesAuthWith($packageName, $hostPackage)) {
-            Auth::reset();
-        } else {
-            Auth::boot();
-        }
-
         if (is_string($managerToken) && $managerToken !== '') {
             Auth::persistClientJwt($managerToken);
         }
 
-        $layerPath = App::pathRoute() . '/app/' . $packageName;
+        $mountPath = 'app/' . $packageName;
 
         try {
-            $response = AppProvider::meetingHandle($packageName, $layerPath, $request);
-
-            return $response instanceof Response ? $response : new Response((string) $response);
+            return SubApp::run($packageName, $mountPath, $request);
         } catch (\Throwable $e) {
             return $this->appViewError(
                 t('manager.app_view_open_error'),

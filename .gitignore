@@ -5,6 +5,9 @@
 # Pincore (Core files for dev) (keep directory markers)
 /pincore/
 .pincore
+
+# Pinoox runtime state (dev server registry, etc.)
+/.pinoox/
 # Baker cache & build output (~pinker)
 /pinker/
 
@@ -79,6 +82,7 @@ MAMP_*
 .editorconfig
 .zed/
 .nova/
+.agents/
 .phpactor.json
 .codex/
 Homestead.json
