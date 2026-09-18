@@ -27,7 +27,7 @@ class DatabaseCredentialsSync
     /**
      * @param array<string, mixed> $config Normalized runtime connection config
      */
-    public static function persist(array $config, string $connectionName = null): bool
+    public static function persist(array $config, ?string $connectionName = null): bool
     {
         $connectionName = self::resolveConnectionName($connectionName);
 
