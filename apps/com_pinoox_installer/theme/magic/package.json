@@ -13,7 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "animate.css": "^4.1.1",
-    "axios": "^1.9.0",
+    "axios": "^1.20.0",
     "axios-method-override": "^1.1.2",
     "flag-icon-css": "^4.1.7",
     "pinia": "^3.0.2",
